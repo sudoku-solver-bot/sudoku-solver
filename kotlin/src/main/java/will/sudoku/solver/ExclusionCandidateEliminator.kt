@@ -28,7 +28,7 @@ class ExclusionCandidateEliminator(var shortCircuitThreshold: Int) : CandidateEl
 
                 for (candidateValue in candidatesValueAppearOnceOnly) {
                     for (coord in coordGroup.coords) {
-                        if (board.candidatePattern(coord) and masks[candidateValue - 1] > 1) {
+                        if (board.candidatePattern(coord) and masks[candidateValue - 1] != 0) {
                             board.markValue(coord, candidateValue)
                             anyUpdate = true
                             stable = false

@@ -117,7 +117,7 @@ class Board private constructor(val candidatePatterns: IntArray) {
     }
 
     fun isConfirmed(coord: Coord): Boolean {
-        return masks.any { candidatePattern(coord) == it }
+        return candidatePattern(coord).countOneBits() == 1
     }
 
     fun isValid(): Boolean {
