@@ -31,12 +31,17 @@ fun Application.module() {
     }
     
     routing {
-        // Serve index.html at root
+        // Serve Vue app at root
         get("/") {
             call.respondText(
                 javaClass.classLoader.getResource("static/index.html")?.readText() ?: "Not found",
                 io.ktor.http.ContentType.Text.Html
             )
+        }
+        
+        // Serve static assets (JS, CSS)
+        static("/assets") {
+            resources("static/assets")
         }
         
         route("api") {
