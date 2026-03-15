@@ -94,3 +94,4 @@ Benchmarks run via manual GitHub Actions workflow dispatch:
 - Run multiple iterations for stable results
 - Compare results across commits to detect regressions
 - Use the same JVM version for consistent comparisons
+
