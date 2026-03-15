@@ -301,17 +301,98 @@
             document.querySelector('.container').classList.toggle('loading', loading);
         }
 
-        // API calls (to be implemented in issue #33)
+        // API calls
         async function solve() {
-            showResult('API not yet connected. Complete issue #33 first.', 'error');
+            const puzzle = getPuzzleString();
+            setLoading(true);
+
+            try {
+                const response = await fetch('/api/solve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ puzzle, includeMetrics: true })
+                });
+
+                const data = await response.json();
+
+                if (data.solved) {
+                    setPuzzleString(data.solution, false);
+                    const metrics = data.metrics;
+                    showResult(
+                        `Solved in ${metrics.solveTimeMs.toFixed(2)}ms | ` +
+                        `Backtracking: ${metrics.backtrackingCount} | ` +
+                        `Depth: ${metrics.maxRecursionDepth}`,
+                        'success'
+                    );
+                } else {
+                    showResult(data.error || 'No solution found', 'error');
+                }
+            } catch (e) {
+                showResult('Failed to connect to server: ' + e.message, 'error');
+            } finally {
+                setLoading(false);
+            }
         }
 
         async function generate(difficulty) {
-            showResult('API not yet connected. Complete issue #33 first.', 'error');
+            setLoading(true);
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ difficulty })
+                });
+
+                const data = await response.json();
+
+                if (data.puzzle) {
+                    setPuzzleString(data.puzzle, true);
+                    showResult(`Generated ${data.difficulty} puzzle`, 'success');
+                } else {
+                    showResult(data.error || 'Failed to generate puzzle', 'error');
+                }
+            } catch (e) {
+                showResult('Failed to connect to server: ' + e.message, 'error');
+            } finally {
+                setLoading(false);
+            }
         }
 
         async function getHint() {
-            showResult('API not yet connected. Complete issue #33 first.', 'error');
+            const puzzle = getPuzzleString();
+            setLoading(true);
+
+            try {
+                const response = await fetch('/api/hint', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ puzzle })
+                });
+
+                const data = await response.json();
+
+                if (data.hasHint) {
+                    const hint = data.hint;
+                    showResult(
+                        `Hint: Cell (${hint.row + 1}, ${hint.col + 1}) = ${hint.value}\n` +
+                        `Technique: ${hint.technique}\n` +
+                        hint.explanation,
+                        'info'
+                    );
+                    // Highlight the cell
+                    const inputs = document.querySelectorAll('.cell input');
+                    const index = hint.row * 9 + hint.col;
+                    inputs[index].style.background = '#fff3cd';
+                    setTimeout(() => inputs[index].style.background = '', 3000);
+                } else {
+                    showResult(data.error || 'No hint available', 'error');
+                }
+            } catch (e) {
+                showResult('Failed to connect to server: ' + e.message, 'error');
+            } finally {
+                setLoading(false);
+            }
         }
 
         function clearGrid() {

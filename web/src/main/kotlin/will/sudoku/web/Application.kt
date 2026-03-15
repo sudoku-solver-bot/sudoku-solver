@@ -30,6 +30,10 @@ fun Application.module() {
     routing {
         route("api") {
             healthRoutes()
+            solveRoutes()
+            hintRoutes()
+            generateRoutes()
+            validateRoutes()
         }
     }
 }
