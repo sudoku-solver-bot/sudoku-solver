@@ -11,6 +11,7 @@ object Settings {
     val hiddenSubsetCandidateEliminator = HiddenSubsetCandidateEliminator()
     val exclusionCandidateEliminator = ExclusionCandidateEliminator(9)
     val xWingCandidateEliminator = XWingCandidateEliminator()
+    val swordfishCandidateEliminator = SwordfishCandidateEliminator()
     val xyWingCandidateEliminator = XYWingCandidateEliminator()
     val eliminators = listOf(
         simpleCandidateEliminator,
@@ -18,6 +19,7 @@ object Settings {
         hiddenSubsetCandidateEliminator,
         exclusionCandidateEliminator,
         xWingCandidateEliminator,
+        swordfishCandidateEliminator,
         xyWingCandidateEliminator
     )
 
