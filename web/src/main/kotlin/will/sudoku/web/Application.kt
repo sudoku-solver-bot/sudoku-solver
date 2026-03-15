@@ -7,10 +7,13 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.routing.*
+import io.ktor.server.response.*
+import io.ktor.server.http.content.*
 import kotlinx.serialization.json.Json
 
 fun main() {
-    embeddedServer(Netty, port = 8080, module = Application::module)
+    val port = System.getenv("PORT")?.toInt() ?: 8080
+    embeddedServer(Netty, port = port, module = Application::module)
         .start(wait = true)
 }
 
@@ -28,6 +31,14 @@ fun Application.module() {
     }
     
     routing {
+        // Serve index.html at root
+        get("/") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/index.html")?.readText() ?: "Not found",
+                io.ktor.http.ContentType.Text.Html
+            )
+        }
+        
         route("api") {
             healthRoutes()
             solveRoutes()
