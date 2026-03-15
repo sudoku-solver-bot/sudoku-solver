@@ -10,7 +10,14 @@ object Settings {
     val groupCandidateEliminator = GroupCandidateEliminator()
     val hiddenSubsetCandidateEliminator = HiddenSubsetCandidateEliminator()
     val exclusionCandidateEliminator = ExclusionCandidateEliminator(9)
-    val eliminators = listOf(simpleCandidateEliminator, groupCandidateEliminator, hiddenSubsetCandidateEliminator, exclusionCandidateEliminator)
+    val xWingCandidateEliminator = XWingCandidateEliminator()
+    val eliminators = listOf(
+        simpleCandidateEliminator,
+        groupCandidateEliminator,
+        hiddenSubsetCandidateEliminator,
+        exclusionCandidateEliminator,
+        xWingCandidateEliminator
+    )
 
     init {
         require(regionSize * regionSize == size) { "given size [$size] cannot be properly sqrt into another integer" }
