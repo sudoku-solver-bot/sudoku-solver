@@ -2,12 +2,58 @@ package will.sudoku.solver
 
 import will.sudoku.solver.Settings.eliminators
 
+/**
+ * Main Sudoku solver using constraint propagation and backtracking.
+ *
+ * The solver uses a combination of:
+ * 1. **Constraint propagation**: Eliminates impossible candidates using various techniques
+ * 2. **Backtracking**: When propagation stalls, makes a guess and recurses
+ *
+ * ## Solving Strategy
+ * The solver applies all configured eliminators iteratively until no more progress can be made.
+ * If the puzzle is still unsolved, it picks the cell with the fewest candidates and tries each
+ * value recursively (backtracking with minimum remaining values heuristic).
+ *
+ * ## Performance
+ * Most puzzles are solved without backtracking using just constraint propagation.
+ * Harder puzzles may require backtracking, which is tracked in metrics.
+ *
+ * ## Example
+ * ```kotlin
+ * val solver = Solver()
+ * val board = BoardReader.readBoard(puzzleString)
+ * val solution = solver.solve(board)
+ *
+ * if (solution != null) {
+ *     println("Solved!")
+ *     println(solution)
+ * } else {
+ *     println("No solution found")
+ * }
+ * ```
+ *
+ * @see SolverWithMetrics for solving with performance metrics
+ * @see Settings.eliminators for the list of configured eliminators
+ */
 class Solver {
 
+    /**
+     * Solves the given Sudoku puzzle.
+     *
+     * @param board The puzzle board to solve
+     * @return The solved board, or null if no solution exists
+     */
     fun solve(board: Board): Board? {
         return solve(board, 0)
     }
 
+    /**
+     * Recursive solving with depth tracking.
+     *
+     * @param board The puzzle board to solve
+     * @param depth Current recursion depth (for backtracking tracking)
+     * @return The solved board, or null if no solution exists
+     */
     fun solve(board: Board, depth: Int): Board? {
         if (!board.isValid()) return null
         if (board.isSolved()) return board
