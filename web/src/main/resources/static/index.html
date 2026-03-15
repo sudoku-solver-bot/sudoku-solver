@@ -296,6 +296,14 @@
             setTimeout(() => result.classList.remove('visible'), 5000);
         }
 
+        // Show result message with HTML content
+        function showResultHTML(html, type = 'info') {
+            const result = document.getElementById('result');
+            result.innerHTML = html;
+            result.className = `result ${type} visible`;
+            setTimeout(() => result.classList.remove('visible'), 8000);
+        }
+
         // Set loading state
         function setLoading(loading) {
             document.querySelector('.container').classList.toggle('loading', loading);
@@ -318,12 +326,23 @@
                 if (data.solved) {
                     setPuzzleString(data.solution, false);
                     const metrics = data.metrics;
-                    showResult(
-                        `Solved in ${metrics.solveTimeMs.toFixed(2)}ms | ` +
-                        `Backtracking: ${metrics.backtrackingCount} | ` +
-                        `Depth: ${metrics.maxRecursionDepth}`,
-                        'success'
-                    );
+                    const difficulty = metrics.difficulty || 'Unknown';
+                    const difficultyClass = difficulty.toLowerCase();
+                    
+                    // Build result message with difficulty badge
+                    let resultHtml = `
+                        <span class="difficulty ${difficultyClass}">${difficulty}</span>
+                        Solved in ${metrics.solveTimeMs.toFixed(2)}ms
+                    `;
+                    
+                    // Add metrics details
+                    if (metrics.techniquesUsed && metrics.techniquesUsed.length > 0) {
+                        resultHtml += `<br><small>Techniques: ${metrics.techniquesUsed.join(', ')}</small>`;
+                    }
+                    
+                    resultHtml += `<br><small>Backtracking: ${metrics.backtrackingCount} | Depth: ${metrics.maxRecursionDepth} | Cells: ${metrics.cellsProcessed}</small>`;
+                    
+                    showResultHTML(resultHtml, 'success');
                 } else {
                     showResult(data.error || 'No solution found', 'error');
                 }
