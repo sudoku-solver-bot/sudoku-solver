@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import will.sudoku.solver.Board
 import will.sudoku.solver.BoardReader
 import will.sudoku.solver.Coord
+import will.sudoku.solver.DifficultyRater
 import will.sudoku.solver.Solver
 import will.sudoku.solver.SolverWithMetrics
 
@@ -32,7 +33,9 @@ data class SolverMetricsResponse(
     val backtrackingCount: Int,
     val maxRecursionDepth: Int,
     val propagationPasses: Int,
-    val cellsProcessed: Int
+    val cellsProcessed: Int,
+    val difficulty: String? = null,
+    val techniquesUsed: List<String> = emptyList()
 )
 
 fun Route.solveRoutes() {
@@ -75,6 +78,9 @@ fun Route.solveRoutes() {
             val solver = SolverWithMetrics()
             val result = solver.solveWithMetrics(board)
             val solvedBoard = result.solvedBoard
+            
+            // Rate difficulty
+            val rating = DifficultyRater.rate(result.metrics)
 
             if (solvedBoard != null) {
                 call.respond(
@@ -86,7 +92,9 @@ fun Route.solveRoutes() {
                             backtrackingCount = result.metrics.backtrackingCount,
                             maxRecursionDepth = result.metrics.maxRecursionDepth,
                             propagationPasses = result.metrics.propagationPasses,
-                            cellsProcessed = result.metrics.cellsProcessed
+                            cellsProcessed = result.metrics.cellsProcessed,
+                            difficulty = rating.level.displayName,
+                            techniquesUsed = rating.techniquesUsed
                         )
                     )
                 )
@@ -100,7 +108,9 @@ fun Route.solveRoutes() {
                             backtrackingCount = result.metrics.backtrackingCount,
                             maxRecursionDepth = result.metrics.maxRecursionDepth,
                             propagationPasses = result.metrics.propagationPasses,
-                            cellsProcessed = result.metrics.cellsProcessed
+                            cellsProcessed = result.metrics.cellsProcessed,
+                            difficulty = rating.level.displayName,
+                            techniquesUsed = rating.techniquesUsed
                         )
                     )
                 )
