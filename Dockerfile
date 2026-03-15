@@ -3,7 +3,7 @@ FROM gradle:8.11-jdk21-alpine AS build
 WORKDIR /app
 
 # Copy gradle files first for better caching
-COPY settings.gradle.kts build.gradle.kts gradle.properties* ./
+COPY settings.gradle.kts build.gradle.kts* gradle.properties* ./
 COPY kotlin/build.gradle.kts ./kotlin/
 COPY web/build.gradle.kts ./web/
 COPY gradle ./gradle
