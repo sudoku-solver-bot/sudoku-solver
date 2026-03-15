@@ -2,17 +2,8 @@
 FROM docker.io/gradle:8.11-jdk21 AS build
 WORKDIR /app
 
-# Copy gradle files first for dependency caching
-COPY settings.gradle.kts build.gradle.kts* gradle.properties* ./
-COPY kotlin/build.gradle.kts ./kotlin/
-COPY web/build.gradle.kts ./web/
-
-# Download dependencies (cached if gradle files don't change)
-RUN gradle dependencies --no-daemon || true
-
-# Copy source code
-COPY kotlin/src ./kotlin/src
-COPY web/src ./web/src
+# Copy everything
+COPY . .
 
 # Build the application
 RUN gradle :web:installDist --no-daemon
