@@ -12,7 +12,8 @@ import io.ktor.server.http.content.*
 import kotlinx.serialization.json.Json
 
 fun main() {
-    embeddedServer(Netty, port = 8080, module = Application::module)
+    val port = System.getenv("PORT")?.toInt() ?: 8080
+    embeddedServer(Netty, port = port, module = Application::module)
         .start(wait = true)
 }
 

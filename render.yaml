@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: sudoku-solver
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: 10000
