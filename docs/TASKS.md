@@ -20,13 +20,13 @@
 - [ ] 📦 Commit
 
 **Phase 2: Solver Integration**
-- [ ] Create SolverWithSteps (records each step while solving)
-- [ ] Integrate with existing eliminators
+- [x] 🔄 Create SolverWithSteps (records each step while solving)
+- [x] 🔄 Integrate with existing eliminators
 - [ ] Add tests
 
 **Phase 3: API Endpoint**
-- [ ] Add /api/solve/steps endpoint
-- [ ] Return step-by-step solution
+- [x] 🔄 Add /api/solve/steps endpoint
+- [x] 🔄 Return step-by-step solution
 
 **Phase 4: Web UI Integration**
 - [ ] Update Vue UI to show solving steps
