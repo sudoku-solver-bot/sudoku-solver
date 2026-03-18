@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     java
     kotlin("jvm") version "2.1.0"
+    kotlin("plugin.serialization") version "2.1.0"
     id("me.champeau.jmh") version "0.7.3"
 }
 
@@ -14,6 +15,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     // Use junit-jupiter aggregator to fix Gradle test framework auto-loading deprecation
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
     testImplementation("org.assertj:assertj-core:3.26.3")

@@ -1,6 +1,36 @@
 # Sudoku Solver - Task Tracking
 
-## #41 - Convert UI to Vue.js (in progress)
+## #28 - Step-by-Step Solving (in progress)
+
+### Status Legend
+- 🔄 Coded = written, works locally
+- 📦 Committed = committed to branch
+- 🚀 Pushed = pushed to GitHub
+- 🔀 PR = pull request created
+- 👀 Review = reviewers requested
+- ✅ Merged = merged to master
+
+### Plan
+
+**Phase 1: Data Structures**
+- [x] 🔄 Create StepType enum (solving technique types)
+- [x] 🔄 Create SolvingStep data class (single step record)
+- [x] 🔄 Create SolvingProgress data class (tracks all steps)
+- [x] 🔄 Make Coord serializable
+- [ ] 📦 Commit
+
+**Phase 2: Solver Integration**
+- [ ] Create SolverWithSteps (records each step while solving)
+- [ ] Integrate with existing eliminators
+- [ ] Add tests
+
+**Phase 3: API Endpoint**
+- [ ] Add /api/solve/steps endpoint
+- [ ] Return step-by-step solution
+
+**Phase 4: Web UI Integration**
+- [ ] Update Vue UI to show solving steps
+- [ ] Add step navigation controls
 
 ### Status Legend
 - 🔄 Coded = written, works locally
