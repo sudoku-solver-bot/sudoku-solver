@@ -1,8 +1,10 @@
 package will.sudoku.solver
 
+import kotlinx.serialization.Serializable
 import will.sudoku.solver.Settings.regionSize
 import will.sudoku.solver.Settings.size
 
+@Serializable
 data class Coord private constructor(val row: Int, val col: Int) {
 
     val index = row * size + col
