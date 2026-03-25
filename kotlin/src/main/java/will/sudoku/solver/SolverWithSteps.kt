@@ -39,7 +39,7 @@ class SolverWithSteps {
             changed = false
             iterations++
 
-            for (eliminator in Settings.getEliminators()) {
+            for (eliminator in Settings.eliminators) {
                 // Apply eliminator
                 eliminator.eliminate(board)
 
