@@ -1,0 +1,75 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Kotlin source code
+[*.kt]
+indent_style = space
+indent_size = 4
+
+# Kotlin script
+[*.kts]
+indent_style = space
+indent_size = 4
+
+# Java source code
+[*.java]
+indent_style = space
+indent_size = 4
+
+# JavaScript/TypeScript/Vue
+[*.{js,ts,jsx,tsx,vue}]
+indent_style = space
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Gradle files
+[*.gradle]
+indent_style = space
+indent_size = 4
+
+# Properties files
+[*.properties]
+indent_style = space
+indent_size = 4
+
+# XML files
+[*.xml]
+indent_style = space
+indent_size = 4
+
+# Markdown files - preserve trailing whitespace for line breaks
+[*.md]
+trim_trailing_whitespace = false
+indent_style = space
+indent_size = 2
+
+# Shell scripts
+[*.sh]
+indent_style = space
+indent_size = 2
+
+# Batch files (Windows)
+[*.bat]
+end_of_line = crlf
+
+# PowerShell scripts
+[*.ps1]
+end_of_line = crlf
