@@ -1,8 +1,8 @@
 package will.sudoku.solver
 
 import kotlinx.serialization.Serializable
-import will.sudoku.solver.Settings.regionSize
-import will.sudoku.solver.Settings.size
+import will.sudoku.solver.BoardSettings.regionSize
+import will.sudoku.solver.BoardSettings.size
 
 @Serializable
 data class Coord private constructor(val row: Int, val col: Int) {

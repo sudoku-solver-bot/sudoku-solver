@@ -29,8 +29,10 @@ package will.sudoku.solver
  *     println(result.metrics)  // Metrics still useful even on failure
  * }
  * ```
+ *
+ * @property config Solver configuration including eliminators and limits
  */
-class SolverWithMetrics {
+class SolverWithMetrics(private val config: SolverConfig = SolverConfig()) {
 
     /**
      * Solves a puzzle and returns the result with metrics.
@@ -111,7 +113,7 @@ class SolverWithMetrics {
         do {
             anyChanges = false
 
-            for (eliminator in Settings.eliminators) {
+            for (eliminator in config.eliminators) {
                 val startTime = System.nanoTime()
                 var eliminations = 0
                 var passes = 0
