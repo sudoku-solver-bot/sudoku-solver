@@ -9,7 +9,9 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.http.content.*
+import io.ktor.server.plugins.ratelimit.*
 import kotlinx.serialization.json.Json
+import kotlin.time.Duration.Companion.minutes
 
 fun main() {
     val port = System.getenv("PORT")?.toInt() ?: 8080
@@ -28,6 +30,16 @@ fun Application.module() {
     install(CORS) {
         anyHost()
         allowHeader(io.ktor.http.HttpHeaders.ContentType)
+    }
+    
+    // Rate limiting: 100 requests per minute per IP
+    install(RateLimit) {
+        register {
+            rateLimiter(100, 1.minutes)
+            requestKey { call ->
+                call.request.local.remoteAddress
+            }
+        }
     }
     
     routing {
