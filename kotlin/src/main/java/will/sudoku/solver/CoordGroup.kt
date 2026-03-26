@@ -1,7 +1,7 @@
 package will.sudoku.solver
 
-import will.sudoku.solver.Settings.regionSize
-import will.sudoku.solver.Settings.size
+import will.sudoku.solver.BoardSettings.regionSize
+import will.sudoku.solver.BoardSettings.size
 
 /**
  * Represents a group of coordinates (row, column, or 3x3 region).

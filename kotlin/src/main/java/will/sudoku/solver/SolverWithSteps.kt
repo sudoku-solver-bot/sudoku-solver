@@ -7,8 +7,10 @@ package will.sudoku.solver
  * - Each elimination technique applied
  * - Each cell filled
  * - Backtracking steps (if needed)
+ *
+ * @property config Solver configuration including eliminators and limits
  */
-class SolverWithSteps {
+class SolverWithSteps(private val config: SolverConfig = SolverConfig()) {
 
     /**
      * Solve a puzzle and return the solution with step-by-step progress.
@@ -39,7 +41,7 @@ class SolverWithSteps {
             changed = false
             iterations++
 
-            for (eliminator in Settings.eliminators) {
+            for (eliminator in config.eliminators) {
                 // Apply eliminator
                 eliminator.eliminate(board)
 

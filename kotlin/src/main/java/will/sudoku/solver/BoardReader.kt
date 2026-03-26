@@ -1,8 +1,8 @@
 package will.sudoku.solver
 
-import will.sudoku.solver.Settings.size
-import will.sudoku.solver.Settings.regionSize
-import will.sudoku.solver.Settings.symbols
+import will.sudoku.solver.BoardSettings.size
+import will.sudoku.solver.BoardSettings.regionSize
+import will.sudoku.solver.BoardSettings.symbols
 import java.io.InputStream
 import java.nio.file.Path
 

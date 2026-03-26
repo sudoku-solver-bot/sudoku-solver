@@ -1,6 +1,5 @@
 package will.sudoku.solver
 
-import will.sudoku.solver.Settings.eliminators
 
 /**
  * Main Sudoku solver using constraint propagation and backtracking.
@@ -33,9 +32,9 @@ import will.sudoku.solver.Settings.eliminators
  * ```
  *
  * @see SolverWithMetrics for solving with performance metrics
- * @see Settings.eliminators for the list of configured eliminators
+ * @see SolverConfig for configuration options for the list of configured eliminators
  */
-class Solver {
+class Solver(private val config: SolverConfig = SolverConfig()) {
 
     /**
      * Solves the given Sudoku puzzle.
@@ -69,7 +68,7 @@ class Solver {
             val newBoard = board.copy()
             newBoard.markValue(move.first, move.second)
 
-            for (eliminator in eliminators) {
+            for (eliminator in config.eliminators) {
                 eliminator.eliminate(newBoard)
             }
 
