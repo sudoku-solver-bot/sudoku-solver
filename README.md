@@ -215,6 +215,61 @@ val eliminators = listOf(
 - Prefer bitmask operations over loops for candidate checking
 - Add unit tests for any new functionality
 
+### Pre-commit Hooks
+
+This project uses [pre-commit](https://pre-commit.com/) to automatically check code quality before commits.
+
+#### Setup
+
+1. Install pre-commit (one-time setup):
+```bash
+# Using pip
+pip install pre-commit
+
+# Or using Homebrew (macOS)
+brew install pre-commit
+```
+
+2. Install the hooks:
+```bash
+pre-commit install
+```
+
+3. (Optional) Run against all files to verify setup:
+```bash
+pre-commit run --all-files
+```
+
+#### What Gets Checked
+
+Pre-commit automatically runs these checks on every commit:
+
+- **File validation**: YAML, JSON, XML syntax
+- **Merge conflicts**: Detects leftover conflict markers
+- **Security**: Detects private keys and AWS credentials
+- **Formatting**: Trailing whitespace, end-of-file fixes, line endings
+- **Linting**: 
+  - Kotlin (ktlint)
+  - JavaScript/Vue (ESLint)
+  - Dockerfiles (hadolint)
+- **Large files**: Prevents committing files > 1MB
+
+#### Bypass Hooks (Emergency Only)
+
+```bash
+# Skip pre-commit hooks (not recommended)
+git commit --no-verify
+```
+
+#### Update Hooks
+
+Periodically update to latest hook versions:
+```bash
+pre-commit autoupdate
+```
+
+For more information, see the [pre-commit documentation](https://pre-commit.com/).
+
 ## Performance
 
 Benchmark results test different `shortCircuitThreshold` values:

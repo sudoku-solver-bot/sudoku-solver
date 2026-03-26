@@ -1,0 +1,88 @@
+# Pre-commit configuration
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      # File validation
+      - id: check-yaml
+        args: [--unsafe]
+      - id: check-json
+      - id: check-xml
+      
+      # Conflict and syntax checks
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      
+      # File permissions
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      
+      # Security
+      - id: detect-private-key
+      
+      # Whitespace and formatting
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: ['--fix=lf']
+      
+      # Other checks
+      - id: check-added-large-files
+        args: ['--maxkb=1000']
+      - id: check-ast
+        files: \.py$
+      - id: check-byte-order-marker
+      - id: check-symlinks
+      - id: detect-aws-credentials
+        args: ['--allow-missing-credentials']
+
+  # Kotlin linting (ktlint)
+  - repo: https://github.com/pinterest/ktlint
+    rev: 1.2.1
+    hooks:
+      - id: ktlint
+        name: ktlint (Kotlin linter)
+        files: \.kt[s]?$
+        exclude: ^gradle/
+
+  # JavaScript/Vue linting (ESLint)
+  - repo: https://github.com/eslint/eslint
+    rev: v8.57.0
+    hooks:
+      - id: eslint
+        name: eslint (JavaScript/Vue linter)
+        files: \.(js|vue|ts|tsx)$
+        types: [file]
+        additional_dependencies:
+          - eslint@8.57.0
+          - eslint-plugin-vue@9.22.0
+        exclude: ^web-ui/node_modules/
+
+  # Dockerfile linting
+  - repo: https://github.com/hadolint/hadolint
+    rev: v2.12.1-beta
+    hooks:
+      - id: hadolint-docker
+        name: hadolint (Dockerfile linter)
+        files: Dockerfile
+
+# Configuration
+default_language_version:
+  python: python3
+
+# Skip certain hooks in certain scenarios
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit.com hooks
+
+    for more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: []
+  submodules: false
