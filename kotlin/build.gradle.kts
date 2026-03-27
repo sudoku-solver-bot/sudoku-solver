@@ -5,6 +5,7 @@ plugins {
     kotlin("jvm") version "2.1.0"
     kotlin("plugin.serialization") version "2.1.0"
     id("me.champeau.jmh") version "0.7.3"
+    jacoco
 }
 
 group "will"
@@ -40,6 +41,21 @@ tasks.register<JavaExec>("run") {
 
 tasks.test {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport) // Report is always generated after tests run
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // Tests are required to run before generating the report
+    
+    reports {
+        xml.required.set(true) // XML report for SonarCloud
+        csv.required.set(false)
+        html.required.set(true) // HTML report for local viewing
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
 }
 
 java {
