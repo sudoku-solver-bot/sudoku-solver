@@ -1,7 +1,7 @@
 package will.sudoku.web
 
-import io.github.smiley4.ktorswaggerui.dsl.routing.get
-import io.github.smiley4.ktorswaggerui.dsl.routing.post
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -74,13 +74,6 @@ fun Route.tutorialRoutes() {
             TutorialModuleSummary(
                 id = module.id,
                 title = module.title,
-                description = module.description,
-                difficulty = module.difficulty.name,
-                technique = module.technique,
-                estimatedMinutes = module.estimatedMinutes,
-                prerequisites = module.prerequisites
-            )
-        }
         
         call.respond(
             TutorialListResponse(
@@ -107,34 +100,8 @@ fun Route.tutorialRoutes() {
             TutorialModuleResponse(
                 id = module.id,
                 title = module.title,
-                description = module.description,
-                difficulty = module.difficulty.name,
-                technique = module.technique,
-                steps = module.steps.mapIndexed { index, step ->
-                    TutorialStepResponse(
-                        stepNumber = index + 1,
-                        instruction = step.instruction,
-                        highlight = step.highlight.map { CellCoord(it.row, it.col) },
-                        expectedAction = step.expectedAction.name,
-                        hint = step.hint,
-                        successMessage = step.successMessage,
-                        teachingPoint = step.teachingPoint
-                    )
-                },
-                practicePuzzles = module.practicePuzzles,
-                estimatedMinutes = module.estimatedMinutes,
-                prerequisites = module.prerequisites
-            )
-        )
-    }
     
     post("/tutorials/progress") {
-        response {
-            HttpStatusCode.OK to {
-                description = "Learning progress"
-                body<TutorialProgressResponse>()
-            }
-        }
     }) {
         val request = call.receive<ProgressRequest>()
         val completedIds = request.completedModuleIds.toSet()
@@ -150,13 +117,6 @@ fun Route.tutorialRoutes() {
                     TutorialModuleSummary(
                         id = module.id,
                         title = module.title,
-                        description = module.description,
-                        difficulty = module.difficulty.name,
-                        technique = module.technique,
-                        estimatedMinutes = module.estimatedMinutes,
-                        prerequisites = module.prerequisites
-                    )
-                }
             )
         )
     }
