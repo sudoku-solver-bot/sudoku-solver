@@ -3,98 +3,50 @@ package will.sudoku.solver
 /**
  * A solver wrapper that records every step of the solving process.
  *
+ * **Note:** This class now delegates to Solver + StepRecorder.
+ * It is maintained for backward compatibility.
+ *
+ * ## Recommended Migration
+ *
+ * ```kotlin
+ * // Old way (deprecated):
+ * val solver = SolverWithSteps()
+ * val (solution, progress) = solver.solveWithSteps(board)
+ *
+ * // New way (recommended):
+ * val solver = Solver()
+ * val recorder = StepRecorder()
+ * val solution = solver.solve(board, recorder)
+ * val progress = recorder.progress
+ * ```
+ *
  * This solver wraps the standard Solver and captures:
  * - Each elimination technique applied
  * - Each cell filled
  * - Backtracking steps (if needed)
  *
  * @property config Solver configuration including eliminators and limits
+ * @see Solver for the underlying solver
+ * @see StepRecorder for the step recording listener
  */
 class SolverWithSteps(private val config: SolverConfig = SolverConfig()) {
+
+    private val solver = Solver(config)
 
     /**
      * Solve a puzzle and return the solution with step-by-step progress.
      */
     fun solveWithSteps(initialBoard: Board): Pair<Board?, SolvingProgress> {
-        val initialPuzzleString = writeBoardToString(initialBoard)
-        val progress = SolvingProgress.fromPuzzle(initialPuzzleString)
-        val board = initialBoard.copy()
-
-        // Track which cells were already confirmed before each iteration
-        val previouslyConfirmed = mutableSetOf<Coord>()
-        for (row in 0 until 9) {
-            for (col in 0 until 9) {
-                val coord = Coord(row, col)
-                if (board.isConfirmed(coord)) {
-                    previouslyConfirmed.add(coord)
-                }
-            }
+        val recorder = StepRecorder()
+        recorder.setBoardState(writeBoardToString(initialBoard))
+        
+        val solution = solver.solve(initialBoard, recorder)
+        
+        if (solution != null) {
+            recorder.setBoardState(writeBoardToString(solution))
         }
-
-        // Apply eliminators and record steps
-        var stepNumber = 1
-        var changed = true
-        var iterations = 0
-        val maxIterations = 100 // Safety limit
-
-        while (changed && !board.isSolved() && iterations < maxIterations) {
-            changed = false
-            iterations++
-
-            for (eliminator in config.eliminators) {
-                // Apply eliminator
-                eliminator.eliminate(board)
-
-                // Check for newly confirmed cells
-                for (row in 0 until 9) {
-                    for (col in 0 until 9) {
-                        val coord = Coord(row, col)
-                        if (board.isConfirmed(coord) && coord !in previouslyConfirmed) {
-                            val value = board.value(coord)
-                            progress.addStep(SolvingStep.cellFilled(
-                                stepNumber = stepNumber++,
-                                cell = coord,
-                                value = value,
-                                explanation = "Cell (${row + 1}, ${col + 1}) confirmed as $value",
-                                boardState = writeBoardToString(board)
-                            ))
-                            previouslyConfirmed.add(coord)
-                            changed = true
-                        }
-                    }
-                }
-            }
-        }
-
-        // If not solved by elimination alone, need backtracking
-        if (!board.isSolved()) {
-            val solution = Solver().solve(board)
-            if (solution != null) {
-                // Record the remaining cells that were filled by backtracking
-                for (row in 0 until 9) {
-                    for (col in 0 until 9) {
-                        val coord = Coord(row, col)
-                        if (solution.isConfirmed(coord) && coord !in previouslyConfirmed) {
-                            val value = solution.value(coord)
-                            progress.addStep(SolvingStep.guessMade(
-                                stepNumber = stepNumber++,
-                                cell = coord,
-                                guessedValue = value,
-                                explanation = "Cell (${row + 1}, ${col + 1}) filled via backtracking"
-                            ))
-                        }
-                    }
-                }
-                progress.markSolved(writeBoardToString(solution))
-                return Pair(solution, progress)
-            } else {
-                progress.markNoSolution("No valid solution found")
-                return Pair(null, progress)
-            }
-        }
-
-        progress.markSolved(writeBoardToString(board))
-        return Pair(board, progress)
+        
+        return Pair(solution, recorder.progress)
     }
 
     /**
@@ -122,6 +74,14 @@ class SolverWithSteps(private val config: SolverConfig = SolverConfig()) {
         fun solveWithSteps(puzzleString: String): Pair<Board?, SolvingProgress> {
             val board = BoardReader.readBoard(puzzleString)
             return SolverWithSteps().solveWithSteps(board)
+        }
+
+        /**
+         * Convenience method to solve with custom config.
+         */
+        fun solveWithSteps(puzzleString: String, config: SolverConfig): Pair<Board?, SolvingProgress> {
+            val board = BoardReader.readBoard(puzzleString)
+            return SolverWithSteps(config).solveWithSteps(board)
         }
     }
 }

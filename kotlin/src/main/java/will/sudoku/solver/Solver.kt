@@ -42,37 +42,89 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
      * @return The solved board, or null if no solution exists
      */
     fun solve(board: Board): Board? {
-        return solve(board, 0)
+        return solve(board, NoOpListener)
     }
 
     /**
-     * Recursive solving with depth tracking.
+     * Solves the given Sudoku puzzle with a listener for observing the process.
+     *
+     * @param board The puzzle board to solve
+     * @param listener Listener to receive callbacks during solving
+     * @return The solved board, or null if no solution exists
+     */
+    fun solve(board: Board, listener: SolvingListener): Board? {
+        val startTime = System.nanoTime()
+        
+        listener.onPropagationPassStarted()
+        
+        val result = solveInternal(board, 0, listener)
+        
+        // Notify completion
+        val timeNanos = System.nanoTime() - startTime
+        val backtracks = 0 // Will be updated by listener if it tracks this
+        listener.onSolveComplete(result != null, timeNanos, backtracks)
+        
+        return result
+    }
+
+    /**
+     * Recursive solving with depth tracking (backward compatibility).
      *
      * @param board The puzzle board to solve
      * @param depth Current recursion depth (for backtracking tracking)
      * @return The solved board, or null if no solution exists
      */
     fun solve(board: Board, depth: Int): Board? {
+        return solveInternal(board, depth, NoOpListener)
+    }
+
+    /**
+     * Internal recursive solving with listener support.
+     *
+     * @param board The puzzle board to solve
+     * @param depth Current recursion depth
+     * @param listener Listener to receive callbacks
+     * @return The solved board, or null if no solution exists
+     */
+    private fun solveInternal(board: Board, depth: Int, listener: SolvingListener): Board? {
         if (!board.isValid()) return null
         if (board.isSolved()) return board
 
-        val moves = sequence {
-            val unresolvedCoord = board.unresolvedCoord()!!
-            for (candidateValue in board.candidateValues(unresolvedCoord)) {
-                yield(Pair(unresolvedCoord, candidateValue))
-            }
+        val unresolvedCoord = board.unresolvedCoord() ?: return null
+        val candidates = board.candidateValues(unresolvedCoord).toList()
+        
+        // If this is a guess point (more than one candidate), notify listener
+        if (candidates.size > 1) {
+            listener.onGuessMade(unresolvedCoord, candidates.first(), candidates.size)
         }
 
-        return moves.map { move ->
+        for (candidateValue in candidates) {
             val newBoard = board.copy()
-            newBoard.markValue(move.first, move.second)
+            newBoard.markValue(unresolvedCoord, candidateValue)
+            
+            // Notify listener about cell fill
+            val explanation = if (candidates.size == 1) {
+                "Only candidate"
+            } else {
+                "Guess (try $candidateValue among ${candidates.size} candidates)"
+            }
+            listener.onCellFilled(unresolvedCoord, candidateValue, explanation)
 
+            // Apply constraint propagation
             for (eliminator in config.eliminators) {
                 eliminator.eliminate(newBoard)
             }
 
-            solve(newBoard, depth + 1)
-        }.firstOrNull { it != null }
+            val result = solveInternal(newBoard, depth + 1, listener)
+            if (result != null) {
+                return result
+            }
+            
+            // Backtrack
+            listener.onBacktracking()
+        }
+
+        return null
     }
 
     companion object {
