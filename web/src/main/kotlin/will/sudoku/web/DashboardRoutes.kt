@@ -1,7 +1,5 @@
 package will.sudoku.web
 
-import io.github.smiley4.ktorswaggerui.dsl.routing.get
-import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -109,27 +107,8 @@ data class ActivityEventResponse(
 fun Route.dashboardRoutes() {
     val dashboardSystem = DashboardSystem()
 
-    post("/dashboard/student/report", {
-        tags = listOf("Parent/Teacher Dashboard")
-        description = "Get detailed progress report for a student"
-        request {
-            body<StudentReportRequest> {
-                example("sample") {
-                    value = StudentReportRequest(
-                        studentId = "student123",
-                        studentName = "Emma",
-                        days = 30
-                    )
-                }
-            }
-        }
-        response {
-            HttpStatusCode.OK to {
-                description = "Student progress report"
-                body<StudentReportResponse>()
-            }
-        }
-    }) {
+    post("/dashboard/student/report") {
+
         val request = call.receive<StudentReportRequest>()
         
         val report = dashboardSystem.generateStudentReport(
@@ -181,16 +160,8 @@ fun Route.dashboardRoutes() {
         )
     }
     
-    get("/dashboard/classroom/{classroomId}", {
-        tags = listOf("Parent/Teacher Dashboard")
-        description = "Get classroom overview for teachers"
-        response {
-            HttpStatusCode.OK to {
-                description = "Classroom overview"
-                body<ClassroomOverviewResponse>()
-            }
-        }
-    }) {
+    get("/dashboard/classroom/{classroomId}") {
+
         val classroomId = call.parameters["classroomId"] ?: return@get call.respond(
             HttpStatusCode.BadRequest,
             mapOf("error" to "Missing classroomId")
@@ -238,7 +209,6 @@ fun Route.dashboardRoutes() {
                         timestamp = event.timestamp,
                         studentName = event.studentName,
                         eventType = event.eventType,
-                        description = event.description
                     )
                 }
             )

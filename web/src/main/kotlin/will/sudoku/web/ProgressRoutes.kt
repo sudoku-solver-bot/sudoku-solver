@@ -1,7 +1,5 @@
 package will.sudoku.web
 
-import io.github.smiley4.ktorswaggerui.dsl.routing.get
-import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -79,16 +77,8 @@ data class AchievementsListResponse(
 fun Route.progressRoutes() {
     val progressTracker = ProgressTracker()
 
-    get("/achievements", {
-        tags = listOf("Progress")
-        description = "Get all available achievements"
-        response {
-            HttpStatusCode.OK to {
-                description = "List of all achievements"
-                body<AchievementsListResponse>()
-            }
-        }
-    }) {
+    get("/achievements") {
+
         val allAchievements = progressTracker.getAchievements()
         
         call.respond(
@@ -97,7 +87,6 @@ fun Route.progressRoutes() {
                     AchievementResponse(
                         id = achievement.id,
                         name = achievement.name,
-                        description = achievement.description,
                         icon = achievement.icon,
                         category = achievement.category.name,
                         points = achievement.points,
@@ -110,34 +99,8 @@ fun Route.progressRoutes() {
         )
     }
     
-    post("/progress", {
-        tags = listOf("Progress")
-        description = "Calculate user progress and achievements"
-        request {
-            body<UserStatsRequest> {
-                example("sample") {
-                    value = UserStatsRequest(
-                        userId = "user123",
-                        puzzlesSolved = 15,
-                        puzzlesAttempted = 18,
-                        hintsUsed = 8,
-                        tutorialsCompleted = 2,
-                        averageSolveTimeMs = 45000.0,
-                        fastestSolveMs = 12000,
-                        perfectGames = 7,
-                        gamesByDifficulty = mapOf("EASY" to 10, "MEDIUM" to 5),
-                        currentStreak = 4
-                    )
-                }
-            }
-        }
-        response {
-            HttpStatusCode.OK to {
-                description = "User progress and achievements"
-                body<ProgressResponse>()
-            }
-        }
-    }) {
+    post("/progress") {
+
         val request = call.receive<UserStatsRequest>()
         
         val stats = UserStats(
@@ -182,7 +145,6 @@ fun Route.progressRoutes() {
                     AchievementResponse(
                         id = achievement.id,
                         name = achievement.name,
-                        description = achievement.description,
                         icon = achievement.icon,
                         category = achievement.category.name,
                         points = achievement.points,
@@ -207,7 +169,6 @@ fun Route.progressRoutes() {
                         achievement = AchievementResponse(
                             id = progress.achievement.id,
                             name = progress.achievement.name,
-                            description = progress.achievement.description,
                             icon = progress.achievement.icon,
                             category = progress.achievement.category.name,
                             points = progress.achievement.points,

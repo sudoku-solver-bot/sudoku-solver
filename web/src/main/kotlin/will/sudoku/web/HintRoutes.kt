@@ -1,6 +1,5 @@
 package will.sudoku.web
 
-import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -37,45 +36,8 @@ data class CellCoord(
 fun Route.hintRoutes() {
     val hintProvider = TeachingHintProvider()
 
-    post("/hint", {
-        tags = listOf("Teaching")
-        description = "Get a teaching hint for the next move"
-        request {
-            body<HintRequest> {
-                description = "Current puzzle state and target difficulty"
-                example("sample") {
-                    value = HintRequest(
-                        puzzle = "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
-                        targetDifficulty = "EASY"
-                    )
-                }
-            }
-        }
-        response {
-            HttpStatusCode.OK to {
-                description = "Hint generated successfully"
-                body<HintResponse> {
-                    example("hint") {
-                        value = HintResponse(
-                            type = "SINGLE_CANDIDATE",
-                            cell = CellCoord(0, 4),
-                            value = 6,
-                            technique = "Single Candidate",
-                            explanation = "Look at cell (row 1, column 5). Only number 6 can go there!",
-                            confidence = 1.0,
-                            difficulty = "EASY",
-                            relatedCells = emptyList(),
-                            teachingPoints = listOf(
-                                "Look at one cell at a time",
-                                "Check which numbers 1-9 can go there",
-                                "If only one number fits, that's your answer!"
-                            )
-                        )
-                    }
-                }
-            }
-        }
-    }) {
+    post("/hint") {
+
         val request = call.receive<HintRequest>()
         
         // Validate puzzle
@@ -104,7 +66,6 @@ fun Route.hintRoutes() {
             HintResponse(
                 type = hint.type.name,
                 cell = CellCoord(hint.cell.row, hint.cell.col),
-                value = hint.value,
                 technique = hint.technique,
                 explanation = hint.explanation,
                 confidence = hint.confidence,
