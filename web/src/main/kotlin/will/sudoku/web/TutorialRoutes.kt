@@ -1,7 +1,7 @@
 package will.sudoku.web
 
-import io.ktor.server.routing.get
-import io.ktor.server.routing.post
+import io.github.smiley4.ktorswaggerui.dsl.routing.get
+import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -58,7 +58,7 @@ data class ProgressRequest(
 )
 
 @Serializable
-data class TutorialProgressResponse(
+data class ProgressResponse(
     val totalModules: Int,
     val completedModules: Int,
     val percentage: Int,
@@ -69,11 +69,26 @@ fun Route.tutorialRoutes() {
     val tutorialSystem = TutorialSystem()
 
     get("/tutorials", {
+        tags = listOf("Tutorial")
+        description = "Get all available tutorial modules"
+        response {
+            HttpStatusCode.OK to {
+                description = "List of tutorial modules"
+                body<TutorialListResponse>()
+            }
+        }
     }) {
         val modules = tutorialSystem.getModules().map { module ->
             TutorialModuleSummary(
                 id = module.id,
                 title = module.title,
+                description = module.description,
+                difficulty = module.difficulty.name,
+                technique = module.technique,
+                estimatedMinutes = module.estimatedMinutes,
+                prerequisites = module.prerequisites
+            )
+        }
         
         call.respond(
             TutorialListResponse(
@@ -84,6 +99,17 @@ fun Route.tutorialRoutes() {
     }
     
     get("/tutorials/{id}", {
+        tags = listOf("Tutorial")
+        description = "Get a specific tutorial module"
+        response {
+            HttpStatusCode.OK to {
+                description = "Tutorial module details"
+                body<TutorialModuleResponse>()
+            }
+            HttpStatusCode.NotFound to {
+                description = "Tutorial not found"
+            }
+        }
     }) {
         val moduleId = call.parameters["id"] ?: return@get call.respond(
             HttpStatusCode.BadRequest,
@@ -100,8 +126,45 @@ fun Route.tutorialRoutes() {
             TutorialModuleResponse(
                 id = module.id,
                 title = module.title,
+                description = module.description,
+                difficulty = module.difficulty.name,
+                technique = module.technique,
+                steps = module.steps.mapIndexed { index, step ->
+                    TutorialStepResponse(
+                        stepNumber = index + 1,
+                        instruction = step.instruction,
+                        highlight = step.highlight.map { CellCoord(it.row, it.col) },
+                        expectedAction = step.expectedAction.name,
+                        hint = step.hint,
+                        successMessage = step.successMessage,
+                        teachingPoint = step.teachingPoint
+                    )
+                },
+                practicePuzzles = module.practicePuzzles,
+                estimatedMinutes = module.estimatedMinutes,
+                prerequisites = module.prerequisites
+            )
+        )
+    }
     
-    post("/tutorials/progress") {
+    post("/tutorials/progress", {
+        tags = listOf("Tutorial")
+        description = "Get learning progress based on completed modules"
+        request {
+            body<ProgressRequest> {
+                example("sample") {
+                    value = ProgressRequest(
+                        completedModuleIds = listOf("single-candidate-basics")
+                    )
+                }
+            }
+        }
+        response {
+            HttpStatusCode.OK to {
+                description = "Learning progress"
+                body<ProgressResponse>()
+            }
+        }
     }) {
         val request = call.receive<ProgressRequest>()
         val completedIds = request.completedModuleIds.toSet()
@@ -109,7 +172,7 @@ fun Route.tutorialRoutes() {
         val progress = tutorialSystem.calculateProgress(completedIds)
         
         call.respond(
-            TutorialProgressResponse(
+            ProgressResponse(
                 totalModules = progress.totalModules,
                 completedModules = progress.completedModules,
                 percentage = progress.percentage,
@@ -117,6 +180,13 @@ fun Route.tutorialRoutes() {
                     TutorialModuleSummary(
                         id = module.id,
                         title = module.title,
+                        description = module.description,
+                        difficulty = module.difficulty.name,
+                        technique = module.technique,
+                        estimatedMinutes = module.estimatedMinutes,
+                        prerequisites = module.prerequisites
+                    )
+                }
             )
         )
     }
