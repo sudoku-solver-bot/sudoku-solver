@@ -1,6 +1,5 @@
 package will.sudoku.solver
 
-
 /**
  * Main Sudoku solver using constraint propagation and backtracking.
  *

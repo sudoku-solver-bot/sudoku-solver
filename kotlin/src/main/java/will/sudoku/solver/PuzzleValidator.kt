@@ -111,7 +111,7 @@ object PuzzleValidator {
 
         // Check for solution uniqueness if requested
         if (checkUniqueness) {
-            val solutionCount = countSolutions(board, maxCount = 2)
+            val solutionCount = countSolutions(board, maxCount = 2, config = SolverConfig())
             
             return ValidationResult(
                 isValid = true,
@@ -147,7 +147,7 @@ object PuzzleValidator {
      */
     fun hasUniqueSolution(board: Board): Boolean {
         if (!isValid(board)) return false
-        return countSolutions(board, maxCount = 2) == 1
+        return countSolutions(board, maxCount = 2, config = SolverConfig()) == 1
     }
 
     /**
@@ -242,7 +242,7 @@ object PuzzleValidator {
      *
      * Uses a modified solver that stops after finding maxCount solutions.
      */
-    private fun countSolutions(board: Board, maxCount: Int): Int {
+    private fun countSolutions(board: Board, maxCount: Int, config: SolverConfig): Int {
         var count = 0
 
         fun solveWithCount(currentBoard: Board): Boolean {
@@ -260,8 +260,8 @@ object PuzzleValidator {
                 val newBoard = currentBoard.copy()
                 newBoard.markValue(unresolvedCoord, candidateValue)
 
-                // Apply eliminators
-                for (eliminator in Settings.eliminators) {
+                // Apply eliminators from config
+                for (eliminator in config.eliminators) {
                     eliminator.eliminate(newBoard)
                 }
 
@@ -273,9 +273,9 @@ object PuzzleValidator {
             return false
         }
 
-        // Make a copy and apply initial eliminators
+        // Make a copy and apply initial eliminators from config
         val workingBoard = board.copy()
-        for (eliminator in Settings.eliminators) {
+        for (eliminator in config.eliminators) {
             eliminator.eliminate(workingBoard)
         }
 
