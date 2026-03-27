@@ -69,6 +69,14 @@ fun Route.tutorialRoutes() {
     val tutorialSystem = TutorialSystem()
 
     get("/tutorials", {
+        tags = listOf("Tutorial")
+        description = "Get all available tutorial modules"
+        response {
+            HttpStatusCode.OK to {
+                description = "List of tutorial modules"
+                body<TutorialListResponse>()
+            }
+        }
     }) {
         val modules = tutorialSystem.getModules().map { module ->
             TutorialModuleSummary(
@@ -91,6 +99,17 @@ fun Route.tutorialRoutes() {
     }
     
     get("/tutorials/{id}", {
+        tags = listOf("Tutorial")
+        description = "Get a specific tutorial module"
+        response {
+            HttpStatusCode.OK to {
+                description = "Tutorial module details"
+                body<TutorialModuleResponse>()
+            }
+            HttpStatusCode.NotFound to {
+                description = "Tutorial not found"
+            }
+        }
     }) {
         val moduleId = call.parameters["id"] ?: return@get call.respond(
             HttpStatusCode.BadRequest,
@@ -128,7 +147,18 @@ fun Route.tutorialRoutes() {
         )
     }
     
-    post("/tutorials/progress") {
+    post("/tutorials/progress", {
+        tags = listOf("Tutorial")
+        description = "Get learning progress based on completed modules"
+        request {
+            body<ProgressRequest> {
+                example("sample") {
+                    value = ProgressRequest(
+                        completedModuleIds = listOf("single-candidate-basics")
+                    )
+                }
+            }
+        }
         response {
             HttpStatusCode.OK to {
                 description = "Learning progress"
