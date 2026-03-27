@@ -59,7 +59,7 @@ data class CoordGroup private constructor(val coords: List<Coord>) {
          * - 3-5: Middle-left, Middle-center, Middle-right
          * - 6-8: Bottom-left, Bottom-center, Bottom-right
          */
-        private val indices = (0 until Settings.size)
+        private val indices = (0 until BoardSettings.size)
 
         /**
          * Pre-computed vertical coordinate groups (columns).
