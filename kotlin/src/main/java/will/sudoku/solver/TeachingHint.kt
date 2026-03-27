@@ -72,7 +72,7 @@ class TeachingHintProvider {
                             cell = coord,
                             value = value,
                             technique = "Single Candidate",
-                            explanation = generateSingleCandidateExplanation(coord, value, candidates),
+                            explanation = generateSingleCandidateExplanation(coord, value, candidates.toSet()),
                             confidence = 1.0,
                             difficulty = DifficultyLevel.EASY,
                             teachingPoints = listOf(
@@ -143,7 +143,7 @@ class TeachingHintProvider {
             for (col in 0..8) {
                 val coord = Coord(row, col)
                 if (board.value(coord) == 0) {
-                    val candidates = board.candidateValues(coord)
+                    val candidates = board.candidateValues(coord).toSet()
                     if (candidates.size < fewestCandidates && candidates.isNotEmpty()) {
                         bestCell = coord
                         fewestCandidates = candidates.size

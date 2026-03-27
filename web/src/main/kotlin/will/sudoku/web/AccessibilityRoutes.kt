@@ -5,7 +5,7 @@ import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import io.ktor.server.server.response.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import will.sudoku.solver.*

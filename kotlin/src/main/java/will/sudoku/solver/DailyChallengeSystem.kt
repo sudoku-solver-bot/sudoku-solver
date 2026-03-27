@@ -64,7 +64,7 @@ data class StreakInfo(
  * Daily challenge system with streaks and history.
  */
 class DailyChallengeSystem(
-    private val generator: PuzzleGenerator = PuzzleGenerator()
+    private val solver: Solver = Solver()
 ) {
     // Store generated daily challenges (in production, use database)
     private val challenges = mutableMapOf<LocalDate, DailyChallenge>()
@@ -96,7 +96,7 @@ class DailyChallengeSystem(
         val seed = date.year * 10000L + date.monthValue * 100L + date.dayOfMonth
         
         // Determine difficulty based on day of week
-        val difficulty = when (date.dayOfWeek.value) {
+        val difficultyLevel = when (date.dayOfWeek.value) {
             1, 2 -> DifficultyLevel.EASY      // Mon-Tue
             3, 4 -> DifficultyLevel.MEDIUM    // Wed-Thu
             5, 6 -> DifficultyLevel.HARD      // Fri-Sat
@@ -104,17 +104,23 @@ class DailyChallengeSystem(
             else -> DifficultyLevel.MEDIUM
         }
         
+        // Convert to DifficultyRater.Level for PuzzleGenerator
+        val raterLevel = when (difficultyLevel) {
+            DifficultyLevel.EASY -> DifficultyRater.Level.EASY
+            DifficultyLevel.MEDIUM -> DifficultyRater.Level.MEDIUM
+            DifficultyLevel.HARD -> DifficultyRater.Level.HARD
+            DifficultyLevel.EXPERT -> DifficultyRater.Level.EXPERT
+        }
+        
         // Generate puzzle with deterministic seed
-        val seededGenerator = PuzzleGenerator(random = java.util.Random(seed))
-        val puzzle = seededGenerator.generate(difficulty)
+        val puzzle = PuzzleGenerator.generate(raterLevel, seed = seed)
         
         // Solve it to get solution
-        val solver = Solver()
         val solution = solver.solve(puzzle) ?: puzzle
         
         return DailyChallenge(
             date = date,
-            difficulty = difficulty,
+            difficulty = difficultyLevel,
             puzzle = puzzle.toString(),
             solution = solution.toString(),
             seed = seed

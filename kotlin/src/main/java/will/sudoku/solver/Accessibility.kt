@@ -86,7 +86,7 @@ object AccessibilityHelper {
                 val value = board.value(coord)
                 val isGiven = value != 0
                 val candidates = if (value == 0) {
-                    board.candidateValues(coord)
+                    board.candidateValues(coord).toSet()
                 } else {
                     emptySet()
                 }

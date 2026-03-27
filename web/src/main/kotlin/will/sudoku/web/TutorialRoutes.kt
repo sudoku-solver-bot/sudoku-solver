@@ -58,7 +58,7 @@ data class ProgressRequest(
 )
 
 @Serializable
-data class ProgressResponse(
+data class TutorialTutorialProgressResponse(
     val totalModules: Int,
     val completedModules: Int,
     val percentage: Int,
@@ -172,7 +172,7 @@ fun Route.tutorialRoutes() {
         val progress = tutorialSystem.calculateProgress(completedIds)
         
         call.respond(
-            ProgressResponse(
+            TutorialProgressResponse(
                 totalModules = progress.totalModules,
                 completedModules = progress.completedModules,
                 percentage = progress.percentage,
