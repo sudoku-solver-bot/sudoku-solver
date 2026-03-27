@@ -2,6 +2,8 @@ package will.sudoku.web
 
 import io.ktor.http.*
 import kotlinx.serialization.Serializable
+import will.sudoku.solver.Board
+import will.sudoku.solver.BoardReader
 
 /**
  * Validation result for puzzle input.
@@ -15,12 +17,13 @@ data class ValidationResult(
 )
 
 /**
- * Comprehensive puzzle validation utility.
+ * API-focused puzzle validation utility.
+ * Delegates structural validation to backend PuzzleValidator.
  */
 object PuzzleValidator {
     
     /**
-     * Validates puzzle string for correctness.
+     * Validates puzzle string for API input.
      * 
      * @param puzzle The 81-character puzzle string
      * @return ValidationResult with details if invalid
@@ -109,119 +112,30 @@ object PuzzleValidator {
             }
         }
         
-        // Check for obvious conflicts in rows
-        val rowConflict = findRowConflict(puzzle)
-        if (rowConflict != null) {
+        // Delegate structural validation to backend
+        try {
+            val board = BoardReader.readBoard(puzzle)
+            val backendValidation = will.sudoku.solver.PuzzleValidator.isValid(board)
+            
+            if (!backendValidation) {
+                // Backend found structural issues (row/column/region conflicts)
+                // Return generic error (backend doesn't provide specific error messages yet)
+                return ValidationResult(
+                    valid = false,
+                    errorCode = "STRUCTURAL_CONFLICT",
+                    errorMessage = "Puzzle contains duplicate values in a row, column, or 3x3 region"
+                )
+            }
+        } catch (e: Exception) {
             return ValidationResult(
                 valid = false,
-                errorCode = "ROW_CONFLICT",
-                errorMessage = "Row ${rowConflict.first + 1} contains duplicate value '${rowConflict.second}'",
-                errorDetails = mapOf(
-                    "row" to (rowConflict.first + 1).toString(),
-                    "value" to rowConflict.second.toString()
-                )
-            )
-        }
-        
-        // Check for obvious conflicts in columns
-        val colConflict = findColumnConflict(puzzle)
-        if (colConflict != null) {
-            return ValidationResult(
-                valid = false,
-                errorCode = "COLUMN_CONFLICT",
-                errorMessage = "Column ${colConflict.first + 1} contains duplicate value '${colConflict.second}'",
-                errorDetails = mapOf(
-                    "column" to (colConflict.first + 1).toString(),
-                    "value" to colConflict.second.toString()
-                )
-            )
-        }
-        
-        // Check for obvious conflicts in 3x3 regions
-        val regionConflict = findRegionConflict(puzzle)
-        if (regionConflict != null) {
-            return ValidationResult(
-                valid = false,
-                errorCode = "REGION_CONFLICT",
-                errorMessage = "3x3 region contains duplicate value '${regionConflict.second}'",
-                errorDetails = mapOf(
-                    "region" to (regionConflict.first + 1).toString(),
-                    "value" to regionConflict.second.toString()
-                )
+                errorCode = "VALIDATION_ERROR",
+                errorMessage = "Error validating puzzle: ${e.message}"
             )
         }
         
         // All validations passed
         return ValidationResult(valid = true)
-    }
-    
-    /**
-     * Find duplicate in any row.
-     * @return Pair of (row index, duplicate digit) or null if no conflict
-     */
-    private fun findRowConflict(puzzle: String): Pair<Int, Char>? {
-        for (row in 0 until 9) {
-            val digits = mutableMapOf<Char, Int>()
-            for (col in 0 until 9) {
-                val char = puzzle[row * 9 + col]
-                if (char in '1'..'9') {
-                    if (digits.containsKey(char)) {
-                        return Pair(row, char)
-                    }
-                    digits[char] = col
-                }
-            }
-        }
-        return null
-    }
-    
-    /**
-     * Find duplicate in any column.
-     * @return Pair of (column index, duplicate digit) or null if no conflict
-     */
-    private fun findColumnConflict(puzzle: String): Pair<Int, Char>? {
-        for (col in 0 until 9) {
-            val digits = mutableMapOf<Char, Int>()
-            for (row in 0 until 9) {
-                val char = puzzle[row * 9 + col]
-                if (char in '1'..'9') {
-                    if (digits.containsKey(char)) {
-                        return Pair(col, char)
-                    }
-                    digits[char] = row
-                }
-            }
-        }
-        return null
-    }
-    
-    /**
-     * Find duplicate in any 3x3 region.
-     * @return Pair of (region index, duplicate digit) or null if no conflict
-     */
-    private fun findRegionConflict(puzzle: String): Pair<Int, Char>? {
-        for (regionRow in 0 until 3) {
-            for (regionCol in 0 until 3) {
-                val digits = mutableMapOf<Char, Int>()
-                val regionIndex = regionRow * 3 + regionCol
-                
-                for (localRow in 0 until 3) {
-                    for (localCol in 0 until 3) {
-                        val row = regionRow * 3 + localRow
-                        val col = regionCol * 3 + localCol
-                        val char = puzzle[row * 9 + col]
-                        
-                        if (char in '1'..'9') {
-                            if (digits.containsKey(char)) {
-                                return Pair(regionIndex, char)
-                            }
-                            digits[char] = row * 9 + col
-                        }
-                    }
-                }
-            }
-        }
-        return null
     }
     
     /**
@@ -231,7 +145,7 @@ object PuzzleValidator {
         return when (errorCode) {
             "NULL_INPUT", "INVALID_LENGTH", "INVALID_CHARACTERS" -> HttpStatusCode.BadRequest
             "EMPTY_PUZZLE", "TOO_FEW_CLUES" -> HttpStatusCode.BadRequest
-            "DUPLICATE_VALUES", "ROW_CONFLICT", "COLUMN_CONFLICT", "REGION_CONFLICT" -> HttpStatusCode.BadRequest
+            "DUPLICATE_VALUES", "STRUCTURAL_CONFLICT" -> HttpStatusCode.BadRequest
             else -> HttpStatusCode.BadRequest
         }
     }
