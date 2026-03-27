@@ -1,7 +1,5 @@
 package will.sudoku.web
 
-import io.github.smiley4.ktorswaggerui.dsl.routing.post
-import io.github.smiley4.ktorswaggerui.dsl.routing.get
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -30,41 +28,8 @@ data class GenerateResponse(
 fun Route.generateRoutes() {
     val generator = PuzzleGenerator()
 
-    post("/generate", {
-        tags = listOf("Generation")
-        description = "Generate a new Sudoku puzzle with specified difficulty"
-        request {
-            body<GenerateRequest> {
-                description = "Puzzle generation options"
-                example("easy") {
-                    value = GenerateRequest(difficulty = "EASY")
-                }
-                example("for-age-10") {
-                    value = GenerateRequest(age = 10)
-                }
-                example("legacy-clues") {
-                    value = GenerateRequest(clues = 35)
-                }
-            }
-        }
-        response {
-            HttpStatusCode.OK to {
-                description = "Puzzle generated successfully"
-                body<GenerateResponse> {
-                    example("generated") {
-                        value = GenerateResponse(
-                            puzzle = "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
-                            difficulty = "EASY",
-                            targetAge = "8-9 years",
-                            clueCount = 42,
-                            techniques = listOf("Single candidate", "Single position"),
-                            description = "Great for beginners! Uses basic logic."
-                        )
-                    }
-                }
-            }
-        }
-    }) {
+    post("/generate") {
+
         val request = call.receive<GenerateRequest>()
         
         // Determine difficulty level
@@ -120,7 +85,6 @@ fun Route.generateRoutes() {
                 targetAge = difficulty.targetAgeRange,
                 clueCount = clueCount,
                 techniques = difficulty.techniques,
-                description = difficulty.description
             )
         )
     }

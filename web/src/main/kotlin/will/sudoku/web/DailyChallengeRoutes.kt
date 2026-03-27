@@ -1,7 +1,5 @@
 package will.sudoku.web
 
-import io.github.smiley4.ktorswaggerui.dsl.routing.get
-import io.github.smiley4.ktorswaggerui.dsl.routing.post
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -63,16 +61,8 @@ data class DailyChallengeSummary(
 fun Route.dailyChallengeRoutes() {
     val dailySystem = DailyChallengeSystem()
 
-    get("/daily", {
-        tags = listOf("Daily Challenge")
-        description = "Get today's daily challenge puzzle"
-        response {
-            HttpStatusCode.OK to {
-                description = "Today's challenge"
-                body<DailyChallengeResponse>()
-            }
-        }
-    }) {
+    get("/daily") {
+
         val timezone = ZoneId.of("Asia/Hong_Kong")  // Kid-friendly timezone
         val challenge = dailySystem.getTodayChallenge(timezone)
         val today = LocalDate.now(timezone)
@@ -100,28 +90,8 @@ fun Route.dailyChallengeRoutes() {
         )
     }
     
-    post("/daily/complete", {
-        tags = listOf("Daily Challenge")
-        description = "Mark daily challenge as completed"
-        request {
-            body<CompletionRequest> {
-                example("sample") {
-                    value = CompletionRequest(
-                        userId = "user123",
-                        date = "2026-03-27",
-                        timeSeconds = 120,
-                        hintsUsed = 2
-                    )
-                }
-            }
-        }
-        response {
-            HttpStatusCode.OK to {
-                description = "Completion recorded"
-                body<CompletionResponse>()
-            }
-        }
-    }) {
+    post("/daily/complete") {
+
         val request = call.receive<CompletionRequest>()
         val date = LocalDate.parse(request.date)
         
@@ -166,16 +136,8 @@ fun Route.dailyChallengeRoutes() {
         )
     }
     
-    get("/daily/streak/{userId}", {
-        tags = listOf("Daily Challenge")
-        description = "Get user's streak information"
-        response {
-            HttpStatusCode.OK to {
-                description = "Streak info"
-                body<StreakResponse>()
-            }
-        }
-    }) {
+    get("/daily/streak/{userId}") {
+
         val userId = call.parameters["userId"] ?: return@get call.respond(
             HttpStatusCode.BadRequest,
             mapOf("error" to "Missing userId")
@@ -206,16 +168,8 @@ fun Route.dailyChallengeRoutes() {
         )
     }
     
-    get("/daily/recent", {
-        tags = listOf("Daily Challenge")
-        description = "Get recent daily challenges"
-        response {
-            HttpStatusCode.OK to {
-                description = "Recent challenges"
-                body<RecentChallengesResponse>()
-            }
-        }
-    }) {
+    get("/daily/recent") {
+
         val recentChallenges = dailySystem.getRecentChallenges(7)
         
         val dayNames = listOf(
