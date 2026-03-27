@@ -6,9 +6,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import will.sudoku.solver.Board
-import will.sudoku.solver.BoardReader
-import will.sudoku.solver.HintGenerator
+import will.sudoku.solver.*
 
 @Serializable
 data class HintRequest(
@@ -17,78 +15,43 @@ data class HintRequest(
 
 @Serializable
 data class HintResponse(
-    val hasHint: Boolean,
-    val hint: HintData? = null,
-    val error: String? = null
+    val type: String,
+    val cell: CellCoordinate?,
+    val technique: String,
+    val explanation: String,
+    val teachingPoints: List<String>
 )
 
 @Serializable
-data class HintData(
+data class CellCoordinate(
     val row: Int,
-    val col: Int,
-    val value: Int,
-    val technique: String,
-    val explanation: String
+    val col: Int
 )
 
 fun Route.hintRoutes() {
-    post("/hint") {
-        val request = try {
-            call.receive<HintRequest>()
-        } catch (e: Exception) {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                HintResponse(hasHint = false, error = "Invalid request body: ${e.message}")
-            )
-            return@post
-        }
+    val hintProvider = TeachingHintProvider()
 
-        // Validate puzzle length
+    post("/api/v1/hint") {
+        val request = call.receive<HintRequest>()
+        
         if (request.puzzle.length != 81) {
-            call.respond(
+            return@post call.respond(
                 HttpStatusCode.BadRequest,
-                HintResponse(
-                    hasHint = false,
-                    error = "Puzzle must be 81 characters, got ${request.puzzle.length}"
-                )
-            )
-            return@post
-        }
-
-        // Parse the puzzle
-        val board: Board = try {
-            BoardReader.readBoard(request.puzzle)
-        } catch (e: Exception) {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                HintResponse(hasHint = false, error = "Invalid puzzle: ${e.message}")
-            )
-            return@post
-        }
-
-        // Generate hint
-        val hint = HintGenerator.generate(board)
-
-        if (hint != null) {
-            call.respond(
-                HintResponse(
-                    hasHint = true,
-                    hint = HintData(
-                        row = hint.coord.row,
-                        col = hint.coord.col,
-                        value = hint.value,
-                        technique = hint.technique.displayName,
-                        explanation = hint.explanation
-                    )
-                )
-            )
-        } else {
-            call.respond(
-                HintResponse(
-                    hasHint = false,
-                    error = "No hint available. The puzzle may require guessing or is already solved."
-                )
+                mapOf("error" to "Puzzle must be 81 characters")
             )
         }
+        
+        val board = BoardReader.read(request.puzzle)
+        val hint = hintProvider.getHint(board)
+        
+        call.respond(
+            HintResponse(
+                type = hint.type.name,
+                cell = hint.cell?.let { CellCoordinate(it.row, it.col) },
+                technique = hint.technique,
+                explanation = hint.explanation,
+                teachingPoints = hint.teachingPoints
+            )
+        )
     }
 }
