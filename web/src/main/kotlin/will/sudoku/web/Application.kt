@@ -73,6 +73,7 @@ fun Application.module() {
             generateRoutes()
             validateRoutes()
             stepByStepRoutes()
+            sharingRoutes()
         }
         
         // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
@@ -90,6 +91,7 @@ fun Application.module() {
             generateRoutes()
             validateRoutes()
             stepByStepRoutes()
+            sharingRoutes()
         }
     }
 }
