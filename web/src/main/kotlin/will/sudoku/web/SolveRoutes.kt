@@ -50,13 +50,15 @@ fun Route.solveRoutes() {
             return@post
         }
 
-        // Validate puzzle length
-        if (request.puzzle.length != 81) {
+        // Comprehensive input validation
+        val validation = PuzzleValidator.validate(request.puzzle)
+        if (!validation.valid) {
             call.respond(
-                HttpStatusCode.BadRequest,
+                PuzzleValidator.getHttpStatusCode(validation.errorCode!!),
                 SolveResponse(
                     solved = false,
-                    error = "Puzzle must be 81 characters, got ${request.puzzle.length}"
+                    error = validation.errorMessage,
+                    metrics = null
                 )
             )
             return@post
