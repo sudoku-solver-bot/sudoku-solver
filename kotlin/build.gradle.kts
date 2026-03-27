@@ -17,6 +17,11 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    
+    // Logging
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
+    implementation("org.slf4j:slf4j-api:2.0.9")
+    
     // Use junit-jupiter aggregator to fix Gradle test framework auto-loading deprecation
     testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
     testImplementation("org.assertj:assertj-core:3.26.3")

@@ -21,6 +21,9 @@ fun main() {
 }
 
 fun Application.module() {
+    // Install request logging with request ID tracking
+    installRequestLogging()
+    
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
