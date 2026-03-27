@@ -34,6 +34,8 @@ package will.sudoku.solver
  * @see SolverConfig for configuration options for the list of configured eliminators
  */
 class Solver(private val config: SolverConfig = SolverConfig()) {
+    
+    private val logger = SolverLogger("Solver")
 
     /**
      * Solves the given Sudoku puzzle.
@@ -54,6 +56,9 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
      */
     fun solve(board: Board, listener: SolvingListener): Board? {
         val startTime = System.nanoTime()
+        val puzzleString = board.toString()
+        
+        logger.logSolveStart(puzzleString, "Solver")
         
         listener.onPropagationPassStarted()
         
@@ -63,6 +68,14 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         val timeNanos = System.nanoTime() - startTime
         val backtracks = 0 // Will be updated by listener if it tracks this
         listener.onSolveComplete(result != null, timeNanos, backtracks)
+        
+        logger.logSolveComplete(
+            success = result != null,
+            solveTimeMs = timeNanos / 1_000_000.0,
+            backtrackingCount = backtracks,
+            stepsCount = null,
+            solverType = "Solver"
+        )
         
         return result
     }
