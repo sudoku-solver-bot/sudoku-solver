@@ -70,7 +70,7 @@ fun Application.module() {
             healthRoutes()
             solveRoutes()
             hintRoutes()
-            generateRoutes()
+            generateRoutes()  // NEW
             validateRoutes()
             stepByStepRoutes()
             sharingRoutes()
