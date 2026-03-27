@@ -43,13 +43,19 @@ class StepRecorder : SolvingListener {
      * The solving progress recorded so far.
      */
     val progress: SolvingProgress
-        get() = SolvingProgress(
-            steps = _steps.toList(),
-            isSolved = solved,
-            noSolutionReason = noSolutionReason,
-            initialPuzzle = currentBoardState ?: "",
-            finalSolution = if (solved) currentBoardState else null
-        )
+        get() {
+            val progressObj = SolvingProgress(
+                originalPuzzle = currentBoardState ?: "",
+                currentBoardState = currentBoardState ?: ""
+            )
+            _steps.forEach { progressObj.addStep(it) }
+            if (solved) {
+                progressObj.markSolved(currentBoardState ?: "")
+            } else if (noSolution) {
+                progressObj.markNoSolution(noSolutionReason ?: "No valid solution found")
+            }
+            return progressObj
+        }
     
     override fun onCellFilled(coord: Coord, value: Int, explanation: String) {
         stepNumber++
@@ -64,8 +70,10 @@ class StepRecorder : SolvingListener {
     
     override fun onBacktracking() {
         stepNumber++
-        _steps.add(SolvingStep.backtracking(
+        _steps.add(SolvingStep.backtrack(
             stepNumber = stepNumber,
+            cell = Coord(0, 0), // Placeholder - no specific cell for backtracking
+            wrongValue = 0,     // Placeholder - no specific value
             explanation = "Backtracking - no valid candidates found"
         ))
     }
