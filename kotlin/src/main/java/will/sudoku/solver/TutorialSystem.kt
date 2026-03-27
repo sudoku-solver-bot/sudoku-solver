@@ -153,6 +153,126 @@ class TutorialSystem {
             ),
             estimatedMinutes = 15,
             prerequisites = listOf("single-candidate-basics", "single-position-basics")
+        ),
+        
+        // Module 4: Candidate Lines (Medium technique)
+        TutorialModule(
+            id = "candidate-lines",
+            title = "Candidate Lines",
+            description = "Learn to spot numbers that must be in a line within a box!",
+            difficulty = DifficultyLevel.MEDIUM,
+            technique = "Candidate Lines",
+            steps = listOf(
+                TutorialStep(
+                    instruction = "Sometimes a number must be in one ROW or COLUMN within a box. This helps us eliminate it from other places!",
+                    highlight = emptyList(),
+                    expectedAction = TutorialAction.FIND_PATTERN,
+                    hint = "Look at a 3x3 box. If a number can only go in one row or column within that box, it can't go in that row/column in other boxes!",
+                    successMessage = "Great! You found a candidate line!",
+                    teachingPoint = "When a number is limited to one line in a box, it can't be in that line in other boxes!"
+                )
+            ),
+            practicePuzzles = listOf(
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            ),
+            estimatedMinutes = 12,
+            prerequisites = listOf("basic-combination")
+        ),
+        
+        // Module 5: Naked Pairs (Medium technique)
+        TutorialModule(
+            id = "naked-pairs",
+            title = "Naked Pairs",
+            description = "Two cells, two numbers - eliminate candidates!",
+            difficulty = DifficultyLevel.MEDIUM,
+            technique = "Naked Pairs",
+            steps = listOf(
+                TutorialStep(
+                    instruction = "When two cells in a row/column/box have the same TWO candidates, those numbers can't be anywhere else in that group!",
+                    highlight = emptyList(),
+                    expectedAction = TutorialAction.FIND_PATTERN,
+                    hint = "Look for two cells that share exactly two candidate numbers. Those two numbers are 'locked' into those cells!",
+                    successMessage = "Excellent! You found a naked pair!",
+                    teachingPoint = "Naked pairs let you eliminate those candidates from other cells in the same row/column/box!"
+                )
+            ),
+            practicePuzzles = listOf(
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            ),
+            estimatedMinutes = 15,
+            prerequisites = listOf("candidate-lines")
+        ),
+        
+        // Module 6: Hidden Pairs (Medium technique)
+        TutorialModule(
+            id = "hidden-pairs",
+            title = "Hidden Pairs",
+            description = "Two numbers hiding in only two cells!",
+            difficulty = DifficultyLevel.MEDIUM,
+            technique = "Hidden Pairs",
+            steps = listOf(
+                TutorialStep(
+                    instruction = "When two numbers appear in only TWO cells in a group, those cells can't have any other numbers!",
+                    highlight = emptyList(),
+                    expectedAction = TutorialAction.FIND_PATTERN,
+                    hint = "Look for two numbers that only appear in the same two cells. Those cells must contain ONLY those two numbers!",
+                    successMessage = "You found the hidden pair!",
+                    teachingPoint = "Hidden pairs help you eliminate other candidates from those cells, even if the cells have more candidates!"
+                )
+            ),
+            practicePuzzles = listOf(
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            ),
+            estimatedMinutes = 15,
+            prerequisites = listOf("naked-pairs")
+        ),
+        
+        // Module 7: X-Wing (Hard technique)
+        TutorialModule(
+            id = "x-wing",
+            title = "X-Wing Pattern",
+            description = "Master this powerful elimination technique!",
+            difficulty = DifficultyLevel.HARD,
+            technique = "X-Wing",
+            steps = listOf(
+                TutorialStep(
+                    instruction = "When a candidate appears in the same two positions in two rows, you can eliminate it from those columns in other rows!",
+                    highlight = emptyList(),
+                    expectedAction = TutorialAction.FIND_PATTERN,
+                    hint = "Look for a rectangle pattern with the same candidate at all four corners. This 'locks' the number to those four positions!",
+                    successMessage = "X-Wing found! You're becoming a master!",
+                    teachingPoint = "X-Wing is like finding a box in the grid that locks a number in place across multiple rows and columns!"
+                )
+            ),
+            practicePuzzles = listOf(
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            ),
+            estimatedMinutes = 20,
+            prerequisites = listOf("hidden-pairs")
+        ),
+        
+        // Module 8: XY-Wing (Expert technique)
+        TutorialModule(
+            id = "xy-wing",
+            title = "XY-Wing Technique",
+            description = "Advanced technique for expert solvers!",
+            difficulty = DifficultyLevel.EXPERT,
+            technique = "XY-Wing",
+            steps = listOf(
+                TutorialStep(
+                    instruction = "The XY-Wing uses three cells to eliminate candidates. Find the pivot cell with two candidates, and two wing cells that share one candidate each with the pivot!",
+                    highlight = emptyList(),
+                    expectedAction = TutorialAction.FIND_PATTERN,
+                    hint = "Look for: Pivot (AB), Wing1 (AC), Wing2 (BC). The candidate C can be eliminated from any cell that sees both wings!",
+                    successMessage = "XY-Wing master! You're solving like a champion!",
+                    teachingPoint = "XY-Wing is powerful but requires practice to spot quickly. Look for cells with exactly two candidates!"
+                )
+            ),
+            practicePuzzles = listOf(
+                "000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+            ),
+            estimatedMinutes = 25,
+            prerequisites = listOf("x-wing")
         )
     )
     
