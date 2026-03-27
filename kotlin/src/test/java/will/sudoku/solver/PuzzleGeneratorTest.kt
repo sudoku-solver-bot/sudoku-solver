@@ -80,7 +80,8 @@ class PuzzleGeneratorTest {
 
     @Test
     fun `generates minimal puzzle`() {
-        val puzzle = PuzzleGenerator.generateMinimal()
+        // Use fixed seed for deterministic test
+        val puzzle = PuzzleGenerator.generateMinimal(seed = 12345)
 
         // Minimal puzzle should be solvable
         val solver = Solver()
