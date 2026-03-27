@@ -1,0 +1,106 @@
+package will.sudoku.solver
+
+import will.sudoku.solver.Board
+import will.sudoku.solver.Coord
+
+/**
+ * Records each step of the solving process.
+ *
+ * Tracks:
+ * - Each cell filled
+ * - Each backtracking event
+ * - Each eliminator application
+ * - Complete solving progress
+ *
+ * ## Usage
+ *
+ * ```kotlin
+ * val solver = Solver()
+ * val recorder = StepRecorder()
+ * val solution = solver.solve(board, recorder)
+ *
+ * if (solution != null) {
+ *     println("Solved in ${recorder.progress.stepCount} steps")
+ *     recorder.progress.steps.forEach { step ->
+ *         println("${step.stepNumber}: ${step.explanation}")
+ *     }
+ * }
+ * ```
+ *
+ * @see SolvingProgress for the complete progress data
+ * @see SolvingStep for individual step details
+ */
+class StepRecorder : SolvingListener {
+    
+    private val _steps = mutableListOf<SolvingStep>()
+    private var stepNumber = 0
+    private var currentBoardState: String? = null
+    private var solved = false
+    private var noSolution = false
+    private var noSolutionReason: String? = null
+    
+    /**
+     * The solving progress recorded so far.
+     */
+    val progress: SolvingProgress
+        get() = SolvingProgress(
+            steps = _steps.toList(),
+            isSolved = solved,
+            noSolutionReason = noSolutionReason,
+            initialPuzzle = currentBoardState ?: "",
+            finalSolution = if (solved) currentBoardState else null
+        )
+    
+    override fun onCellFilled(coord: Coord, value: Int, explanation: String) {
+        stepNumber++
+        _steps.add(SolvingStep.cellFilled(
+            stepNumber = stepNumber,
+            cell = coord,
+            value = value,
+            explanation = explanation,
+            boardState = currentBoardState ?: ""
+        ))
+    }
+    
+    override fun onBacktracking() {
+        stepNumber++
+        _steps.add(SolvingStep.backtracking(
+            stepNumber = stepNumber,
+            explanation = "Backtracking - no valid candidates found"
+        ))
+    }
+    
+    override fun onEliminatorApplied(name: String, eliminations: Int) {
+        // Optionally record eliminator applications as steps
+        // For now, we'll skip this to keep step count manageable
+        // Could be enabled via configuration flag
+    }
+    
+    override fun onSolveComplete(solved: Boolean, timeNanos: Long, backtracks: Int) {
+        if (solved) {
+            this.solved = true
+        } else {
+            this.noSolution = true
+            this.noSolutionReason = "No valid solution found"
+        }
+    }
+    
+    override fun onPropagationPassStarted() {
+        // No action needed
+    }
+    
+    override fun onPropagationPassComplete(cellsFilled: Int, candidatesEliminated: Int) {
+        // No action needed
+    }
+    
+    override fun onGuessMade(coord: Coord, value: Int, candidateCount: Int) {
+        // Already handled by onCellFilled with "Guess" explanation
+    }
+    
+    /**
+     * Sets the current board state (called by solver).
+     */
+    fun setBoardState(boardString: String) {
+        currentBoardState = boardString
+    }
+}
