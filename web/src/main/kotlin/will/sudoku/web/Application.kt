@@ -10,6 +10,7 @@ import io.ktor.server.routing.*
 import io.ktor.server.response.*
 import io.ktor.server.http.content.*
 import io.ktor.server.plugins.ratelimit.*
+import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.minutes
 
@@ -56,12 +57,36 @@ fun Application.module() {
             resources("static/assets")
         }
         
-        route("api") {
+        // Versioned API routes (v1)
+        route("api/v1") {
+            // Add API version header to all responses
+            intercept(ApplicationCallPipeline.Plugins) {
+                call.response.headers.append("X-API-Version", "1.0")
+            }
+            
             healthRoutes()
             solveRoutes()
             hintRoutes()
             generateRoutes()
             validateRoutes()
+            stepByStepRoutes()
+        }
+        
+        // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
+        // These redirect to /api/v1/* for backward compatibility
+        route("api") {
+            // Add deprecation warning header
+            intercept(ApplicationCallPipeline.Plugins) {
+                call.response.headers.append("X-API-Warn", "Deprecated: Use /api/v1/ instead. This endpoint will be removed in v2")
+                call.response.headers.append("Deprecation", "true")
+            }
+            
+            healthRoutes()
+            solveRoutes()
+            hintRoutes()
+            generateRoutes()
+            validateRoutes()
+            stepByStepRoutes()
         }
     }
 }
