@@ -34,14 +34,17 @@ fun Route.hintRoutes() {
     post("/api/v1/hint") {
         val request = call.receive<HintRequest>()
         
-        if (request.puzzle.length != 81) {
+        val puzzle = request.puzzle.filter { it.isDigit() }
+        if (puzzle.length != 81) {
             return@post call.respond(
                 HttpStatusCode.BadRequest,
                 mapOf("error" to "Puzzle must be 81 characters")
             )
         }
         
-        val board = BoardReader.read(request.puzzle)
+        // Create board from puzzle string
+        val values = IntArray(81) { puzzle[it].digitToInt() }
+        val board = Board(values)
         val hint = hintProvider.getHint(board)
         
         call.respond(
