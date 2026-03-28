@@ -46,7 +46,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew build sonarqube --info --no-daemon
+        run: |
+          if [ -n "$SONAR_TOKEN" ]; then
+            ./gradlew build sonarqube --info --no-daemon
+          else
+            echo "SONAR_TOKEN not configured, skipping SonarQube analysis"
+            ./gradlew build --info --no-daemon
+          fi
 
       - name: Upload test reports
         uses: actions/upload-artifact@v4
