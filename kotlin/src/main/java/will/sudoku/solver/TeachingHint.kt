@@ -36,12 +36,7 @@ class TeachingHintProvider {
             for (col in 0..8) {
                 val coord = Coord(row, col)
                 if (board.value(coord) == 0) {
-                    val candidates = mutableSetOf<Int>()
-                    for (v in 1..9) {
-                        if (board.couldBe(coord, v)) {
-                            candidates.add(v)
-                        }
-                    }
+                    val candidates = board.candidateValues(coord).toMutableSet()
                     
                     if (candidates.size == 1) {
                         val value = candidates.first()
