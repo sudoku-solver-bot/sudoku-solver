@@ -1,51 +1,216 @@
 <template>
-  <div class="buttons">
-    <button class="btn-primary" @click="$emit('solve')">Solve</button>
-    <button class="btn-warning" @click="$emit('clear')">Clear</button>
-    <button class="btn-secondary" @click="$emit('generate', 'EASY')">Easy</button>
-    <button class="btn-secondary" @click="$emit('generate', 'MEDIUM')">Medium</button>
-    <button class="btn-secondary" @click="$emit('generate', 'HARD')">Hard</button>
-    <button class="btn-info" @click="$emit('generate', 'EXPERT')">Expert</button>
-    <button class="btn-info btn-full" @click="$emit('hint')">Get Hint</button>
+  <div class="control-panel">
+    <!-- Undo/Redo row -->
+    <div class="undo-redo-row">
+      <button
+        class="btn-undo"
+        :disabled="!canUndo"
+        @click="$emit('undo')"
+      >
+        ↶ Undo
+        <span v-if="undoCount > 0" class="count">({{ undoCount }})</span>
+      </button>
+      <button
+        class="btn-redo"
+        :disabled="!canRedo"
+        @click="$emit('redo')"
+      >
+        Redo ↷
+        <span v-if="redoCount > 0" class="count">({{ redoCount }})</span>
+      </button>
+    </div>
+
+    <!-- Main action buttons -->
+    <div class="main-buttons">
+      <button class="btn-primary" :disabled="loading" @click="$emit('solve')">
+        <span class="btn-icon">🧩</span>
+        Solve
+      </button>
+      <button class="btn-secondary" :disabled="loading" @click="$emit('clear')">
+        <span class="btn-icon">🗑️</span>
+        Clear
+      </button>
+    </div>
+
+    <!-- Difficulty buttons -->
+    <div class="difficulty-section">
+      <p class="section-label">New Puzzle:</p>
+      <div class="difficulty-buttons">
+        <button
+          class="btn-difficulty easy"
+          :disabled="loading"
+          @click="$emit('generate', 'EASY')"
+        >
+          ⭐ Easy
+        </button>
+        <button
+          class="btn-difficulty medium"
+          :disabled="loading"
+          @click="$emit('generate', 'MEDIUM')"
+        >
+          ⭐⭐ Medium
+        </button>
+        <button
+          class="btn-difficulty hard"
+          :disabled="loading"
+          @click="$emit('generate', 'HARD')"
+        >
+          ⭐⭐⭐ Hard
+        </button>
+        <button
+          class="btn-difficulty expert"
+          :disabled="loading"
+          @click="$emit('generate', 'EXPERT')"
+        >
+          ⭐⭐⭐⭐ Expert
+        </button>
+      </div>
+    </div>
+
+    <!-- Hint button -->
+    <button class="btn-hint" :disabled="loading" @click="$emit('hint')">
+      <span class="btn-icon">💡</span>
+      Get a Hint!
+    </button>
   </div>
 </template>
 
 <script>
 export default {
   name: 'ControlPanel',
-  emits: ['solve', 'clear', 'generate', 'hint']
+  props: {
+    loading: {
+      type: Boolean,
+      default: false
+    },
+    canUndo: {
+      type: Boolean,
+      default: false
+    },
+    canRedo: {
+      type: Boolean,
+      default: false
+    },
+    undoCount: {
+      type: Number,
+      default: 0
+    },
+    redoCount: {
+      type: Number,
+      default: 0
+    }
+  },
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo']
 }
 </script>
 
 <style scoped>
-.buttons {
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.undo-redo-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.btn-undo,
+.btn-redo {
+  padding: 10px 16px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.btn-undo:not(:disabled):hover,
+.btn-redo:not(:disabled):hover {
+  border-color: #4285f4;
+  background: #e8f0fe;
+  color: #4285f4;
+}
+
+.btn-undo:disabled,
+.btn-redo:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.count {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.main-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.difficulty-section {
+  margin-top: 4px;
+}
+
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 0 8px 0;
+}
+
+.difficulty-buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
 }
 
 button {
-  padding: 14px 20px;
+  padding: 12px 16px;
   border: none;
   border-radius: 8px;
-  font-size: clamp(14px, 3.5vw, 16px);
+  font-size: clamp(13px, 3vw, 15px);
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.1s, box-shadow 0.1s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-button:active {
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+button:active:not(:disabled) {
   transform: scale(0.98);
 }
 
 @media (hover: hover) {
-  button:hover {
+  button:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
+}
+
+.btn-icon {
+  font-size: 16px;
 }
 
 .btn-primary {
@@ -54,41 +219,84 @@ button:active {
 }
 
 .btn-secondary {
-  background: #34a853;
-  color: white;
-}
-
-.btn-warning {
   background: #fbbc05;
+  color: #333;
+}
+
+.btn-difficulty {
+  font-size: clamp(12px, 2.8vw, 14px);
+  padding: 10px 12px;
+}
+
+.btn-difficulty.easy {
+  background: #4caf50;
   color: white;
 }
 
-.btn-info {
+.btn-difficulty.medium {
+  background: #ff9800;
+  color: white;
+}
+
+.btn-difficulty.hard {
+  background: #f44336;
+  color: white;
+}
+
+.btn-difficulty.expert {
   background: #9c27b0;
   color: white;
 }
 
-.btn-full {
-  grid-column: span 2;
+.btn-hint {
+  background: linear-gradient(135deg, #fff8e1, #ffecb3);
+  color: #f57f17;
+  padding: 14px;
+  font-size: 15px;
+  margin-top: 4px;
 }
 
-/* Mobile touch targets - minimum 44px height for iOS */
+/* Mobile responsive */
 @media (max-width: 500px) {
+  .control-panel {
+    gap: 10px;
+  }
+
   button {
-    padding: 12px 16px;
+    padding: 10px 12px;
     min-height: 44px;
   }
 
-  .buttons {
-    gap: 8px;
+  .difficulty-buttons {
+    gap: 6px;
+  }
+
+  .btn-difficulty {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }
 
 /* iPhone SE */
 @media (max-width: 380px) {
+  .undo-redo-row {
+    gap: 6px;
+  }
+
   button {
-    padding: 10px 12px;
-    font-size: 13px;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 320px) {
+  .difficulty-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-difficulty {
+    padding: 10px;
   }
 }
 </style>
