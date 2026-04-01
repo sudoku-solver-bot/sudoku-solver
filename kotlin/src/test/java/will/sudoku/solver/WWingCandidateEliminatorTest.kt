@@ -39,8 +39,8 @@ class WWingCandidateEliminatorTest {
         }
 
         assertThat(hasWWingEliminator)
-            .`as`("WWingCandidateEliminator is currently disabled due to bugs")
-            .isFalse()
+            .`as`("WWingCandidateEliminator is now enabled")
+            .isTrue()
     }
 
     @Test
