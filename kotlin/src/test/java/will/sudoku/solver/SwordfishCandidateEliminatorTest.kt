@@ -74,41 +74,103 @@ class SwordfishCandidateEliminatorTest {
     // ===== COMPLEX PATTERNS =====
 
     @Test
-    fun `Swordfish pattern across three rows`() {
-        // Simple test - just verify eliminator runs without error
-        val values = IntArray(81) { 0 }
-        values[0] = 1
-        values[4] = 2
-        values[8] = 3
+    fun `Swordfish pattern across three rows eliminates candidates correctly`() {
+        // Create a Swordfish pattern for candidate 7
+        // Rows 0, 3, 6 have candidate 7 in columns 1, 4, 7
+        // This should eliminate 7 from other cells in these columns
+        
+        val values = intArrayOf(
+            0, 0, 0, 0, 0, 0, 0, 0, 0,  // Row 0: candidate 7 in col 1,4,7
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,  // Row 3: candidate 7 in col 1,4,7  
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,  // Row 6: candidate 7 in col 1,4,7
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            0, 0, 0, 0, 0, 0, 0, 0, 0
+        )
         
         val board = Board(values)
-        val eliminator = SwordfishCandidateEliminator()
-        eliminator.eliminate(board)
+        // Fill candidates to create Swordfish pattern
+        SimpleCandidateEliminator().eliminate(board)
         
-        // Test passes if no exception is thrown
-        assertThat(true).isTrue()
+        // Manually set up the Swordfish pattern for candidate 7
+        board.setCandidates(0, 1, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 0, Col 1
+        board.setCandidates(0, 4, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 0, Col 4
+        board.setCandidates(0, 7, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 0, Col 7
+        
+        board.setCandidates(3, 1, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 3, Col 1
+        board.setCandidates(3, 4, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 3, Col 4
+        board.setCandidates(3, 7, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 3, Col 7
+        
+        board.setCandidates(6, 1, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 6, Col 1
+        board.setCandidates(6, 4, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 6, Col 4
+        board.setCandidates(6, 7, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 6, Col 7
+        
+        val eliminator = SwordfishCandidateEliminator()
+        val changed = eliminator.eliminate(board)
+        
+        // Verify that candidate 7 was eliminated from other cells in these columns
+        // Check cells that should be affected by the Swordfish pattern
+        assertThat(board.getCandidates(1, 1)).doesNotContain(7)  // Row 1, Col 1 - should not have 7
+        assertThat(board.getCandidates(2, 1)).doesNotContain(7)  // Row 2, Col 1 - should not have 7
+        assertThat(board.getCandidates(4, 1)).doesNotContain(7)  // Row 4, Col 1 - should not have 7
+        assertThat(board.getCandidates(5, 1)).doesNotContain(7)  // Row 5, Col 1 - should not have 7
+        assertThat(board.getCandidates(7, 1)).doesNotContain(7)  // Row 7, Col 1 - should not have 7
+        assertThat(board.getCandidates(8, 1)).doesNotContain(7)  // Row 8, Col 1 - should not have 7
+        
+        assertThat(changed).isTrue()
     }
 
     @Test
-    fun `Swordfish pattern across three columns`() {
-        // Test Swordfish where a candidate appears in exactly 3 rows across 3 columns
+    fun `Swordfish pattern across three columns eliminates candidates correctly`() {
+        // Create a Swordfish pattern for candidate 5
+        // Columns 0, 3, 6 have candidate 5 in rows 1, 4, 7
+        // This should eliminate 5 from other cells in these rows
         
-        val values = IntArray(81) { 0 }
-        
-        // Column 0: Place values to constrain
-        for (i in 0..8) {
-            if (i != 0 && i != 3 && i != 6) {
-                values[i * 9] = i + 1
-            }
-        }
+        val values = intArrayOf(
+            1, 0, 0, 2, 0, 0, 3, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,  // Row 1: candidate 5 in col 0,3,6
+            4, 0, 0, 5, 0, 0, 6, 0, 0,
+            7, 0, 0, 8, 0, 0, 9, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,  // Row 4: candidate 5 in col 0,3,6
+            1, 0, 0, 2, 0, 0, 3, 0, 0,
+            4, 0, 0, 5, 0, 0, 6, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,  // Row 7: candidate 5 in col 0,3,6
+            7, 0, 0, 8, 0, 0, 9, 0, 0
+        )
         
         val board = Board(values)
+        // Fill candidates to create Swordfish pattern
         SimpleCandidateEliminator().eliminate(board)
         
-        val eliminator = SwordfishCandidateEliminator()
-        eliminator.eliminate(board)
+        // Manually set up the Swordfish pattern for candidate 5
+        board.setCandidates(1, 0, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 1, Col 0
+        board.setCandidates(1, 3, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 1, Col 3
+        board.setCandidates(1, 6, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 1, Col 6
         
-        assertThat(board.isValid()).isTrue()
+        board.setCandidates(4, 0, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 4, Col 0
+        board.setCandidates(4, 3, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 4, Col 3
+        board.setCandidates(4, 6, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 4, Col 6
+        
+        board.setCandidates(7, 0, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 7, Col 0
+        board.setCandidates(7, 3, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 7, Col 3
+        board.setCandidates(7, 6, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))  // Row 7, Col 6
+        
+        val eliminator = SwordfishCandidateEliminator()
+        val changed = eliminator.eliminate(board)
+        
+        // Verify that candidate 5 was eliminated from other cells in these rows
+        // Check cells that should be affected by the Swordfish pattern
+        assertThat(board.getCandidates(1, 1)).doesNotContain(5)  // Row 1, Col 1 - should not have 5
+        assertThat(board.getCandidates(1, 2)).doesNotContain(5)  // Row 1, Col 2 - should not have 5
+        assertThat(board.getCandidates(1, 4)).doesNotContain(5)  // Row 1, Col 4 - should not have 5
+        assertThat(board.getCandidates(1, 5)).doesNotContain(5)  // Row 1, Col 5 - should not have 5
+        assertThat(board.getCandidates(1, 7)).doesNotContain(5)  // Row 1, Col 7 - should not have 5
+        assertThat(board.getCandidates(1, 8)).doesNotContain(5)  // Row 1, Col 8 - should not have 5
+        
+        assertThat(changed).isTrue()
     }
 
     @Test
@@ -155,6 +217,82 @@ class SwordfishCandidateEliminatorTest {
         eliminator.eliminate(board)
         
         assertThat(board.isValid()).isTrue()
+    }
+
+    @Test
+    fun `Swordfish overlapping with X-Wing pattern`() {
+        // Test that Swordfish doesn't interfere with X-Wing patterns
+        // and both can coexist in the same puzzle
+        
+        val values = intArrayOf(
+            0, 0, 0, 1, 0, 0, 2, 0, 0,  // Row 0: candidate 3 in col 2,5,8
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            0, 0, 0, 1, 0, 0, 2, 0, 0,  // Row 2: candidate 3 in col 2,5,8
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            0, 0, 0, 1, 0, 0, 2, 0, 0,  // Row 4: candidate 3 in col 2,5,8
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            0, 0, 0, 1, 0, 0, 2, 0, 0,  // Row 6: candidate 3 in col 2,5,8
+            1, 2, 3, 4, 5, 6, 7, 8, 9,
+            0, 0, 0, 1, 0, 0, 2, 0, 0   // Row 8: candidate 3 in col 2,5,8
+        )
+        
+        val board = Board(values)
+        SimpleCandidateEliminator().eliminate(board)
+        
+        // Set up candidates for Swordfish pattern (candidate 3)
+        for (row in intArrayOf(0, 2, 4, 6)) {
+            for (col in intArrayOf(2, 5, 8)) {
+                board.setCandidates(row, col, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))
+            }
+        }
+        
+        val eliminator = SwordfishCandidateEliminator()
+        val changed = eliminator.eliminate(board)
+        
+        // Board should remain valid and tests should pass
+        assertThat(board.isValid()).isTrue()
+        assertThat(changed).isTrue() // Should trigger elimination
+    }
+
+    @Test
+    fun `Complex Swordfish with wrapped rows and columns`() {
+        // Test a more complex Swordfish pattern that wraps around the grid
+        // Candidate 3 appears in rows 1,4,7 and columns 0,3,6
+        
+        val values = intArrayOf(
+            1, 0, 0, 2, 0, 0, 3, 0, 0,   // Row 0
+            0, 0, 0, 0, 0, 0, 0, 0, 0,   // Row 1: candidate 3 in col 0,3,6
+            4, 0, 0, 5, 0, 0, 6, 0, 0,
+            7, 0, 0, 8, 0, 0, 9, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,   // Row 4: candidate 3 in col 0,3,6
+            1, 0, 0, 2, 0, 0, 3, 0, 0,
+            4, 0, 0, 5, 0, 0, 6, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0,   // Row 7: candidate 3 in col 0,3,6
+            7, 0, 0, 8, 0, 0, 9, 0, 0
+        )
+        
+        val board = Board(values)
+        SimpleCandidateEliminator().eliminate(board)
+        
+        // Set up the complex Swordfish pattern
+        for (row in intArrayOf(1, 4, 7)) {
+            for (col in intArrayOf(0, 3, 6)) {
+                board.setCandidates(row, col, intArrayOf(1, 2, 3, 4, 5, 6, 7, 8, 9))
+            }
+        }
+        
+        val eliminator = SwordfishCandidateEliminator()
+        val changed = eliminator.eliminate(board)
+        
+        // Verify that candidate 3 was eliminated from cells that see the Swordfish pattern
+        // Test some cells that should be affected
+        assertThat(board.getCandidates(2, 1)).doesNotContain(3)  // Row 2, Col 1 - should not have 3
+        assertThat(board.getCandidates(3, 1)).doesNotContain(3)  // Row 3, Col 1 - should not have 3
+        assertThat(board.getCandidates(5, 1)).doesNotContain(3)  // Row 5, Col 1 - should not have 3
+        assertThat(board.getCandidates(6, 1)).doesNotContain(3)  // Row 6, Col 1 - should not have 3
+        assertThat(board.getCandidates(8, 1)).doesNotContain(3)  // Row 8, Col 1 - should not have 3
+        
+        assertThat(changed).isTrue()
     }
 
     @Test
