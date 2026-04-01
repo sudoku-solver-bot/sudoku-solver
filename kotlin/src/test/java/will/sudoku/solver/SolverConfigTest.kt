@@ -24,6 +24,10 @@ class SolverConfigTest {
             "XWingCandidateEliminator",
             "SwordfishCandidateEliminator",
             "XYWingCandidateEliminator"
+            // TODO: Re-enable after fixing bugs
+            // "XYZWingCandidateEliminator",
+            // "WWingCandidateEliminator",
+            // "SimpleColoringCandidateEliminator"
         )
     }
 

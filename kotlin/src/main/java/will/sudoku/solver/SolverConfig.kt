@@ -45,6 +45,10 @@ data class SolverConfig(
             XWingCandidateEliminator(),
             SwordfishCandidateEliminator(),
             XYWingCandidateEliminator()
+            // TODO: Re-enable after fixing bugs
+            // XYZWingCandidateEliminator(),
+            // WWingCandidateEliminator(),
+            // SimpleColoringCandidateEliminator()
         )
 
         /**
@@ -78,6 +82,10 @@ data class SolverConfig(
                 eliminators.add(XWingCandidateEliminator())
                 eliminators.add(SwordfishCandidateEliminator())
                 eliminators.add(XYWingCandidateEliminator())
+                // TODO: Re-enable after fixing bugs
+                // eliminators.add(XYZWingCandidateEliminator())
+                // eliminators.add(WWingCandidateEliminator())
+                // eliminators.add(SimpleColoringCandidateEliminator())
             }
 
             return SolverConfig(eliminators = eliminators)
@@ -135,4 +143,8 @@ object Settings {
     val xWingCandidateEliminator = XWingCandidateEliminator()
     val swordfishCandidateEliminator = SwordfishCandidateEliminator()
     val xyWingCandidateEliminator = XYWingCandidateEliminator()
+    // TODO: Re-enable after fixing bugs
+    // val xyzWingCandidateEliminator = XYZWingCandidateEliminator()
+    // val wWingCandidateEliminator = WWingCandidateEliminator()
+    // val simpleColoringCandidateEliminator = SimpleColoringCandidateEliminator()
 }
