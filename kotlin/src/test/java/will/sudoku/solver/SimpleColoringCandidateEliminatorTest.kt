@@ -39,7 +39,7 @@ class SimpleColoringCandidateEliminatorTest {
         }
 
         assertThat(hasSimpleColoringEliminator)
-            .`as`("Solver should NOT include SimpleColoringCandidateEliminator (disabled until bugs are fixed)")
+            .`as`("SimpleColoringCandidateEliminator is currently disabled due to bugs")
             .isFalse()
     }
 
