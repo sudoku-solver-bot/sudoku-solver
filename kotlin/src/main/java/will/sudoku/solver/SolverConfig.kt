@@ -44,9 +44,9 @@ data class SolverConfig(
             ExclusionCandidateEliminator(9),
             XWingCandidateEliminator(),
             SwordfishCandidateEliminator(),
-            XYWingCandidateEliminator()
-            // TODO: Fix bugs in these advanced eliminators
-            // XYZWingCandidateEliminator(),
+            XYWingCandidateEliminator(),
+            XYZWingCandidateEliminator()
+            // TODO: Advanced eliminators disabled due to test failures
             // WWingCandidateEliminator(),
             // SimpleColoringCandidateEliminator()
         )

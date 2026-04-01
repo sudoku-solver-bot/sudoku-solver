@@ -39,8 +39,8 @@ class XYZWingCandidateEliminatorTest {
         }
 
         assertThat(hasXYZWingEliminator)
-            .`as`("XYZWingCandidateEliminator is currently disabled due to bugs")
-            .isFalse()
+            .`as`("XYZWingCandidateEliminator should be registered in settings")
+            .isTrue()
     }
 
     @Test
