@@ -78,7 +78,7 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
         if (invalidColor != null) {
             val toEliminate = if (invalidColor == COLOR_A) colorA else colorB
             for (coord in toEliminate) {
-                if (!board.isConfirmed(coord)) {
+                if (!board.isConfirmed(coord) && candidate in board.candidateValues(coord)) {
                     val changed = board.eraseCandidateValue(coord, candidate)
                     if (changed) anyUpdate = true
                 }
@@ -91,11 +91,11 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
             if (board.isConfirmed(coord)) continue
             if (colors.containsKey(coord)) continue
 
-            // Check if this cell sees both colors
+            // Check if this cell has the candidate and sees both colors
             val seesColorA = colorA.any { seesEachOther(coord, it) }
             val seesColorB = colorB.any { seesEachOther(coord, it) }
 
-            if (seesColorA && seesColorB) {
+            if (candidate in board.candidateValues(coord) && seesColorA && seesColorB) {
                 val changed = board.eraseCandidateValue(coord, candidate)
                 if (changed) anyUpdate = true
             }
