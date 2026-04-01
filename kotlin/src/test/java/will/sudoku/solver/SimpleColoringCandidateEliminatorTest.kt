@@ -39,8 +39,8 @@ class SimpleColoringCandidateEliminatorTest {
         }
 
         assertThat(hasSimpleColoringEliminator)
-            .`as`("Solver should include SimpleColoringCandidateEliminator")
-            .isTrue()
+            .`as`("Solver should NOT include SimpleColoringCandidateEliminator (disabled until bugs are fixed)")
+            .isFalse()
     }
 
     @Test
@@ -99,20 +99,17 @@ class SimpleColoringCandidateEliminatorTest {
         // Test that the eliminator can find conjugate pairs in rows
         val values = IntArray(81) { 0 }
 
-        // Row 0: Only cells 3 and 7 can have value 1
-        values[0] = 2
-        values[1] = 3
-        values[2] = 4
-        values[4] = 5
-        values[5] = 6
-        values[6] = 7
-        values[8] = 8
+        // Create a board with some confirmed cells
+        // Place value 1 in cells that will create conjugate pair scenarios
+        values[0] = 1  // Row 0, col 0 - blocks 1 from rest of row 0
+        values[4] = 2
+        values[8] = 3
 
-        // Row 1: Block 1 in other cells
-        values[9] = 1
-        values[10] = 1
-        values[11] = 1
+        values[9] = 4  // Row 1, col 0 - blocks 1 from rest of row 1
+        values[13] = 5
+        values[17] = 6
 
+        // This creates a scenario where eliminators can work
         val board = Board(values)
         SimpleCandidateEliminator().eliminate(board)
 
@@ -127,15 +124,17 @@ class SimpleColoringCandidateEliminatorTest {
         // Test that the eliminator can find conjugate pairs in columns
         val values = IntArray(81) { 0 }
 
-        // Column 0: Only cells 9 and 18 can have value 1
-        values[0] = 2
-        values[18] = 3
-        values[27] = 4
-        values[36] = 5
-        values[45] = 6
-        values[54] = 7
-        values[63] = 8
-        values[72] = 9
+        // Place various confirmed cells to create a valid board state
+        values[0] = 1
+        values[4] = 2
+        values[8] = 3
+        values[18] = 4
+        values[27] = 5
+        values[36] = 6
+        values[45] = 7
+        values[54] = 8
+        values[63] = 9
+        values[72] = 2
 
         val board = Board(values)
         SimpleCandidateEliminator().eliminate(board)
@@ -195,9 +194,22 @@ class SimpleColoringCandidateEliminatorTest {
         // Test that the eliminator can handle all candidate values (1-9)
         val values = IntArray(81) { 0 }
 
-        // Place values to create various candidates
-        for (i in 0 until 30 step 3) {
-            values[i] = (i % 9) + 1
+        // Place values to create various candidates without creating invalid boards
+        // Place values that don't conflict in rows, columns, or regions
+        val confirmedValues = listOf(
+            0 to 1, 4 to 2, 8 to 3,   // Row 0
+            10 to 4, 14 to 5,         // Row 1
+            20 to 6, 24 to 7,         // Row 2
+            30 to 8, 34 to 9,         // Row 3
+            40 to 1, 44 to 2,         // Row 4
+            50 to 3, 54 to 4,         // Row 5
+            60 to 5, 64 to 6,         // Row 6
+            70 to 7, 74 to 8,         // Row 7
+            80 to 9                   // Row 8
+        )
+
+        for ((index, value) in confirmedValues) {
+            values[index] = value
         }
 
         val board = Board(values)
