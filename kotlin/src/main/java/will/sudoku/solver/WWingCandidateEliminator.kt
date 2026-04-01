@@ -101,10 +101,70 @@ class WWingCandidateEliminator : CandidateEliminator {
         // Check if any pair of link cells see each other (forming the bridge)
         for (linkCell1 in linkCells1) {
             for (linkCell2 in linkCells2) {
+                // Skip if link cells are the same (would create a degenerate W-Wing)
+                if (linkCell1 == linkCell2) continue
+
                 if (seesEachOther(linkCell1, linkCell2)) {
-                    // Found a W-Wing! Eliminate 'target' from cells seeing both bi-value cells
-                    return eliminateFromCommonPeers(board, cell1, cell2, target)
+                    // Verify this is a proper W-Wing by checking the strong link condition:
+                    // The two link cells should be the only cells in their shared unit with 'link'
+                    if (isStrongLink(board, linkCell1, linkCell2, link)) {
+                        // Found a valid W-Wing! Eliminate 'target' from cells seeing both bi-value cells
+                        return eliminateFromCommonPeers(board, cell1, cell2, target)
+                    }
                 }
+            }
+        }
+
+        return false
+    }
+
+    /**
+     * Check if two cells form a strong link on a candidate.
+     *
+     * A strong link exists when both cells are in the same unit (row/col/region)
+     * and they are the ONLY two cells in that unit with the specified candidate.
+     *
+     * @param cell1 First cell
+     * @param cell2 Second cell
+     * @param candidate The candidate to check
+     * @return true if a strong link exists
+     */
+    private fun isStrongLink(board: Board, cell1: Coord, cell2: Coord, candidate: Int): Boolean {
+        // If they're not in the same unit, no strong link
+        if (!seesEachOther(cell1, cell2)) return false
+
+        val candidateMask = Board.masks[candidate - 1]
+
+        // Check each shared unit
+        val sharedUnits = mutableListOf<List<Coord>>()
+
+        // Same row?
+        if (cell1.row == cell2.row) {
+            sharedUnits.add(CoordGroup.horizontalOf(cell1).coords)
+        }
+
+        // Same column?
+        if (cell1.col == cell2.col) {
+            sharedUnits.add(CoordGroup.verticalOf(cell1).coords)
+        }
+
+        // Same region?
+        if (sameRegion(cell1, cell2)) {
+            sharedUnits.add(CoordGroup.regionOf(cell1).coords)
+        }
+
+        // For each shared unit, check if they're the only two cells with the candidate
+        for (unit in sharedUnits) {
+            val cellsWithCandidate = unit.filter { coord ->
+                !board.isConfirmed(coord) &&
+                (board.candidatePattern(coord) and candidateMask) != 0
+            }
+
+            // Strong link exists if exactly 2 cells in the unit have this candidate
+            if (cellsWithCandidate.size == 2 &&
+                cellsWithCandidate.contains(cell1) &&
+                cellsWithCandidate.contains(cell2)) {
+                return true
             }
         }
 
