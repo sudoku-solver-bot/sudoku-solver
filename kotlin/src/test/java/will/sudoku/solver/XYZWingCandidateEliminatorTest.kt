@@ -33,7 +33,6 @@ class XYZWingCandidateEliminatorTest {
     }
 
     @Test
-    @Disabled("TODO: Fix bugs in XYZ-Wing implementation")
     fun `XYZ-Wing eliminator is registered in settings`() {
         val hasXYZWingEliminator = Settings.eliminators.any {
             it is XYZWingCandidateEliminator
@@ -203,7 +202,6 @@ class XYZWingCandidateEliminatorTest {
     }
 
     @Test
-    @Disabled("TODO: Fix bugs in XYZ-Wing implementation")
     fun `XYZ-Wing eliminator handles all candidate values`() {
         // Test that the eliminator can handle all candidate values (1-9)
         val values = IntArray(81) { 0 }

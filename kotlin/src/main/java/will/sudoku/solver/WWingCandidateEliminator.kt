@@ -153,8 +153,9 @@ class WWingCandidateEliminator : CandidateEliminator {
             if (coord == cell1 || coord == cell2) continue
             if (board.isConfirmed(coord)) continue
 
-            // Check if this cell sees both bi-value cells
-            if (seesEachOther(coord, cell1) && seesEachOther(coord, cell2)) {
+            // Check if this cell has the candidate and sees both bi-value cells
+            if (candidate in board.candidateValues(coord) &&
+                seesEachOther(coord, cell1) && seesEachOther(coord, cell2)) {
                 val changed = board.eraseCandidateValue(coord, candidate)
                 if (changed) anyUpdate = true
             }

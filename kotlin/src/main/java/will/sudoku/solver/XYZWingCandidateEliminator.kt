@@ -136,8 +136,9 @@ class XYZWingCandidateEliminator : CandidateEliminator {
             if (coord == pivot || coord == wing1 || coord == wing2) continue
             if (board.isConfirmed(coord)) continue
 
-            // Check if this cell sees all three cells
-            if (seesEachOther(coord, pivot) &&
+            // Check if this cell has the candidate and sees all three cells
+            if (candidate in board.candidateValues(coord) &&
+                seesEachOther(coord, pivot) &&
                 seesEachOther(coord, wing1) &&
                 seesEachOther(coord, wing2)) {
                 val changed = board.eraseCandidateValue(coord, candidate)

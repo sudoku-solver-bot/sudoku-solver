@@ -33,7 +33,6 @@ class SimpleColoringCandidateEliminatorTest {
     }
 
     @Test
-    @Disabled("TODO: Fix bugs in Simple Coloring implementation")
     fun `Simple Coloring eliminator is registered in settings`() {
         val hasSimpleColoringEliminator = Settings.eliminators.any {
             it is SimpleColoringCandidateEliminator
@@ -96,7 +95,6 @@ class SimpleColoringCandidateEliminatorTest {
     // ===== EDGE CASES =====
 
     @Test
-    @Disabled("TODO: Fix bugs in Simple Coloring implementation")
     fun `Simple Coloring finds conjugate pairs in rows`() {
         // Test that the eliminator can find conjugate pairs in rows
         val values = IntArray(81) { 0 }
@@ -193,7 +191,6 @@ class SimpleColoringCandidateEliminatorTest {
     }
 
     @Test
-    @Disabled("TODO: Fix bugs in Simple Coloring implementation")
     fun `Simple Coloring handles all candidate values`() {
         // Test that the eliminator can handle all candidate values (1-9)
         val values = IntArray(81) { 0 }
