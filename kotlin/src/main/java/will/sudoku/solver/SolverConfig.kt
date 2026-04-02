@@ -47,7 +47,8 @@ data class SolverConfig(
             XYWingCandidateEliminator(),
             XYZWingCandidateEliminator(),
             WWingCandidateEliminator(),
-            SimpleColoringCandidateEliminator()
+            SimpleColoringCandidateEliminator(),
+            UniqueRectanglesCandidateEliminator()
         )
 
         /**
@@ -144,4 +145,5 @@ object Settings {
     val xyzWingCandidateEliminator = XYZWingCandidateEliminator()
     val wWingCandidateEliminator = WWingCandidateEliminator()
     val simpleColoringCandidateEliminator = SimpleColoringCandidateEliminator()
+    val uniqueRectanglesCandidateEliminator = UniqueRectanglesCandidateEliminator()
 }
