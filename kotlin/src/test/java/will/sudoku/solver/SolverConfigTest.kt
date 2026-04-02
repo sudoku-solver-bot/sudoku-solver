@@ -15,7 +15,7 @@ class SolverConfigTest {
     fun `default config includes all eliminators`() {
         val config = SolverConfig()
 
-        assertThat(config.eliminators).hasSize(11)
+        assertThat(config.eliminators).hasSize(12)
         assertThat(config.eliminators.map { it::class.simpleName }).containsExactly(
             "SimpleCandidateEliminator",
             "GroupCandidateEliminator",
@@ -27,7 +27,8 @@ class SolverConfigTest {
             "XYZWingCandidateEliminator",
             "WWingCandidateEliminator",
             "SimpleColoringCandidateEliminator",
-            "UniqueRectanglesCandidateEliminator"
+            "UniqueRectanglesCandidateEliminator",
+            "ForcingChainsCandidateEliminator"
         )
     }
 
@@ -134,7 +135,7 @@ class SolverConfigTest {
         @Suppress("DEPRECATION")
         val eliminators = Settings.eliminators
 
-        assertThat(eliminators).hasSize(11)
+        assertThat(eliminators).hasSize(12)
     }
 
     companion object {
