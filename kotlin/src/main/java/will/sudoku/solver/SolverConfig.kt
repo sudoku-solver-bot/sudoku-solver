@@ -49,7 +49,8 @@ data class SolverConfig(
             WWingCandidateEliminator(),
             SimpleColoringCandidateEliminator(),
             UniqueRectanglesCandidateEliminator(),
-            ForcingChainsCandidateEliminator()
+            ForcingChainsCandidateEliminator(),
+            ALSXZCandidateEliminator()
         )
 
         /**
@@ -148,4 +149,5 @@ object Settings {
     val simpleColoringCandidateEliminator = SimpleColoringCandidateEliminator()
     val uniqueRectanglesCandidateEliminator = UniqueRectanglesCandidateEliminator()
     val forcingChainsCandidateEliminator = ForcingChainsCandidateEliminator()
+    val alsxzCandidateEliminator = ALSXZCandidateEliminator()
 }
