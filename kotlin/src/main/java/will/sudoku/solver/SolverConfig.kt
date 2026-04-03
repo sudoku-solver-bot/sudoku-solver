@@ -50,7 +50,8 @@ data class SolverConfig(
             SimpleColoringCandidateEliminator(),
             UniqueRectanglesCandidateEliminator(),
             ForcingChainsCandidateEliminator(),
-            ALSXZCandidateEliminator()
+            ALSXZCandidateEliminator(),
+            FrankenFishCandidateEliminator()
         )
 
         /**
@@ -150,4 +151,5 @@ object Settings {
     val uniqueRectanglesCandidateEliminator = UniqueRectanglesCandidateEliminator()
     val forcingChainsCandidateEliminator = ForcingChainsCandidateEliminator()
     val alsxzCandidateEliminator = ALSXZCandidateEliminator()
+    val frankenFishCandidateEliminator = FrankenFishCandidateEliminator()
 }
