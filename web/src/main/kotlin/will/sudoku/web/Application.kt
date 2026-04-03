@@ -14,6 +14,14 @@ import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration.Companion.minutes
 
+// Import route functions
+import will.sudoku.web.healthRoutes
+import will.sudoku.web.solveRoutes
+import will.sudoku.web.hintRoutes
+import will.sudoku.web.generateRoutes
+import will.sudoku.web.validateRoutes
+import will.sudoku.web.stepByStepRoutes
+
 fun main() {
     val port = System.getenv("PORT")?.toInt() ?: 8080
     embeddedServer(Netty, port = port, module = Application::module)
