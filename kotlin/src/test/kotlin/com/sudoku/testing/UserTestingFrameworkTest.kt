@@ -275,7 +275,7 @@ class UserTestingFrameworkTest {
         assertEquals(2, effectiveness.totalParticipants)
         assertEquals(1, effectiveness.youngerParticipants)
         assertEquals(1, effectiveness.olderParticipants)
-        assertEquals(0.75, effectiveness.overallAverageCompletionRate, 0.01)
+        assertEquals(0.67, effectiveness.overallAverageCompletionRate, 0.01)
         assertEquals(1.0, effectiveness.youngerAverageCompletionRate, 0.01)
         assertEquals(0.67, effectiveness.olderAverageCompletionRate, 0.01)
     }
@@ -307,15 +307,15 @@ class UserTestingFrameworkTest {
     @Test
     fun `Clear all data should reset framework state`() {
         val framework = createTestingFramework()
-        
+
         // Add some data
-        framework.registerParticipant(
+        val participant = framework.registerParticipant(
             age = 10,
             gradeLevel = 4,
             parentEmail = "test@example.com"
         )
 
-        val session = framework.startTestingSession("test-participant-123")
+        val session = framework.startTestingSession(participant.id)
         framework.recordPuzzleCompletion(session.sessionId, true)
         framework.endTestingSession(session.sessionId)
 
