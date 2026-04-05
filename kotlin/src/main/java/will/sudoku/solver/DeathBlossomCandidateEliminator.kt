@@ -197,17 +197,13 @@ class DeathBlossomCandidateEliminator : CandidateEliminator {
 
         return alsSets.filter { als ->
             // Must contain target value
-            als.candidates.contains(targetValue)
-
+            als.candidates.contains(targetValue) &&
+            
             // Must share at least one candidate with stem (excluding target)
-            val sharedCandidates = als.candidates.intersect(stemCandidates) - targetValue
-            sharedCandidates.isNotEmpty()
-
+            als.candidates.intersect(stemCandidates).minus(targetValue).isNotEmpty() &&
+            
             // At least one cell in ALS must be visible to stem
-            val visibleToStem = als.cells.any { alsCell ->
-                seesEachOther(stem, alsCell)
-            }
-            visibleToStem
+            als.cells.any { alsCell -> seesEachOther(stem, alsCell) }
         }
     }
 
