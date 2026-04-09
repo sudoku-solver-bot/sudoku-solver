@@ -20,6 +20,12 @@
       </button>
     </div>
 
+    <!-- Share button -->
+    <button class="btn-share" :disabled="loading" @click="$emit('share')">
+      <span class="btn-icon">🔗</span>
+      Share Puzzle
+    </button>
+
     <!-- Main action buttons -->
     <div class="main-buttons">
       <button class="btn-primary" :disabled="loading" @click="$emit('solve')">
@@ -100,7 +106,7 @@ export default {
       default: 0
     }
   },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo']
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'share']
 }
 </script>
 
@@ -150,6 +156,27 @@ export default {
 .count {
   font-size: 11px;
   opacity: 0.7;
+}
+
+.btn-share {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #1976d2;
+  border: 2px solid #90caf9;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.btn-share:not(:disabled):hover {
+  background: linear-gradient(135deg, #bbdefb, #90caf9);
+  border-color: #64b5f6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.btn-share:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
 .main-buttons {

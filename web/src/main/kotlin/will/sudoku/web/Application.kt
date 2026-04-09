@@ -66,13 +66,14 @@ fun Application.module() {
             intercept(ApplicationCallPipeline.Plugins) {
                 call.response.headers.append("X-API-Version", "1.0")
             }
-            
+
             healthRoutes()
             solveRoutes()
             hintRoutes()
             generateRoutes()
             validateRoutes()
             stepByStepRoutes()
+            shareRoutes()
         }
         
         // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
@@ -83,13 +84,14 @@ fun Application.module() {
                 call.response.headers.append("X-API-Warn", "Deprecated: Use /api/v1/ instead. This endpoint will be removed in v2")
                 call.response.headers.append("Deprecation", "true")
             }
-            
+
             healthRoutes()
             solveRoutes()
             hintRoutes()
             generateRoutes()
             validateRoutes()
             stepByStepRoutes()
+            shareRoutes()
         }
     }
 }

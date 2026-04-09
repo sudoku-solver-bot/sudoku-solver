@@ -73,6 +73,7 @@
         @hint="getHint"
         @undo="undo"
         @redo="redo"
+        @share="sharePuzzle"
       />
 
       <!-- Mobile number pad -->
@@ -110,7 +111,9 @@ import {
   saveState,
   undo,
   redo,
-  getHistory
+  getHistory,
+  generateShareUrl,
+  loadPuzzleFromUrl
 } from './api'
 
 export default {
@@ -192,6 +195,18 @@ export default {
 
       // Load initial undo/redo state
       loadHistoryState()
+
+      // Load puzzle from URL parameter if present
+      const urlPuzzle = loadPuzzleFromUrl()
+      if (urlPuzzle) {
+        setPuzzle(urlPuzzle, true)
+        lastSavedState = urlPuzzle
+        showToast(
+          'Puzzle Loaded!',
+          'A puzzle was loaded from the shared link.',
+          'success'
+        )
+      }
     })
 
     onUnmounted(() => {
@@ -479,6 +494,54 @@ export default {
       hintModalVisible.value = false
     }
 
+    // Share puzzle
+    const sharePuzzle = async () => {
+      try {
+        const shareUrl = generateShareUrl(puzzle.value)
+
+        // Copy to clipboard
+        await navigator.clipboard.writeText(shareUrl)
+
+        showToast(
+          'Link Copied!',
+          'Share this URL with friends to let them try this puzzle.',
+          'success'
+        )
+      } catch (e) {
+        // Fallback for older browsers or if clipboard API fails
+        try {
+          const shareUrl = generateShareUrl(puzzle.value)
+
+          // Create temporary textarea to copy
+          const textarea = document.createElement('textarea')
+          textarea.value = shareUrl
+          textarea.style.position = 'fixed'
+          textarea.style.opacity = '0'
+          document.body.appendChild(textarea)
+          textarea.select()
+
+          const successful = document.execCommand('copy')
+          document.body.removeChild(textarea)
+
+          if (successful) {
+            showToast(
+              'Link Copied!',
+              'Share this URL with friends to let them try this puzzle.',
+              'success'
+            )
+          } else {
+            throw new Error('execCommand failed')
+          }
+        } catch (e2) {
+          showToast(
+            'Copy Failed',
+            'Could not copy link to clipboard. Please try again.',
+            'error'
+          )
+        }
+      }
+    }
+
     // Clear the grid
     const clearGrid = () => {
       puzzle.value = '.'.repeat(81)
@@ -529,6 +592,7 @@ export default {
       undo,
       redo,
       clearGrid,
+      sharePuzzle,
       hideToast,
       closeHintModal
     }
