@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import will.sudoku.solver.*
@@ -203,11 +204,15 @@ fun Route.userTestingRoutes() {
             val metrics = learningMetrics[participantId] ?: emptyList()
             
             call.respond(mapOf(
-                "participantId" to participantId,
-                "metrics" to metrics,
-                "totalPuzzles" to metrics.sumOf { it.puzzlesCompleted },
-                "currentLevel" to metrics.maxOfOrNull { it.currentLevel } ?: 1,
-                "totalXP" to metrics.sumOf { it.xpGained }
+                "participantId" to participantId as Any,
+                "metrics" to metrics.map { m -> mapOf(
+                    "puzzlesCompleted" to m.puzzlesCompleted,
+                    "currentLevel" to m.currentLevel,
+                    "xpGained" to m.xpGained
+                ) } as Any,
+                "totalPuzzles" to metrics.sumOf { it.puzzlesCompleted } as Any,
+                "currentLevel" to (metrics.maxOfOrNull { it.currentLevel } ?: 1) as Any,
+                "totalXP" to metrics.sumOf { it.xpGained } as Any
             ))
         } catch (e: Exception) {
             call.respond(status = io.ktor.http.HttpStatusCode.BadRequest, mapOf(
@@ -279,7 +284,7 @@ data class CreateSessionRequest(
 data class RecordActionRequest(
     val sessionId: String,
     val actionType: ActionType,
-    val details: Map<String, Any> = emptyMap()
+    val details: Map<String, @Contextual Any> = emptyMap()
 )
 
 @Serializable
@@ -287,7 +292,7 @@ data class SubmitSurveyRequest(
     val surveyId: String,
     val participantId: String,
     val sessionId: String,
-    val responses: Map<String, SurveyResponse>,
+    val responses: Map<String, @Contextual SurveyResponse>,
     val overallRating: Int? = null,
     val comments: String? = null
 )
