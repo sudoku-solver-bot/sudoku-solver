@@ -107,3 +107,10 @@ export async function fetchTutorialProgress() {
   const response = await fetch(`${API_BASE}/v1/tutorials/progress`)
   return response.json()
 }
+
+// Daily Challenge API
+export async function fetchDailyChallenge(date = null) {
+  const url = date ? `${API_BASE}/v1/daily/${date}` : `${API_BASE}/v1/daily`
+  const response = await fetch(url)
+  return response.json()
+}

@@ -5,6 +5,9 @@
       <div class="header">
         <h1>🧩 Sudoku Solver</h1>
         <div class="header-actions">
+          <button class="daily-btn" @click="dailyMode = !dailyMode" :title="dailyMode ? 'Exit Daily' : 'Daily Challenge'">
+            📅
+          </button>
           <button class="learn-btn" @click="toggleTutorialMode" :title="tutorialMode ? 'Exit Tutorial' : 'Learn Techniques'">
             📚
           </button>
@@ -13,6 +16,13 @@
           </button>
         </div>
       </div>
+
+      <!-- Daily Challenge -->
+      <DailyChallenge
+        v-if="dailyMode && !tutorialMode && !tutorialSelectorOpen"
+        :is-dark="isDark"
+        @exit="dailyMode = false"
+      />
 
       <!-- Tutorial Selector -->
       <TutorialSelector
@@ -34,7 +44,7 @@
       />
 
       <!-- Normal mode (hidden in tutorial) -->
-      <template v-if="!tutorialMode && !tutorialSelectorOpen">
+      <template v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode">
 
       <!-- Toast notification -->
       <ToastNotification
@@ -137,6 +147,7 @@ import MobileNumberPad from './components/MobileNumberPad.vue'
 import HintModal from './components/HintModal.vue'
 import TutorialMode from './components/TutorialMode.vue'
 import TutorialSelector from './components/TutorialSelector.vue'
+import DailyChallenge from './components/DailyChallenge.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -161,7 +172,8 @@ export default {
     MobileNumberPad,
     HintModal,
     TutorialMode,
-    TutorialSelector
+    TutorialSelector,
+    DailyChallenge
   },
   setup() {
     // Puzzle state
@@ -222,6 +234,7 @@ export default {
     const tutorialList = ref([])
     const currentTutorialLesson = ref(null)
     const tutorialSelectorOpen = ref(false)
+    const dailyMode = ref(false)
     const completedTutorials = ref(new Set())
 
     // Load completed tutorials from localStorage
@@ -644,6 +657,7 @@ export default {
       tutorialList,
       currentTutorialLesson,
       tutorialSelectorOpen,
+      dailyMode,
       completedTutorials,
       toggleDarkMode,
       toggleTutorialMode,
@@ -749,6 +763,29 @@ body {
 }
 
 .app.dark .learn-btn {
+  background: #333;
+}
+
+.daily-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: #fce4ec;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.daily-btn:hover {
+  background: #f8bbd0;
+  transform: scale(1.1);
+}
+
+.app.dark .daily-btn {
   background: #333;
 }
 
