@@ -48,8 +48,10 @@ object PuzzleGenerator {
         // Fill diagonal 3x3 regions first (they don't affect each other)
         fillDiagonalRegions(board, random)
 
-        // Solve the rest
-        val solver = Solver()
+        // Solve the rest — use basic config for reliable generation.
+        // Advanced eliminators aren't needed for filling a board;
+        // they only matter during puzzle analysis/rating.
+        val solver = Solver(SolverConfig.basic())
         val solved = solver.solve(board)
 
         return solved ?: throw IllegalStateException("Failed to generate solved board")

@@ -109,10 +109,12 @@ object PuzzleValidator {
             )
         }
 
-        // Check for solution uniqueness if requested
+        // Check for solution uniqueness if requested.
+        // Use basic config for solution counting — advanced eliminators add
+        // significant overhead without improving solution-counting correctness.
         if (checkUniqueness) {
-            val solutionCount = countSolutions(board, maxCount = 2, config = SolverConfig())
-            
+            val solutionCount = countSolutions(board, maxCount = 2, config = SolverConfig.basic())
+
             return ValidationResult(
                 isValid = true,
                 hasUniqueSolution = solutionCount == 1,
@@ -147,7 +149,7 @@ object PuzzleValidator {
      */
     fun hasUniqueSolution(board: Board): Boolean {
         if (!isValid(board)) return false
-        return countSolutions(board, maxCount = 2, config = SolverConfig()) == 1
+        return countSolutions(board, maxCount = 2, config = SolverConfig.basic()) == 1
     }
 
     /**

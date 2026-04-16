@@ -44,7 +44,16 @@ data class SolverConfig(
             ExclusionCandidateEliminator(9),
             XWingCandidateEliminator(),
             SwordfishCandidateEliminator(),
-            XYWingCandidateEliminator()
+            XYWingCandidateEliminator(),
+            XYZWingCandidateEliminator(),
+            WWingCandidateEliminator(),
+            SimpleColoringCandidateEliminator(),
+            UniqueRectanglesCandidateEliminator(),
+            ForcingChainsCandidateEliminator(),
+            ALSXZCandidateEliminator(),
+            FrankenFishCandidateEliminator(),
+            MutantFishCandidateEliminator(),
+            DeathBlossomCandidateEliminator()
         )
 
         /**
@@ -78,6 +87,9 @@ data class SolverConfig(
                 eliminators.add(XWingCandidateEliminator())
                 eliminators.add(SwordfishCandidateEliminator())
                 eliminators.add(XYWingCandidateEliminator())
+                eliminators.add(XYZWingCandidateEliminator())
+                eliminators.add(WWingCandidateEliminator())
+                eliminators.add(SimpleColoringCandidateEliminator())
             }
 
             return SolverConfig(eliminators = eliminators)
@@ -135,4 +147,13 @@ object Settings {
     val xWingCandidateEliminator = XWingCandidateEliminator()
     val swordfishCandidateEliminator = SwordfishCandidateEliminator()
     val xyWingCandidateEliminator = XYWingCandidateEliminator()
+    val xyzWingCandidateEliminator = XYZWingCandidateEliminator()
+    val wWingCandidateEliminator = WWingCandidateEliminator()
+    val simpleColoringCandidateEliminator = SimpleColoringCandidateEliminator()
+    val uniqueRectanglesCandidateEliminator = UniqueRectanglesCandidateEliminator()
+    val forcingChainsCandidateEliminator = ForcingChainsCandidateEliminator()
+    val alsxzCandidateEliminator = ALSXZCandidateEliminator()
+    val frankenFishCandidateEliminator = FrankenFishCandidateEliminator()
+    val mutantFishCandidateEliminator = MutantFishCandidateEliminator()
+    val deathBlossomCandidateEliminator = DeathBlossomCandidateEliminator()
 }

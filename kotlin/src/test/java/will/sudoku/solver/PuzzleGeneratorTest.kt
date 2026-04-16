@@ -10,13 +10,17 @@ import org.junit.jupiter.api.Test
  */
 class PuzzleGeneratorTest {
 
+    /** Solver for verifying generated puzzles — uses basic eliminators
+     *  to avoid OOM on resource-constrained CI. A puzzle solvable by
+     *  basic techniques is still a valid puzzle. */
+    private val verifier = Solver(SolverConfig.basic())
+
     @Test
     fun `generates solvable puzzle`() {
         val puzzle = PuzzleGenerator.generate()
 
         // Puzzle should be solvable
-        val solver = Solver()
-        val solution = solver.solve(puzzle)
+        val solution = verifier.solve(puzzle)
 
         assertThat(solution).isNotNull
         assertThat(solution!!.isSolved()).isTrue()
@@ -84,8 +88,7 @@ class PuzzleGeneratorTest {
         val puzzle = PuzzleGenerator.generateMinimal(seed = 12345)
 
         // Minimal puzzle should be solvable
-        val solver = Solver()
-        val solution = solver.solve(puzzle)
+        val solution = verifier.solve(puzzle)
 
         assertThat(solution).isNotNull
         assertThat(solution!!.isSolved()).isTrue()
