@@ -14,6 +14,16 @@
         </div>
       </div>
 
+      <!-- Tutorial Selector -->
+      <TutorialSelector
+        v-if="tutorialSelectorOpen && !tutorialMode"
+        :tutorials="tutorialList"
+        :completed-ids="completedTutorials"
+        :is-dark="isDark"
+        @exit="tutorialSelectorOpen = false"
+        @select="onTutorialSelected"
+      />
+
       <!-- Tutorial Mode -->
       <TutorialMode
         v-if="tutorialMode && currentTutorialLesson"
@@ -24,7 +34,7 @@
       />
 
       <!-- Normal mode (hidden in tutorial) -->
-      <template v-if="!tutorialMode">
+      <template v-if="!tutorialMode && !tutorialSelectorOpen">
 
       <!-- Toast notification -->
       <ToastNotification
@@ -126,6 +136,7 @@ import ToastNotification from './components/ToastNotification.vue'
 import MobileNumberPad from './components/MobileNumberPad.vue'
 import HintModal from './components/HintModal.vue'
 import TutorialMode from './components/TutorialMode.vue'
+import TutorialSelector from './components/TutorialSelector.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -149,7 +160,8 @@ export default {
     ToastNotification,
     MobileNumberPad,
     HintModal,
-    TutorialMode
+    TutorialMode,
+    TutorialSelector
   },
   setup() {
     // Puzzle state
@@ -209,6 +221,14 @@ export default {
     const tutorialMode = ref(false)
     const tutorialList = ref([])
     const currentTutorialLesson = ref(null)
+    const tutorialSelectorOpen = ref(false)
+    const completedTutorials = ref(new Set())
+
+    // Load completed tutorials from localStorage
+    try {
+      const saved = localStorage.getItem('sudokuCompletedTutorials')
+      if (saved) completedTutorials.value = new Set(JSON.parse(saved))
+    } catch (e) {}
 
     // Initialize dark mode from localStorage or system preference
     onMounted(() => {
@@ -559,32 +579,39 @@ export default {
       try {
         const tutorials = await fetchTutorials()
         tutorialList.value = tutorials
-        // Load the first uncompleted tutorial
-        const next = tutorials.find(t => !t.completed)
-        if (next) {
-          const lesson = await fetchTutorial(next.id)
-          currentTutorialLesson.value = lesson
-        } else {
-          // All completed, show first
-          const lesson = await fetchTutorial(tutorials[0].id)
-          currentTutorialLesson.value = lesson
-        }
-        tutorialMode.value = true
+        // Show the selector instead of auto-loading
+        tutorialSelectorOpen.value = true
       } catch (e) {
         console.error('Failed to load tutorials:', e)
+      }
+    }
+
+    const onTutorialSelected = async (lesson) => {
+      try {
+        const full = await fetchTutorial(lesson.id)
+        currentTutorialLesson.value = full
+        tutorialSelectorOpen.value = false
+        tutorialMode.value = true
+      } catch (e) {
+        console.error('Failed to load tutorial:', e)
       }
     }
 
     const exitTutorialMode = () => {
       tutorialMode.value = false
       currentTutorialLesson.value = null
+      // Go back to selector
+      if (tutorialList.value.length > 0) {
+        tutorialSelectorOpen.value = true
+      }
     }
 
     const onTutorialCompleted = (lessonId) => {
-      // Could navigate to next tutorial here
-      setTimeout(() => {
-        exitTutorialMode()
-      }, 500)
+      completedTutorials.value.add(lessonId)
+      localStorage.setItem(
+        'sudokuCompletedTutorials',
+        JSON.stringify([...completedTutorials.value])
+      )
     }
 
     return {
@@ -616,8 +643,11 @@ export default {
       tutorialMode,
       tutorialList,
       currentTutorialLesson,
+      tutorialSelectorOpen,
+      completedTutorials,
       toggleDarkMode,
       toggleTutorialMode,
+      onTutorialSelected,
       exitTutorialMode,
       onTutorialCompleted,
       onCellUpdate,

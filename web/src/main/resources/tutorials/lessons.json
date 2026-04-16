@@ -32,7 +32,7 @@
     "examplePuzzle": ".........9.46.7....768.41..3.97.1.8...8...3...5.3.87.2..75.261....4.32.8.........",
     "steps": [
       { "order": 1, "type": "explain", "cells": [], "text": "Great job on your White Belt! 🌟 A 'Hidden Single' is when a number can only go in ONE cell in a row/column/box, even though that cell has other candidates." },
-      { "order": 2, "type": "highlight", "cells": [0,1,2,3,4,5,6,7,8], "highlightColor": "blue", "text": "Look at row 1 (top row). It's completely empty! All 9 numbers need to be placed. Let's focus on where specific numbers can go." },
+      { "order": 2, "type": "highlight", "cells": [0,1,2,3,4,5,6,7,8], "highlightColor": "blue", "text": "Look at row 1 (top row). It's completely empty! All 9 numbers need to be placed." },
       { "order": 3, "type": "highlight", "cells": [0,1,2], "highlightColor": "yellow", "text": "Check the first 3 cells — they're in box 1 (top-left). Column by column, which columns already have a 1 placed somewhere?" },
       { "order": 4, "type": "explain", "cells": [], "text": "Column 3 has a 1 (row 4). Column 5 has a 1. So in row 1, 1 can't go in those columns. Keep eliminating!" },
       { "order": 5, "type": "highlight", "cells": [0,1,2,6], "highlightColor": "green", "text": "After checking ALL columns and boxes, there's only ONE cell where 1 can go. The number is 'hidden' among many candidates! 🎯" },
@@ -73,8 +73,8 @@
     "steps": [
       { "order": 1, "type": "explain", "cells": [], "text": "Staying Orange! 🧡 Hidden Pairs are the opposite of Naked Pairs. We find two numbers that share the same two cells." },
       { "order": 2, "type": "explain", "cells": [], "text": "Check: 'Where can 6 go in this row?' And 'Where can 7 go?' If BOTH numbers can ONLY go in the same two cells — Hidden Pair!" },
-      { "order": 3, "type": "highlight", "cells": [27,28,29,30,31,32,33,34,35], "highlightColor": "blue", "text": "Look at row 4. It has many candidates. Let's check where numbers 6 and 7 can go." },
-      { "order": 4, "type": "highlight", "cells": [30,32], "highlightColor": "yellow", "text": "Numbers 6 AND 7 can only appear in these two highlighted cells. No other cell in the row can hold 6 or 7!" },
+      { "order": 3, "type": "highlight", "cells": [27,28,29,30,31,32,33,34,35], "highlightColor": "blue", "text": "Look at row 4. Many candidates. Let's check where numbers 6 and 7 can go." },
+      { "order": 4, "type": "highlight", "cells": [30,32], "highlightColor": "yellow", "text": "Numbers 6 AND 7 can only appear in these two cells. No other cell in the row can hold 6 or 7!" },
       { "order": 5, "type": "explain", "cells": [], "text": "Since 6 and 7 must occupy these two cells, remove ALL other candidates from them. The hidden pair is revealed!" },
       { "order": 6, "type": "reveal", "cells": [30,32], "highlightColor": "green", "text": "🎉 Hidden Pairs clear extra candidates, often revealing singles! Scan for two numbers sharing only two cells.", "eliminatedValue": 6 }
     ]
@@ -96,7 +96,7 @@
       { "order": 3, "type": "highlight", "cells": [18,19,20,21], "highlightColor": "red", "text": "Since 3 MUST be in one of the yellow cells, eliminate 3 from these other cells in the same row!" },
       { "order": 4, "type": "explain", "cells": [], "text": "Same logic works for columns: if all candidates in a box line up on one column, eliminate from the rest of the column." },
       { "order": 5, "type": "explain", "cells": [], "text": "Pointing Triples work the same way — just three cells instead of two, all in the same box and aligned on one row or column." },
-      { "order": 6, "type": "reveal", "cells": [25,26], "highlightColor": "green", "text": "🎉 Pointing Pairs bridge boxes and rows! Find a number constrained to one line in a box, then eliminate it from the rest of that line.", "eliminatedValue": 3 }
+      { "order": 6, "type": "reveal", "cells": [25,26], "highlightColor": "green", "text": "🎉 Pointing Pairs bridge boxes and rows! Find a number constrained to one line in a box, then eliminate from the rest of that line.", "eliminatedValue": 3 }
     ]
   },
   {
@@ -168,27 +168,47 @@
     "beltEmoji": "🟣",
     "beltName": "Purple Belt",
     "description": "When a number appears in exactly two cells in two rows, and those cells share the same two columns.",
-    "concept": "An X-Wing forms a rectangle: a number appears in exactly 2 cells in each of 2 rows, and those cells are in the same 2 columns. Eliminate that number from the rest of those columns (and vice versa for columns→rows).",
+    "concept": "An X-Wing forms a rectangle: a number appears in exactly 2 cells in each of 2 rows, and those cells are in the same 2 columns. Eliminate that number from the rest of those columns!",
     "examplePuzzle": "1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5",
     "steps": [
-      { "order": 1, "type": "explain", "cells": [], "text": "Purple Belt! 🟣 X-Wing is your first advanced fish pattern. It looks at a single number across the entire board." },
+      { "order": 1, "type": "explain", "cells": [], "text": "Purple Belt! 🟣 X-Wing is your first 'fish' pattern — looking at a single number across the ENTIRE board." },
       { "order": 2, "type": "explain", "cells": [], "text": "An X-Wing forms when a candidate appears in exactly 2 cells in each of 2 rows, and those cells share the same 2 columns — forming a rectangle." },
-      { "order": 3, "type": "highlight", "cells": [10,16], "highlightColor": "yellow", "text": "Look at these two cells — they're in the same row. The number 7 (check pencil marks) can only go in these positions in this row." },
-      { "order": 4, "type": "highlight", "cells": [46,52], "highlightColor": "yellow", "text": "And in another row, 7 also appears in exactly two cells — in the SAME two columns! We have a rectangle of 7s." },
-      { "order": 5, "type": "highlight", "cells": [10,16,46,52], "highlightColor": "green", "text": "The four corners form an X-Wing! Since 7 must go in one of these corners, eliminate 7 from other cells in those columns." },
-      { "order": 6, "type": "reveal", "cells": [10,16,46,52], "highlightColor": "green", "text": "🎉 X-Wing is the gateway to fish patterns (Swordfish = 3 rows, Jellyfish = 4). Look for a number forming a rectangle across rows/columns!", "eliminatedValue": 7 }
+      { "order": 3, "type": "highlight", "cells": [10,16], "highlightColor": "yellow", "text": "In one row, the number 7 (check pencil marks) can only go in these two cells. They're in columns 2 and 8." },
+      { "order": 4, "type": "highlight", "cells": [46,52], "highlightColor": "yellow", "text": "In another row, 7 also appears in exactly two cells — in the SAME columns 2 and 8! We have a rectangle of 7s." },
+      { "order": 5, "type": "highlight", "cells": [10,16,46,52], "highlightColor": "green", "text": "The four corners form an X-Wing! Since 7 must go in diagonally opposite corners, eliminate 7 from other cells in those columns." },
+      { "order": 6, "type": "reveal", "cells": [10,16,46,52], "highlightColor": "green", "text": "🎉 X-Wing is the gateway to fish patterns! The same logic works with columns → rows. Look for rectangles of a single candidate.", "eliminatedValue": 7 }
+    ]
+  },
+  {
+    "id": "swordfish",
+    "order": 10,
+    "title": "Swordfish",
+    "belt": "purple",
+    "beltColor": "#9C27B0",
+    "beltEmoji": "🟣",
+    "beltName": "Purple Belt",
+    "description": "Like X-Wing but with three rows and three columns — the bigger fish!",
+    "concept": "Swordfish extends X-Wing to 3 rows/columns. If a candidate appears in exactly 2-3 cells in each of 3 rows, and all candidates lie in just 3 columns, eliminate from the rest of those columns.",
+    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "steps": [
+      { "order": 1, "type": "explain", "cells": [], "text": "Still Purple! 🟣 Swordfish is X-Wing's bigger sibling. Instead of 2 rows × 2 columns, it uses 3 rows × 3 columns." },
+      { "order": 2, "type": "explain", "cells": [], "text": "If a candidate appears in 2-3 cells in each of 3 rows, and ALL those candidates fall within just 3 columns — that's a Swordfish!" },
+      { "order": 3, "type": "highlight", "cells": [0,1,2,3,4,5,6,7,8], "highlightColor": "blue", "text": "This is the famous 'World's Hardest Sudoku' by Arto Inkala. It needs advanced techniques like Swordfish to solve." },
+      { "order": 4, "type": "explain", "cells": [], "text": "Look for a number that's constrained to just 3 columns across 3 different rows. The candidates form a fish-like shape." },
+      { "order": 5, "type": "explain", "cells": [], "text": "Eliminate that candidate from the rest of those 3 columns. The pattern is harder to spot than X-Wing but follows the same logic!" },
+      { "order": 6, "type": "reveal", "cells": [0,6,12], "highlightColor": "green", "text": "🎉 Swordfish, X-Wing, and Jellyfish (4×4) are all fish patterns. The bigger the fish, the harder to spot — but the elimination power is the same!", "eliminatedValue": 1 }
     ]
   },
   {
     "id": "xy-wing",
-    "order": 10,
+    "order": 11,
     "title": "XY-Wing (Y-Wing)",
     "belt": "brown",
     "beltColor": "#795548",
     "beltEmoji": "🟤",
     "beltName": "Brown Belt",
-    "description": "Three cells with candidates {AB}, {AC}, {BC} — eliminate C from cells that see both {AC} and {BC}.",
-    "concept": "An XY-Wing uses three cells: a 'pivot' with {A,B}, and two 'pincers' with {A,C} and {B,C}. Whatever A or B the pivot is, C must appear in one of the pincers. So eliminate C from any cell that sees BOTH pincers.",
+    "description": "Three cells with candidates {AB}, {AC}, {BC} — eliminate C from cells that see both pincers.",
+    "concept": "An XY-Wing uses three cells: a 'pivot' with {A,B}, and two 'pincers' with {A,C} and {B,C}. Whatever A or B the pivot is, C must appear in one of the pincers. Eliminate C from any cell that sees BOTH pincers.",
     "examplePuzzle": ".345.....8.2.6.4..6....8.....39....4.5.....9.9....58.....3....8..1.4.6.5.....712.",
     "steps": [
       { "order": 1, "type": "explain", "cells": [], "text": "Brown Belt! 🟤 XY-Wing (also called Y-Wing) uses three cells with overlapping candidates to eliminate a number." },
@@ -196,47 +216,87 @@
       { "order": 3, "type": "highlight", "cells": [40], "highlightColor": "blue", "text": "This highlighted cell is our pivot. It has exactly two candidates — say {A, B}." },
       { "order": 4, "type": "highlight", "cells": [22,58], "highlightColor": "yellow", "text": "These two cells are our pincers — one shares candidate A with the pivot, the other shares B. Both also contain a common candidate C." },
       { "order": 5, "type": "explain", "cells": [], "text": "No matter whether the pivot is A or B, one pincer will always be C. So any cell that sees BOTH pincers cannot be C!" },
-      { "order": 6, "type": "reveal", "cells": [22,58], "highlightColor": "green", "text": "🎉 XY-Wing is powerful for eliminating candidates! Find the pivot with 2 candidates, locate the pincers, then eliminate from cells seeing both pincers.", "eliminatedValue": 1 }
+      { "order": 6, "type": "reveal", "cells": [22,58], "highlightColor": "green", "text": "🎉 XY-Wing is powerful! Find the pivot with 2 candidates, locate the pincers, then eliminate from cells seeing both pincers.", "eliminatedValue": 1 }
+    ]
+  },
+  {
+    "id": "xyz-wing",
+    "order": 12,
+    "title": "XYZ-Wing",
+    "belt": "brown",
+    "beltColor": "#795548",
+    "beltEmoji": "🟤",
+    "beltName": "Brown Belt",
+    "description": "Like XY-Wing but the pivot has three candidates — even more powerful!",
+    "concept": "An XYZ-Wing has a pivot with {A,B,C} and two pincers: one with {A,C} and one with {B,C}. The shared candidate C can be eliminated from any cell that sees all three cells.",
+    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "steps": [
+      { "order": 1, "type": "explain", "cells": [], "text": "Still Brown! 🟤 XYZ-Wing is XY-Wing's bigger cousin. The pivot now has THREE candidates instead of two." },
+      { "order": 2, "type": "explain", "cells": [], "text": "The pivot has {A,B,C}. One pincer has {A,C}, the other {B,C}. Since the pivot must contain C in some form, C can be eliminated from cells that see ALL three." },
+      { "order": 3, "type": "explain", "cells": [], "text": "The key difference from XY-Wing: the elimination target must see ALL THREE cells (pivot + both pincers), not just the pincers." },
+      { "order": 4, "type": "explain", "cells": [], "text": "Look for a cell with 3 candidates where two of its peers each share exactly 2 of those 3 candidates." },
+      { "order": 5, "type": "explain", "cells": [], "text": "This is one of the harder patterns to spot, but it's extremely satisfying when you find one!" },
+      { "order": 6, "type": "reveal", "cells": [0,6,12], "highlightColor": "green", "text": "🎉 XYZ-Wing extends XY-Wing logic. Master both and you have a powerful toolkit for eliminating candidates in tough puzzles!", "eliminatedValue": 1 }
     ]
   },
   {
     "id": "unique-rectangle",
-    "order": 11,
+    "order": 13,
     "title": "Unique Rectangle",
     "belt": "black",
     "beltColor": "#333333",
     "beltEmoji": "⬛",
     "beltName": "Black Belt",
     "description": "Avoid deadly patterns — if four cells form a rectangle with the same pair, one must be different.",
-    "concept": "Valid Sudoku puzzles have exactly one solution. If four cells form a rectangle (2 rows × 2 cols, same 2 boxes) and all contain the same two candidates, that creates multiple solutions. So one cell must have an extra candidate that breaks the pattern!",
+    "concept": "Valid Sudoku puzzles have exactly one solution. If four cells form a rectangle (2 rows × 2 cols, same 2 boxes) and all contain the same two candidates, that creates multiple solutions. One cell must have an extra candidate!",
     "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
     "steps": [
       { "order": 1, "type": "explain", "cells": [], "text": "Black Belt! ⬛ Unique Rectangles use a powerful meta-rule: every valid Sudoku has exactly ONE solution." },
-      { "order": 2, "type": "explain", "cells": [], "text": "If four cells form a rectangle (2 rows, 2 columns, 2 boxes) and all contain the same pair {X,Y}, then X and Y could swap — giving TWO solutions! This is forbidden." },
+      { "order": 2, "type": "explain", "cells": [], "text": "If four cells form a rectangle (2 rows, 2 columns, 2 boxes) and all contain the same pair {X,Y}, then X and Y could swap — TWO solutions! This is forbidden." },
       { "order": 3, "type": "highlight", "cells": [1,4,10,13], "highlightColor": "yellow", "text": "Look for four cells forming a rectangle. If three corners have the same two candidates and the fourth has those plus extras..." },
-      { "order": 4, "type": "explain", "cells": [], "text": "The extra candidates in the fourth cell are there to break the deadly pattern! So we know that cell CANNOT be just {X,Y} — one of the extra candidates must be the answer." },
+      { "order": 4, "type": "explain", "cells": [], "text": "The extra candidates in the fourth cell break the deadly pattern! So that cell CANNOT be just {X,Y} — one of the extra candidates must be the answer." },
       { "order": 5, "type": "highlight", "cells": [1,4,10,13], "highlightColor": "red", "text": "We can eliminate {X,Y} from the fourth corner cell! Its extra candidates are the only valid options." },
-      { "order": 6, "type": "reveal", "cells": [1,4,10,13], "highlightColor": "green", "text": "🎉 Unique Rectangles use Sudoku's one-solution rule to eliminate candidates. Look for rectangular patterns with matching pairs across two rows and columns!", "eliminatedValue": 1 }
+      { "order": 6, "type": "reveal", "cells": [1,4,10,13], "highlightColor": "green", "text": "🎉 Unique Rectangles use Sudoku's one-solution rule to eliminate candidates. Look for rectangular patterns with matching pairs!", "eliminatedValue": 1 }
     ]
   },
   {
     "id": "simple-coloring",
-    "order": 12,
+    "order": 14,
     "title": "Simple Coloring",
     "belt": "black",
     "beltColor": "#333333",
     "beltEmoji": "⬛",
     "beltName": "Black Belt",
     "description": "Color conjugate pairs to find contradictions and eliminate candidates.",
-    "concept": "When a candidate appears in exactly two cells in a group (a conjugate pair), we can 'color' them alternately. Following the chain, if a color creates a contradiction (same color appears twice in a group), all cells of that color can be eliminated.",
+    "concept": "When a candidate appears in exactly two cells in a group (a conjugate pair), we can 'color' them alternately. If a color creates a contradiction (same color appears twice in a group), eliminate all cells of that color.",
     "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
     "steps": [
       { "order": 1, "type": "explain", "cells": [], "text": "Black Belt coloring! ⬛ When a number appears in only 2 cells in a group, those cells form a 'conjugate pair' — one is the answer, the other isn't." },
-      { "order": 2, "type": "explain", "cells": [], "text": "Color one cell blue (ON) and the other red (OFF). Follow the chain — each cell that shares a group with a colored cell and also has that candidate gets the opposite color." },
+      { "order": 2, "type": "explain", "cells": [], "text": "Color one cell blue (ON) and the other red (OFF). Follow the chain — each conjugate cell gets the opposite color." },
       { "order": 3, "type": "highlight", "cells": [0], "highlightColor": "blue", "text": "Start with this cell colored blue (ON) for a specific candidate number." },
       { "order": 4, "type": "highlight", "cells": [6], "highlightColor": "yellow", "text": "Follow the chain — this cell gets the opposite color (red/OFF). Keep following through more conjugate pairs." },
       { "order": 5, "type": "explain", "cells": [], "text": "If two cells of the same color appear in the same group, that's a contradiction! All cells with that color can be eliminated." },
-      { "order": 6, "type": "reveal", "cells": [0,6], "highlightColor": "green", "text": "🎉 Coloring chains are powerful for hard puzzles. Color conjugate pairs alternately, then find contradictions. Eliminate the impossible color!", "eliminatedValue": 1 }
+      { "order": 6, "type": "reveal", "cells": [0,6], "highlightColor": "green", "text": "🎉 Coloring chains are powerful for hard puzzles. Color conjugate pairs alternately, find contradictions, and eliminate the impossible color!", "eliminatedValue": 1 }
+    ]
+  },
+  {
+    "id": "w-wing",
+    "order": 15,
+    "title": "W-Wing",
+    "belt": "black",
+    "beltColor": "#333333",
+    "beltEmoji": "⬛",
+    "beltName": "Black Belt",
+    "description": "Two cells with the same pair linked by a conjugate pair in a third group.",
+    "concept": "A W-Wing finds two cells with the same two candidates {X,Y}. If they're connected by a conjugate pair of X (or Y) in a shared row/column/box, then Y (or X) can be eliminated from cells that see both endpoints.",
+    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "steps": [
+      { "order": 1, "type": "explain", "cells": [], "text": "Last Black Belt technique! ⬛ W-Wing is a chain pattern that connects two cells through a third group." },
+      { "order": 2, "type": "explain", "cells": [], "text": "Find two cells with the same pair {X,Y}. Check if they're connected by a conjugate pair of X in some row, column, or box." },
+      { "order": 3, "type": "explain", "cells": [], "text": "If the conjugate pair guarantees that X appears in one of the two connecting positions, then Y must appear in the other." },
+      { "order": 4, "type": "explain", "cells": [], "text": "This means Y can be eliminated from any cell that sees BOTH of the original {X,Y} cells." },
+      { "order": 5, "type": "explain", "cells": [], "text": "W-Wings are like a simplified forcing chain — they prove a number must be in one of two places without following a long chain." },
+      { "order": 6, "type": "reveal", "cells": [0,8], "highlightColor": "green", "text": "🎉 W-Wing completes your Black Belt toolkit! Combined with Coloring and Unique Rectangles, you can tackle the hardest puzzles ever created!", "eliminatedValue": 1 }
     ]
   }
 ]
