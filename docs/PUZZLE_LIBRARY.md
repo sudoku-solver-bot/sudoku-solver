@@ -47,3 +47,10 @@ One of the first puzzles rated "most difficult" by multiple solvers
 - Candidate counts shown after simple elimination only
 - For tutorials, prefer puzzles with many visible candidates
 - SudokuWiki puzzles are designed to showcase specific techniques
+
+## World's Hardest Sudoku (Inkala 2012)
+Used for: Swordfish, Unique Rectangle, Simple Coloring, W-Wing, XYZ-Wing tutorials
+Puzzle: 8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..
+Givens: 21
+Candidates: 60
+Pairs: 1, Triples: 11
