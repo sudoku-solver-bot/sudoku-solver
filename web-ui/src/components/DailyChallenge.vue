@@ -66,7 +66,10 @@
           </div>
         </div>
         <p class="completion-msg">See you tomorrow! 🌟</p>
-        <button class="done-btn" @click="$emit('exit')">🏠 Home</button>
+        <div class="completion-actions">
+          <button class="share-btn" @click="shareResult">📤 Share</button>
+          <button class="done-btn" @click="$emit('exit')">🏠 Home</button>
+        </div>
       </div>
     </div>
   </div>
@@ -210,11 +213,26 @@ export default {
       stopTimer()
     })
 
+    const shareResult = () => {
+      const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      const timeStr = formatTime(elapsedTime.value)
+      const belt = challenge.value.beltEmoji
+      const text = `🧩 Sudoku Dojo ${date}\n${belt} ${challenge.value.difficulty}\n⏱️ ${timeStr}\n💡 ${hintsUsed.value} hints\n🔥 ${streak.value} day streak\n\nPlay at sudoku-solver-r5y8.onrender.com`
+      
+      if (navigator.share) {
+        navigator.share({ title: 'Sudoku Dojo', text })
+      } else {
+        navigator.clipboard.writeText(text).then(() => {
+          alert('Copied to clipboard!')
+        })
+      }
+    }
+
     return {
       challenge, puzzle, givenCells, solvedCells, candidates,
       selectedCell, elapsedTime, hintsUsed, completed, streak,
       formattedDate, formatTime,
-      onCellUpdate, onCellSelect, inputNumber, eraseCell
+      onCellUpdate, onCellSelect, inputNumber, eraseCell, shareResult
     }
   }
 }
@@ -431,6 +449,29 @@ export default {
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.completion-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.share-btn {
+  padding: 12px 24px;
+  border: 2px solid #4285f4;
+  border-radius: 12px;
+  background: white;
+  color: #4285f4;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.daily-challenge.dark .share-btn {
+  background: #2d2d2d;
+  color: #81c995;
+  border-color: #81c995;
 }
 
 @media (max-width: 400px) {
