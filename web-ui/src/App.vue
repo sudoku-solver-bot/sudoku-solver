@@ -53,6 +53,8 @@
         :solved-cells="solvedCells"
         :selected-cell="selectedCell"
         :is-dark="isDark"
+        :candidates="candidates"
+        :show-candidates="showCandidates"
         @update="onCellUpdate"
         @select="selectCell"
         @navigate="navigateToCell"
@@ -67,12 +69,14 @@
         :can-redo="canRedo"
         :undo-count="undoCount"
         :redo-count="redoCount"
+        :show-candidates="showCandidates"
         @solve="solve"
         @clear="clearGrid"
         @generate="generate"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
+        @toggle-candidates="showCandidates = !showCandidates"
       />
 
       <!-- Mobile number pad -->
@@ -110,7 +114,8 @@ import {
   saveState,
   undo,
   redo,
-  getHistory
+  getHistory,
+  fetchCandidates
 } from './api'
 
 export default {
@@ -173,6 +178,10 @@ export default {
     // Hint modal state
     const hintModalVisible = ref(false)
     const currentHint = ref(null)
+
+    // Candidates (pencil marks) state
+    const candidates = ref({})
+    const showCandidates = ref(true)
 
     // Initialize dark mode from localStorage or system preference
     onMounted(() => {
@@ -238,6 +247,9 @@ export default {
       // Auto-save state for undo/redo
       await autoSaveState()
 
+      // Refresh candidates after cell update
+      await refreshCandidates()
+
       // Track mistakes if changing a solved cell to wrong value
       if (solvedCells.value.has(index) && value !== '.' && value !== oldValue) {
         // Could add validation here
@@ -290,6 +302,22 @@ export default {
       mistakes.value = 0
       hintsUsed.value = 0
       startTimer()
+
+      // Fetch candidates for the new puzzle
+      refreshCandidates()
+    }
+
+    // Refresh candidates from the backend
+    const refreshCandidates = async () => {
+      try {
+        const data = await fetchCandidates(puzzle.value)
+        if (data.candidates) {
+          candidates.value = data.candidates
+        }
+      } catch (e) {
+        // Silently fail - candidates are optional
+        console.error('Failed to fetch candidates:', e)
+      }
     }
 
     // Show toast notification
@@ -489,6 +517,7 @@ export default {
       showMobilePad.value = false
       mistakes.value = 0
       hintsUsed.value = 0
+      candidates.value = {}
       startTimer()
       lastSavedState = puzzle.value
     }
@@ -517,6 +546,8 @@ export default {
       toast,
       hintModalVisible,
       currentHint,
+      candidates,
+      showCandidates,
       toggleDarkMode,
       onCellUpdate,
       onNumberPadInput,

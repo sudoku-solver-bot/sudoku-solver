@@ -8,6 +8,7 @@
       @click="selectCell(index)"
     >
       <input
+        v-if="puzzle[index] !== '.' || !showCandidates || givenCells.has(index)"
         ref="inputs"
         type="text"
         inputmode="numeric"
@@ -20,6 +21,22 @@
         @focus="selectCell(index)"
         @keydown="onKeyDown($event, index)"
       />
+      <div
+        v-else
+        ref="candidateGrids"
+        class="candidates-grid"
+        :data-index="index"
+        tabindex="0"
+        @focus="selectCell(index)"
+        @keydown="onKeyDown($event, index)"
+      >
+        <span
+          v-for="n in 9"
+          :key="n"
+          class="candidate"
+          :class="{ visible: cellCandidates(index, n) }"
+        >{{ cellCandidates(index, n) ? n : '' }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -49,11 +66,25 @@ export default {
     isDark: {
       type: Boolean,
       default: false
+    },
+    candidates: {
+      type: Object,
+      default: () => ({})
+    },
+    showCandidates: {
+      type: Boolean,
+      default: true
     }
   },
   emits: ['update', 'select', 'navigate', 'undo', 'redo'],
   setup(props, { emit }) {
     const inputs = ref([])
+    const candidateGrids = ref([])
+
+    const cellCandidates = (index, n) => {
+      const key = String(index)
+      return props.candidates[key]?.includes(n) ?? false
+    }
 
     const getRow = (index) => Math.floor(index / 9)
     const getCol = (index) => index % 9
@@ -105,6 +136,13 @@ export default {
       const input = inputs.value[index]
       if (input) {
         input.focus()
+      } else if (candidateGrids.value) {
+        // Find the candidate grid element with matching data-index
+        const grids = Array.isArray(candidateGrids.value) ? candidateGrids.value : [candidateGrids.value]
+        const grid = grids.find(el => el?.dataset?.index === String(index))
+        if (grid) {
+          grid.focus()
+        }
       }
     }
 
@@ -200,6 +238,8 @@ export default {
 
     return {
       inputs,
+      candidateGrids,
+      cellCandidates,
       getCellClasses,
       isBottomBorder,
       selectCell,
@@ -239,6 +279,34 @@ export default {
 
 .grid.dark .cell {
   background: #2d2d2d;
+}
+
+.candidates-grid {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  outline: none;
+}
+
+.candidate {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(7px, 1.8vw, 11px);
+  font-weight: 400;
+  color: transparent;
+  user-select: none;
+  line-height: 1;
+}
+
+.candidate.visible {
+  color: #999;
+}
+
+.grid.dark .candidate.visible {
+  color: #888;
 }
 
 .cell input {

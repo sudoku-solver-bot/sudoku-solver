@@ -72,6 +72,16 @@
       <span class="btn-icon">💡</span>
       Get a Hint!
     </button>
+
+    <!-- Pencil marks toggle -->
+    <button
+      class="btn-toggle"
+      :class="{ active: showCandidates }"
+      @click="$emit('toggle-candidates')"
+    >
+      <span class="btn-icon">{{ showCandidates ? '✏️' : '✏️' }}</span>
+      {{ showCandidates ? 'Hide Pencil Marks' : 'Show Pencil Marks' }}
+    </button>
   </div>
 </template>
 
@@ -98,9 +108,13 @@ export default {
     redoCount: {
       type: Number,
       default: 0
+    },
+    showCandidates: {
+      type: Boolean,
+      default: true
     }
   },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo']
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates']
 }
 </script>
 
@@ -254,6 +268,21 @@ button:active:not(:disabled) {
   padding: 14px;
   font-size: 15px;
   margin-top: 4px;
+}
+
+.btn-toggle {
+  background: #f0f0f0;
+  color: #666;
+  padding: 12px 16px;
+  font-size: clamp(12px, 2.8vw, 14px);
+  margin-top: 4px;
+  border: 2px solid #e0e0e0;
+}
+
+.btn-toggle.active {
+  background: #e8f0fe;
+  color: #4285f4;
+  border-color: #4285f4;
 }
 
 /* Mobile responsive */
