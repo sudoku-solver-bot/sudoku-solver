@@ -69,3 +69,12 @@ export async function getHistory() {
   })
   return response.json()
 }
+
+export async function fetchCandidates(puzzle) {
+  const response = await fetch(`${API_BASE}/v1/candidates`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ puzzle })
+  })
+  return response.json()
+}
