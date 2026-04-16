@@ -171,7 +171,7 @@ export default {
     const showAnswer = () => {
       const step = currentStep.value
       if (step.type === 'question') {
-        feedback = `The answer: ${step.answerValue} goes in the highlighted cell!`
+        feedback.value = `The answer: ${step.answerValue} goes in the highlighted cell!`
         feedbackType.value = 'hint'
       }
     }
@@ -534,9 +534,10 @@ export default {
   }
 }
 
-@media (max-width: 400px) {
+@media (max-width: 500px) {
   .tutorial-header {
     gap: 8px;
+    flex-wrap: wrap;
   }
 
   .belt-badge {
@@ -546,12 +547,27 @@ export default {
   }
 
   .lesson-info h2 {
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .nav-btn {
     padding: 8px 14px;
     font-size: 13px;
+  }
+
+  .step-content {
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  .step-text {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .celebration-content {
+    padding: 24px;
+    margin: 0 16px;
   }
 }
 </style>

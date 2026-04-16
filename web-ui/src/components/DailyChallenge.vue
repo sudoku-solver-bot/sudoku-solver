@@ -66,7 +66,7 @@
           </div>
         </div>
         <p class="completion-msg">See you tomorrow! 🌟</p>
-        <button class="done-btn" @click="$emit('exit')">Done</button>
+        <button class="done-btn" @click="$emit('exit')">🏠 Home</button>
       </div>
     </div>
   </div>
@@ -75,7 +75,7 @@
 <script>
 import { ref, onMounted, onUnmounted } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
-import { fetchDailyChallenge } from '../api'
+import { fetchDailyChallenge, solvePuzzle } from '../api'
 
 export default {
   name: 'DailyChallenge',
@@ -181,18 +181,24 @@ export default {
     }
 
     const checkCompletion = async () => {
-      // Simple validation: no dots remaining
-      // Could call /validate for proper check
-      completed.value = true
-      stopTimer()
+      try {
+        const data = await solvePuzzle(puzzle.value, false)
+        if (data.solved) {
+          completed.value = true
+          stopTimer()
 
-      // Update streak
-      const today = new Date().toISOString().split('T')[0]
-      streak.value++
-      localStorage.setItem('sudokuDailyStreak', JSON.stringify({
-        lastDate: today,
-        count: streak.value
-      }))
+          // Update streak
+          const today = new Date().toISOString().split('T')[0]
+          streak.value++
+          localStorage.setItem('sudokuDailyStreak', JSON.stringify({
+            lastDate: today,
+            count: streak.value
+          }))
+          localStorage.setItem('sudokuDailyCompleted', today)
+        }
+      } catch (e) {
+        console.error('Validation failed:', e)
+      }
     }
 
     onMounted(() => {
