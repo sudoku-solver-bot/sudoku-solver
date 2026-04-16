@@ -66,9 +66,22 @@ fun Application.module() {
             )
         }
         
-        // Serve static assets (JS, CSS)
+        // Serve static assets (JS, CSS, images)
         static("/assets") {
             resources("static/assets")
+        }
+        
+        // Serve PWA files
+        get("/sw.js") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/sw.js")?.readText() ?: "",
+                io.ktor.http.ContentType.Application.JavaScript
+            )
+        }
+        
+        // Serve workbox library
+        static("/workbox") {
+            resources("static")
         }
         
         // Versioned API routes (v1)
