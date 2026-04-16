@@ -74,6 +74,10 @@ export default {
     showCandidates: {
       type: Boolean,
       default: true
+    },
+    highlightedCells: {
+      type: Array,
+      default: () => []
     }
   },
   emits: ['update', 'select', 'navigate', 'undo', 'redo'],
@@ -118,7 +122,19 @@ export default {
           index !== props.selectedCell
       }
 
+      // Tutorial highlighting (always active)
+      classes['highlight-blue'] = isHighlighted(index, 'blue')
+      classes['highlight-green'] = isHighlighted(index, 'green')
+      classes['highlight-red'] = isHighlighted(index, 'red')
+      classes['highlight-yellow'] = isHighlighted(index, 'yellow')
+
       return classes
+    }
+
+    const isHighlighted = (index, color) => {
+      return props.highlightedCells.some(h =>
+        h.cells.includes(index) && h.color === color
+      )
     }
 
     const isBottomBorder = (index) => {
@@ -390,6 +406,48 @@ export default {
 
 .grid.dark .cell.solved input {
   color: #81c995;
+}
+
+/* Tutorial highlighting */
+.cell.highlight-blue {
+  background: #e3f2fd !important;
+  box-shadow: inset 0 0 0 2px #4285f4;
+  animation: pulse 1.5s ease infinite;
+}
+
+.cell.highlight-green {
+  background: #e8f5e9 !important;
+  box-shadow: inset 0 0 0 2px #34a853;
+  animation: pulse 1.5s ease infinite;
+}
+
+.cell.highlight-red {
+  background: #fce4ec !important;
+  box-shadow: inset 0 0 0 2px #ea4335;
+  animation: pulse 1.5s ease infinite;
+}
+
+.cell.highlight-yellow {
+  background: #fff8e1 !important;
+  box-shadow: inset 0 0 0 2px #fbbc05;
+  animation: pulse 1.5s ease infinite;
+}
+
+.cell.highlight-blue.selected,
+.cell.highlight-green.selected,
+.cell.highlight-red.selected,
+.cell.highlight-yellow.selected {
+  animation: none;
+}
+
+.grid.dark .cell.highlight-blue { background: #1a3a5c !important; }
+.grid.dark .cell.highlight-green { background: #1a3c1a !important; }
+.grid.dark .cell.highlight-red { background: #3c1a1a !important; }
+.grid.dark .cell.highlight-yellow { background: #3c3c1a !important; }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
 }
 
 /* Borders */

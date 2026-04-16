@@ -1,0 +1,195 @@
+[
+  {
+    "id": "naked-single",
+    "order": 1,
+    "title": "Naked Single",
+    "belt": "white",
+    "beltColor": "#E0E0E0",
+    "beltEmoji": "⬜",
+    "beltName": "White Belt",
+    "description": "When a cell has only ONE candidate left, that must be the answer!",
+    "concept": "If all numbers 1-9 except one have been eliminated from a cell, the remaining number is the only possibility. This is the simplest Sudoku technique.",
+    "examplePuzzle": "4.9..5.7...17.9.3...3.4.1.5.39.1.42..1.5.3.97.23.9.15.6.1.3.7.4...9.7.31...7.4..2",
+    "steps": [
+      {
+        "order": 1,
+        "type": "explain",
+        "cells": [],
+        "text": "Welcome to your first Sudoku lesson! 🎉 A 'candidate' is a number that could possibly go in a cell. Let's find a cell with only one candidate left."
+      },
+      {
+        "order": 2,
+        "type": "highlight",
+        "cells": [5, 14, 23, 32, 41, 50, 59, 68, 77],
+        "highlightColor": "blue",
+        "text": "Look at the diagonal — but actually, let's focus on a specific cell. See cell at row 1, column 2 (near the top)."
+      },
+      {
+        "order": 3,
+        "type": "highlight",
+        "cells": [1],
+        "highlightColor": "yellow",
+        "text": "This highlighted cell is in row 1. Row 1 already has 4, 9, 5, 7. That leaves 1, 2, 3, 6, 8 as candidates."
+      },
+      {
+        "order": 4,
+        "type": "highlight",
+        "cells": [1, 0, 2, 9, 10, 11, 18, 19, 20],
+        "highlightColor": "green",
+        "text": "The cell is also in column 2. Column 2 has 1, 7, 3, 9, 5 already placed. And in the same 3×3 box, we can see more numbers."
+      },
+      {
+        "order": 5,
+        "type": "highlight",
+        "cells": [1],
+        "highlightColor": "red",
+        "text": "After eliminating all numbers that appear in the same row, column, and box — only ONE number is left! This is called a 'Naked Single'."
+      },
+      {
+        "order": 6,
+        "type": "question",
+        "cells": [1],
+        "highlightColor": "yellow",
+        "text": "Can you figure out what number goes here? Look at the pencil marks (candidates) in the cell.",
+        "answer": 1,
+        "answerValue": "6"
+      },
+      {
+        "order": 7,
+        "type": "reveal",
+        "cells": [1],
+        "highlightColor": "green",
+        "text": "The answer is 6! 🎯 When a cell has only one candidate, it's called a Naked Single. This is the most basic solving technique.",
+        "eliminatedValue": 6
+      }
+    ]
+  },
+  {
+    "id": "hidden-single",
+    "order": 2,
+    "title": "Hidden Single",
+    "belt": "yellow",
+    "beltColor": "#FFD700",
+    "beltEmoji": "🟡",
+    "beltName": "Yellow Belt",
+    "description": "When a number can only go in ONE place within a row, column, or box — it must go there!",
+    "concept": "Even if a cell has multiple candidates, if a specific number can only go in one cell within a group (row/col/box), it must go there. The number is 'hidden' among other candidates.",
+    "examplePuzzle": "5.3.....68...2.1..7..4..5..2...9.3.7.9.6.2.4.3.4...6..5..3..7..8.1...43.....5.2",
+    "steps": [
+      {
+        "order": 1,
+        "type": "explain",
+        "cells": [],
+        "text": "Great job earning your Yellow Belt! 🌟 Now let's learn 'Hidden Single'. Sometimes a cell has multiple candidates, but a specific number can ONLY go in one place in a group."
+      },
+      {
+        "order": 2,
+        "type": "highlight",
+        "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "highlightColor": "blue",
+        "text": "Look at row 1. We need to place all numbers 1-9. Which numbers are missing?"
+      },
+      {
+        "order": 3,
+        "type": "highlight",
+        "cells": [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        "highlightColor": "blue",
+        "text": "Row 1 has 5 and 3. We need: 1, 2, 4, 6, 7, 8, 9. Each empty cell has multiple candidates, but let's check where 9 can go."
+      },
+      {
+        "order": 4,
+        "type": "highlight",
+        "cells": [4],
+        "highlightColor": "yellow",
+        "text": "Look at the pencil marks for this cell. Check if 9 can go anywhere else in row 1..."
+      },
+      {
+        "order": 5,
+        "type": "explain",
+        "cells": [],
+        "text": "After checking all empty cells in row 1, the number 9 can only go in ONE specific cell. Even though that cell has other candidates too, 9 is 'hidden' — it must go here!"
+      },
+      {
+        "order": 6,
+        "type": "question",
+        "cells": [3, 4, 5, 6, 7, 8],
+        "highlightColor": "yellow",
+        "text": "Which cell in row 1 is the only place where 9 can go? Look at the candidates carefully!",
+        "answer": 1,
+        "answerValue": "9"
+      },
+      {
+        "order": 7,
+        "type": "reveal",
+        "cells": [4],
+        "highlightColor": "green",
+        "text": "The number 9 can only go in this cell! 🎯 Even though the cell had other candidates, 9 was 'hidden' as the only option in the row. This is a Hidden Single!",
+        "eliminatedValue": 9
+      }
+    ]
+  },
+  {
+    "id": "naked-pair",
+    "order": 3,
+    "title": "Naked Pair",
+    "belt": "orange",
+    "beltColor": "#FF8C00",
+    "beltEmoji": "🟠",
+    "beltName": "Orange Belt",
+    "description": "When two cells in the same group have the same two candidates, those numbers can be eliminated from other cells in the group.",
+    "concept": "If two cells in a row/column/box can only contain the same two numbers, then those two numbers MUST occupy those two cells. We can remove them from all other cells in the group.",
+    "examplePuzzle": "12.45.789956387124783912654294563817317829465869741523635291478572148396148675293",
+    "steps": [
+      {
+        "order": 1,
+        "type": "explain",
+        "cells": [],
+        "text": "Orange Belt time! 🧡 The Naked Pair technique is powerful. If TWO cells share the exact same TWO candidates, we can eliminate those numbers from other cells in the group."
+      },
+      {
+        "order": 2,
+        "type": "explain",
+        "cells": [],
+        "text": "Imagine a row where two empty cells both have only candidates {3, 7}. Since one must be 3 and the other must be 7, no other cell in that row can be 3 or 7!"
+      },
+      {
+        "order": 3,
+        "type": "highlight",
+        "cells": [2, 5],
+        "highlightColor": "yellow",
+        "text": "Look at row 1 — these two highlighted cells. Check their pencil marks. They both share the same two candidates!"
+      },
+      {
+        "order": 4,
+        "type": "highlight",
+        "cells": [2, 5],
+        "highlightColor": "red",
+        "text": "These two cells form a 'Naked Pair'. If cell A is {3,6} and cell B is also {3,6}, then 3 and 6 are locked into these two positions."
+      },
+      {
+        "order": 5,
+        "type": "highlight",
+        "cells": [0, 1, 3, 4, 6, 7, 8],
+        "highlightColor": "green",
+        "text": "Now look at the other cells in this row. The values from the naked pair can be eliminated as candidates from all of these cells!"
+      },
+      {
+        "order": 6,
+        "type": "question",
+        "cells": [2, 5],
+        "highlightColor": "yellow",
+        "text": "What values does the naked pair eliminate from the other cells? Think about which two numbers are shared.",
+        "answer": 1,
+        "answerValue": "6"
+      },
+      {
+        "order": 7,
+        "type": "reveal",
+        "cells": [2, 5],
+        "highlightColor": "green",
+        "text": "By identifying the Naked Pair {3, 6}, we can remove 3 and 6 as candidates from all other cells in the row! 🎯 This narrows down possibilities everywhere else.",
+        "eliminatedValue": 3
+      }
+    ]
+  }
+]
