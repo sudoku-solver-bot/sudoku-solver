@@ -1,11 +1,14 @@
 <template>
-  <div class="grid" :class="{ dark: isDark }">
+  <div class="grid" :class="{ dark: isDark }" role="grid" aria-label="Sudoku puzzle grid">
     <div
       v-for="(cell, index) in 81"
       :key="index"
       class="cell"
       :class="getCellClasses(index)"
       @click="selectCell(index)"
+      role="gridcell"
+      :aria-label="getCellLabel(index)"
+      :aria-selected="selectedCell === index"
     >
       <input
         v-if="puzzle[index] !== '.' || !showCandidates || givenCells.has(index)"
@@ -140,6 +143,18 @@ export default {
     const isBottomBorder = (index) => {
       const row = Math.floor(index / 9)
       return row === 2 || row === 5
+    }
+
+    const getCellLabel = (index) => {
+      const row = Math.floor(index / 9) + 1
+      const col = (index % 9) + 1
+      const value = props.puzzle[index]
+      if (value !== '.') {
+        return `Row ${row}, Column ${col}: ${value}`
+      }
+      const key = String(index)
+      const cands = props.candidates[key] || []
+      return `Row ${row}, Column ${col}: empty, candidates ${cands.join(', ') || 'none'}`
     }
 
     const selectCell = (index) => {
@@ -293,6 +308,12 @@ export default {
   transition: background-color 0.15s ease;
   position: relative;
   overflow: hidden;
+}
+
+.cell:focus-within {
+  outline: 2px solid #4285f4;
+  outline-offset: -2px;
+  z-index: 1;
 }
 
 .grid.dark .cell {
