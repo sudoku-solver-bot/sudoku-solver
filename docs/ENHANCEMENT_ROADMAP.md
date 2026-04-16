@@ -191,3 +191,44 @@ Each tutorial lesson has:
 4. **Phase 4** (Polish) — shipping quality
 
 Each phase can be broken into individual PRs. Phase 2 should be done incrementally — start with the first 3-5 techniques and ship, then add more.
+
+---
+
+## Completion Status (2026-04-17)
+
+### ✅ Phase 1: Candidate Display — COMPLETE
+- [x] 1.1 Candidate Grid Rendering (3×3 mini-grid pencil marks)
+- [x] 1.2 Candidate Editing (auto-refresh after cell update)
+- [x] 1.3 Visual Highlighting (row/col/box peer highlighting, same-value highlighting)
+- [x] 1.4 Backend API (`/api/v1/candidates`)
+
+### ✅ Phase 2: Tutorial System — COMPLETE
+- [x] 2.1 Tutorial Data Model (lessons.json with steps, highlights)
+- [x] 2.2 Example Puzzle Authoring (15 curated puzzles from SudokuWiki)
+- [x] 2.3 Tutorial Engine (backend routes for tutorials, boards, progress)
+- [x] 2.4 Tutorial UI (TutorialMode + TutorialSelector with belt groups)
+- [x] 2.5 Tutorial Routes (list, get, board, complete, progress)
+- **15 tutorials across 7 belt levels** (White → Black)
+
+### ✅ Phase 3: Gamification — COMPLETE
+- [x] 3.1 Belt/Rank System (7 belts with emoji + color)
+- [x] 3.2 Daily Puzzle Challenge (deterministic rotation, streak tracking)
+- [x] 3.3 Progress Dashboard (stats, belt progress visualization)
+- [x] 3.4 Accessibility (ARIA labels, keyboard navigation, focus indicators)
+
+### ✅ Phase 4: Polish & Mobile — COMPLETE
+- [x] 4.1 Responsive Design (mobile-first grid, touch targets)
+- [x] 4.2 Performance (service worker caching, lazy candidates)
+- [x] 4.3 PWA (vite-plugin-pwa, offline support, install prompt)
+- [x] Splash screen for cold starts
+- [x] Share results (Web Share API)
+- [x] SVG-generated app icons
+
+### Remaining Ideas (Future)
+- [ ] Swipe gestures for tutorial step navigation
+- [ ] High-contrast mode toggle
+- [ ] Color-blind friendly palette option
+- [ ] Printable certificates per belt
+- [ ] Leaderboard (opt-in)
+- [ ] Tutorial quiz mode ("spot the pattern")
+- [ ] Practice puzzles (2-3 per technique)
