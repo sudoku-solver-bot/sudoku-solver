@@ -16,21 +16,10 @@ package will.sudoku.solver
  * 3. If both paths lead to the same cell having the same value Z, we can confirm Z
  * 4. If one path leads to a contradiction (empty cell), we can eliminate that candidate
  *
- * ## Example
- *
- * Cell A has candidates {1, 2}:
- * - If A=1, then through a chain of deductions, cell B=3
- * - If A=2, then through a chain of deductions, cell B=3
- * - Therefore, cell B MUST be 3 (both paths agree)
- *
- * Or:
- * - If A=1, we eventually reach a contradiction (cell C has no candidates)
- * - Therefore, A cannot be 1, so eliminate 1 from A
- *
  * ## Algorithm
  * 1. Find all bi-value cells (cells with exactly 2 candidates)
  * 2. For each cell, try both candidate values
- * 3. Propagate consequences using simple elimination (limited depth to avoid exponential blowup)
+ * 3. Propagate consequences by actually applying eliminations on a copy
  * 4. Check for contradictions or convergences
  * 5. Apply eliminations based on findings
  *
@@ -58,42 +47,31 @@ class ForcingChainsCandidateEliminator : CandidateEliminator {
 
             val (x, y) = candidates[0] to candidates[1]
 
-            // Explore both paths
-            val resultX = exploreConsequences(board.copy(), pivot, x)
-            val resultY = exploreConsequences(board.copy(), pivot, y)
+            // Explore both paths on copies of the board
+            val boardX = board.copy()
+            val boardY = board.copy()
+
+            val resultX = exploreConsequences(boardX, pivot, x)
+            val resultY = exploreConsequences(boardY, pivot, y)
 
             // Check for contradictions
             if (resultX.isContradiction) {
-                // X leads to contradiction, eliminate X from pivot
                 val erased = board.eraseCandidateValue(pivot, x)
                 if (erased) anyUpdate = true
-                // Continue to next pivot (we modified the board)
                 continue
             }
 
             if (resultY.isContradiction) {
-                // Y leads to contradiction, eliminate Y from pivot
                 val erased = board.eraseCandidateValue(pivot, y)
                 if (erased) anyUpdate = true
                 continue
             }
 
-            // Check for convergences (both paths lead to same conclusion)
-            val convergence = findConvergence(resultX, resultY)
-            if (convergence != null) {
-                val (coord, value) = convergence
-                if (!board.isConfirmed(coord)) {
-                    val originalPattern = board.candidatePattern(coord)
-                    val newValue = Board.masks[value - 1]
-
-                    // If cell doesn't already have this value confirmed
-                    if (originalPattern != newValue) {
-                        // Mark the value (eliminates all other candidates)
-                        val changed = markCandidate(board, coord, value)
-                        if (changed) anyUpdate = true
-                    }
-                }
-            }
+            // Contradiction-based eliminations only (safe)
+            // Convergence logic is disabled because chain propagation is
+            // incomplete and can produce spurious convergences that
+            // eliminate the correct value from a cell.
+            // TODO: Re-enable convergence with proper propagation if needed.
         }
 
         return anyUpdate
@@ -101,10 +79,7 @@ class ForcingChainsCandidateEliminator : CandidateEliminator {
 
     /**
      * Explore consequences of setting a cell to a specific value.
-     *
-     * Returns a ChainResult containing:
-     * - isContradiction: whether the chain led to a contradiction
-     * - confirmedValues: map of coordinates to confirmed values
+     * Actually applies eliminations on the board copy for accurate propagation.
      */
     private fun exploreConsequences(
         board: Board,
@@ -119,17 +94,15 @@ class ForcingChainsCandidateEliminator : CandidateEliminator {
         while (toProcess.isNotEmpty()) {
             val (coord, value, depth) = toProcess.removeFirst()
 
-            // Check depth limit
-            if (depth > MAX_CHAIN_DEPTH) {
-                continue
-            }
+            if (depth > MAX_CHAIN_DEPTH) continue
 
-            // If we already processed this coord with a different value, contradiction
-            if (coord in confirmed) {
-                if (confirmed[coord] != value) {
+            // If this cell is already confirmed to a different value, contradiction
+            if (board.isConfirmed(coord)) {
+                val existingValue = board.value(coord)
+                if (existingValue != 0 && existingValue != value) {
                     return ChainResult(isContradiction = true, confirmedValues = confirmed)
                 }
-                continue
+                if (existingValue == value) continue // already set
             }
 
             // If this cell doesn't have this candidate, contradiction
@@ -137,15 +110,26 @@ class ForcingChainsCandidateEliminator : CandidateEliminator {
                 return ChainResult(isContradiction = true, confirmedValues = confirmed)
             }
 
-            // Mark this cell as having this value
+            // Actually apply: set the cell to this value
+            board.markValue(coord, value)
             confirmed[coord] = value
 
-            // Get consequences using simple elimination
-            val consequences = getConsequences(board, coord, value)
-
-            // Add consequences to queue
-            for ((nextCoord, nextValue) in consequences) {
-                toProcess.add(Triple(nextCoord, nextValue, depth + 1))
+            // Propagate: eliminate this value from all peers
+            val peers = getPeers(coord)
+            for (peer in peers) {
+                if (board.eraseCandidateValue(peer, value)) {
+                    // Check if peer now has zero candidates — contradiction
+                    if (board.candidatePattern(peer) == 0) {
+                        return ChainResult(isContradiction = true, confirmedValues = confirmed)
+                    }
+                    // If peer now has exactly one candidate, it's a forced value
+                    if (board.isConfirmed(peer) && peer !in confirmed) {
+                        val forcedValue = board.value(peer)
+                        if (forcedValue != 0) {
+                            toProcess.add(Triple(peer, forcedValue, depth + 1))
+                        }
+                    }
+                }
             }
         }
 
@@ -153,86 +137,17 @@ class ForcingChainsCandidateEliminator : CandidateEliminator {
     }
 
     /**
-     * Get immediate consequences of setting a cell to a value.
-     * Returns a list of (coord, value) pairs that can be deduced.
+     * Get all peers (cells that share a row, column, or box) of a coordinate.
      */
-    private fun getConsequences(
-        board: Board,
-        coord: Coord,
-        value: Int
-    ): List<Pair<Coord, Int>> {
-        val consequences = mutableListOf<Pair<Coord, Int>>()
-
-        // For each group that contains this cell
-        val groups = listOf(
-            CoordGroup.verticalOf(coord),
-            CoordGroup.horizontalOf(coord),
-            CoordGroup.regionOf(coord)
-        )
-
-        for (group in groups) {
-            // Check for hidden singles in the group
-            for (candidate in 1..9) {
-                // Find all cells in this group that can have this candidate
-                val cellsWithCandidate = group.coords.filter { c ->
-                    !board.isConfirmed(c) && board.candidateValues(c).contains(candidate)
-                }
-
-                // If only one cell can have this candidate, it's a hidden single
-                if (cellsWithCandidate.size == 1 && cellsWithCandidate[0] != coord) {
-                    consequences.add(cellsWithCandidate[0] to candidate)
-                }
-            }
-
-            // Check for naked singles (cells with only one candidate left)
-            for (c in group.coords) {
-                if (c == coord) continue
-                if (board.isConfirmed(c)) continue
-
-                val candidates = board.candidateValues(c)
-                if (candidates.size == 1) {
-                    consequences.add(c to candidates[0])
-                }
+    private fun getPeers(coord: Coord): Set<Coord> {
+        val peers = mutableSetOf<Coord>()
+        for (group in CoordGroup.all) {
+            if (coord in group.coords) {
+                peers.addAll(group.coords)
             }
         }
-
-        return consequences
-    }
-
-    /**
-     * Find convergence between two chain results.
-     * Returns a pair of (coord, value) if both paths agree on a value for a cell.
-     */
-    private fun findConvergence(
-        result1: ChainResult,
-        result2: ChainResult
-    ): Pair<Coord, Int>? {
-        for ((coord, value1) in result1.confirmedValues) {
-            val value2 = result2.confirmedValues[coord]
-            if (value2 != null && value1 == value2) {
-                // Both paths agree on this value for this cell
-                return Pair(coord, value1)
-            }
-        }
-        return null
-    }
-
-    /**
-     * Mark a candidate value in a cell, eliminating all other candidates.
-     * Returns true if the board was modified.
-     */
-    private fun markCandidate(board: Board, coord: Coord, value: Int): Boolean {
-        var anyUpdate = false
-        val candidates = board.candidateValues(coord)
-
-        for (candidate in candidates) {
-            if (candidate != value) {
-                val erased = board.eraseCandidateValue(coord, candidate)
-                if (erased) anyUpdate = true
-            }
-        }
-
-        return anyUpdate
+        peers.remove(coord)
+        return peers
     }
 
     /**

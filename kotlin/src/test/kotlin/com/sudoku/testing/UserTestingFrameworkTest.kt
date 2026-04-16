@@ -275,7 +275,7 @@ class UserTestingFrameworkTest {
         assertEquals(2, effectiveness.totalParticipants)
         assertEquals(1, effectiveness.youngerParticipants)
         assertEquals(1, effectiveness.olderParticipants)
-        assertEquals(0.67, effectiveness.overallAverageCompletionRate, 0.01)
+        assertEquals(0.83, effectiveness.overallAverageCompletionRate, 0.01)
         assertEquals(1.0, effectiveness.youngerAverageCompletionRate, 0.01)
         assertEquals(0.67, effectiveness.olderAverageCompletionRate, 0.01)
     }

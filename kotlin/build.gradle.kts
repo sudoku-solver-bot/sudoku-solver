@@ -47,6 +47,10 @@ tasks.register<JavaExec>("run") {
 tasks.test {
     useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport) // Report is always generated after tests run
+    
+    // Limit memory usage on constrained environments
+    maxParallelForks = 1
+    jvmArgs = listOf("-Xmx384m")
 }
 
 tasks.jacocoTestReport {

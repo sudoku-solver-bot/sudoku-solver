@@ -76,10 +76,9 @@ class DeathBlossomCandidateEliminatorTest {
         SimpleCandidateEliminator().eliminate(board)
 
         val eliminator = DeathBlossomCandidateEliminator()
-        val result = eliminator.eliminate(board)
+        eliminator.eliminate(board)
 
-        // Verify eliminator runs without error
-        assertThat(result).isNotNull()
+        assertThat(board.isValid()).isTrue()
     }
 
     @Test
@@ -326,26 +325,26 @@ class DeathBlossomCandidateEliminatorTest {
 
     @Test
     fun `eliminator handles blossom cell detection`() {
-        // Create a valid partial board with potential blossom cells
-        // Values placed to avoid row/col/box conflicts
-        val values = IntArray(81) { 0 }
-        values[0] = 5;  values[4] = 3;  values[8] = 7
-        values[9] = 6;  values[13] = 9; values[17] = 1
-        values[20] = 8; values[22] = 4
-        values[27] = 3; values[31] = 7
-        values[36] = 1; values[40] = 8; values[44] = 4
-        values[47] = 2
-        values[54] = 9; values[58] = 1
-        values[63] = 7; values[67] = 5
-        values[72] = 2; values[76] = 6; values[80] = 3
+        // Create a valid partial board derived from a known solution
+        // with ~20 cells removed to create ALS opportunities
+        val values = intArrayOf(
+            5, 0, 9, 3, 0, 8, 1, 0, 2,
+            0, 1, 7, 4, 6, 0, 3, 9, 0,
+            6, 3, 0, 2, 9, 1, 0, 7, 5,
+            9, 2, 3, 0, 4, 6, 7, 8, 1,
+            1, 0, 4, 8, 2, 9, 5, 0, 6,
+            8, 6, 0, 7, 1, 3, 0, 2, 4,
+            4, 0, 2, 9, 8, 0, 6, 1, 3,
+            3, 9, 0, 6, 0, 2, 8, 4, 0,
+            7, 0, 6, 1, 3, 0, 2, 0, 9
+        )
 
         val board = Board(values)
         SimpleCandidateEliminator().eliminate(board)
 
         val eliminator = DeathBlossomCandidateEliminator()
-        val result = eliminator.eliminate(board)
+        eliminator.eliminate(board)
 
-        // Verify eliminator runs without error
-        assertThat(result).isNotNull()
+        assertThat(board.isValid()).isTrue()
     }
 }

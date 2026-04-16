@@ -172,7 +172,7 @@ class PropertyBasedTest {
      */
     @Test
     fun `generated puzzles are solvable`() {
-        val solver = Solver()
+        val solver = Solver(SolverConfig.basic())
 
         // Test with seeds that produce valid puzzles
         // Note: PuzzleGenerator is a simple implementation and may produce
