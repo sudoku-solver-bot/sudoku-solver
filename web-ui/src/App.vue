@@ -5,6 +5,9 @@
       <div class="header">
         <h1>🧩 Sudoku Solver</h1>
         <div class="header-actions">
+          <button v-if="playMode" class="home-btn" @click="playMode = false" title="Home">
+            🏠
+          </button>
           <button class="daily-btn" @click="dailyMode = !dailyMode" :title="dailyMode ? 'Exit Daily' : 'Daily Challenge'">
             📅
           </button>
@@ -16,6 +19,17 @@
           </button>
         </div>
       </div>
+
+      <!-- Dashboard (home) -->
+      <Dashboard
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode"
+        :completed-tutorials="completedTutorials"
+        :total-tutorials="tutorialList.length || 15"
+        :is-dark="isDark"
+        @daily="dailyMode = true"
+        @learn="toggleTutorialMode"
+        @play="playMode = true"
+      />
 
       <!-- Daily Challenge -->
       <DailyChallenge
@@ -43,8 +57,8 @@
         @completed="onTutorialCompleted"
       />
 
-      <!-- Normal mode (hidden in tutorial) -->
-      <template v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode">
+      <!-- Normal mode (hidden in tutorial/daily/dashboard) -->
+      <template v-if="playMode && !tutorialMode && !tutorialSelectorOpen && !dailyMode">
 
       <!-- Toast notification -->
       <ToastNotification
@@ -148,6 +162,7 @@ import HintModal from './components/HintModal.vue'
 import TutorialMode from './components/TutorialMode.vue'
 import TutorialSelector from './components/TutorialSelector.vue'
 import DailyChallenge from './components/DailyChallenge.vue'
+import Dashboard from './components/Dashboard.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -173,7 +188,8 @@ export default {
     HintModal,
     TutorialMode,
     TutorialSelector,
-    DailyChallenge
+    DailyChallenge,
+    Dashboard
   },
   setup() {
     // Puzzle state
@@ -235,6 +251,7 @@ export default {
     const currentTutorialLesson = ref(null)
     const tutorialSelectorOpen = ref(false)
     const dailyMode = ref(false)
+    const playMode = ref(false)
     const completedTutorials = ref(new Set())
 
     // Load completed tutorials from localStorage
@@ -658,6 +675,7 @@ export default {
       currentTutorialLesson,
       tutorialSelectorOpen,
       dailyMode,
+      playMode,
       completedTutorials,
       toggleDarkMode,
       toggleTutorialMode,
@@ -786,6 +804,29 @@ body {
 }
 
 .app.dark .daily-btn {
+  background: #333;
+}
+
+.home-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: #e8f5e9;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-btn:hover {
+  background: #c8e6c9;
+  transform: scale(1.1);
+}
+
+.app.dark .home-btn {
   background: #333;
 }
 
