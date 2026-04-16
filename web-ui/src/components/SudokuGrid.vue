@@ -291,6 +291,8 @@ export default {
   font-size: clamp(14px, 4vw, 20px);
   font-weight: 600;
   transition: background-color 0.15s ease;
+  position: relative;
+  overflow: hidden;
 }
 
 .grid.dark .cell {
@@ -450,21 +452,35 @@ export default {
   50% { opacity: 0.75; }
 }
 
-/* Borders */
-.cell.border-right {
-  border-right: 2px solid #333;
+/* Borders for 3x3 box edges — using box-shadow to avoid layout shifts */
+.cell.border-right::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #333;
+  pointer-events: none;
 }
 
-.grid.dark .cell.border-right {
-  border-right-color: #555;
+.grid.dark .cell.border-right::after {
+  background: #555;
 }
 
-.cell.border-bottom {
-  border-bottom: 2px solid #333;
+.cell.border-bottom::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: #333;
+  pointer-events: none;
 }
 
-.grid.dark .cell.border-bottom {
-  border-bottom-color: #555;
+.grid.dark .cell.border-bottom::after {
+  background: #555;
 }
 
 /* Mobile touch targets */
