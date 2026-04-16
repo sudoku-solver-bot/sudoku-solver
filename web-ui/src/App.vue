@@ -4,10 +4,27 @@
       <!-- Header with dark mode toggle -->
       <div class="header">
         <h1>🧩 Sudoku Solver</h1>
-        <button class="dark-toggle" @click="toggleDarkMode" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
-          {{ isDark ? '☀️' : '🌙' }}
-        </button>
+        <div class="header-actions">
+          <button class="learn-btn" @click="toggleTutorialMode" :title="tutorialMode ? 'Exit Tutorial' : 'Learn Techniques'">
+            📚
+          </button>
+          <button class="dark-toggle" @click="toggleDarkMode" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+            {{ isDark ? '☀️' : '🌙' }}
+          </button>
+        </div>
       </div>
+
+      <!-- Tutorial Mode -->
+      <TutorialMode
+        v-if="tutorialMode && currentTutorialLesson"
+        :lesson="currentTutorialLesson"
+        :is-dark="isDark"
+        @exit="exitTutorialMode"
+        @completed="onTutorialCompleted"
+      />
+
+      <!-- Normal mode (hidden in tutorial) -->
+      <template v-if="!tutorialMode">
 
       <!-- Toast notification -->
       <ToastNotification
@@ -94,6 +111,7 @@
         :total-hints="hintsUsed"
         @close="closeHintModal"
       />
+      </template>
     </div>
   </div>
 </template>
@@ -107,6 +125,7 @@ import ProgressIndicator from './components/ProgressIndicator.vue'
 import ToastNotification from './components/ToastNotification.vue'
 import MobileNumberPad from './components/MobileNumberPad.vue'
 import HintModal from './components/HintModal.vue'
+import TutorialMode from './components/TutorialMode.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -115,7 +134,9 @@ import {
   undo,
   redo,
   getHistory,
-  fetchCandidates
+  fetchCandidates,
+  fetchTutorials,
+  fetchTutorial
 } from './api'
 
 export default {
@@ -127,7 +148,8 @@ export default {
     ProgressIndicator,
     ToastNotification,
     MobileNumberPad,
-    HintModal
+    HintModal,
+    TutorialMode
   },
   setup() {
     // Puzzle state
@@ -182,6 +204,11 @@ export default {
     // Candidates (pencil marks) state
     const candidates = ref({})
     const showCandidates = ref(true)
+
+    // Tutorial state
+    const tutorialMode = ref(false)
+    const tutorialList = ref([])
+    const currentTutorialLesson = ref(null)
 
     // Initialize dark mode from localStorage or system preference
     onMounted(() => {
@@ -522,6 +549,44 @@ export default {
       lastSavedState = puzzle.value
     }
 
+    // Tutorial methods
+    const toggleTutorialMode = async () => {
+      if (tutorialMode.value) {
+        tutorialMode.value = false
+        currentTutorialLesson.value = null
+        return
+      }
+      try {
+        const tutorials = await fetchTutorials()
+        tutorialList.value = tutorials
+        // Load the first uncompleted tutorial
+        const next = tutorials.find(t => !t.completed)
+        if (next) {
+          const lesson = await fetchTutorial(next.id)
+          currentTutorialLesson.value = lesson
+        } else {
+          // All completed, show first
+          const lesson = await fetchTutorial(tutorials[0].id)
+          currentTutorialLesson.value = lesson
+        }
+        tutorialMode.value = true
+      } catch (e) {
+        console.error('Failed to load tutorials:', e)
+      }
+    }
+
+    const exitTutorialMode = () => {
+      tutorialMode.value = false
+      currentTutorialLesson.value = null
+    }
+
+    const onTutorialCompleted = (lessonId) => {
+      // Could navigate to next tutorial here
+      setTimeout(() => {
+        exitTutorialMode()
+      }, 500)
+    }
+
     return {
       puzzle,
       givenCells,
@@ -548,7 +613,13 @@ export default {
       currentHint,
       candidates,
       showCandidates,
+      tutorialMode,
+      tutorialList,
+      currentTutorialLesson,
       toggleDarkMode,
+      toggleTutorialMode,
+      exitTutorialMode,
+      onTutorialCompleted,
       onCellUpdate,
       onNumberPadInput,
       clearSelectedCell,
@@ -621,6 +692,34 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.learn-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: #e8f0fe;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.learn-btn:hover {
+  background: #d2e3fc;
+  transform: scale(1.1);
+}
+
+.app.dark .learn-btn {
+  background: #333;
 }
 
 h1 {

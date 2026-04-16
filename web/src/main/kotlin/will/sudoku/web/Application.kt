@@ -22,6 +22,7 @@ import will.sudoku.web.generateRoutes
 import will.sudoku.web.validateRoutes
 import will.sudoku.web.stepByStepRoutes
 import will.sudoku.web.candidateRoutes
+import will.sudoku.web.tutorialRoutes
 
 fun main() {
     val port = System.getenv("PORT")?.toInt() ?: 8080
@@ -83,6 +84,7 @@ fun Application.module() {
             validateRoutes()
             stepByStepRoutes()
             candidateRoutes()
+            tutorialRoutes()
         }
         
         // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
@@ -101,6 +103,7 @@ fun Application.module() {
             validateRoutes()
             stepByStepRoutes()
             candidateRoutes()
+            tutorialRoutes()
         }
     }
 }

@@ -78,3 +78,32 @@ export async function fetchCandidates(puzzle) {
   })
   return response.json()
 }
+
+// Tutorial API
+export async function fetchTutorials() {
+  const response = await fetch(`${API_BASE}/v1/tutorials`)
+  return response.json()
+}
+
+export async function fetchTutorial(id) {
+  const response = await fetch(`${API_BASE}/v1/tutorials/${id}`)
+  return response.json()
+}
+
+export async function fetchTutorialBoard(id) {
+  const response = await fetch(`${API_BASE}/v1/tutorials/${id}/board`)
+  return response.json()
+}
+
+export async function completeTutorial(id) {
+  const response = await fetch(`${API_BASE}/v1/tutorials/${id}/complete`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return response.json()
+}
+
+export async function fetchTutorialProgress() {
+  const response = await fetch(`${API_BASE}/v1/tutorials/progress`)
+  return response.json()
+}
