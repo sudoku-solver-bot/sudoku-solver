@@ -79,6 +79,20 @@ fun Application.module() {
             )
         }
         
+        get("/manifest.webmanifest") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/manifest.webmanifest")?.readText() ?: "{}",
+                io.ktor.http.ContentType.Application.Json
+            )
+        }
+        
+        get("/registerSW.js") {
+            call.respondText(
+                javaClass.classLoader.getResource("static/registerSW.js")?.readText() ?: "",
+                io.ktor.http.ContentType.Application.JavaScript
+            )
+        }
+        
         // Serve workbox library
         static("/workbox") {
             resources("static")
