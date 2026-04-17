@@ -1,352 +1,204 @@
-# Sudoku Solver
+# Sudoku Dojo — Learn & Play
 
-A high-performance Sudoku solver implemented in Kotlin, featuring multiple constraint propagation strategies and backtracking with JMH benchmarking capabilities.
+An educational Sudoku platform with 17 solving algorithms, interactive tutorials, daily challenges, and belt-rank progression. Built with Kotlin + Vue 3.
 
-## Overview
+**Live:** [sudoku-solver-r5y8.onrender.com](https://sudoku-solver-r5y8.onrender.com)
 
-This project implements a fast Sudoku solver that combines:
-- **Bitmask-based candidate representation** for efficient state management
-- **Three elimination strategies** for constraint propagation
-- **Backtracking search** with minimum remaining values heuristic
-- **JMH benchmarks** for performance validation
+---
 
-## Features
+## What It Does
 
-- **Efficient Candidate Management**: Uses bitmask patterns (9-bit integers) to represent possible values
-- **Three Elimination Techniques**:
-  - *Simple Eliminator*: Removes confirmed values from peer cells
-  - *Group Eliminator*: Detects naked pairs/triples (naked subsets)
-  - *Exclusion Eliminator*: Detects hidden singles
-- **Configurable Thresholds**: The exclusion eliminator can skip groups with too many known values
-- **Benchmarking**: JMH microbenchmarks for performance analysis
+Sudoku Dojo teaches Sudoku solving techniques step-by-step, from basic elimination to advanced logic chains. Think of it as a karate dojo — each technique earns you a belt, from ⬜ White to 🎓 Master.
 
-## Project Structure
+### Core Features
 
-```
-sudoku-solver/
-├── kotlin/                    # Kotlin implementation
-│   ├── src/main/
-│   │   └── java/will/sudoku/solver/
-│   │       ├── Board.kt              # Board state & candidate patterns
-│   │       ├── Solver.kt             # Main solver with backtracking
-│   │       ├── Settings.kt            # Configuration constants
-│   │       ├── Coord.kt               # Cell coordinates (row, col)
-│   │       ├── CoordGroup.kt          # Row/column/region groups
-│   │       ├── CandidateEliminator.kt # Interface for eliminators
-│   │       ├── SimpleCandidateEliminator.kt
-│   │       ├── GroupCandidateEliminator.kt
-│   │       ├── ExclusionCandidateEliminator.kt
-│   │       └── BoardReader.kt         # Parse boards from files/strings
-│   ├── src/test/             # JUnit 5 tests
-│   └── src/jmh/              # JMH benchmarks
-```
+- **20 Interactive Tutorials** across 7 belt levels (White → Master)
+- **17 Solving Algorithms** (see below)
+- **Step-by-step guided lessons** with highlighted cells and explanations
+- **Daily Challenge** — new puzzle every day with streak tracking
+- **Dashboard** — stats, belt progress, and solving history
+- **Candidate Display** — pencil marks shown as mini 3×3 grids
+- **PWA Support** — installable, works offline
+- **Accessibility** — color-blind mode, high contrast, ARIA labels, keyboard navigation
+- **Share Results** — Web Share API for daily challenge completion
 
-## Building
+---
 
-### Prerequisites
+## Solving Techniques
 
-- JDK 21 or higher
-- Gradle 7.x+ (or use the included Gradle wrapper)
+The solver implements 17 elimination algorithms, ordered by difficulty:
 
-### Build Commands
+| # | Technique | Belt | Key Concept |
+|---|-----------|------|-------------|
+| 1 | **Simple Elimination** | ⬜ White | Remove known values from peers |
+| 2 | **Naked Single** | ⬜ White | Only one candidate left |
+| 3 | **Hidden Single** | 🟡 Yellow | Value can only go in one place |
+| 4 | **Naked Pair** | 🟠 Orange | Two cells, two same candidates |
+| 5 | **Hidden Pair** | 🟠 Orange | Two numbers, same two cells |
+| 6 | **Pointing Pair/Triple** | 🟢 Green | Box forces row/col elimination |
+| 7 | **Box/Line Reduction** | 🟢 Green | Row/col forces box elimination |
+| 8 | **Naked Triple** | 🔵 Blue | Three cells, three candidates |
+| 9 | **Hidden Triple** | 🔵 Blue | Three numbers, same three cells |
+| 10 | **X-Wing** | 🟣 Purple | Two rows, two columns pattern |
+| 11 | **Swordfish** | 🟣 Purple | Three rows, three columns |
+| 12 | **XY-Wing** | 🟤 Brown | Three-cell chain elimination |
+| 13 | **XYZ-Wing** | 🟤 Brown | Three-cell with triple |
+| 14 | **W-Wing** | ⬛ Black | Conjugate pair chain |
+| 15 | **Simple Coloring** | ⬛ Black | Color chains of candidates |
+| 16 | **Unique Rectangles** | ⬛ Black | Avoid deadly patterns |
+| 17 | **ALS-XZ** | 🎓 Master | Almost Locked Sets with restricted common |
+| 18 | **Franken Fish** | 🎓 Master | Fish using boxes as base/cover |
+| 19 | **Mutant Fish** | 🎓 Master | Mixed house types in base + cover |
+| 20 | **Death Blossom** | 🎓 Master | Stem + petal ALS elimination |
+| 21 | **Forcing Chains** | 🎓 Master | What-if chain contradictions |
 
-```bash
-# Build the project
-./gradlew build
-
-# Clean build artifacts
-./gradlew clean
-```
-
-## Running Tests
-
-```bash
-# Run all tests
-./gradlew test
-```
-
-Tests use parameterized board files in `kotlin/src/test/resources/solver/`. Boards are read in pairs:
-- `<name>.question` - The unsolved puzzle
-- `<name>.solution` - The expected solution
-
-## Running Benchmarks
-
-```bash
-# Run JMH benchmarks
-./gradlew :kotlin:jmh
-```
-
-The benchmarks test solving performance with different `shortCircuitThreshold` values (0, 3, 6, 9) across multiple puzzle files (g1-g4).
-
-## Board Format
-
-Boards are represented as text with the following format:
-
-- `.` or `0` - Empty/unknown cell
-- `1-9` - Confirmed value
-- `!` - Column separator (every 3 columns, for 3x3 regions)
-- `-` - Row separator (every 3 rows, for 3x3 regions)
-
-Example:
-```
-.4.!3.8!1..
-21.!.65!...
-6..!...!.7.
----!---!---
-9.3!.46!781
-...
-```
-
-## Usage Example (Kotlin)
-
-```kotlin
-import will.sudoku.solver.*
-
-// Parse a board from string
-val board = BoardReader.readBoard("""
-    .4.!3.8!1..
-    21.!.65!...
-    6..!...!.7.
-    ---!---!---
-    9.3!.46!781
-    1.4!829!5.6
-    8.5!...!.2.
-    ---!---!---
-    4..!...!6.3
-    ...!6.2!.47
-    .8.!.3.!...
-""".trimIndent())
-
-// Solve the puzzle
-val solved = Solver().solve(board)
-
-if (solved != null) {
-    println(solved)
-} else {
-    println("No solution found")
-}
-```
+---
 
 ## Architecture
 
-### Candidate Pattern Representation
+### Backend — Kotlin + Ktor
 
-The solver uses bitmask patterns to efficiently track possible values for each cell:
+- **Solver Engine** (`kotlin/`) — Bitmask-based candidate representation with 17 eliminators and backtracking (MRV heuristic)
+- **Web API** (`web/`) — Ktor REST API serving puzzles, solutions, tutorials, hints, daily challenges
+- **Docker** — Multi-stage build (Gradle build + Alpine JRE runtime)
 
-- Each cell has a 9-bit integer representing candidates
-- Bit `i` (0-indexed) corresponds to value `i+1`
-- Example: `0b000001010` = values 2 and 4 are candidates
-- Confirmed cell = only one bit set (single value)
+### Frontend — Vue 3 + Vite
 
-```kotlin
-// Value 5 is confirmed: 0b000010000 (bit 4 set)
-// All candidates: 0b111111111 (all 9 bits)
+- **Single-page app** (`web-ui/`) — Responsive, mobile-first design
+- **Components:** SudokuGrid, TutorialMode, TutorialSelector, Dashboard, DailyChallenge, Settings
+- **PWA:** Service worker caching via vite-plugin-pwa
+
+### Project Structure
+
+```
+sudoku-solver/
+├── kotlin/                    # Kotlin solver engine
+│   ├── src/main/              # 17 eliminators + solver + puzzle generator
+│   └── src/test/              # 389 tests, 0 failures
+├── web/                       # Ktor web server
+│   └── src/main/              # REST API routes + static resources
+│       └── resources/tutorials/  # lessons.json (20 tutorials)
+├── web-ui/                    # Vue 3 frontend
+│   └── src/components/        # 14 Vue components
+├── Dockerfile                 # Multi-stage Docker build
+└── docs/                      # Roadmap, benchmarks, puzzle library
 ```
 
-### Solver Algorithm
+---
 
-1. **Constraint Propagation**: Apply all eliminators until no more changes
-   - `SimpleCandidateEliminator`: Remove known values from peers
-   - `GroupCandidateEliminator`: Find naked pairs/triples in groups
-   - `ExclusionCandidateEliminator`: Find hidden singles in groups
+## API Endpoints
 
-2. **Select Cell**: Choose the cell with minimum remaining candidates (MRV heuristic)
+| Endpoint | Description |
+|----------|-------------|
+| `POST /api/solve` | Solve a puzzle |
+| `POST /api/v1/candidates` | Get candidate sets for a board |
+| `GET /api/hint` | Get a teaching hint for current board state |
+| `GET /api/generate?difficulty=medium` | Generate a random puzzle |
+| `GET /api/daily` | Today's daily challenge puzzle |
+| `GET /api/v1/tutorials` | List all tutorials |
+| `GET /api/v1/tutorials/{id}` | Get tutorial lesson + steps |
+| `GET /api/v1/tutorials/{id}/board` | Get example puzzle for tutorial |
+| `POST /api/v1/tutorials/{id}/complete` | Mark tutorial as completed |
+| `GET /api/v1/progress` | Student progress overview |
+| `GET /api/health` | Health check (uptime, JVM memory, threads) |
+| `GET /api/validate` | Validate a puzzle solution |
 
-3. **Backtrack**: Try each candidate value recursively
-   - After placing a value, apply eliminators again
-   - If conflict occurs, backtrack and try next candidate
+---
 
-### Coordinate System
+## Getting Started
 
-- `Coord(row: Int, col: Int)` - Zero-indexed (0-8)
-- `CoordGroup` - Represents rows, columns, and 3x3 regions
-- Each cell belongs to 3 groups: its row, column, and region
+### Prerequisites
 
-## Configuration
+- **JDK 21+**
+- **Node.js 18+** (for frontend build)
+- **Docker** (optional, for containerized deployment)
 
-The `Settings` object contains global configuration:
+### Run Locally
 
-```kotlin
-object Settings {
-    const val size: Int = 9                           // 9x9 board
-    val regionSize: Int = 3                          // 3x3 regions
-    val symbols: CharArray = charArrayOf('.', '1'..'9')  // Display symbols
-}
+```bash
+# Build and run backend (includes frontend assets)
+./gradlew :web:run
+
+# Or run frontend dev server separately
+cd web-ui && npm install && npm run dev
 ```
+
+### Run Tests
+
+```bash
+# All 389 tests
+./gradlew test
+
+# Single test class
+./gradlew test --tests will.sudoku.solver.SolverTest
+```
+
+### Docker
+
+```bash
+docker build -t sudoku-dojo .
+docker run -p 10000:10000 sudoku-dojo
+```
+
+---
+
+## Deployment
+
+Deployed on [Render](https://render.com) (free tier):
+
+- **Branch:** `master` (auto-deploy on push)
+- **Runtime:** Docker
+- **Region:** Oregon
+- **Health Check:** `/api/health`
+- **Dashboard:** [dashboard.render.com](https://dashboard.render.com)
+
+---
 
 ## Contributing
 
 ### Development Workflow
 
-1. Fork the repository and create a feature branch
-2. Make your changes
-3. Run tests: `./gradlew test`
-4. Run benchmarks if performance changes: `./gradlew :kotlin:jmh`
-5. Submit a pull request with clear description of changes
+1. Create a feature branch from `master`
+2. Make changes + add tests
+3. Run `./gradlew test` to verify
+4. Open a pull request
+5. CI must pass (Java CI workflow, 389 tests)
 
-### Adding New Elimination Strategies
+### Branch Protection
 
-1. Implement the `CandidateEliminator` interface:
-```kotlin
-class MyEliminator : CandidateEliminator {
-    override fun eliminate(board: Board): Boolean {
-        // Apply elimination rules
-        // Return true if any changes were made
-    }
-}
-```
+- ✅ CI status checks required
+- ✅ PR reviews required
+- ✅ Linear history (squash merge)
+- ✅ Admin enforcement
+- ✅ Force pushes disabled
 
-2. Add to eliminators list in `Settings.kt`:
-```kotlin
-val eliminators = listOf(
-    simpleCandidateEliminator,
-    groupCandidateEliminator,
-    exclusionCandidateEliminator,
-    myEliminator  // Add here
-)
-```
+### Adding a New Elimination Technique
 
-3. Add tests in `kotlin/src/test/resources/solver/` with `<name>.question` and `<name>.solution` pairs
-
-### Code Style
-
-- Follow Kotlin coding conventions
-- Use the `Settings` object for configuration constants
-- Prefer bitmask operations over loops for candidate checking
-- Add unit tests for any new functionality
+1. Implement `CandidateEliminator` interface in `kotlin/src/main/`
+2. Register in `Solver.kt` eliminator chain
+3. Add tests with `.question` / `.solution` files
+4. Create a tutorial lesson in `lessons.json`
+5. Add frontend support (tutorial steps, highlights)
 
 ### Pre-commit Hooks
 
-This project uses [pre-commit](https://pre-commit.com/) to automatically check code quality before commits.
-
-#### Setup
-
-1. Install pre-commit (one-time setup):
-```bash
-# Using pip
-pip install pre-commit
-
-# Or using Homebrew (macOS)
-brew install pre-commit
-```
-
-2. Install the hooks:
-```bash
-pre-commit install
-```
-
-3. (Optional) Run against all files to verify setup:
-```bash
-pre-commit run --all-files
-```
-
-#### What Gets Checked
-
-Pre-commit automatically runs these checks on every commit:
-
-- **File validation**: YAML, JSON, XML syntax
-- **Merge conflicts**: Detects leftover conflict markers
-- **Security**: Detects private keys and AWS credentials
-- **Formatting**: Trailing whitespace, end-of-file fixes, line endings
-- **Linting**: 
-  - Kotlin (ktlint)
-  - JavaScript/Vue (ESLint)
-  - Dockerfiles (hadolint)
-- **Large files**: Prevents committing files > 1MB
-
-#### Bypass Hooks (Emergency Only)
+This project uses [pre-commit](https://pre-commit.com/):
 
 ```bash
-# Skip pre-commit hooks (not recommended)
-git commit --no-verify
+pip install pre-commit && pre-commit install
 ```
 
-#### Update Hooks
+Checks: Kotlin (ktlint), JavaScript/Vue (ESLint), Dockerfiles (hadolint), YAML/JSON/XML syntax, security (private keys, AWS credentials), trailing whitespace, large files.
 
-Periodically update to latest hook versions:
-```bash
-pre-commit autoupdate
-```
+---
 
-For more information, see the [pre-commit documentation](https://pre-commit.com/).
+## Stats
 
-## Performance
-
-Benchmark results test different `shortCircuitThreshold` values:
-- `0`: Apply exclusion eliminator to all groups (most thorough, slower)
-- `3-6`: Skip groups with many known values (balanced)
-- `9`: Skip exclusion eliminator entirely (faster, but may miss constraints)
-
-Higher thresholds improve speed on simple puzzles but may increase backtracking on complex ones.
-
-Benchmarks test different `shortCircuitThreshold` values:
-- `0`: Apply exclusion eliminator to all groups (most thorough, slower)
-- `3-6`: Skip groups with many known values (balanced)
-- `9`: Skip exclusion eliminator entirely (faster, but may miss constraints)
-
-Higher thresholds improve speed on simple puzzles but may increase backtracking on complex ones.
-
-### Performance
-
-### Optimization Tips
-
-- The MRV (minimum remaining values) heuristic significantly reduces search space
-- Bitmask operations are ~10x faster than array-based candidate tracking
-- Pre-computed `Coord.all` and `CoordGroup.all` avoid repeated allocations
-
-## Troubleshooting
-
-### Build Issues
-
-**Problem**: "Could not resolve dependencies"
-```
-Solution: Clean and rebuild: ./gradlew clean build
-```
-
-**Problem**: JMH benchmarks fail to run
-```
-Solution: Ensure JDK 11 is installed and JAVA_HOME is set correctly
-```
-
-### Solver Issues
-
-**Problem**: Solver returns null for valid puzzles
-```
-Solution: Check board format - ensure separators (! and -) are placed correctly
-```
-
-**Problem**: Solver is slow on certain puzzles
-```
-Solution: Adjust shortCircuitThreshold in Settings or add more eliminators
-```
-
-**Problem**: OutOfMemoryError on large batches
-```
-Solution: Increase JVM heap size: ./gradlew :kotlin:test -Dorg.gradle.jvmargs="-Xmx2g"
-```
-
-### Board Format Issues
-
-**Problem**: "Invalid board format" error
-```
-Solution: Ensure exactly 9 rows and 9 columns (excluding separators)
-```
-
-**Problem**: Solution doesn't match expected
-```
-Solution: Verify the .solution file is valid - run BoardReader.readBoard() on it
-```
-
-## Board Difficulty Classification
-
-Based on solver performance:
-
-- **Easy (< 10ms)**: Solved by constraint propagation alone, no backtracking needed
-- **Medium (10-100ms)**: Requires minimal backtracking (few hundred guesses)
-- **Hard (100-1000ms)**: Extensive backtracking (thousands of guesses)
-- **Expert (> 1000ms)**: Maximum difficulty, requires advanced techniques
-
-To classify a puzzle, run: `./gradlew :kotlin:jmh` and observe solve times.
+- **109 PRs merged** (G1-G10 game/teaching features + UI/UX enhancements)
+- **389 tests**, 0 failures
+- **20 tutorials**, 7 belt levels
+- **17 elimination algorithms**
+- **CI:** GitHub Actions (Java CI + Detekt + JMH benchmarks)
 
 ## License
 
