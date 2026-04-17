@@ -214,6 +214,7 @@
         @generate="generate"
         @import="importModalOpen = true"
         @share="sharePuzzle"
+        @print="handlePrint"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -282,6 +283,7 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
@@ -933,6 +935,11 @@ export default {
       playSound('click')
     }
 
+    const handlePrint = () => {
+      printPuzzle(puzzle.value, puzzleDifficulty.value)
+      playSound('click')
+    }
+
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -1186,6 +1193,7 @@ export default {
       importModalOpen,
       onImportPuzzle,
       sharePuzzle,
+      handlePrint,
       handleKeyDown
     }
   }

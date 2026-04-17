@@ -82,6 +82,11 @@
       Share Puzzle
     </button>
 
+    <button class="btn-print" @click="$emit('print')">
+      <span class="btn-icon">🖨️</span>
+      Print
+    </button>
+
     <!-- Pencil marks toggle -->
     <button
       class="btn-toggle"
@@ -123,7 +128,7 @@ export default {
       default: true
     }
   },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share']
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print']
 }
 </script>
 
@@ -282,6 +287,14 @@ button:active:not(:disabled) {
 .btn-share {
   background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
   color: #4285f4;
+  padding: 14px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.btn-print {
+  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+  color: #7b1fa2;
   padding: 14px;
   font-size: 15px;
   margin-top: 4px;
