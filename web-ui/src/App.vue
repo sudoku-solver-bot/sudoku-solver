@@ -177,6 +177,7 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
+        :show-conflicts="playMode"
         @update="onCellUpdate"
         @select="selectCell"
         @navigate="navigateToCell"

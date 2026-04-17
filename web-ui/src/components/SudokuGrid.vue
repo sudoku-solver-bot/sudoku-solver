@@ -82,6 +82,10 @@ export default {
       type: Array,
       default: () => []
     },
+    showConflicts: {
+      type: Boolean,
+      default: true
+    },
     colorBlind: {
       type: Boolean,
       default: false
@@ -108,6 +112,25 @@ export default {
       const col = getCol(index)
       return Math.floor(row / 3) * 3 + Math.floor(col / 3)
     }
+
+    // Detect conflicts (duplicate values in row/col/box)
+    const conflicts = computed(() => {
+      if (!props.showConflicts) return new Set()
+      const set = new Set()
+      for (let i = 0; i < 81; i++) {
+        if (props.puzzle[i] === '.') continue
+        const val = props.puzzle[i]
+        const row = getRow(i), col = getCol(i), region = getRegion(i)
+        for (let j = 0; j < 81; j++) {
+          if (i === j || props.puzzle[j] !== val) continue
+          if (getRow(j) === row || getCol(j) === col || getRegion(j) === region) {
+            set.add(i)
+            set.add(j)
+          }
+        }
+      }
+      return set
+    })
 
     const getCellClasses = (index) => {
       const classes = {
@@ -138,6 +161,9 @@ export default {
       classes['highlight-green'] = isHighlighted(index, 'green')
       classes['highlight-red'] = isHighlighted(index, 'red')
       classes['highlight-yellow'] = isHighlighted(index, 'yellow')
+
+      // Conflict highlighting
+      classes['conflict'] = conflicts.value.has(index)
 
       return classes
     }
@@ -407,8 +433,25 @@ export default {
   background: #fff8e1;
 }
 
+.cell.conflict {
+  background: #ffebee !important;
+  color: #c62828;
+  animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px); }
+  75% { transform: translateX(2px); }
+}
+
 .grid.dark .cell.same-value {
   background: #4d4d3d;
+}
+
+.grid.dark .cell.conflict {
+  background: #4d1a1a !important;
+  color: #ef9a9a;
 }
 
 /* Given and solved cells */
