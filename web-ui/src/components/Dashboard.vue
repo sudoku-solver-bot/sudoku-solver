@@ -69,17 +69,32 @@
           :class="{ earned: belt.earned, current: belt.current }"
           :style="{ '--color': belt.color }"
           :title="belt.name"
+          @click="belt.earned && openCert(belt)"
         >
           <span class="belt-emoji">{{ belt.emoji }}</span>
           <span class="belt-label">{{ belt.shortName }}</span>
         </div>
       </div>
+      <p v-if="earnedBelts.length" class="cert-hint">Click an earned belt to view certificate 🏆</p>
     </div>
+
+    <!-- Certificate modal -->
+    <BeltCertificate
+      v-if="showCert"
+      :technique="certBelt.technique"
+      :belt-name="certBelt.name"
+      :belt-emoji="certBelt.emoji"
+      :belt-color="certBelt.color"
+      :tutorials-completed="completedTutorials.size"
+      :total-tutorials="totalTutorials"
+      @close="showCert = false"
+    />
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import BeltCertificate from './BeltCertificate.vue'
 
 export default {
   name: 'Dashboard',
@@ -89,7 +104,15 @@ export default {
     isDark: { type: Boolean, default: false }
   },
   emits: ['daily', 'learn', 'play'],
+  components: { BeltCertificate },
   setup(props) {
+    const showCert = ref(false)
+    const certBelt = ref({})
+
+    const openCert = (belt) => {
+      certBelt.value = belt
+      showCert.value = true
+    }
     const streak = computed(() => {
       try {
         const saved = localStorage.getItem('sudokuDailyStreak')
@@ -149,7 +172,9 @@ export default {
       return `${props.totalTutorials - count} lessons remaining`
     })
 
-    return { streak, currentBelt, belts, dailyInfo, learnInfo }
+    const earnedBelts = computed(() => belts.value.filter(b => b.earned))
+
+    return { streak, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
   }
 }
 </script>
@@ -355,6 +380,11 @@ export default {
 
 .belt-node.earned {
   opacity: 1;
+  cursor: pointer;
+}
+
+.belt-node.earned:hover {
+  transform: scale(1.1);
 }
 
 .belt-node.current {
@@ -379,6 +409,13 @@ export default {
   font-size: 9px;
   color: #888;
   text-transform: uppercase;
+}
+
+.cert-hint {
+  text-align: center;
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 8px;
 }
 
 @media (max-width: 380px) {
