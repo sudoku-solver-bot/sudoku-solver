@@ -496,6 +496,19 @@ export default {
       // Load initial undo/redo state
       loadHistoryState()
 
+      // Restore saved game state
+      const savedGame = localStorage.getItem('sudoku-current-game')
+      if (savedGame && !sharedPuzzle) {
+        try {
+          const game = JSON.parse(savedGame)
+          if (game.puzzle && game.puzzle.length === 81 && game.puzzle !== '.'.repeat(81)) {
+            setPuzzle(game.puzzle, true)
+            if (game.playMode) playMode.value = true
+            if (game.difficulty) puzzleDifficulty.value = game.difficulty
+          }
+        } catch (e) {}
+      }
+
       // Check for shared puzzle in URL
       const params = new URLSearchParams(window.location.search)
       const sharedPuzzle = params.get('p')
@@ -514,6 +527,18 @@ export default {
 
       // Keyboard navigation
       window.addEventListener('keydown', handleKeyDown)
+
+      // Auto-save game state on puzzle changes
+      watch(puzzle, (val) => {
+        if (val && val !== '.'.repeat(81)) {
+          localStorage.setItem('sudoku-current-game', JSON.stringify({
+            puzzle: val,
+            playMode: playMode.value,
+            difficulty: puzzleDifficulty.value,
+            ts: Date.now()
+          }))
+        }
+      })
     })
 
     onUnmounted(() => {
