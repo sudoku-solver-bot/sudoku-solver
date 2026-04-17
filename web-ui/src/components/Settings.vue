@@ -54,6 +54,15 @@
         </div>
       </div>
 
+      <!-- Language section -->
+      <div class="settings-section">
+        <h3>Language / 語言</h3>
+        <div class="lang-selector">
+          <button class="lang-btn" :class="{ active: currentLocale === 'en' }" @click="setLocale('en')">🇬🇧 English</button>
+          <button class="lang-btn" :class="{ active: currentLocale === 'zh-Hant' }" @click="setLocale('zh-Hant')">🇭🇰 繁體中文</button>
+        </div>
+      </div>
+
       <!-- Data section -->
       <div class="settings-section">
         <h3>Data</h3>
@@ -83,6 +92,7 @@
 <script>
 import { ref } from 'vue'
 import { isSoundEnabled, setSoundEnabled, playSound } from '../sounds'
+import { useI18n } from '../i18n'
 
 export default {
   name: 'Settings',
@@ -95,6 +105,7 @@ export default {
   emits: ['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast', 'change-theme'],
   setup(props, { emit }) {
     const soundEnabled = ref(isSoundEnabled())
+    const { currentLocale, setLocale } = useI18n()
 
     const themes = [
       { id: 'default', name: 'Default' },
@@ -125,7 +136,7 @@ export default {
         emit('exit')
       }
     }
-    return { resetProgress, soundEnabled, toggleSound, themes, currentTheme, selectTheme }
+    return { resetProgress, soundEnabled, toggleSound, themes, currentTheme, selectTheme, currentLocale, setLocale }
   }
 }
 </script>
@@ -281,4 +292,11 @@ export default {
 
 .theme-name { font-size: 10px; color: #666; }
 .theme-btn.active .theme-name { color: #4285f4; font-weight: 600; }
+
+.lang-selector { display: flex; gap: 8px; }
+.lang-btn {
+  flex: 1; padding: 10px; border: 2px solid #e0e0e0; border-radius: 10px;
+  background: transparent; cursor: pointer; font-size: 14px; transition: all 0.2s;
+}
+.lang-btn.active { border-color: #4285f4; background: #e8f0fe; color: #4285f4; font-weight: 600; }
 </style>
