@@ -50,6 +50,7 @@
             <div class="diff-fill" :style="{ width: d.percent + '%', background: d.color }"></div>
           </div>
           <span class="diff-count">{{ d.count }}</span>
+          <span v-if="d.best" class="diff-best">⏱ {{ formatTime(d.best) }}</span>
         </div>
       </div>
     </div>
@@ -127,12 +128,13 @@ export default {
 
     const difficultyStats = computed(() => {
       const byDiff = stats.value.byDifficulty || {}
+      const bestByDiff = stats.value.bestTimeByDifficulty || {}
       const max = Math.max(1, ...Object.values(byDiff))
       return [
-        { name: 'Easy', icon: '🟢', color: '#34a853', count: byDiff.easy || 0, percent: ((byDiff.easy || 0) / max) * 100 },
-        { name: 'Medium', icon: '🟡', color: '#fbbc04', count: byDiff.medium || 0, percent: ((byDiff.medium || 0) / max) * 100 },
-        { name: 'Hard', icon: '🟠', color: '#ff6d01', count: byDiff.hard || 0, percent: ((byDiff.hard || 0) / max) * 100 },
-        { name: 'Expert', icon: '🔴', color: '#ea4335', count: byDiff.expert || 0, percent: ((byDiff.expert || 0) / max) * 100 },
+        { name: 'Easy', icon: '🟢', color: '#34a853', count: byDiff.easy || 0, percent: ((byDiff.easy || 0) / max) * 100, best: bestByDiff.easy },
+        { name: 'Medium', icon: '🟡', color: '#fbbc04', count: byDiff.medium || 0, percent: ((byDiff.medium || 0) / max) * 100, best: bestByDiff.medium },
+        { name: 'Hard', icon: '🟠', color: '#ff6d01', count: byDiff.hard || 0, percent: ((byDiff.hard || 0) / max) * 100, best: bestByDiff.hard },
+        { name: 'Expert', icon: '🔴', color: '#ea4335', count: byDiff.expert || 0, percent: ((byDiff.expert || 0) / max) * 100, best: bestByDiff.expert },
       ]
     })
 
@@ -344,6 +346,14 @@ export default {
   color: #333;
   text-align: right;
 }
+
+.diff-best {
+  font-size: 11px;
+  color: #4285f4;
+  min-width: 60px;
+  text-align: right;
+}
+
 .stats-page.dark .diff-count, .stats-page.dark .time-count { color: #ddd; }
 
 .activity-row {
