@@ -44,7 +44,28 @@
               <div class="lesson-title">{{ lesson.title }}</div>
               <div class="lesson-desc">{{ lesson.description }}</div>
             </div>
-            <div v-if="!lesson.locked" class="lesson-arrow">→</div>
+            <div class="lesson-actions">
+              <button
+                v-if="lesson.completed && getPracticeSet(lesson.id)"
+                class="mini-btn practice-btn"
+                title="Practice puzzles"
+                @click.stop="$emit('practice', lesson)"
+              >🎯</button>
+              <div v-if="!lesson.locked" class="lesson-arrow">→</div>
+            </div>
+          </button>
+          <!-- Quiz button for belt group -->
+          <button
+            v-if="group.allComplete && group.quizData"
+            class="quiz-card"
+            @click="$emit('quiz', group.quizData)"
+          >
+            <div class="lesson-icon">🧠</div>
+            <div class="lesson-info">
+              <div class="lesson-title">Quiz: {{ group.quizData.technique }}</div>
+              <div class="lesson-desc">Test your pattern recognition!</div>
+            </div>
+            <div class="lesson-arrow">→</div>
           </button>
         </div>
       </div>
@@ -60,9 +81,11 @@ export default {
   props: {
     tutorials: { type: Array, required: true },
     completedIds: { type: Set, default: () => new Set() },
-    isDark: { type: Boolean, default: false }
+    isDark: { type: Boolean, default: false },
+    quizData: { type: Array, default: () => [] },
+    practiceData: { type: Array, default: () => [] }
   },
-  emits: ['exit', 'select'],
+  emits: ['exit', 'select', 'quiz', 'practice'],
   setup(props, { emit }) {
     const completedCount = computed(() => props.completedIds.size)
 
@@ -81,7 +104,10 @@ export default {
             emoji: t.beltEmoji,
             color: t.beltColor,
             lessons: [],
-            completed: 0
+            completed: 0,
+            total: 0,
+            allComplete: false,
+            quizData: null
           }
         }
         const completed = props.completedIds.has(t.id)
@@ -95,10 +121,24 @@ export default {
         const locked = !completed && t.order > maxCompletedOrder + 1
 
         groups[t.belt].lessons.push({ ...t, completed, locked })
+        groups[t.belt].total++
         if (completed) groups[t.belt].completed++
       }
+
+      // Check which belt groups are fully complete and attach quiz data
+      for (const group of Object.values(groups)) {
+        group.allComplete = group.completed === group.total
+        if (group.allComplete) {
+          group.quizData = props.quizData.find(q => q.belt === group.belt) || null
+        }
+      }
+
       return Object.values(groups)
     })
+
+    const getPracticeSet = (lessonId) => {
+      return props.practiceData.find(p => p.tutorialId === lessonId)
+    }
 
     const selectLesson = (lesson) => {
       if (!lesson.locked) {
@@ -106,7 +146,7 @@ export default {
       }
     }
 
-    return { completedCount, overallProgress, beltGroups, selectLesson }
+    return { completedCount, overallProgress, beltGroups, getPracticeSet, selectLesson }
   }
 }
 </script>
@@ -316,6 +356,61 @@ export default {
 
 .lesson-card.completed .lesson-arrow {
   color: #34a853;
+}
+
+.lesson-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mini-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.2s;
+}
+
+.tutorial-selector.dark .mini-btn {
+  background: #333;
+  border-color: #555;
+}
+
+.mini-btn:hover {
+  transform: scale(1.1);
+  border-color: #4285f4;
+}
+
+.quiz-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #e8f0fe, #f3e5f5);
+  border: 2px solid #9c27b0;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  width: 100%;
+}
+
+.tutorial-selector.dark .quiz-card {
+  background: linear-gradient(135deg, #1a1a3c, #2a1a2a);
+  border-color: #9c27b0;
+}
+
+.quiz-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.2);
 }
 
 @media (max-width: 500px) {
