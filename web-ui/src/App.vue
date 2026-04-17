@@ -549,6 +549,33 @@ export default {
       // Refresh candidates after cell update
       await refreshCandidates()
 
+      // Auto-remove pencil marks for this number in same row/col/box
+      if (value && value !== '.') {
+        const row = Math.floor(index / 9)
+        const col = index % 9
+        const region = Math.floor(row / 3) * 3 + Math.floor(col / 3)
+        const newCandidates = { ...candidates.value }
+        let changed = false
+        for (let i = 0; i < 81; i++) {
+          const iRow = Math.floor(i / 9)
+          const iCol = i % 9
+          const iRegion = Math.floor(iRow / 3) * 3 + Math.floor(iCol / 3)
+          if (iRow === row || iCol === col || iRegion === region) {
+            const key = String(i)
+            if (newCandidates[key]) {
+              const filtered = newCandidates[key].filter(n => n !== parseInt(value))
+              if (filtered.length !== newCandidates[key].length) {
+                newCandidates[key] = filtered
+                changed = true
+              }
+            }
+          }
+        }
+        if (changed) {
+          candidates.value = newCandidates
+        }
+      }
+
       // Track mistakes if changing a solved cell to wrong value
       if (solvedCells.value.has(index) && value !== '.' && value !== oldValue) {
         // Could add validation here
