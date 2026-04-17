@@ -30,6 +30,10 @@
         <span class="btn-icon">🗑️</span>
         Clear
       </button>
+      <button class="btn-secondary" @click="$emit('import')">
+        <span class="btn-icon">📥</span>
+        Import
+      </button>
     </div>
 
     <!-- Difficulty buttons -->
@@ -114,7 +118,7 @@ export default {
       default: true
     }
   },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates']
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import']
 }
 </script>
 
