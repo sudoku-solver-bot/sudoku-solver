@@ -23,12 +23,18 @@
           <button class="lb-btn" @click="leaderboardOpen = !leaderboardOpen" title="Leaderboard">
             🏆
           </button>
+          <button class="ach-btn" @click="openAchievements" title="Achievements">
+            🏅
+          </button>
+          <button class="stats-btn" @click="openStats" title="Statistics">
+            📊
+          </button>
         </div>
       </div>
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen""
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen""
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
@@ -51,9 +57,25 @@
 
       <!-- Leaderboard -->
       <Leaderboard
-        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode"
+        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen"
         :is-dark="isDark"
         @back="leaderboardOpen = false"
+      />
+
+      <!-- Achievements -->
+      <Achievements
+        v-if="achievementsOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !leaderboardOpen && !statsOpen"
+        :is-dark="isDark"
+        :stats="achievementStats"
+        @back="achievementsOpen = false"
+      />
+
+      <!-- Stats -->
+      <StatsPage
+        v-if="statsOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen"
+        :is-dark="isDark"
+        @back="statsOpen = false"
+        @reset-stats="statsOpen = false"
       />
 
       <!-- Daily Challenge -->
@@ -215,6 +237,9 @@ import PracticeMode from './components/PracticeMode.vue'
 import DailyChallenge from './components/DailyChallenge.vue'
 import Dashboard from './components/Dashboard.vue'
 import Leaderboard from './components/Leaderboard.vue'
+import Achievements from './components/Achievements.vue'
+import StatsPage from './components/StatsPage.vue'
+import { getStatsForAchievements } from './stats-tracker'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -248,6 +273,8 @@ export default {
     DailyChallenge,
     Leaderboard,
     Dashboard,
+    Achievements,
+    StatsPage,
     Settings
   },
   setup() {
@@ -324,6 +351,9 @@ export default {
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
     const leaderboardOpen = ref(false)
+    const achievementsOpen = ref(false)
+    const statsOpen = ref(false)
+    const achievementStats = ref({})
 
     // Load completed tutorials from localStorage
     try {
@@ -777,6 +807,19 @@ export default {
       }
     }
 
+    const openAchievements = () => {
+      achievementStats.value = getStatsForAchievements()
+      leaderboardOpen.value = false
+      statsOpen.value = false
+      achievementsOpen.value = true
+    }
+
+    const openStats = () => {
+      achievementsOpen.value = false
+      leaderboardOpen.value = false
+      statsOpen.value = true
+    }
+
     const onPracticeCompleted = (result) => {
       // Progress is saved in PracticeMode via localStorage
     }
@@ -836,6 +879,12 @@ export default {
       onPracticeSelected,
       exitPracticeMode,
       onPracticeCompleted,
+      leaderboardOpen,
+      achievementsOpen,
+      statsOpen,
+      achievementStats,
+      openAchievements,
+      openStats,
       onCellUpdate,
       onNumberPadInput,
       clearSelectedCell,
