@@ -195,6 +195,7 @@
         @solve="solve"
         @clear="clearGrid"
         @generate="generate"
+        @import="importModalOpen = true"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -216,6 +217,14 @@
         :total-hints="hintsUsed"
         @close="closeHintModal"
       />
+
+      <!-- Import puzzle modal -->
+      <ImportPuzzle
+        v-if="importModalOpen"
+        :is-dark="isDark"
+        @close="importModalOpen = false"
+        @import="onImportPuzzle"
+      />
       </template>
     </div>
   </div>
@@ -236,6 +245,7 @@ import QuizMode from './components/QuizMode.vue'
 import PracticeMode from './components/PracticeMode.vue'
 import DailyChallenge from './components/DailyChallenge.vue'
 import Dashboard from './components/Dashboard.vue'
+import ImportPuzzle from './components/ImportPuzzle.vue'
 import Leaderboard from './components/Leaderboard.vue'
 import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
@@ -271,6 +281,7 @@ export default {
     QuizMode,
     PracticeMode,
     DailyChallenge,
+    ImportPuzzle,
     Leaderboard,
     Dashboard,
     Achievements,
@@ -351,6 +362,7 @@ export default {
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
     const leaderboardOpen = ref(false)
+    const importModalOpen = ref(false)
     const achievementsOpen = ref(false)
     const statsOpen = ref(false)
     const achievementStats = ref({})
@@ -712,6 +724,14 @@ export default {
       }
     }
 
+    const onImportPuzzle = (puzzleStr) => {
+      setPuzzle(puzzleStr, true)
+      selectedCell.value = -1
+      importModalOpen.value = false
+      playMode.value = true
+      showResult('Puzzle imported! Tap Solve or solve it yourself.', 'success')
+    }
+
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -956,6 +976,8 @@ export default {
       clearGrid,
       hideToast,
       closeHintModal,
+      importModalOpen,
+      onImportPuzzle,
       handleKeyDown
     }
   }
