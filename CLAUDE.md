@@ -4,164 +4,170 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a high-performance Sudoku solver implemented in Kotlin. The solver uses bitmask-based candidate representation and multiple constraint propagation strategies combined with backtracking.
+**Sudoku Dojo** — An educational Sudoku platform with 17 solving algorithms, 20 interactive tutorials, daily challenges, and belt-rank progression. Built with Kotlin (backend) + Vue 3 (frontend).
+
+**Live site:** https://sudoku-solver-r5y8.onrender.com
 
 ## Build System
 
-Single-module Gradle project:
-- `kotlin` - Main implementation (Kotlin)
+Multi-module Gradle project:
+- `kotlin` — Solver engine (17 elimination algorithms)
+- `web` — Ktor web server (REST API)
+- `web-ui` — Vue 3 + Vite frontend (builds into `web/src/main/resources/static/`)
 
 ### Common Commands
 
 ```bash
-# Build the project
+# Build everything
 ./gradlew build
 
-# Clean build artifacts
-./gradlew clean
-
-# Run all tests
+# Run all tests (389 tests)
 ./gradlew test
 
 # Run single test class
 ./gradlew test --tests will.sudoku.solver.SolverTest
 
+# Run backend locally (serves frontend too)
+./gradlew :web:run
+
+# Frontend dev server (hot reload)
+cd web-ui && npm run dev
+
+# Build frontend for production
+cd web-ui && npm run build
+
 # Run JMH benchmarks (manual trigger only)
 ./gradlew :kotlin:jmh
-
-# Run the solver with a sample puzzle
-./gradlew :kotlin:run
 ```
 
 ## CI/CD
 
-The project uses GitHub Actions:
-- **Java CI workflow**: Runs on push/PR to `master` and `develop` branches
-- **JMH workflow**: Runs via manual dispatch only (triggers `./gradlew jmh`)
-- **Detekt workflow**: Runs on push to `master`, PRs to `master`, and weekly schedule
+GitHub Actions:
+- **Java CI** — Runs on push/PR to `master` (389 tests)
+- **Detekt** — Kotlin static analysis on push to `master` + weekly
+- **JMH** — Manual dispatch only
 
-JDK 21 is required (configured in `.github/workflows/gradle.yml`).
+JDK 21 required. Auto-deploys to Render on merge to `master`.
 
 ## Architecture
 
-### Core Data Model
+### Backend
 
-The solver centers around the `Board` class which maintains state as a 81-element `IntArray` of candidate patterns:
+#### Core Solver (`kotlin/src/main/java/will/sudoku/solver/`)
 
-- Each cell has a 9-bit integer representing possible values
-- Bit `i` (0-indexed) corresponds to value `i+1`
-- `Board.masks[]` provides bitmask values: `0b000000001` for value 1, `0b000000010` for value 2, etc.
-- Confirmed cell = single bit set; unresolved cell = multiple bits set
-- Empty/unknown cell = all bits set (`(1 shl size) - 1`)
+The `Board` class maintains state as an 81-element `IntArray` of candidate patterns:
+- Each cell has a 9-bit integer (bitmask) representing possible values 1-9
+- Bit `i` (0-indexed) = value `i+1`
+- Confirmed cell = single bit set; unresolved = multiple bits set
 
-Example: `candidatePattern = 0b000001010` means values 2 and 4 are candidates.
+**17 Eliminators** (all implement `CandidateEliminator` interface):
+
+| Class | Technique |
+|-------|-----------|
+| `SimpleCandidateEliminator` | Remove known values from peers |
+| `GroupCandidateEliminator` | Naked subsets (pairs, triples, quads) |
+| `ExclusionCandidateEliminator` | Hidden singles |
+| `HiddenSubsetCandidateEliminator` | Hidden pairs/triples/quads |
+| `XWingCandidateEliminator` | X-Wing pattern |
+| `SwordfishCandidateEliminator` | Swordfish (3-row/col) |
+| `XYWingCandidateEliminator` | XY-Wing (Y-Wing) |
+| `XYZWingCandidateEliminator` | XYZ-Wing |
+| `WWingCandidateEliminator` | W-Wing |
+| `SimpleColoringCandidateEliminator` | Simple coloring chains |
+| `UniqueRectanglesCandidateEliminator` | Unique rectangle avoidance |
+| `ALSXZCandidateEliminator` | Almost Locked Sets - XZ |
+| `FrankenFishCandidateEliminator` | Franken Fish |
+| `MutantFishCandidateEliminator` | Mutant Fish |
+| `DeathBlossomCandidateEliminator` | Death Blossom |
+| `ForcingChainsCandidateEliminator` | Forcing chains |
+
+**Solver algorithm:** Backtracking with MRV heuristic. Applies all eliminators until stable, then picks cell with fewest candidates to branch on.
+
+#### Web Server (`web/src/main/kotlin/will/sudoku/web/`)
+
+Ktor REST API with routes:
+- `SolveRoutes` — Solve puzzles
+- `CandidateRoutes` — Get candidate sets
+- `HintRoutes` — Teaching hints
+- `GenerateRoutes` — Puzzle generation
+- `DailyChallengeRoutes` — Daily puzzle
+- `TutorialRoutes` — 20 tutorials from `lessons.json`
+- `DashboardRoutes` — Stats and progress
+- `HealthRoutes` — Health check (JVM memory, uptime)
+- `StepByStepRoutes` — Step-by-step solving
+- `ProgressRoutes` — Student progress tracking
+
+#### Tutorials (`web/src/main/resources/tutorials/lessons.json`)
+
+20 lessons across 7 belt levels:
+- White (2): Naked Single, Hidden Single
+- Yellow (1): Hidden Single
+- Orange (2): Naked Pair, Hidden Pair
+- Green (2): Pointing Pair, Box/Line Reduction
+- Blue (2): Naked Triple, Hidden Triple
+- Purple (2): X-Wing, Swordfish
+- Brown (2): XY-Wing, XYZ-Wing
+- Black (3): Unique Rectangle, Simple Coloring, W-Wing
+- Master (5): ALS-XZ, Franken Fish, Mutant Fish, Death Blossom, Forcing Chains
+
+### Frontend (`web-ui/src/`)
+
+Vue 3 SPA with 14 components:
+- `App.vue` — Root with navigation
+- `SudokuGrid.vue` — 9×9 grid with candidates, highlighting
+- `TutorialMode.vue` — Guided lesson player
+- `TutorialSelector.vue` — Belt-grouped tutorial list
+- `Dashboard.vue` — Stats and progress
+- `DailyChallenge.vue` — Daily puzzle with streaks
+- `Settings.vue` — Color-blind, high contrast, dark mode
+- `ControlPanel.vue`, `MobileNumberPad.vue`, `HintModal.vue` — Controls
+- `ResultDisplay.vue`, `ToastNotification.vue`, `ProgressIndicator.vue` — Feedback
+
+**State:** localStorage for progress, settings, streaks (no backend auth)
 
 ### Coordinate System
 
-- `Coord(row: Int, col: Int)` - Zero-indexed (0-8), with computed `index` property
-- `Coord.all` - Pre-computed array of all 81 coordinates
-- `CoordGroup` - Represents rows, columns, and 3x3 regions
-- Each cell belongs to 3 groups: `CoordGroup.verticalOf()`, `horizontalOf()`, `regionOf()`
-
-### Solver Algorithm
-
-The `Solver` class implements backtracking with constraint propagation:
-
-1. Apply all eliminators (`Settings.eliminators`) until no changes
-2. Select unresolved cell with minimum remaining candidates (MRV heuristic via `unresolvedCoord()`)
-3. Try each candidate value recursively
-4. After placing value, reapply eliminators before next recursion
-
-### Eliminator Pattern
-
-All eliminators implement `CandidateEliminator` interface:
-```kotlin
-interface CandidateEliminator {
-    fun eliminate(board: Board): Boolean  // Returns true if any changes made
-}
-```
-
-The three eliminators in `Settings.eliminators`:
-
-1. `SimpleCandidateEliminator` - Removes confirmed values from peer cells
-2. `GroupCandidateEliminator` - Detects naked pairs/triples (naked subsets)
-3. `ExclusionCandidateEliminator` - Detects hidden singles; takes `shortCircuitThreshold` parameter to skip groups with too many known values
+- `Coord(row: Int, col: Int)` — Zero-indexed (0-8)
+- `Coord.all` — Pre-computed array of all 81 coordinates
+- `CoordGroup` — Rows, columns, 3×3 regions
 
 ### Board Format
 
 Text format with optional visual separators:
-- `.` or `0` - Empty/unknown cell
-- `1-9` - Confirmed value
-- `!` - Column separator (every 3 columns)
-- `-` - Row separator (every 3 rows)
+- `.` or `0` = empty, `1-9` = value
+- `!` = column separator, `-` = row separator
 
-Example:
-```
-.4.!3.8!1..
-21.!.65!...
-6..!...!.7.
----!---!---
-```
-
-Parsed by `BoardReader.readBoard()` which accepts `String`, `File`, or `InputStream`.
+Parsed by `BoardReader.readBoard()`.
 
 ### Test Structure
 
-Tests use parameterized board files in `kotlin/src/test/resources/solver/`:
-- `<name>.question` - The unsolved puzzle
-- `<name>.solution` - The expected solution
-
-`SolverTest` automatically discovers and pairs these files using reflection.
-
-### Benchmarking
-
-JMH benchmarks are in `kotlin/src/jmh/`. They test performance across:
-- Multiple puzzle files (g1-g4 from www.sudokuweb.org)
-- Different `shortCircuitThreshold` values (0, 3, 6, 9)
-
-Benchmarks run only via manual GitHub Actions workflow dispatch.
-
-## Configuration
-
-Global settings in `Settings` object:
-- `size = 9` - Board dimensions
-- `regionSize = 3` - 3x3 subgrids
-- `symbols` - Display characters (`.`, `1`-`9`)
-- `eliminators` - Ordered list of eliminators applied during solving
-
-To add a new eliminator:
-1. Implement `CandidateEliminator` interface
-2. Add instance to `Settings.eliminators` list
-3. Configure any parameters in `Settings`
-
-## Module Structure
-
-```
-kotlin/src/main/java/will/sudoku/solver/
-├── Board.kt                  # Board state & candidate pattern operations
-├── Solver.kt                 # Main solver with backtracking
-├── Settings.kt               # Global configuration & eliminator instances
-├── Coord.kt                  # Cell coordinates (row, col) with computed index
-├── CoordGroup.kt             # Row/column/region groups
-├── CandidateEliminator.kt    # Interface for eliminators
-├── SimpleCandidateEliminator.kt
-├── GroupCandidateEliminator.kt
-├── ExclusionCandidateEliminator.kt
-├── BoardReader.kt            # Parse boards from files/strings
-└── ValidationException.kt   # Custom exception for invalid board formats
-```
-
-## Running the Solver
-
-The `Solver` class has a `main()` method that can be run with a sample puzzle:
-
-```bash
-./gradlew :kotlin:run
-```
+Tests in `kotlin/src/test/`:
+- `kotlin/src/test/resources/solver/` — `.question` / `.solution` file pairs
+- `SolverTest` auto-discovers paired files
+- Individual eliminator tests (e.g., `XWingCandidateEliminatorTest`)
+- Total: 389 tests, 0 failures
 
 ## Branch Strategy
 
-- **master**: Main stable branch
-- **develop**: Development branch
+- **master** — Stable, auto-deploys to Render
+- Branch protection: CI required, reviews required, linear history, admin enforcement
 
-CI runs on both branches for all pushes and pull requests.
+## Adding a New Feature
+
+### New Elimination Technique
+1. Implement `CandidateEliminator` in `kotlin/src/main/`
+2. Add to eliminator chain in `Solver.kt`
+3. Add tests with `.question`/`.solution` files
+4. Create tutorial in `lessons.json`
+5. Add frontend tutorial content
+
+### New Frontend Component
+1. Create `.vue` file in `web-ui/src/components/`
+2. Import in `App.vue` or parent component
+3. Add API calls in `api.js` if needed
+4. Build: `cd web-ui && npm run build`
+
+### New API Endpoint
+1. Create route file in `web/src/main/kotlin/will/sudoku/web/`
+2. Register in `Application.kt`
+3. Add corresponding frontend API call in `api.js`
