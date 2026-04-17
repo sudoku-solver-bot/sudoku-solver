@@ -229,6 +229,15 @@
         @close="importModalOpen = false"
         @import="onImportPuzzle"
       />
+
+      <!-- Confetti celebration -->
+      <ConfettiCelebration
+        :visible="confettiVisible"
+        :time="formatTime(elapsedTime)"
+        :mistakes="mistakes"
+        :hints="hintsUsed"
+        @done="confettiVisible = false"
+      />
       </template>
     </div>
   </div>
@@ -255,6 +264,7 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -291,6 +301,7 @@ export default {
     Dashboard,
     Achievements,
     StatsPage,
+    ConfettiCelebration,
     Settings
   },
   setup() {
@@ -368,6 +379,7 @@ export default {
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
     const leaderboardOpen = ref(false)
+    const confettiVisible = ref(false)
     const importModalOpen = ref(false)
     const achievementsOpen = ref(false)
     const statsOpen = ref(false)
@@ -486,6 +498,14 @@ export default {
       isMobile.value = window.innerWidth < 768
     }
 
+    const formatTime = (ms) => {
+      const seconds = Math.floor(ms / 1000)
+      const minutes = Math.floor(seconds / 60)
+      const remainingSeconds = seconds % 60
+      if (minutes > 0) return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+      return `${seconds}s`
+    }
+
     const toggleDarkMode = () => {
       isDark.value = !isDark.value
       localStorage.setItem('sudokuDarkMode', isDark.value.toString())
@@ -532,6 +552,18 @@ export default {
       // Track mistakes if changing a solved cell to wrong value
       if (solvedCells.value.has(index) && value !== '.' && value !== oldValue) {
         // Could add validation here
+      }
+
+      // Check for puzzle completion in play mode
+      if (playMode.value && !puzzle.value.includes('.')) {
+        // All cells filled — check if correct
+        const solved = await solvePuzzle(puzzle.value, false).catch(() => null)
+        if (solved && solved.solved) {
+          stopTimer()
+          playSound('solved')
+          confettiVisible,
+      formatTime.value = true
+        }
       }
     }
 
