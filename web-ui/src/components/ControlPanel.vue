@@ -77,6 +77,11 @@
       Get a Hint!
     </button>
 
+    <button class="btn-share" @click="$emit('share')">
+      <span class="btn-icon">🔗</span>
+      Share Puzzle
+    </button>
+
     <!-- Pencil marks toggle -->
     <button
       class="btn-toggle"
@@ -118,7 +123,7 @@ export default {
       default: true
     }
   },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import']
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share']
 }
 </script>
 
@@ -269,6 +274,14 @@ button:active:not(:disabled) {
 .btn-hint {
   background: linear-gradient(135deg, #fff8e1, #ffecb3);
   color: #f57f17;
+  padding: 14px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.btn-share {
+  background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
+  color: #4285f4;
   padding: 14px;
   font-size: 15px;
   margin-top: 4px;

@@ -196,6 +196,7 @@
         @clear="clearGrid"
         @generate="generate"
         @import="importModalOpen = true"
+        @share="sharePuzzle"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -450,6 +451,22 @@ export default {
 
       // Load initial undo/redo state
       loadHistoryState()
+
+      // Check for shared puzzle in URL
+      const params = new URLSearchParams(window.location.search)
+      const sharedPuzzle = params.get('p')
+      if (sharedPuzzle) {
+        try {
+          const decoded = atob(sharedPuzzle).replace(/0/g, '.')
+          if (decoded.length === 81) {
+            setPuzzle(decoded, true)
+            playMode.value = true
+            showResult('Shared puzzle loaded! Solve it yourself or tap Solve.', 'info')
+          }
+        } catch (e) {}
+        // Clean URL
+        window.history.replaceState({}, '', window.location.pathname)
+      }
 
       // Keyboard navigation
       window.addEventListener('keydown', handleKeyDown)
@@ -739,6 +756,27 @@ export default {
       showResult('Puzzle imported! Tap Solve or solve it yourself.', 'success')
     }
 
+    const sharePuzzle = async () => {
+      // Encode puzzle as base64 URL parameter
+      const puzzleData = puzzle.value.replace(/\./g, '0')
+      const encoded = btoa(puzzleData)
+      const url = `${window.location.origin}?p=${encoded}`
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Sudoku Dojo Puzzle',
+            text: 'Can you solve this Sudoku puzzle?',
+            url
+          })
+        } catch (e) { /* cancelled */ }
+      } else {
+        await navigator.clipboard.writeText(url)
+        showToast('Link Copied!', 'Share this link to challenge someone!', 'success')
+      }
+      playSound('click')
+    }
+
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -986,6 +1024,7 @@ export default {
       closeHintModal,
       importModalOpen,
       onImportPuzzle,
+      sharePuzzle,
       handleKeyDown
     }
   }
