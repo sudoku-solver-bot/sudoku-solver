@@ -33,6 +33,14 @@
           </div>
           <input type="checkbox" :checked="isDark" @change="$emit('toggle-dark')" class="toggle">
         </label>
+
+        <label class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Sound effects</span>
+            <span class="setting-desc">Audio feedback for actions</span>
+          </div>
+          <input type="checkbox" :checked="soundEnabled" @change="toggleSound" class="toggle">
+        </label>
       </div>
 
       <!-- Data section -->
@@ -62,6 +70,9 @@
 </template>
 
 <script>
+import { ref } from 'vue'
+import { isSoundEnabled, setSoundEnabled, playSound } from '../sounds'
+
 export default {
   name: 'Settings',
   props: {
@@ -71,6 +82,14 @@ export default {
   },
   emits: ['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast'],
   setup(props, { emit }) {
+    const soundEnabled = ref(isSoundEnabled())
+
+    const toggleSound = () => {
+      soundEnabled.value = !soundEnabled.value
+      setSoundEnabled(soundEnabled.value)
+      if (soundEnabled.value) playSound('click')
+    }
+
     const resetProgress = () => {
       if (confirm('Reset all progress? This cannot be undone.')) {
         localStorage.removeItem('sudokuCompletedTutorials')
@@ -79,7 +98,7 @@ export default {
         emit('exit')
       }
     }
-    return { resetProgress }
+    return { resetProgress, soundEnabled, toggleSound }
   }
 }
 </script>

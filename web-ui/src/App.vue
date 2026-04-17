@@ -250,6 +250,7 @@ import Leaderboard from './components/Leaderboard.vue'
 import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
+import { playSound } from './sounds'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -491,6 +492,11 @@ export default {
       chars[index] = value || '.'
       puzzle.value = chars.join('')
 
+      // Sound feedback
+      if (value && value !== '.') {
+        playSound('place')
+      }
+
       // Show mobile pad on mobile if value was cleared
       if (isMobile.value && value === '') {
         showMobilePad.value = true
@@ -670,6 +676,7 @@ export default {
       try {
         const data = await solvePuzzle(puzzle.value, true)
         if (data.solved) {
+          playSound('solved')
           setPuzzle(data.solution, false)
           showResult(
             `Solved in ${data.metrics.solveTimeMs.toFixed(2)}ms`,
@@ -742,6 +749,7 @@ export default {
           currentHint.value = data.hint
           hintsUsed.value++
           hintModalVisible.value = true
+          playSound('hint')
           showMobilePad.value = false
         } else {
           showToast(
