@@ -20,12 +20,15 @@
           <button class="settings-btn" @click="settingsOpen = !settingsOpen" title="Settings">
             ⚙️
           </button>
+          <button class="lb-btn" @click="leaderboardOpen = !leaderboardOpen" title="Leaderboard">
+            🏆
+          </button>
         </div>
       </div>
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode"
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen""
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
@@ -44,6 +47,13 @@
         @toggle-dark="toggleDarkMode"
         @toggle-colorblind="toggleColorBlind"
         @toggle-highcontrast="toggleHighContrast"
+      />
+
+      <!-- Leaderboard -->
+      <Leaderboard
+        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode"
+        :is-dark="isDark"
+        @back="leaderboardOpen = false"
       />
 
       <!-- Daily Challenge -->
@@ -204,6 +214,7 @@ import QuizMode from './components/QuizMode.vue'
 import PracticeMode from './components/PracticeMode.vue'
 import DailyChallenge from './components/DailyChallenge.vue'
 import Dashboard from './components/Dashboard.vue'
+import Leaderboard from './components/Leaderboard.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -235,6 +246,7 @@ export default {
     QuizMode,
     PracticeMode,
     DailyChallenge,
+    Leaderboard,
     Dashboard,
     Settings
   },
@@ -311,6 +323,7 @@ export default {
     const practiceMode = ref(false)
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
+    const leaderboardOpen = ref(false)
 
     // Load completed tutorials from localStorage
     try {
