@@ -149,6 +149,7 @@
         :mistakes="mistakes"
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
+        :difficulty="puzzleDifficulty"
       />
 
       <!-- Result display -->
@@ -326,6 +327,7 @@ export default {
     // Progress tracking
     const mistakes = ref(0)
     const hintsUsed = ref(0)
+    const puzzleDifficulty = ref('')
 
     // Undo/Redo state
     const canUndo = ref(false)
@@ -790,6 +792,7 @@ export default {
         if (data.puzzle) {
           setPuzzle(data.puzzle, true)
           showResult(`Generated ${data.difficulty} puzzle!`, 'success')
+          puzzleDifficulty.value = data.difficulty || difficulty
           selectedCell.value = -1
           showMobilePad.value = false
           lastSavedState = data.puzzle
@@ -1023,6 +1026,7 @@ export default {
       elapsedTime,
       mistakes,
       hintsUsed,
+      puzzleDifficulty,
       canUndo,
       canRedo,
       undoCount,
