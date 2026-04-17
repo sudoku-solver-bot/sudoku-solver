@@ -2,8 +2,8 @@
   <div class="dashboard" :class="{ dark: isDark }">
     <!-- Welcome -->
     <div class="welcome">
-      <h2>Welcome back! 👋</h2>
-      <p class="subtitle">What would you like to do today?</p>
+      <h2>{{ t('dashboardTitle') }} 👋</h2>
+      <p class="subtitle">{{ t('dashboardSubtitle') }}</p>
     </div>
 
     <!-- Quick stats -->
@@ -96,6 +96,8 @@
 import { computed, ref } from 'vue'
 import BeltCertificate from './BeltCertificate.vue'
 
+import { useI18n } from '../i18n'
+
 export default {
   name: 'Dashboard',
   props: {
@@ -106,6 +108,7 @@ export default {
   emits: ['daily', 'learn', 'play'],
   components: { BeltCertificate },
   setup(props) {
+    const { t } = useI18n()
     const showCert = ref(false)
     const certBelt = ref({})
 
@@ -174,7 +177,7 @@ export default {
 
     const earnedBelts = computed(() => belts.value.filter(b => b.earned))
 
-    return { streak, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
+    return { t, streak, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
   }
 }
 </script>

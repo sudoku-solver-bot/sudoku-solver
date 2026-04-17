@@ -23,6 +23,9 @@
           <button class="lb-btn" @click="leaderboardOpen = !leaderboardOpen" title="Leaderboard">
             🏆
           </button>
+          <button class="save-btn" @click="savesOpen = !savesOpen" title="Saved Puzzles">
+            💾
+          </button>
           <button class="ach-btn" @click="openAchievements" title="Achievements">
             🏅
           </button>
@@ -34,7 +37,7 @@
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen""
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen""
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
@@ -59,9 +62,19 @@
 
       <!-- Leaderboard -->
       <Leaderboard
-        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen"
+        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen"
         :is-dark="isDark"
         @back="leaderboardOpen = false"
+      />
+
+      <!-- Saved Puzzles -->
+      <SavedPuzzles
+        v-if="savesOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !leaderboardOpen"
+        :is-dark="isDark"
+        :current-puzzle="puzzle"
+        :current-difficulty="puzzleDifficulty"
+        @close="savesOpen = false"
+        @load="onLoadSave"
       />
 
       <!-- Achievements -->
@@ -267,6 +280,7 @@ import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
+import SavedPuzzles from './components/SavedPuzzles.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -304,6 +318,7 @@ export default {
     Achievements,
     StatsPage,
     ConfettiCelebration,
+    SavedPuzzles,
     Settings
   },
   setup() {
@@ -391,6 +406,7 @@ export default {
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
     const leaderboardOpen = ref(false)
+    const savesOpen = ref(false)
     const confettiVisible = ref(false)
     const importModalOpen = ref(false)
     const achievementsOpen = ref(false)
@@ -857,6 +873,15 @@ export default {
       showResult('Puzzle imported! Tap Solve or solve it yourself.', 'success')
     }
 
+    const onLoadSave = (save) => {
+      setPuzzle(save.puzzle, true)
+      selectedCell.value = -1
+      savesOpen.value = false
+      playMode.value = true
+      if (save.difficulty) puzzleDifficulty.value = save.difficulty
+      showResult('Puzzle loaded! Continue where you left off.', 'info')
+    }
+
     const sharePuzzle = async () => {
       // Encode puzzle as base64 URL parameter
       const puzzleData = puzzle.value.replace(/\./g, '0')
@@ -1108,6 +1133,8 @@ export default {
       exitPracticeMode,
       onPracticeCompleted,
       leaderboardOpen,
+      savesOpen,
+      onLoadSave,
       achievementsOpen,
       statsOpen,
       achievementStats,
