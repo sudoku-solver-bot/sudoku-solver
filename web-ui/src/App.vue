@@ -366,6 +366,60 @@ export default {
     } catch (e) {}
 
     // Initialize dark mode from localStorage or system preference
+    const handleKeyDown = (e) => {
+      // Don't capture when typing in inputs
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+
+      const cell = selectedCell.value
+
+      // Arrow key navigation
+      if (e.key === 'ArrowUp' && cell >= 9) { e.preventDefault(); navigateToCell(cell - 9); return }
+      if (e.key === 'ArrowDown' && cell < 72) { e.preventDefault(); navigateToCell(cell + 9); return }
+      if (e.key === 'ArrowLeft' && cell % 9 > 0) { e.preventDefault(); navigateToCell(cell - 1); return }
+      if (e.key === 'ArrowRight' && cell % 9 < 8) { e.preventDefault(); navigateToCell(cell + 1); return }
+
+      // Number keys 1-9 to enter values
+      if (/^[1-9]$/.test(e.key) && cell >= 0 && !givenCells.value.has(cell)) {
+        e.preventDefault()
+        onCellUpdate(cell, e.key)
+        return
+      }
+
+      // Delete/Backspace to clear cell
+      if ((e.key === 'Delete' || e.key === 'Backspace') && cell >= 0 && !givenCells.value.has(cell)) {
+        e.preventDefault()
+        onCellUpdate(cell, '')
+        return
+      }
+
+      // Escape to deselect
+      if (e.key === 'Escape') {
+        selectedCell.value = -1
+        return
+      }
+
+      // Ctrl+Z / Cmd+Z for undo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault()
+        undo()
+        return
+      }
+
+      // Ctrl+Y / Cmd+Shift+Z for redo
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault()
+        redo()
+        return
+      }
+
+      // H for hint
+      if (e.key === 'h' || e.key === 'H') {
+        e.preventDefault()
+        getHint()
+        return
+      }
+    }
+
     onMounted(() => {
       const savedDarkMode = localStorage.getItem('sudokuDarkMode')
       if (savedDarkMode !== null) {
@@ -383,10 +437,14 @@ export default {
 
       // Load initial undo/redo state
       loadHistoryState()
+
+      // Keyboard navigation
+      window.addEventListener('keydown', handleKeyDown)
     })
 
     onUnmounted(() => {
       window.removeEventListener('resize', checkMobile)
+      window.removeEventListener('keydown', handleKeyDown)
       stopTimer()
     })
 
@@ -897,7 +955,8 @@ export default {
       redo,
       clearGrid,
       hideToast,
-      closeHintModal
+      closeHintModal,
+      handleKeyDown
     }
   }
 }
