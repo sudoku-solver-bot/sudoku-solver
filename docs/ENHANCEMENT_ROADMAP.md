@@ -225,10 +225,10 @@ Each phase can be broken into individual PRs. Phase 2 should be done incremental
 - [x] SVG-generated app icons
 
 ### Remaining Ideas (Future)
-- [ ] Swipe gestures for tutorial step navigation
-- [ ] High-contrast mode toggle
-- [ ] Color-blind friendly palette option
-- [ ] Printable certificates per belt
-- [ ] Leaderboard (opt-in)
-- [ ] Tutorial quiz mode ("spot the pattern")
-- [ ] Practice puzzles (2-3 per technique)
+- [x] Swipe gestures for tutorial step navigation
+- [x] High-contrast mode toggle (PR #110)
+- [x] Color-blind friendly palette option (PR #110)
+- [x] Printable certificates per belt (PR #114)
+- [x] Leaderboard (opt-in) (PR #115)
+- [x] Tutorial quiz mode "spot the pattern" (PR #113)
+- [x] Practice puzzles 2-3 per technique (PR #113)
