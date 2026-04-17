@@ -1,5 +1,5 @@
 <template>
-  <div class="grid" :class="{ dark: isDark }" role="grid" aria-label="Sudoku puzzle grid">
+  <div class="grid" :class="{ dark: isDark, colorblind: colorBlind, 'high-contrast': highContrast }" role="grid" aria-label="Sudoku puzzle grid">
     <div
       v-for="(cell, index) in 81"
       :key="index"
@@ -81,6 +81,14 @@ export default {
     highlightedCells: {
       type: Array,
       default: () => []
+    },
+    colorBlind: {
+      type: Boolean,
+      default: false
+    },
+    highContrast: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['update', 'select', 'navigate', 'undo', 'redo'],
@@ -454,6 +462,52 @@ export default {
   background: #fff8e1 !important;
   box-shadow: inset 0 0 0 2px #fbbc05;
   animation: pulse 1.5s ease infinite;
+}
+
+/* Color-blind friendly: use patterns + shapes instead of just color */
+.grid.colorblind .cell.highlight-blue {
+  background: #e3f2fd !important;
+  box-shadow: inset 0 0 0 3px #1565c0;
+}
+
+.grid.colorblind .cell.highlight-green {
+  background: #f3e5f5 !important;
+  box-shadow: inset 0 0 0 3px #7b1fa2;
+}
+
+.grid.colorblind .cell.highlight-red {
+  background: #fff3e0 !important;
+  box-shadow: inset 0 0 0 3px #e65100;
+}
+
+.grid.colorblind .cell.highlight-yellow {
+  background: #e0f7fa !important;
+  box-shadow: inset 0 0 0 3px #006064;
+}
+
+/* High contrast mode */
+.grid.high-contrast .cell {
+  border: 1px solid #000;
+}
+
+.grid.high-contrast .cell.given input {
+  color: #000;
+  font-weight: 800;
+}
+
+.grid.high-contrast .cell.solved input {
+  color: #1a73e8;
+  font-weight: 800;
+}
+
+.grid.high-contrast .cell.selected {
+  outline: 3px solid #000;
+  outline-offset: -3px;
+}
+
+.grid.high-contrast .candidates-grid .candidate.visible {
+  color: #333;
+  font-weight: 500;
 }
 
 .cell.highlight-blue.selected,

@@ -17,18 +17,33 @@
           <button class="dark-toggle" @click="toggleDarkMode" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
             {{ isDark ? '☀️' : '🌙' }}
           </button>
+          <button class="settings-btn" @click="settingsOpen = !settingsOpen" title="Settings">
+            ⚙️
+          </button>
         </div>
       </div>
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode"
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen"
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
         @daily="dailyMode = true"
         @learn="toggleTutorialMode"
         @play="playMode = true"
+      />
+
+      <!-- Settings -->
+      <Settings
+        v-if="settingsOpen && !tutorialMode && !dailyMode"
+        :is-dark="isDark"
+        :color-blind="colorBlindMode"
+        :high-contrast="highContrastMode"
+        @exit="settingsOpen = false"
+        @toggle-dark="toggleDarkMode"
+        @toggle-colorblind="toggleColorBlind"
+        @toggle-highcontrast="toggleHighContrast"
       />
 
       <!-- Daily Challenge -->
@@ -106,6 +121,8 @@
         :is-dark="isDark"
         :candidates="candidates"
         :show-candidates="showCandidates"
+        :color-blind="colorBlindMode"
+        :high-contrast="highContrastMode"
         @update="onCellUpdate"
         @select="selectCell"
         @navigate="navigateToCell"
@@ -163,6 +180,7 @@ import TutorialMode from './components/TutorialMode.vue'
 import TutorialSelector from './components/TutorialSelector.vue'
 import DailyChallenge from './components/DailyChallenge.vue'
 import Dashboard from './components/Dashboard.vue'
+import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -189,7 +207,8 @@ export default {
     TutorialMode,
     TutorialSelector,
     DailyChallenge,
-    Dashboard
+    Dashboard,
+    Settings
   },
   setup() {
     // Puzzle state
@@ -252,12 +271,19 @@ export default {
     const tutorialSelectorOpen = ref(false)
     const dailyMode = ref(false)
     const playMode = ref(false)
+    const settingsOpen = ref(false)
+    const colorBlindMode = ref(false)
+    const highContrastMode = ref(false)
     const completedTutorials = ref(new Set())
 
     // Load completed tutorials from localStorage
     try {
       const saved = localStorage.getItem('sudokuCompletedTutorials')
       if (saved) completedTutorials.value = new Set(JSON.parse(saved))
+    } catch (e) {}
+    try {
+      colorBlindMode.value = localStorage.getItem('sudokuColorBlind') === 'true'
+      highContrastMode.value = localStorage.getItem('sudokuHighContrast') === 'true'
     } catch (e) {}
 
     // Initialize dark mode from localStorage or system preference
@@ -600,6 +626,16 @@ export default {
     }
 
     // Tutorial methods
+    const toggleColorBlind = () => {
+      colorBlindMode.value = !colorBlindMode.value
+      localStorage.setItem('sudokuColorBlind', colorBlindMode.value.toString())
+    }
+
+    const toggleHighContrast = () => {
+      highContrastMode.value = !highContrastMode.value
+      localStorage.setItem('sudokuHighContrast', highContrastMode.value.toString())
+    }
+
     const toggleTutorialMode = async () => {
       if (tutorialMode.value) {
         tutorialMode.value = false
@@ -676,8 +712,13 @@ export default {
       tutorialSelectorOpen,
       dailyMode,
       playMode,
+      settingsOpen,
+      colorBlindMode,
+      highContrastMode,
       completedTutorials,
       toggleDarkMode,
+      toggleColorBlind,
+      toggleHighContrast,
       toggleTutorialMode,
       onTutorialSelected,
       exitTutorialMode,
@@ -827,6 +868,29 @@ body {
 }
 
 .app.dark .home-btn {
+  background: #333;
+}
+
+.settings-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: #f3e5f5;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.settings-btn:hover {
+  background: #e1bee7;
+  transform: scale(1.1);
+}
+
+.app.dark .settings-btn {
   background: #333;
 }
 
