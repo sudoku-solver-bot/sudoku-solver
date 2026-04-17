@@ -223,6 +223,7 @@
       <!-- Mobile number pad -->
       <MobileNumberPad
         :visible="showMobilePad"
+        :counts="digitCounts"
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
@@ -253,12 +254,15 @@
         @done="confettiVisible = false"
       />
       </template>
+
+      <!-- PWA install prompt -->
+      <InstallPrompt :is-dark="isDark" />
     </div>
   </div>
 </template>
 
 <script>
-import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import SudokuGrid from './components/SudokuGrid.vue'
 import ControlPanel from './components/ControlPanel.vue'
 import ResultDisplay from './components/ResultDisplay.vue'
@@ -280,6 +284,7 @@ import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
+import InstallPrompt from './components/InstallPrompt.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -318,6 +323,7 @@ export default {
     StatsPage,
     ConfettiCelebration,
     SavedPuzzles,
+    InstallPrompt,
     Settings
   },
   setup() {
@@ -325,6 +331,15 @@ export default {
     const puzzle = ref('.'.repeat(81))
     const givenCells = ref(new Set())
     const solvedCells = ref(new Set())
+
+    // Digit counts for numpad
+    const digitCounts = computed(() => {
+      const counts = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0}
+      for (const c of puzzle.value) {
+        if (c >= '1' && c <= '9') counts[c]++
+      }
+      return counts
+    })
 
     // UI state
     const loading = ref(false)
@@ -486,6 +501,19 @@ export default {
       // Load initial undo/redo state
       loadHistoryState()
 
+      // Restore saved game state
+      const savedGame = localStorage.getItem('sudoku-current-game')
+      if (savedGame && !sharedPuzzle) {
+        try {
+          const game = JSON.parse(savedGame)
+          if (game.puzzle && game.puzzle.length === 81 && game.puzzle !== '.'.repeat(81)) {
+            setPuzzle(game.puzzle, true)
+            if (game.playMode) playMode.value = true
+            if (game.difficulty) puzzleDifficulty.value = game.difficulty
+          }
+        } catch (e) {}
+      }
+
       // Check for shared puzzle in URL
       const params = new URLSearchParams(window.location.search)
       const sharedPuzzle = params.get('p')
@@ -504,6 +532,18 @@ export default {
 
       // Keyboard navigation
       window.addEventListener('keydown', handleKeyDown)
+
+      // Auto-save game state on puzzle changes
+      watch(puzzle, (val) => {
+        if (val && val !== '.'.repeat(81)) {
+          localStorage.setItem('sudoku-current-game', JSON.stringify({
+            puzzle: val,
+            playMode: playMode.value,
+            difficulty: puzzleDifficulty.value,
+            ts: Date.now()
+          }))
+        }
+      })
     })
 
     onUnmounted(() => {
@@ -1068,6 +1108,7 @@ export default {
       puzzle,
       givenCells,
       solvedCells,
+      digitCounts,
       loading,
       loadingMessage,
       selectedCell,
