@@ -1,5 +1,5 @@
 <template>
-  <div class="tutorial-mode" :class="{ dark: isDark }">
+  <div class="tutorial-mode" :class="{ dark: isDark }" @touchstart="onTouchStart" @touchend="onTouchEnd">
     <!-- Header -->
     <div class="tutorial-header">
       <button class="back-btn" @click="$emit('exit')">← Back</button>
@@ -193,6 +193,25 @@ export default {
       }
     }
 
+    // Swipe gesture support
+    let touchStartX = ref(0)
+    let touchStartY = ref(0)
+
+    const onTouchStart = (e) => {
+      touchStartX.value = e.touches[0].clientX
+      touchStartY.value = e.touches[0].clientY
+    }
+
+    const onTouchEnd = (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX.value
+      const dy = e.changedTouches[0].clientY - touchStartY.value
+      // Only trigger if horizontal swipe is dominant and long enough
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) nextStep()  // Swipe left → next
+        else prevStep()          // Swipe right → prev
+      }
+    }
+
     const completeLesson = async () => {
       try {
         await completeTutorial(props.lesson.id)
@@ -234,7 +253,9 @@ export default {
       prevStep,
       showAnswer,
       onCellSelect,
-      completeLesson
+      completeLesson,
+      onTouchStart,
+      onTouchEnd
     }
   }
 }
