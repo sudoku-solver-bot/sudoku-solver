@@ -535,9 +535,10 @@ export default {
       chars[index] = value || '.'
       puzzle.value = chars.join('')
 
-      // Sound feedback
+      // Sound feedback + auto-remove pencil marks
       if (value && value !== '.') {
         playSound('place')
+        autoRemovePencilMarks(index, value)
       }
 
       // Show mobile pad on mobile if value was cleared
@@ -658,6 +659,30 @@ export default {
         // Silently fail - candidates are optional
         console.error('Failed to fetch candidates:', e)
       }
+    }
+
+    // Auto-remove pencil marks when a number is placed
+    const autoRemovePencilMarks = (index, value) => {
+      if (value === '.' || !showCandidates.value) return
+      const row = Math.floor(index / 9)
+      const col = index % 9
+      const region = Math.floor(row / 3) * 3 + Math.floor(col / 3)
+      const num = parseInt(value)
+
+      const updated = { ...candidates.value }
+      for (let i = 0; i < 81; i++) {
+        const r = Math.floor(i / 9)
+        const c = i % 9
+        const reg = Math.floor(r / 3) * 3 + Math.floor(c / 3)
+        if (r === row || c === col || reg === region) {
+          if (updated[i]) {
+            const marks = updated[i].filter(n => n !== num)
+            if (marks.length > 0) updated[i] = marks
+            else delete updated[i]
+          }
+        }
+      }
+      candidates.value = updated
     }
 
     // Show toast notification
