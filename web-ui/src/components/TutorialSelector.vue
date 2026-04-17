@@ -15,8 +15,19 @@
       </div>
     </div>
 
+    <!-- Search bar -->
+    <div class="search-bar">
+      <input
+        v-model="searchQuery"
+        type="text"
+        placeholder="🔍 Search techniques..."
+        class="search-input"
+      />
+      <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''">✕</button>
+    </div>
+
     <!-- Belt groups -->
-    <div class="belt-groups">
+    <div class="belt-groups" v-if="!searchQuery">
       <div
         v-for="group in beltGroups"
         :key="group.belt"
@@ -70,11 +81,39 @@
         </div>
       </div>
     </div>
+
+    <!-- Search results -->
+    <div v-if="searchQuery" class="search-results">
+      <div v-if="filteredLessons.length === 0" class="no-results">
+        No techniques found for "{{ searchQuery }}"
+      </div>
+      <button
+        v-for="lesson in filteredLessons"
+        :key="lesson.id"
+        class="lesson-card"
+        :class="{ completed: lesson.completed, locked: lesson.locked }"
+        @click="selectLesson(lesson)"
+      >
+        <div class="lesson-icon">
+          <span v-if="lesson.completed">✅</span>
+          <span v-else-if="lesson.locked">🔒</span>
+          <span v-else>{{ lesson.beltEmoji }}</span>
+        </div>
+        <div class="lesson-info">
+          <div class="lesson-title" v-html="highlightMatch(lesson.title)"></div>
+          <div class="lesson-desc" v-html="highlightMatch(lesson.description)"></div>
+        </div>
+        <div class="belt-badge" :style="{ background: lesson.beltColor }">
+          {{ lesson.beltEmoji }}
+        </div>
+        <div v-if="!lesson.locked" class="lesson-arrow">→</div>
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 export default {
   name: 'TutorialSelector',
@@ -87,6 +126,7 @@ export default {
   },
   emits: ['exit', 'select', 'quiz', 'practice'],
   setup(props, { emit }) {
+    const searchQuery = ref('')
     const completedCount = computed(() => props.completedIds.size)
 
     const overallProgress = computed(() => {
@@ -146,7 +186,38 @@ export default {
       }
     }
 
-    return { completedCount, overallProgress, beltGroups, getPracticeSet, selectLesson }
+    const allLessons = computed(() => {
+      const maxCompletedOrder = Math.max(
+        ...props.tutorials
+          .filter(tt => props.completedIds.has(tt.id))
+          .map(tt => tt.order),
+        0
+      )
+      return props.tutorials.map(t => ({
+        ...t,
+        completed: props.completedIds.has(t.id),
+        locked: !props.completedIds.has(t.id) && t.order > maxCompletedOrder + 1
+      }))
+    })
+
+    const filteredLessons = computed(() => {
+      const q = searchQuery.value.toLowerCase().trim()
+      if (!q) return []
+      return allLessons.value.filter(l =>
+        l.title.toLowerCase().includes(q) ||
+        l.description.toLowerCase().includes(q) ||
+        (l.beltName && l.beltName.toLowerCase().includes(q))
+      )
+    })
+
+    const highlightMatch = (text) => {
+      const q = searchQuery.value.trim()
+      if (!q) return text
+      const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+      return text.replace(regex, '<mark>$1</mark>')
+    }
+
+    return { searchQuery, completedCount, overallProgress, beltGroups, getPracticeSet, selectLesson, filteredLessons, highlightMatch }
   }
 }
 </script>
@@ -411,6 +482,82 @@ export default {
 .quiz-card:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(156, 39, 176, 0.2);
+}
+
+.search-bar {
+  position: relative;
+  margin-bottom: 12px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 36px 10px 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #4285f4;
+}
+
+.tutorial-selector.dark .search-input {
+  background: #2d2d2d;
+  border-color: #444;
+  color: #ddd;
+}
+
+.clear-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.no-results {
+  text-align: center;
+  padding: 24px;
+  color: #888;
+  font-size: 14px;
+}
+
+.belt-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+mark {
+  background: #fff3cd;
+  color: inherit;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
+.tutorial-selector.dark mark {
+  background: #5c4a00;
 }
 
 @media (max-width: 500px) {
