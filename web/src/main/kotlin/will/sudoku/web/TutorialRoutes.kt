@@ -66,6 +66,45 @@ data class TutorialProgress(
     val currentBeltEmoji: String
 )
 
+@Serializable
+data class QuizQuestion(
+    val id: String,
+    val puzzle: String,
+    val question: String,
+    val hint: String,
+    val answerCell: Int,
+    val answerValue: String,
+    val highlightCells: List<Int> = emptyList(),
+    val highlightColor: String = "blue"
+)
+
+@Serializable
+data class QuizSet(
+    val id: String,
+    val belt: String,
+    val beltName: String,
+    val beltEmoji: String,
+    val beltColor: String,
+    val technique: String,
+    val questions: List<QuizQuestion>
+)
+
+@Serializable
+data class PracticePuzzle(
+    val id: String,
+    val puzzle: String,
+    val description: String
+)
+
+@Serializable
+data class PracticeSet(
+    val id: String,
+    val technique: String,
+    val tutorialId: String,
+    val belt: String,
+    val puzzles: List<PracticePuzzle>
+)
+
 fun Route.tutorialRoutes() {
     // Load lessons from JSON resource
     val lessonsJson = javaClass.classLoader
@@ -167,5 +206,146 @@ fun Route.tutorialRoutes() {
         } else {
             call.respond(HttpStatusCode.NotFound, mapOf("error" to "Tutorial not found: $id"))
         }
+    }
+
+    // --- Quiz & Practice Routes ---
+
+    // Load quiz data
+    val quizzesJson = javaClass.classLoader
+        .getResource("tutorials/quizzes.json")
+        ?.readText()
+    val quizzes = if (quizzesJson != null) json.decodeFromString<List<QuizSet>>(quizzesJson) else emptyList()
+    val quizzesByBelt = quizzes.associateBy { it.belt }
+
+    // Load practice puzzle data
+    val practiceJson = javaClass.classLoader
+        .getResource("tutorials/practice-puzzles.json")
+        ?.readText()
+    val practiceSets = if (practiceJson != null) json.decodeFromString<List<PracticeSet>>(practiceJson) else emptyList()
+    val practiceByTutorialId = practiceSets.associateBy { it.tutorialId }
+
+    // GET /tutorials/quizzes — list all quiz sets
+    get("/tutorials/quizzes") {
+        call.respond(quizzes)
+    }
+
+    // GET /tutorials/practice-sets — list all practice sets
+    get("/tutorials/practice-sets") {
+        call.respond(practiceSets)
+    }
+
+    // GET /tutorials/practice — also list all practice sets (convenience alias)
+    get("/tutorials/practice") {
+        call.respond(practiceSets)
+    }
+
+    // GET /tutorials/quizzes/{belt} — get quiz for a specific belt
+    get("/tutorials/quizzes/{belt}") {
+        val belt = call.parameters["belt"] ?: ""
+        val quiz = quizzesByBelt[belt]
+        if (quiz == null) {
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Quiz not found for belt: $belt"))
+            return@get
+        }
+        call.respond(quiz)
+    }
+
+    // GET /tutorials/quizzes/{belt}/board — get quiz puzzle with candidates
+    get("/tutorials/quizzes/{belt}/board") {
+        val belt = call.parameters["belt"] ?: ""
+        val quiz = quizzesByBelt[belt]
+        if (quiz == null) {
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Quiz not found for belt: $belt"))
+            return@get
+        }
+
+        val question = quiz.questions.firstOrNull()
+        if (question == null) {
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to "No questions in quiz"))
+            return@get
+        }
+
+        val board: Board = try {
+            BoardReader.readBoard(question.puzzle)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid puzzle: ${e.message}"))
+            return@get
+        }
+
+        val eliminator = SimpleCandidateEliminator()
+        eliminator.eliminate(board)
+
+        val candidates = mutableMapOf<String, List<Int>>()
+        for (coord in Coord.all) {
+            if (!board.isConfirmed(coord)) {
+                val values = board.candidateValues(coord).toList()
+                if (values.isNotEmpty()) {
+                    candidates[coord.index.toString()] = values
+                }
+            }
+        }
+
+        call.respond(TutorialBoardResponse(
+            puzzle = question.puzzle,
+            candidates = candidates
+        ))
+    }
+
+    // GET /tutorials/practice — list all practice sets
+    get("/tutorials/practice") {
+        call.respond(practiceSets)
+    }
+
+    // GET /tutorials/practice/{tutorialId} — get practice puzzles for a technique
+    get("/tutorials/practice/{tutorialId}") {
+        val tutorialId = call.parameters["tutorialId"] ?: ""
+        val set = practiceByTutorialId[tutorialId]
+        if (set == null) {
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Practice puzzles not found for: $tutorialId"))
+            return@get
+        }
+        call.respond(set)
+    }
+
+    // GET /tutorials/practice/{tutorialId}/{puzzleId}/board — get practice puzzle with candidates
+    get("/tutorials/practice/{tutorialId}/{puzzleId}/board") {
+        val tutorialId = call.parameters["tutorialId"] ?: ""
+        val puzzleId = call.parameters["puzzleId"] ?: ""
+        val set = practiceByTutorialId[tutorialId]
+        if (set == null) {
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Practice set not found for: $tutorialId"))
+            return@get
+        }
+
+        val puzzleData = set.puzzles.find { it.id == puzzleId }
+        if (puzzleData == null) {
+            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Puzzle not found: $puzzleId"))
+            return@get
+        }
+
+        val board: Board = try {
+            BoardReader.readBoard(puzzleData.puzzle)
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid puzzle: ${e.message}"))
+            return@get
+        }
+
+        val eliminator = SimpleCandidateEliminator()
+        eliminator.eliminate(board)
+
+        val candidates = mutableMapOf<String, List<Int>>()
+        for (coord in Coord.all) {
+            if (!board.isConfirmed(coord)) {
+                val values = board.candidateValues(coord).toList()
+                if (values.isNotEmpty()) {
+                    candidates[coord.index.toString()] = values
+                }
+            }
+        }
+
+        call.respond(TutorialBoardResponse(
+            puzzle = puzzleData.puzzle,
+            candidates = candidates
+        ))
     }
 }

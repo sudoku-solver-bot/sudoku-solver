@@ -114,3 +114,35 @@ export async function fetchDailyChallenge(date = null) {
   const response = await fetch(url)
   return response.json()
 }
+
+// Quiz API
+export async function fetchQuizzes() {
+  const response = await fetch(`${API_BASE}/v1/tutorials/quizzes`)
+  return response.json()
+}
+
+export async function fetchQuizByBelt(belt) {
+  const response = await fetch(`${API_BASE}/v1/tutorials/quizzes/${belt}`)
+  return response.json()
+}
+
+export async function fetchQuizBoard(belt) {
+  const response = await fetch(`${API_BASE}/v1/tutorials/quizzes/${belt}/board`)
+  return response.json()
+}
+
+// Practice API
+export async function fetchAllPracticeSets() {
+  const response = await fetch(`${API_BASE}/v1/tutorials/practice`)
+  return response.json()
+}
+
+export async function fetchPracticePuzzles(tutorialId) {
+  const response = await fetch(`${API_BASE}/v1/tutorials/practice/${tutorialId}`)
+  return response.json()
+}
+
+export async function fetchPracticeBoard(tutorialId, puzzleId) {
+  const response = await fetch(`${API_BASE}/v1/tutorials/practice/${tutorialId}/${puzzleId}/board`)
+  return response.json()
+}

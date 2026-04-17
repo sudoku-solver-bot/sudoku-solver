@@ -25,7 +25,7 @@
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen"
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode"
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
@@ -48,19 +48,23 @@
 
       <!-- Daily Challenge -->
       <DailyChallenge
-        v-if="dailyMode && !tutorialMode && !tutorialSelectorOpen"
+        v-if="dailyMode && !tutorialMode && !tutorialSelectorOpen && !quizMode && !practiceMode"
         :is-dark="isDark"
         @exit="dailyMode = false"
       />
 
       <!-- Tutorial Selector -->
       <TutorialSelector
-        v-if="tutorialSelectorOpen && !tutorialMode"
+        v-if="tutorialSelectorOpen && !tutorialMode && !quizMode && !practiceMode"
         :tutorials="tutorialList"
         :completed-ids="completedTutorials"
         :is-dark="isDark"
+        :quiz-data="quizList"
+        :practice-data="practiceList"
         @exit="tutorialSelectorOpen = false"
         @select="onTutorialSelected"
+        @quiz="onQuizSelected"
+        @practice="onPracticeSelected"
       />
 
       <!-- Tutorial Mode -->
@@ -70,6 +74,24 @@
         :is-dark="isDark"
         @exit="exitTutorialMode"
         @completed="onTutorialCompleted"
+      />
+
+      <!-- Quiz Mode -->
+      <QuizMode
+        v-if="quizMode && currentQuiz"
+        :quiz="currentQuiz"
+        :is-dark="isDark"
+        @exit="exitQuizMode"
+        @completed="onQuizCompleted"
+      />
+
+      <!-- Practice Mode -->
+      <PracticeMode
+        v-if="practiceMode && currentPracticeSet"
+        :practice-set="currentPracticeSet"
+        :is-dark="isDark"
+        @exit="exitPracticeMode"
+        @completed="onPracticeCompleted"
       />
 
       <!-- Normal mode (hidden in tutorial/daily/dashboard) -->
@@ -178,6 +200,8 @@ import MobileNumberPad from './components/MobileNumberPad.vue'
 import HintModal from './components/HintModal.vue'
 import TutorialMode from './components/TutorialMode.vue'
 import TutorialSelector from './components/TutorialSelector.vue'
+import QuizMode from './components/QuizMode.vue'
+import PracticeMode from './components/PracticeMode.vue'
 import DailyChallenge from './components/DailyChallenge.vue'
 import Dashboard from './components/Dashboard.vue'
 import Settings from './components/Settings.vue'
@@ -191,7 +215,9 @@ import {
   getHistory,
   fetchCandidates,
   fetchTutorials,
-  fetchTutorial
+  fetchTutorial,
+  fetchQuizzes,
+  fetchAllPracticeSets
 } from './api'
 
 export default {
@@ -206,6 +232,8 @@ export default {
     HintModal,
     TutorialMode,
     TutorialSelector,
+    QuizMode,
+    PracticeMode,
     DailyChallenge,
     Dashboard,
     Settings
@@ -275,6 +303,14 @@ export default {
     const colorBlindMode = ref(false)
     const highContrastMode = ref(false)
     const completedTutorials = ref(new Set())
+
+    // Quiz & Practice state
+    const quizMode = ref(false)
+    const currentQuiz = ref(null)
+    const quizList = ref([])
+    const practiceMode = ref(false)
+    const currentPracticeSet = ref(null)
+    const practiceList = ref([])
 
     // Load completed tutorials from localStorage
     try {
@@ -637,14 +673,25 @@ export default {
     }
 
     const toggleTutorialMode = async () => {
-      if (tutorialMode.value) {
+      if (tutorialMode.value || quizMode.value || practiceMode.value) {
         tutorialMode.value = false
         currentTutorialLesson.value = null
+        quizMode.value = false
+        currentQuiz.value = null
+        practiceMode.value = false
+        currentPracticeSet.value = null
         return
       }
       try {
         const tutorials = await fetchTutorials()
         tutorialList.value = tutorials
+        // Load quiz and practice data in parallel
+        const [quizzes, practices] = await Promise.all([
+          fetchQuizzes().catch(() => []),
+          fetchAllPracticeSets().catch(() => [])
+        ])
+        quizList.value = quizzes
+        practiceList.value = practices
         // Show the selector instead of auto-loading
         tutorialSelectorOpen.value = true
       } catch (e) {
@@ -678,6 +725,47 @@ export default {
         'sudokuCompletedTutorials',
         JSON.stringify([...completedTutorials.value])
       )
+    }
+
+    // Quiz methods
+    const onQuizSelected = (quiz) => {
+      currentQuiz.value = quiz
+      tutorialSelectorOpen.value = false
+      quizMode.value = true
+    }
+
+    const exitQuizMode = () => {
+      quizMode.value = false
+      currentQuiz.value = null
+      if (tutorialList.value.length > 0) {
+        tutorialSelectorOpen.value = true
+      }
+    }
+
+    const onQuizCompleted = (result) => {
+      // Score is saved in QuizMode via localStorage
+    }
+
+    // Practice methods
+    const onPracticeSelected = async (lesson) => {
+      const set = practiceList.value.find(p => p.tutorialId === lesson.id)
+      if (set) {
+        currentPracticeSet.value = set
+        tutorialSelectorOpen.value = false
+        practiceMode.value = true
+      }
+    }
+
+    const exitPracticeMode = () => {
+      practiceMode.value = false
+      currentPracticeSet.value = null
+      if (tutorialList.value.length > 0) {
+        tutorialSelectorOpen.value = true
+      }
+    }
+
+    const onPracticeCompleted = (result) => {
+      // Progress is saved in PracticeMode via localStorage
     }
 
     return {
@@ -723,6 +811,18 @@ export default {
       onTutorialSelected,
       exitTutorialMode,
       onTutorialCompleted,
+      quizMode,
+      currentQuiz,
+      quizList,
+      practiceMode,
+      currentPracticeSet,
+      practiceList,
+      onQuizSelected,
+      exitQuizMode,
+      onQuizCompleted,
+      onPracticeSelected,
+      exitPracticeMode,
+      onPracticeCompleted,
       onCellUpdate,
       onNumberPadInput,
       clearSelectedCell,
