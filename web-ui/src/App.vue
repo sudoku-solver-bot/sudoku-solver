@@ -147,6 +147,8 @@
         :mistakes="mistakes"
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
+        :timer-paused="timerPaused"
+        @toggle-pause="toggleTimerPause"
       />
 
       <!-- Result display -->
@@ -491,8 +493,11 @@ export default {
     const startTimer = () => {
       stopTimer()
       elapsedTime.value = 0
+      timerPaused.value = false
       timerInterval = setInterval(() => {
-        elapsedTime.value += 1000
+        if (!timerPaused.value) {
+          elapsedTime.value += 1000
+        }
       }, 1000)
     }
 
@@ -501,6 +506,11 @@ export default {
         clearInterval(timerInterval)
         timerInterval = null
       }
+    }
+
+    const timerPaused = ref(false)
+    const toggleTimerPause = () => {
+      timerPaused.value = !timerPaused.value
     }
 
     // Update a single cell
@@ -959,6 +969,8 @@ export default {
       isDark,
       showMobilePad,
       elapsedTime,
+      timerPaused,
+      toggleTimerPause,
       mistakes,
       hintsUsed,
       canUndo,

@@ -15,7 +15,10 @@
       </div>
       <div class="stat">
         <span class="stat-icon">⏱️</span>
-        <span class="stat-value">{{ formattedTime }}</span>
+        <span class="stat-value" :class="{ paused: timerPaused }">{{ formattedTime }}</span>
+        <button v-if="elapsedTime > 0" class="pause-btn" @click="$emit('toggle-pause')">
+          {{ timerPaused ? '▶' : '⏸' }}
+        </button>
         <span class="stat-label">Time</span>
       </div>
       <div v-if="mistakes > 0" class="stat">
@@ -57,8 +60,13 @@ export default {
     elapsedTime: {
       type: Number,
       default: 0
+    },
+    timerPaused: {
+      type: Boolean,
+      default: false
     }
   },
+  emits: ['toggle-pause'],
   setup(props) {
     const filledCells = computed(() => {
       let count = 0
@@ -100,6 +108,21 @@ export default {
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
+}
+
+.paused {
+  color: #ea4335 !important;
+  text-decoration: line-through;
+}
+
+.pause-btn {
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font-size: 12px;
+  cursor: pointer;
+  margin: 2px 0;
 }
 
 .progress-header {
