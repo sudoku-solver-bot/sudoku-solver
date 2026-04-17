@@ -49,10 +49,12 @@
         :is-dark="isDark"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
+        :theme="boardTheme"
         @exit="settingsOpen = false"
         @toggle-dark="toggleDarkMode"
         @toggle-colorblind="toggleColorBlind"
         @toggle-highcontrast="toggleHighContrast"
+        @change-theme="boardTheme = $event"
       />
 
       <!-- Leaderboard -->
@@ -147,8 +149,6 @@
         :mistakes="mistakes"
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
-        :timer-paused="timerPaused"
-        @toggle-pause="toggleTimerPause"
       />
 
       <!-- Result display -->
@@ -179,7 +179,7 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
-        :show-conflicts="playMode"
+        :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
         @navigate="navigateToCell"
@@ -304,6 +304,7 @@ export default {
     const loadingMessage = ref('')
     const selectedCell = ref(-1)
     const isDark = ref(false)
+    const boardTheme = ref(localStorage.getItem('sudoku-theme') || 'default')
     const showMobilePad = ref(false)
     const isMobile = ref(false)
 
@@ -493,11 +494,8 @@ export default {
     const startTimer = () => {
       stopTimer()
       elapsedTime.value = 0
-      timerPaused.value = false
       timerInterval = setInterval(() => {
-        if (!timerPaused.value) {
-          elapsedTime.value += 1000
-        }
+        elapsedTime.value += 1000
       }, 1000)
     }
 
@@ -506,11 +504,6 @@ export default {
         clearInterval(timerInterval)
         timerInterval = null
       }
-    }
-
-    const timerPaused = ref(false)
-    const toggleTimerPause = () => {
-      timerPaused.value = !timerPaused.value
     }
 
     // Update a single cell
@@ -969,8 +962,6 @@ export default {
       isDark,
       showMobilePad,
       elapsedTime,
-      timerPaused,
-      toggleTimerPause,
       mistakes,
       hintsUsed,
       canUndo,
@@ -996,6 +987,7 @@ export default {
       settingsOpen,
       colorBlindMode,
       highContrastMode,
+      boardTheme,
       completedTutorials,
       toggleDarkMode,
       toggleColorBlind,

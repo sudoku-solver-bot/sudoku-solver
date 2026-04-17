@@ -1,5 +1,5 @@
 <template>
-  <div class="grid" :class="{ dark: isDark, colorblind: colorBlind, 'high-contrast': highContrast }" role="grid" aria-label="Sudoku puzzle grid">
+  <div class="grid" :class="{ dark: isDark, colorblind: colorBlind, 'high-contrast': highContrast, ['theme-' + theme]: theme !== 'default' }" role="grid" aria-label="Sudoku puzzle grid">
     <div
       v-for="(cell, index) in 81"
       :key="index"
@@ -93,6 +93,10 @@ export default {
     highContrast: {
       type: Boolean,
       default: false
+    },
+    theme: {
+      type: String,
+      default: 'default' // default, wood, neon, minimal
     }
   },
   emits: ['update', 'select', 'navigate', 'undo', 'redo'],
@@ -634,4 +638,86 @@ export default {
     min-height: 26px;
   }
 }
+
+/* Board Themes */
+
+/* Wood theme */
+.grid.theme-wood {
+  background: #deb887;
+  border: 3px solid #8b4513;
+}
+.grid.theme-wood .cell {
+  background: #f5deb3;
+  border-color: #d2b48c;
+  color: #3e2723;
+}
+.grid.theme-wood .cell.given {
+  color: #1a0e0a;
+  font-weight: 700;
+}
+.grid.theme-wood .cell.selected {
+  background: #ffe0b2;
+  box-shadow: inset 0 0 0 2px #ff8f00;
+}
+.grid.theme-wood .cell.related-row,
+.grid.theme-wood .cell.related-col,
+.grid.theme-wood .cell.related-region {
+  background: #efe0c8;
+}
+.grid.theme-wood .cell.border-right { border-right: 2px solid #8b4513; }
+.grid.theme-wood .cell.border-bottom { border-bottom: 2px solid #8b4513; }
+.grid.theme-wood.dark { background: #3e2723; border-color: #5d4037; }
+.grid.theme-wood.dark .cell { background: #4e342e; color: #d7ccc8; border-color: #5d4037; }
+
+/* Neon theme */
+.grid.theme-neon {
+  background: #0a0a2e;
+  border: 2px solid #00ffff;
+  box-shadow: 0 0 20px rgba(0,255,255,0.3);
+}
+.grid.theme-neon .cell {
+  background: #0f0f3d;
+  border-color: #1a1a5e;
+  color: #00ffff;
+}
+.grid.theme-neon .cell.given {
+  color: #ff00ff;
+  text-shadow: 0 0 8px rgba(255,0,255,0.5);
+}
+.grid.theme-neon .cell.selected {
+  background: #1a1a5e;
+  box-shadow: inset 0 0 0 2px #00ffff, 0 0 10px rgba(0,255,255,0.4);
+}
+.grid.theme-neon .cell.related-row,
+.grid.theme-neon .cell.related-col,
+.grid.theme-neon .cell.related-region {
+  background: #12124a;
+}
+.grid.theme-neon .cell.same-value { background: #1a0a3e; }
+.grid.theme-neon .cell.border-right { border-right: 2px solid #00ffff; }
+.grid.theme-neon .cell.border-bottom { border-bottom: 2px solid #00ffff; }
+
+/* Minimal theme */
+.grid.theme-minimal .cell {
+  background: white;
+  border-color: #eee;
+  color: #333;
+  font-weight: 300;
+}
+.grid.theme-minimal .cell.given {
+  font-weight: 600;
+  color: #111;
+}
+.grid.theme-minimal .cell.selected {
+  background: #f5f5f5;
+  box-shadow: inset 0 0 0 1px #999;
+}
+.grid.theme-minimal .cell.related-row,
+.grid.theme-minimal .cell.related-col,
+.grid.theme-minimal .cell.related-region {
+  background: #fafafa;
+}
+.grid.theme-minimal .cell.border-right { border-right: 1px solid #ccc; }
+.grid.theme-minimal .cell.border-bottom { border-bottom: 1px solid #ccc; }
+.grid.theme-minimal.dark .cell { background: #222; color: #ddd; border-color: #333; }
 </style>

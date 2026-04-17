@@ -43,6 +43,17 @@
         </label>
       </div>
 
+      <!-- Appearance section -->
+      <div class="settings-section">
+        <h3>Board Theme</h3>
+        <div class="theme-selector">
+          <button v-for="t in themes" :key="t.id" class="theme-btn" :class="{ active: currentTheme === t.id }" @click="selectTheme(t.id)">
+            <span class="theme-preview" :class="'preview-' + t.id"></span>
+            <span class="theme-name">{{ t.name }}</span>
+          </button>
+        </div>
+      </div>
+
       <!-- Data section -->
       <div class="settings-section">
         <h3>Data</h3>
@@ -78,11 +89,27 @@ export default {
   props: {
     isDark: { type: Boolean, default: false },
     colorBlind: { type: Boolean, default: false },
-    highContrast: { type: Boolean, default: false }
+    highContrast: { type: Boolean, default: false },
+    theme: { type: String, default: 'default' }
   },
-  emits: ['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast'],
+  emits: ['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast', 'change-theme'],
   setup(props, { emit }) {
     const soundEnabled = ref(isSoundEnabled())
+
+    const themes = [
+      { id: 'default', name: 'Default' },
+      { id: 'wood', name: '🪵 Wood' },
+      { id: 'neon', name: '💜 Neon' },
+      { id: 'minimal', name: '⬜ Minimal' }
+    ]
+    const currentTheme = ref(localStorage.getItem('sudoku-theme') || 'default')
+
+    const selectTheme = (id) => {
+      currentTheme.value = id
+      localStorage.setItem('sudoku-theme', id)
+      emit('change-theme', id)
+      playSound('click')
+    }
 
     const toggleSound = () => {
       soundEnabled.value = !soundEnabled.value
@@ -98,7 +125,7 @@ export default {
         emit('exit')
       }
     }
-    return { resetProgress, soundEnabled, toggleSound }
+    return { resetProgress, soundEnabled, toggleSound, themes, currentTheme, selectTheme }
   }
 }
 </script>
@@ -220,4 +247,38 @@ export default {
   color: #aaa;
   margin-top: 8px;
 }
+
+.theme-selector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.theme-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.theme-btn.active { border-color: #4285f4; background: #e8f0fe; }
+.theme-btn:hover { border-color: #999; }
+
+.theme-preview {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+}
+.preview-default { background: linear-gradient(135deg, #fff, #f0f0f0); }
+.preview-wood { background: linear-gradient(135deg, #deb887, #8b4513); }
+.preview-neon { background: linear-gradient(135deg, #0a0a2e, #00ffff); }
+.preview-minimal { background: #fff; border: 1px solid #eee; }
+
+.theme-name { font-size: 10px; color: #666; }
+.theme-btn.active .theme-name { color: #4285f4; font-weight: 600; }
 </style>
