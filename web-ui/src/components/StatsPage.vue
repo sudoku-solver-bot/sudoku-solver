@@ -82,6 +82,7 @@
     <!-- Reset -->
     <div class="section reset-section">
       <button class="reset-btn" @click="confirmReset">🗑️ Reset All Statistics</button>
+      <button class="export-btn" @click="exportCSV">📥 Export as CSV</button>
     </div>
   </div>
 </template>
@@ -191,9 +192,47 @@ export default {
       }
     }
 
+    const exportCSV = () => {
+      const s = stats.value
+      const h = history.value
+      let csv = 'Sudoku Dojo Statistics Export\n'
+      csv += `Generated,${new Date().toISOString()}\n\n`
+      csv += 'Summary\n'
+      csv += `Total Solved,${s.totalSolved || 0}\n`
+      csv += `Best Time (ms),${s.bestTime || 0}\n`
+      csv += `Average Time (ms),${s.totalSolved ? Math.round((s.totalTime || 0) / s.totalSolved) : 0}\n`
+      csv += `Current Streak,${s.currentStreak || 0}\n`
+      csv += `Best Streak,${s.bestStreak || 0}\n`
+      csv += `Perfect Solves,${s.perfectSolves || 0}\n`
+      csv += `Dailies Completed,${s.dailiesCompleted || 0}\n\n`
+
+      csv += 'Difficulty Breakdown\n'
+      csv += 'Difficulty,Count\n'
+      const byDiff = s.byDifficulty || {}
+      for (const [k, v] of Object.entries(byDiff)) {
+        csv += `${k},${v}\n`
+      }
+      csv += '\n'
+
+      csv += 'History\n'
+      csv += 'Timestamp,Date,Type,Time (ms),Hints,Difficulty\n'
+      for (const entry of h) {
+        const d = new Date(entry.timestamp).toISOString()
+        csv += `${entry.timestamp},${d},${entry.type || 'free'},${entry.time || 0},${entry.hints || 0},${entry.difficulty || ''}\n`
+      }
+
+      const blob = new Blob([csv], { type: 'text/csv' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `sudoku-dojo-stats-${new Date().toISOString().split('T')[0]}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    }
+
     return {
       totalSolved, bestTime, avgTime, currentStreak, bestStreak, perfectSolves,
-      difficultyStats, timeDistribution, recentActivity, formatTime, confirmReset
+      difficultyStats, timeDistribution, recentActivity, formatTime, confirmReset, exportCSV
     }
   }
 }
@@ -344,6 +383,16 @@ export default {
   cursor: pointer;
 }
 .reset-btn:hover { border-color: #ea4335; color: #ea4335; }
+
+.export-btn {
+  background: #4285f4;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  cursor: pointer;
+}
 
 @media (max-width: 500px) {
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
