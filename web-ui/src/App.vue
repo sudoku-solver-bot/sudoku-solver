@@ -254,6 +254,9 @@
         @done="confettiVisible = false"
       />
       </template>
+
+      <!-- PWA install prompt -->
+      <InstallPrompt :is-dark="isDark" />
     </div>
   </div>
 </template>
@@ -281,6 +284,7 @@ import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
+import InstallPrompt from './components/InstallPrompt.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -319,6 +323,7 @@ export default {
     StatsPage,
     ConfettiCelebration,
     SavedPuzzles,
+    InstallPrompt,
     Settings
   },
   setup() {
