@@ -6,9 +6,11 @@
           v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
           :key="num"
           class="pad-btn"
+          :class="{ complete: counts[num] >= 9 }"
           @click="$emit('input', num)"
         >
           {{ num }}
+          <span v-if="counts[num] !== undefined" class="pad-count" :class="{ done: counts[num] >= 9 }">{{ 9 - counts[num] }}</span>
         </button>
         <button class="pad-btn pad-clear" @click="$emit('clear')">
           ✕
@@ -28,6 +30,10 @@ export default {
     visible: {
       type: Boolean,
       default: false
+    },
+    counts: {
+      type: Object,
+      default: () => ({})
     }
   },
   emits: ['input', 'clear', 'hint']
@@ -75,6 +81,23 @@ export default {
   transform: scale(0.95);
   background: #f0f0f0;
 }
+
+.pad-count {
+  position: absolute;
+  top: 2px; right: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #999;
+}
+.pad-count.done { color: #34a853; }
+
+.pad-btn.complete {
+  opacity: 0.4;
+  background: #e8f5e9;
+  border-color: #c8e6c9;
+}
+
+.pad-btn { position: relative; }
 
 @media (hover: hover) {
   .pad-btn:hover {

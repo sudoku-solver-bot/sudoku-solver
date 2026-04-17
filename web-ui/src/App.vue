@@ -223,6 +223,7 @@
       <!-- Mobile number pad -->
       <MobileNumberPad
         :visible="showMobilePad"
+        :counts="digitCounts"
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
@@ -258,7 +259,7 @@
 </template>
 
 <script>
-import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import SudokuGrid from './components/SudokuGrid.vue'
 import ControlPanel from './components/ControlPanel.vue'
 import ResultDisplay from './components/ResultDisplay.vue'
@@ -325,6 +326,15 @@ export default {
     const puzzle = ref('.'.repeat(81))
     const givenCells = ref(new Set())
     const solvedCells = ref(new Set())
+
+    // Digit counts for numpad
+    const digitCounts = computed(() => {
+      const counts = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0}
+      for (const c of puzzle.value) {
+        if (c >= '1' && c <= '9') counts[c]++
+      }
+      return counts
+    })
 
     // UI state
     const loading = ref(false)
@@ -1068,6 +1078,7 @@ export default {
       puzzle,
       givenCells,
       solvedCells,
+      digitCounts,
       loading,
       loadingMessage,
       selectedCell,
