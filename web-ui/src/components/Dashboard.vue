@@ -13,10 +13,11 @@
         <span class="stat-number">{{ completedTutorials.size }}/{{ totalTutorials }}</span>
         <span class="stat-label">Lessons</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-icon">🔥</span>
+      <div class="stat-card streak-card" :class="{ 'on-fire': streak >= 3 }">
+        <span class="stat-icon">{{ streak >= 7 ? '🔥' : streak >= 3 ? '⚡' : '📅' }}</span>
         <span class="stat-number">{{ streak }}</span>
         <span class="stat-label">Day Streak</span>
+        <span v-if="streak >= 3" class="streak-msg">{{ streakMsg }}</span>
       </div>
       <div class="stat-card">
         <span class="stat-icon">🏆</span>
@@ -129,6 +130,16 @@ export default {
       return 0
     })
 
+    const streakMsg = computed(() => {
+      const s = streak.value
+      if (s >= 30) return 'Legendary! 🌟'
+      if (s >= 14) return 'Unstoppable! 💪'
+      if (s >= 7) return 'On fire! 🔥'
+      if (s >= 5) return 'Keep going! 🚀'
+      if (s >= 3) return 'Nice streak! ✨'
+      return ''
+    })
+
     const beltOrder = [
       { name: 'White Belt', shortName: 'Wht', emoji: '⬜', color: '#E0E0E0', lessons: 1 },
       { name: 'Yellow Belt', shortName: 'Yel', emoji: '🟡', color: '#FFD700', lessons: 2 },
@@ -177,7 +188,7 @@ export default {
 
     const earnedBelts = computed(() => belts.value.filter(b => b.earned))
 
-    return { t, streak, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
+    return { t, streak, streakMsg, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
   }
 }
 </script>
@@ -234,6 +245,22 @@ export default {
 
 .dashboard.dark .stat-card {
   background: #2a2a2a;
+}
+
+.streak-card.on-fire {
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2) !important;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.streak-msg {
+  font-size: 11px;
+  color: #e65100;
+  font-weight: 600;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,152,0,0.4); }
+  50% { box-shadow: 0 0 12px 4px rgba(255,152,0,0.2); }
 }
 
 .stat-icon {
