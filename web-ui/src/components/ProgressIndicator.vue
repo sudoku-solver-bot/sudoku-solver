@@ -2,6 +2,7 @@
   <div class="progress">
     <div class="progress-header">
       <span class="progress-label">Progress</span>
+      <span v-if="difficulty" class="difficulty-badge" :class="difficulty.toLowerCase()">{{ difficultyStars }} {{ difficulty }}</span>
       <span class="progress-percentage">{{ percentage }}%</span>
     </div>
     <div class="progress-bar">
@@ -64,6 +65,10 @@ export default {
     timerPaused: {
       type: Boolean,
       default: false
+    },
+    difficulty: {
+      type: String,
+      default: ''
     }
   },
   emits: ['toggle-pause'],
@@ -93,10 +98,16 @@ export default {
       return `${seconds}s`
     })
 
+    const difficultyStars = computed(() => {
+      const map = { EASY: '⭐', MEDIUM: '⭐⭐', HARD: '⭐⭐⭐', EXPERT: '⭐⭐⭐⭐', MASTER: '⭐⭐⭐⭐⭐' }
+      return map[props.difficulty.toUpperCase()] || '⭐'
+    })
+
     return {
       filledCells,
       percentage,
-      formattedTime
+      formattedTime,
+      difficultyStars
     }
   }
 }
@@ -137,6 +148,19 @@ export default {
   font-weight: 600;
   color: #666;
 }
+
+.difficulty-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: capitalize;
+}
+.difficulty-badge.easy { background: #e8f5e9; color: #2e7d32; }
+.difficulty-badge.medium { background: #fff3e0; color: #e65100; }
+.difficulty-badge.hard { background: #fce4ec; color: #c62828; }
+.difficulty-badge.expert { background: #f3e5f5; color: #6a1b9a; }
+.difficulty-badge.master { background: #e0e0e0; color: #333; }
 
 .progress-percentage {
   font-size: 18px;
