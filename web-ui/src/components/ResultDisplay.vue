@@ -9,7 +9,10 @@
     </span>
     <span class="message">{{ message }}</span>
     <div v-if="techniques.length > 0" class="techniques">
-      <small>Techniques: {{ techniques.join(', ') }}</small>
+      <small>Techniques used:</small>
+      <div class="technique-tags">
+        <span v-for="t in techniques" :key="t" class="technique-tag">{{ t }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -86,6 +89,22 @@ export default {
 .techniques {
   margin-top: 8px;
   opacity: 0.8;
+}
+
+.technique-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.technique-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  background: #e8f0fe;
+  color: #4285f4;
 }
 
 .difficulty {
