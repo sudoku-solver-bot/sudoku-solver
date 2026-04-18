@@ -62,9 +62,16 @@
 
       <!-- Leaderboard -->
       <Leaderboard
-        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen"
+        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen && !whatsNewOpen"
         :is-dark="isDark"
         @back="leaderboardOpen = false"
+      />
+
+      <!-- What's New -->
+      <WhatsNew
+        v-if="whatsNewOpen"
+        :is-dark="isDark"
+        @close="whatsNewOpen = false"
       />
 
       <!-- Saved Puzzles -->
@@ -163,6 +170,7 @@
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
         :difficulty="puzzleDifficulty"
+        :new-record="newRecord"
       />
 
       <!-- Result display -->
@@ -247,6 +255,13 @@
         @import="onImportPuzzle"
       />
 
+      <!-- Keyboard help -->
+      <KeyboardHelp
+        v-if="keyboardHelpOpen"
+        :is-dark="isDark"
+        @close="keyboardHelpOpen = false"
+      />
+
       <!-- Confetti celebration -->
       <ConfettiCelebration
         :visible="confettiVisible"
@@ -284,10 +299,14 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+import { savePersonalBest, getPersonalBests, formatTimeMs } from './personal-bests'
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
+
+import WhatsNew from './components/WhatsNew.vue'
+import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -327,6 +346,9 @@ export default {
     ConfettiCelebration,
     SavedPuzzles,
     InstallPrompt,
+
+    WhatsNew,
+    KeyboardHelp,
     Settings
   },
   setup() {
@@ -423,9 +445,13 @@ export default {
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
     const leaderboardOpen = ref(false)
+    const whatsNewOpen = ref(false)
     const savesOpen = ref(false)
     const confettiVisible = ref(false)
+    const newRecord = ref(false)
+    const personalBests = ref(getPersonalBests())
     const importModalOpen = ref(false)
+    const keyboardHelpOpen = ref(false)
     const achievementsOpen = ref(false)
     const statsOpen = ref(false)
     const achievementStats = ref({})
@@ -470,6 +496,13 @@ export default {
       // Escape to deselect
       if (e.key === 'Escape') {
         selectedCell.value = -1
+        keyboardHelpOpen.value = false
+        return
+      }
+
+      // ? for keyboard help
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        keyboardHelpOpen.value = !keyboardHelpOpen.value
         return
       }
 
@@ -505,6 +538,13 @@ export default {
 
       // Check if mobile device
       checkMobile()
+
+      // Show What's New on first visit after update
+      const seenVersion = localStorage.getItem('sudoku-version')
+      if (seenVersion !== '2.0') {
+        whatsNewOpen.value = true
+        localStorage.setItem('sudoku-version', '2.0')
+      }
       window.addEventListener('resize', checkMobile)
 
       // Start timer on first puzzle load
@@ -659,6 +699,9 @@ export default {
         if (solved && solved.solved) {
           stopTimer()
           playSound('solved')
+          const isNewRecord = savePersonalBest(puzzleDifficulty.value, elapsedTime.value)
+          newRecord.value = isNewRecord
+          personalBests.value = getPersonalBests()
           confettiVisible,
       formatTime.value = true
         }
@@ -1181,6 +1224,7 @@ export default {
       exitPracticeMode,
       onPracticeCompleted,
       leaderboardOpen,
+      whatsNewOpen,
       savesOpen,
       onLoadSave,
       achievementsOpen,
@@ -1202,10 +1246,13 @@ export default {
       hideToast,
       closeHintModal,
       importModalOpen,
+      keyboardHelpOpen,
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
-      handleKeyDown
+      handleKeyDown,
+      newRecord,
+      personalBests
     }
   }
 }
