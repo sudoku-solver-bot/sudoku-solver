@@ -303,6 +303,7 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+import { haptics } from './haptics'
 import { savePersonalBest, getPersonalBests, formatTimeMs } from './personal-bests'
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
@@ -655,6 +656,7 @@ export default {
       // Sound feedback + auto-remove pencil marks
       if (value && value !== '.') {
         playSound('place')
+        haptics.tap()
         autoRemovePencilMarks(index, value)
       }
 
@@ -707,7 +709,7 @@ export default {
         const solved = await solvePuzzle(puzzle.value, false).catch(() => null)
         if (solved && solved.solved) {
           stopTimer()
-          playSound('solved')
+          playSound('solved'); haptics.success()
           const isNewRecord = savePersonalBest(puzzleDifficulty.value, elapsedTime.value)
           newRecord.value = isNewRecord
           personalBests.value = getPersonalBests()
@@ -733,6 +735,7 @@ export default {
     // Cell selection
     const selectCell = (index) => {
       selectedCell.value = index
+      if (index >= 0) haptics.tap()
       // Show mobile pad when cell is selected on mobile
       if (isMobile.value && index >= 0 && !givenCells.value.has(index)) {
         showMobilePad.value = true
@@ -903,7 +906,7 @@ export default {
       try {
         const data = await solvePuzzle(puzzle.value, true)
         if (data.solved) {
-          playSound('solved')
+          playSound('solved'); haptics.success()
           setPuzzle(data.solution, false)
           showResult(
             `Solved in ${data.metrics.solveTimeMs.toFixed(2)}ms`,
