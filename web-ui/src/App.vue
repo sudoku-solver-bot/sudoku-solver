@@ -155,6 +155,12 @@
         @retry="toast.onRetry"
       />
 
+      <!-- Number completion bar -->
+      <NumberBar
+        :counts="digitCounts"
+        :is-dark="isDark"
+      />
+
       <!-- Progress indicator -->
       <ProgressIndicator
         :puzzle="puzzle"
@@ -267,6 +273,7 @@ import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import SudokuGrid from './components/SudokuGrid.vue'
 import ControlPanel from './components/ControlPanel.vue'
 import ResultDisplay from './components/ResultDisplay.vue'
+import NumberBar from './components/NumberBar.vue'
 import ProgressIndicator from './components/ProgressIndicator.vue'
 import ToastNotification from './components/ToastNotification.vue'
 import MobileNumberPad from './components/MobileNumberPad.vue'
@@ -309,6 +316,7 @@ export default {
     SudokuGrid,
     ControlPanel,
     ResultDisplay,
+    NumberBar,
     ProgressIndicator,
     ToastNotification,
     MobileNumberPad,
