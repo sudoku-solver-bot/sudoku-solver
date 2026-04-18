@@ -298,11 +298,8 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
-<<<<<<< HEAD
 import { haptics } from './haptics'
-=======
 import { savePersonalBest, getPersonalBests, formatTimeMs } from './personal-bests'
->>>>>>> origin/master
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
@@ -693,14 +690,10 @@ export default {
         const solved = await solvePuzzle(puzzle.value, false).catch(() => null)
         if (solved && solved.solved) {
           stopTimer()
-<<<<<<< HEAD
           playSound('solved'); haptics.success()
-=======
-          playSound('solved')
           const isNewRecord = savePersonalBest(puzzleDifficulty.value, elapsedTime.value)
           newRecord.value = isNewRecord
           personalBests.value = getPersonalBests()
->>>>>>> origin/master
           confettiVisible,
       formatTime.value = true
         }
