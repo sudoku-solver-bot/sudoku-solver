@@ -171,6 +171,7 @@
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
         :difficulty="puzzleDifficulty"
+        :moves="moveCount"
         :new-record="newRecord"
       />
 
@@ -396,6 +397,7 @@ export default {
 
     // Progress tracking
     const mistakes = ref(0)
+    const moveCount = ref(0)
     const hintsUsed = ref(0)
     const puzzleDifficulty = ref('')
 
@@ -658,6 +660,7 @@ export default {
         playSound('place')
         haptics.tap()
         autoRemovePencilMarks(index, value)
+        moveCount.value++
       }
 
       // Show mobile pad on mobile if value was cleared
@@ -941,6 +944,7 @@ export default {
           setPuzzle(data.puzzle, true)
           showResult(`Generated ${data.difficulty} puzzle!`, 'success')
           puzzleDifficulty.value = data.difficulty || difficulty
+          moveCount.value = 0
           selectedCell.value = -1
           showMobilePad.value = false
           lastSavedState = data.puzzle
@@ -1197,6 +1201,7 @@ export default {
       isDark,
       showMobilePad,
       elapsedTime,
+      moveCount,
       mistakes,
       hintsUsed,
       puzzleDifficulty,
