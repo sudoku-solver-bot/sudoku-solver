@@ -232,9 +232,11 @@
       <MobileNumberPad
         :visible="showMobilePad"
         :counts="digitCounts"
+        :pencil-mode="pencilMode"
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
+        @toggle-pencil="pencilMode = !pencilMode"
       />
 
       <!-- Hint modal -->
@@ -412,6 +414,7 @@ export default {
     // Candidates (pencil marks) state
     const candidates = ref({})
     const showCandidates = ref(true)
+    const pencilMode = ref(false)
 
     // Tutorial state
     const tutorialMode = ref(false)
@@ -1175,6 +1178,7 @@ export default {
       currentHint,
       candidates,
       showCandidates,
+      pencilMode,
       tutorialMode,
       tutorialList,
       currentTutorialLesson,

@@ -18,6 +18,9 @@
         <button class="pad-btn pad-hint" @click="$emit('hint')">
           💡
         </button>
+        <button class="pad-btn" :class="{ 'pencil-active': pencilMode }" @click="$emit('toggle-pencil')">
+          ✏️
+        </button>
       </div>
     </div>
   </transition>
@@ -34,9 +37,13 @@ export default {
     counts: {
       type: Object,
       default: () => ({})
+    },
+    pencilMode: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['input', 'clear', 'hint']
+  emits: ['input', 'clear', 'hint', 'toggle-pencil']
 }
 </script>
 
@@ -118,6 +125,12 @@ export default {
   border-color: #ffecb3;
   color: #f57f17;
   font-size: 20px;
+}
+
+.pad-btn.pencil-active {
+  background: #e3f2fd;
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
 }
 
 .slide-up-enter-active,
