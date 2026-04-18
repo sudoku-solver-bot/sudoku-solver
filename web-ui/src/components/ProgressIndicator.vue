@@ -14,11 +14,6 @@
         <span class="stat-value">{{ filledCells }}/81</span>
         <span class="stat-label">Filled</span>
       </div>
-      <div v-if="moves > 0" class="stat">
-        <span class="stat-icon">✏️</span>
-        <span class="stat-value">{{ moves }}</span>
-        <span class="stat-label">Moves</span>
-      </div>
       <div class="stat">
         <span class="stat-icon">⏱️</span>
         <span class="stat-value" :class="{ paused: timerPaused }">{{ formattedTime }}</span>
@@ -75,10 +70,6 @@ export default {
     difficulty: {
       type: String,
       default: ''
-    },
-    moves: {
-      type: Number,
-      default: 0
     },
     newRecord: {
       type: Boolean,
