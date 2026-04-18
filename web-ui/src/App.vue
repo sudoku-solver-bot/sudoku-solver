@@ -222,6 +222,7 @@
         @import="importModalOpen = true"
         @share="sharePuzzle"
         @print="handlePrint"
+        @share-image="handleShareImage"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -298,6 +299,7 @@ import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
 import { printPuzzle } from './print'
+import { generatePuzzleImage, downloadImage } from './share-image'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
@@ -976,6 +978,13 @@ export default {
       playSound('click')
     }
 
+    const handleShareImage = () => {
+      const img = generatePuzzleImage(puzzle.value, puzzleDifficulty.value)
+      downloadImage(img)
+      playSound('click')
+      showToast('Image Saved!', 'Share it with friends!', 'success')
+    }
+
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -1232,6 +1241,7 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
+      handleShareImage,
       handleKeyDown
     }
   }

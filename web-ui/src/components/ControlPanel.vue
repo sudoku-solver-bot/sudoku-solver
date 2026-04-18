@@ -86,6 +86,10 @@
       <span class="btn-icon">🖨️</span>
       Print
     </button>
+    <button class="btn-image" @click="$emit('share-image')">
+      <span class="btn-icon">📸</span>
+      Image
+    </button>
 
     <!-- Pencil marks toggle -->
     <button
@@ -128,7 +132,7 @@ export default {
       default: true
     }
   },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print']
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print', 'share-image']
 }
 </script>
 
@@ -295,6 +299,14 @@ button:active:not(:disabled) {
 .btn-print {
   background: linear-gradient(135deg, #f3e5f5, #e1bee7);
   color: #7b1fa2;
+  padding: 14px;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.btn-image {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  color: #2e7d32;
   padding: 14px;
   font-size: 15px;
   margin-top: 4px;
