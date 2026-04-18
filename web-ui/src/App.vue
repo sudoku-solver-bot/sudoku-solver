@@ -583,6 +583,10 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
+          // Update page title with progress
+          const filled = val.split('').filter(c => c !== '.').length
+          document.title = `🧩 ${filled}/81 · ${puzzleDifficulty.value || 'Sudoku'} | Sudoku Dojo`
+
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
