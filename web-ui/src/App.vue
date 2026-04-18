@@ -203,6 +203,7 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
+        :cell-colors="cellColors"
         :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
@@ -225,6 +226,7 @@
         @import="importModalOpen = true"
         @share="sharePuzzle"
         @print="handlePrint"
+        @color-cell="handleColorCell"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -358,6 +360,7 @@ export default {
     const puzzle = ref('.'.repeat(81))
     const givenCells = ref(new Set())
     const solvedCells = ref(new Set())
+    const cellColors = reactive({})
 
     // Digit counts for numpad
     const digitCounts = computed(() => {
@@ -590,6 +593,10 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
+          // Update page title with progress
+          const filled = val.split('').filter(c => c !== '.').length
+          document.title = `🧩 ${filled}/81 · ${puzzleDifficulty.value || 'Sudoku'} | Sudoku Dojo`
+
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
@@ -995,6 +1002,15 @@ export default {
       playSound('click')
     }
 
+    const handleColorCell = (color) => {
+      if (selectedCell.value < 0) return
+      if (color === null) {
+        delete cellColors[selectedCell.value]
+      } else {
+        cellColors[selectedCell.value] = color
+      }
+    }
+
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -1252,6 +1268,8 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
+      handleColorCell,
+      cellColors,
       handleKeyDown,
       newRecord,
       personalBests

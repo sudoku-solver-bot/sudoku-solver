@@ -86,6 +86,10 @@ export default {
       type: Boolean,
       default: true
     },
+    cellColors: {
+      type: Object,
+      default: () => ({})
+    },
     colorBlind: {
       type: Boolean,
       default: false
@@ -99,7 +103,7 @@ export default {
       default: 'default' // default, wood, neon, minimal
     }
   },
-  emits: ['update', 'select', 'navigate', 'undo', 'redo'],
+  emits: ['update', 'select', 'navigate', 'undo', 'redo', 'color-cell'],
   setup(props, { emit }) {
     const inputs = ref([])
     const candidateGrids = ref([])
@@ -168,6 +172,11 @@ export default {
 
       // Conflict highlighting
       classes['conflict'] = conflicts.value.has(index)
+
+      // User cell coloring
+      if (props.cellColors[index]) {
+        classes['color-' + props.cellColors[index]] = true
+      }
 
       return classes
     }
@@ -457,6 +466,18 @@ export default {
   background: #4d1a1a !important;
   color: #ef9a9a;
 }
+
+/* User cell colors */
+.cell.color-blue { background: #bbdefb !important; }
+.cell.color-green { background: #c8e6c9 !important; }
+.cell.color-yellow { background: #fff9c4 !important; }
+.cell.color-red { background: #ffcdd2 !important; }
+.cell.color-purple { background: #e1bee7 !important; }
+.grid.dark .cell.color-blue { background: #1a237e !important; }
+.grid.dark .cell.color-green { background: #1b5e20 !important; }
+.grid.dark .cell.color-yellow { background: #827717 !important; }
+.grid.dark .cell.color-red { background: #b71c1c !important; }
+.grid.dark .cell.color-purple { background: #4a148c !important; }
 
 /* Given and solved cells */
 .cell.given input {
