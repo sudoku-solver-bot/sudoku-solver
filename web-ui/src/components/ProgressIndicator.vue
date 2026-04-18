@@ -21,6 +21,7 @@
           {{ timerPaused ? '▶' : '⏸' }}
         </button>
         <span class="stat-label">Time</span>
+        <span v-if="newRecord" class="new-record-badge">🏆 New Record!</span>
       </div>
       <div v-if="mistakes > 0" class="stat">
         <span class="stat-icon">❌</span>
@@ -69,6 +70,10 @@ export default {
     difficulty: {
       type: String,
       default: ''
+    },
+    newRecord: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ['toggle-pause'],
@@ -126,6 +131,30 @@ export default {
   text-decoration: line-through;
 }
 
+.pause-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+}
+
+.new-record-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #fbbc04, #ea4335);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  animation: record-pulse 1s ease-in-out infinite;
+  margin-top: 2px;
+}
+
+@keyframes record-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
 .pause-btn {
   background: #f0f0f0;
   border: 1px solid #ddd;
