@@ -1251,15 +1251,11 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
-<<<<<<< HEAD
       handleColorCell,
       cellColors,
-      handleKeyDown
-=======
       handleKeyDown,
       newRecord,
       personalBests
->>>>>>> origin/master
     }
   }
 }
