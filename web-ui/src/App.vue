@@ -297,6 +297,7 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+import { updateFavicon } from './favicon'
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
@@ -574,6 +575,8 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
+          const filled = val.split('').filter(c => c !== '.').length
+          updateFavicon(puzzleDifficulty.value, filled)
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
