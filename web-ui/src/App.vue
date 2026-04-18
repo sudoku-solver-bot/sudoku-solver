@@ -253,6 +253,13 @@
         @import="onImportPuzzle"
       />
 
+      <!-- Keyboard help -->
+      <KeyboardHelp
+        v-if="keyboardHelpOpen"
+        :is-dark="isDark"
+        @close="keyboardHelpOpen = false"
+      />
+
       <!-- Confetti celebration -->
       <ConfettiCelebration
         :visible="confettiVisible"
@@ -294,7 +301,9 @@ import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
+
 import WhatsNew from './components/WhatsNew.vue'
+import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -334,7 +343,9 @@ export default {
     ConfettiCelebration,
     SavedPuzzles,
     InstallPrompt,
+
     WhatsNew,
+    KeyboardHelp,
     Settings
   },
   setup() {
@@ -426,6 +437,7 @@ export default {
     const savesOpen = ref(false)
     const confettiVisible = ref(false)
     const importModalOpen = ref(false)
+    const keyboardHelpOpen = ref(false)
     const achievementsOpen = ref(false)
     const statsOpen = ref(false)
     const achievementStats = ref({})
@@ -470,6 +482,13 @@ export default {
       // Escape to deselect
       if (e.key === 'Escape') {
         selectedCell.value = -1
+        keyboardHelpOpen.value = false
+        return
+      }
+
+      // ? for keyboard help
+      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+        keyboardHelpOpen.value = !keyboardHelpOpen.value
         return
       }
 
@@ -1209,6 +1228,7 @@ export default {
       hideToast,
       closeHintModal,
       importModalOpen,
+      keyboardHelpOpen,
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
