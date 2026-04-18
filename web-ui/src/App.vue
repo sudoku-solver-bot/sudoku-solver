@@ -559,6 +559,10 @@ export default {
       // Load initial undo/redo state
       loadHistoryState()
 
+      // Check for shared puzzle in URL (must be before savedGame check)
+      const params = new URLSearchParams(window.location.search)
+      const sharedPuzzle = params.get('p')
+
       // Restore saved game state
       const savedGame = localStorage.getItem('sudoku-current-game')
       if (savedGame && !sharedPuzzle) {
@@ -572,9 +576,7 @@ export default {
         } catch (e) {}
       }
 
-      // Check for shared puzzle in URL
-      const params = new URLSearchParams(window.location.search)
-      const sharedPuzzle = params.get('p')
+      // Handle shared puzzle
       if (sharedPuzzle) {
         try {
           const decoded = atob(sharedPuzzle).replace(/0/g, '.')
