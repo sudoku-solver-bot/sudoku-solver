@@ -6,7 +6,7 @@
           v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
           :key="num"
           class="pad-btn"
-          :class="{ complete: counts[num] >= 9 }"
+          :class="{ complete: counts[num] >= 9, suggested: num === suggested }"
           @click="$emit('input', num)"
         >
           {{ num }}
@@ -34,6 +34,10 @@ export default {
     counts: {
       type: Object,
       default: () => ({})
+    },
+    suggested: {
+      type: Number,
+      default: null
     }
   },
   emits: ['input', 'clear', 'hint']
@@ -95,6 +99,17 @@ export default {
   opacity: 0.4;
   background: #e8f5e9;
   border-color: #c8e6c9;
+}
+
+.pad-btn.suggested {
+  border-color: #4285f4;
+  box-shadow: 0 0 0 3px rgba(66,133,244,0.3);
+  animation: pulse-suggest 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-suggest {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(66,133,244,0.3); }
+  50% { box-shadow: 0 0 0 5px rgba(66,133,244,0.15); }
 }
 
 .pad-btn { position: relative; }

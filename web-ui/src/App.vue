@@ -225,6 +225,7 @@
       <MobileNumberPad
         :visible="showMobilePad"
         :counts="digitCounts"
+        :suggested="suggestedNumber"
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
@@ -341,6 +342,15 @@ export default {
         if (c >= '1' && c <= '9') counts[c]++
       }
       return counts
+    })
+
+    // Suggested number — single candidate for selected cell
+    const suggestedNumber = computed(() => {
+      const cell = selectedCell.value
+      if (cell < 0 || givenCells.value.has(cell) || puzzle.value[cell] !== '.') return null
+      const cands = candidates.value[String(cell)]
+      if (cands && cands.length === 1) return cands[0]
+      return null
     })
 
     // UI state
@@ -1116,6 +1126,7 @@ export default {
       givenCells,
       solvedCells,
       digitCounts,
+      suggestedNumber,
       loading,
       loadingMessage,
       selectedCell,
