@@ -53,10 +53,12 @@
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
         :theme="boardTheme"
+        :challenge-mode="challengeMode"
         @exit="settingsOpen = false"
         @toggle-dark="toggleDarkMode"
         @toggle-colorblind="toggleColorBlind"
         @toggle-highcontrast="toggleHighContrast"
+        @toggle-challenge="toggleChallenge"
         @change-theme="boardTheme = $event"
       />
 
@@ -200,6 +202,7 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
+        :challenge-mode="challengeMode"
         :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
@@ -380,6 +383,7 @@ export default {
     const mistakes = ref(0)
     const hintsUsed = ref(0)
     const puzzleDifficulty = ref('')
+    const puzzleSolution = ref('')
 
     // Undo/Redo state
     const canUndo = ref(false)
@@ -423,6 +427,7 @@ export default {
     const settingsOpen = ref(false)
     const colorBlindMode = ref(false)
     const highContrastMode = ref(false)
+    const challengeMode = ref(localStorage.getItem('sudoku-challenge') === 'true')
     const completedTutorials = ref(new Set())
 
     // Quiz & Practice state
@@ -633,6 +638,14 @@ export default {
       if (value && value !== '.') {
         playSound('place')
         autoRemovePencilMarks(index, value)
+        // Challenge mode: detect mistakes
+        if (challengeMode.value && puzzleSolution.value && puzzleSolution.value[index] !== value) {
+          mistakes.value++
+          if (mistakes.value >= 3) {
+            stopTimer()
+            showResult('💀 Game Over! 3 mistakes reached.', 'error')
+          }
+        }
       }
 
       // Show mobile pad on mobile if value was cleared
@@ -912,6 +925,11 @@ export default {
           setPuzzle(data.puzzle, true)
           showResult(`Generated ${data.difficulty} puzzle!`, 'success')
           puzzleDifficulty.value = data.difficulty || difficulty
+          // Get solution for challenge mode
+          try {
+            const sol = await solvePuzzle(data.puzzle, false)
+            if (sol && sol.solved) puzzleSolution.value = sol.solution
+          } catch(e) {}
           selectedCell.value = -1
           showMobilePad.value = false
           lastSavedState = data.puzzle
@@ -1036,6 +1054,11 @@ export default {
     const toggleHighContrast = () => {
       highContrastMode.value = !highContrastMode.value
       localStorage.setItem('sudokuHighContrast', highContrastMode.value.toString())
+    }
+
+    const toggleChallenge = () => {
+      challengeMode.value = !challengeMode.value
+      localStorage.setItem('sudoku-challenge', challengeMode.value.toString())
     }
 
     const toggleTutorialMode = async () => {
@@ -1189,6 +1212,8 @@ export default {
       toggleDarkMode,
       toggleColorBlind,
       toggleHighContrast,
+      toggleChallenge,
+      challengeMode,
       toggleTutorialMode,
       onTutorialSelected,
       exitTutorialMode,
