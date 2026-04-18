@@ -170,6 +170,7 @@
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
         :difficulty="puzzleDifficulty"
+        :new-record="newRecord"
       />
 
       <!-- Result display -->
@@ -297,6 +298,7 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+import { savePersonalBest, getPersonalBests, formatTimeMs } from './personal-bests'
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
@@ -436,6 +438,8 @@ export default {
     const whatsNewOpen = ref(false)
     const savesOpen = ref(false)
     const confettiVisible = ref(false)
+    const newRecord = ref(false)
+    const personalBests = ref(getPersonalBests())
     const importModalOpen = ref(false)
     const keyboardHelpOpen = ref(false)
     const achievementsOpen = ref(false)
@@ -685,6 +689,9 @@ export default {
         if (solved && solved.solved) {
           stopTimer()
           playSound('solved')
+          const isNewRecord = savePersonalBest(puzzleDifficulty.value, elapsedTime.value)
+          newRecord.value = isNewRecord
+          personalBests.value = getPersonalBests()
           confettiVisible,
       formatTime.value = true
         }
@@ -1232,7 +1239,9 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
-      handleKeyDown
+      handleKeyDown,
+      newRecord,
+      personalBests
     }
   }
 }
