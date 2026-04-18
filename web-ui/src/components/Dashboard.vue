@@ -26,6 +26,15 @@
       </div>
     </div>
 
+    <!-- Recommended next -->
+    <div class="recommendation" v-if="recommendation">
+      <span class="rec-icon">{{ recommendation.icon }}</span>
+      <div class="rec-text">
+        <strong>{{ recommendation.title }}</strong>
+        <p>{{ recommendation.desc }}</p>
+      </div>
+    </div>
+
     <!-- Action cards -->
     <div class="actions">
       <!-- Daily Challenge -->
@@ -140,6 +149,18 @@ export default {
       return ''
     })
 
+    const recommendation = computed(() => {
+      const s = streak.value
+      const completed = props.completedTutorials.size
+      const total = props.totalTutorials
+
+      if (s === 0) return { icon: '📅', title: 'Start your streak!', desc: 'Play today\'s daily challenge to begin.' }
+      if (completed === 0) return { icon: '📚', title: 'Begin your journey', desc: 'Start with White Belt basics.' }
+      if (completed < total) return { icon: '📖', title: `Lesson ${completed + 1} awaits`, desc: `${total - completed} techniques left to master.` }
+      if (s < 7) return { icon: '🔥', title: 'Build your streak!', desc: `${7 - s} more days for "On fire!" status.` }
+      return { icon: '🏆', title: 'You\'re a master!', desc: 'Try Expert puzzles for a real challenge.' }
+    })
+
     const beltOrder = [
       { name: 'White Belt', shortName: 'Wht', emoji: '⬜', color: '#E0E0E0', lessons: 1 },
       { name: 'Yellow Belt', shortName: 'Yel', emoji: '🟡', color: '#FFD700', lessons: 2 },
@@ -188,7 +209,7 @@ export default {
 
     const earnedBelts = computed(() => belts.value.filter(b => b.earned))
 
-    return { t, streak, streakMsg, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
+    return { t, streak, streakMsg, recommendation, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
   }
 }
 </script>
@@ -246,6 +267,22 @@ export default {
 .dashboard.dark .stat-card {
   background: #2a2a2a;
 }
+
+.recommendation {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.dashboard.dark .recommendation { background: linear-gradient(135deg, #1a237e, #283593); }
+.rec-icon { font-size: 28px; }
+.rec-text strong { font-size: 14px; display: block; color: #333; }
+.rec-text p { font-size: 12px; color: #666; margin: 2px 0 0; }
+.dashboard.dark .rec-text strong { color: #e0e0e0; }
+.dashboard.dark .rec-text p { color: #aaa; }
 
 .streak-card.on-fire {
   background: linear-gradient(135deg, #fff3e0, #ffe0b2) !important;
