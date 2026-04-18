@@ -62,9 +62,16 @@
 
       <!-- Leaderboard -->
       <Leaderboard
-        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen"
+        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen && !whatsNewOpen"
         :is-dark="isDark"
         @back="leaderboardOpen = false"
+      />
+
+      <!-- What's New -->
+      <WhatsNew
+        v-if="whatsNewOpen"
+        :is-dark="isDark"
+        @close="whatsNewOpen = false"
       />
 
       <!-- Saved Puzzles -->
@@ -287,6 +294,7 @@ import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
+import WhatsNew from './components/WhatsNew.vue'
 import Settings from './components/Settings.vue'
 import {
   solvePuzzle,
@@ -326,6 +334,7 @@ export default {
     ConfettiCelebration,
     SavedPuzzles,
     InstallPrompt,
+    WhatsNew,
     Settings
   },
   setup() {
@@ -413,6 +422,7 @@ export default {
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
     const leaderboardOpen = ref(false)
+    const whatsNewOpen = ref(false)
     const savesOpen = ref(false)
     const confettiVisible = ref(false)
     const importModalOpen = ref(false)
@@ -495,6 +505,13 @@ export default {
 
       // Check if mobile device
       checkMobile()
+
+      // Show What's New on first visit after update
+      const seenVersion = localStorage.getItem('sudoku-version')
+      if (seenVersion !== '2.0') {
+        whatsNewOpen.value = true
+        localStorage.setItem('sudoku-version', '2.0')
+      }
       window.addEventListener('resize', checkMobile)
 
       // Start timer on first puzzle load
@@ -1170,6 +1187,7 @@ export default {
       exitPracticeMode,
       onPracticeCompleted,
       leaderboardOpen,
+      whatsNewOpen,
       savesOpen,
       onLoadSave,
       achievementsOpen,
