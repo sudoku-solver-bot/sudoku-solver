@@ -26,6 +26,16 @@
       </div>
     </div>
 
+    <!-- Tip of the day -->
+    <div class="tip-card" :class="{ dark: isDark }">
+      <span class="tip-icon">💡</span>
+      <div class="tip-content">
+        <strong>Tip #{{ tipIndex + 1 }}</strong>
+        <p>{{ tips[tipIndex] }}</p>
+      </div>
+      <button class="tip-next" @click="tipIndex = (tipIndex + 1) % tips.length">→</button>
+    </div>
+
     <!-- Action cards -->
     <div class="actions">
       <!-- Daily Challenge -->
@@ -140,6 +150,22 @@ export default {
       return ''
     })
 
+    const tipIndex = ref(0)
+    const tips = [
+      'Start with rows/columns/boxes that have the most given numbers.',
+      'Use pencil marks to track candidates in each cell.',
+      'Look for "naked singles" — cells with only one possible value.',
+      'Hidden singles: a number that can only go in one place in a row/col/box.',
+      'Scan for pairs — two cells with the same two candidates eliminate them elsewhere.',
+      'Press ? to see all keyboard shortcuts.',
+      'Challenge mode: 3 mistakes = game over. Train your accuracy!',
+      'Try cell colors to track patterns and groups.',
+      'The daily challenge resets at midnight — keep your streak alive!',
+      'Press Ctrl+Z to undo. You can undo multiple times.',
+      'Print your puzzle for old-school paper solving.',
+      'Share a puzzle link with friends to compete.',
+    ]
+
     const beltOrder = [
       { name: 'White Belt', shortName: 'Wht', emoji: '⬜', color: '#E0E0E0', lessons: 1 },
       { name: 'Yellow Belt', shortName: 'Yel', emoji: '🟡', color: '#FFD700', lessons: 2 },
@@ -188,7 +214,7 @@ export default {
 
     const earnedBelts = computed(() => belts.value.filter(b => b.earned))
 
-    return { t, streak, streakMsg, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert }
+    return { t, streak, streakMsg, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert, tips, tipIndex }
   }
 }
 </script>
@@ -291,6 +317,25 @@ export default {
   gap: 10px;
   margin-bottom: 24px;
 }
+
+/* Tip card */
+.tip-card {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px; margin-bottom: 12px;
+  background: #fffde7; border-radius: 12px;
+  border: 1px solid #fff9c4;
+}
+.tip-card.dark { background: #33291a; border-color: #5d4627; }
+.tip-icon { font-size: 24px; }
+.tip-content { flex: 1; }
+.tip-content strong { font-size: 12px; color: #f57f17; display: block; }
+.tip-content p { font-size: 13px; margin: 2px 0 0; color: #555; }
+.tip-card.dark .tip-content p { color: #ccc; }
+.tip-next {
+  background: #fff8e1; border: none; border-radius: 50%;
+  width: 28px; height: 28px; cursor: pointer; font-size: 16px;
+}
+.tip-card.dark .tip-next { background: #5d4627; color: #ccc; }
 
 .action-card {
   display: flex;
