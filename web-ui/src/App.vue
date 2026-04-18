@@ -62,9 +62,16 @@
 
       <!-- Leaderboard -->
       <Leaderboard
-        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen"
+        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen && !whatsNewOpen"
         :is-dark="isDark"
         @back="leaderboardOpen = false"
+      />
+
+      <!-- What's New -->
+      <WhatsNew
+        v-if="whatsNewOpen"
+        :is-dark="isDark"
+        @close="whatsNewOpen = false"
       />
 
       <!-- Saved Puzzles -->
@@ -153,12 +160,6 @@
         :show-retry="toast.showRetry"
         @close="hideToast"
         @retry="toast.onRetry"
-      />
-
-      <!-- Number completion bar -->
-      <NumberBar
-        :counts="digitCounts"
-        :is-dark="isDark"
       />
 
       <!-- Progress indicator -->
@@ -280,7 +281,6 @@ import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import SudokuGrid from './components/SudokuGrid.vue'
 import ControlPanel from './components/ControlPanel.vue'
 import ResultDisplay from './components/ResultDisplay.vue'
-import NumberBar from './components/NumberBar.vue'
 import ProgressIndicator from './components/ProgressIndicator.vue'
 import ToastNotification from './components/ToastNotification.vue'
 import MobileNumberPad from './components/MobileNumberPad.vue'
@@ -301,6 +301,8 @@ import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
+
+import WhatsNew from './components/WhatsNew.vue'
 import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
 import {
@@ -324,7 +326,6 @@ export default {
     SudokuGrid,
     ControlPanel,
     ResultDisplay,
-    NumberBar,
     ProgressIndicator,
     ToastNotification,
     MobileNumberPad,
@@ -342,6 +343,8 @@ export default {
     ConfettiCelebration,
     SavedPuzzles,
     InstallPrompt,
+
+    WhatsNew,
     KeyboardHelp,
     Settings
   },
@@ -430,6 +433,7 @@ export default {
     const currentPracticeSet = ref(null)
     const practiceList = ref([])
     const leaderboardOpen = ref(false)
+    const whatsNewOpen = ref(false)
     const savesOpen = ref(false)
     const confettiVisible = ref(false)
     const importModalOpen = ref(false)
@@ -520,6 +524,13 @@ export default {
 
       // Check if mobile device
       checkMobile()
+
+      // Show What's New on first visit after update
+      const seenVersion = localStorage.getItem('sudoku-version')
+      if (seenVersion !== '2.0') {
+        whatsNewOpen.value = true
+        localStorage.setItem('sudoku-version', '2.0')
+      }
       window.addEventListener('resize', checkMobile)
 
       // Start timer on first puzzle load
@@ -1195,6 +1206,7 @@ export default {
       exitPracticeMode,
       onPracticeCompleted,
       leaderboardOpen,
+      whatsNewOpen,
       savesOpen,
       onLoadSave,
       achievementsOpen,
