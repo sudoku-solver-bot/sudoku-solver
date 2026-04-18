@@ -83,8 +83,6 @@ export default {
     newRecord: {
       type: Boolean,
       default: false
-      default: false
->>>>>>> origin/master
     }
   },
   emits: ['toggle-pause'],
