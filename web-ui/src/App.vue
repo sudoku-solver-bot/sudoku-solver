@@ -921,9 +921,12 @@ export default {
           showResult(data.error || 'Failed to generate puzzle', 'error')
         }
       } catch (e) {
+        const msg = e.message?.includes('fetch') || e.message?.includes('network') || e.message?.includes('Failed to fetch')
+          ? 'Server is sleeping. Trying again in 30s...'
+          : 'Failed to generate puzzle: ' + e.message
         showToast(
-          'Error',
-          'Failed to generate puzzle: ' + e.message,
+          'Oops!',
+          msg,
           'error',
           true,
           () => generate(difficulty)
