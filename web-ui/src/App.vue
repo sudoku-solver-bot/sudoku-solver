@@ -1,8 +1,9 @@
 <template>
   <div class="app" :class="{ dark: isDark }">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container" :class="{ loading }">
       <!-- Header with dark mode toggle -->
-      <div class="header">
+      <div class="header" role="banner">
         <h1>🧩 Sudoku Solver</h1>
         <div class="header-actions">
           <button v-if="playMode" class="home-btn" @click="playMode = false" title="Home">
@@ -184,6 +185,7 @@
 
       <!-- Sudoku grid -->
       <SudokuGrid
+        id="main-content"
         :puzzle="puzzle"
         :given-cells="givenCells"
         :solved-cells="solvedCells"
@@ -1201,6 +1203,13 @@ export default {
 </script>
 
 <style>
+.skip-link {
+  position: absolute; top: -40px; left: 0; background: #4285f4; color: white;
+  padding: 8px 16px; z-index: 9999; transition: top 0.2s;
+  border-radius: 0 0 8px 0; font-size: 14px;
+}
+.skip-link:focus { top: 0; }
+
 * {
   box-sizing: border-box;
   margin: 0;
