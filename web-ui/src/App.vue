@@ -202,8 +202,11 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
+<<<<<<< HEAD
+=======
         :challenge-mode="challengeMode"
 
+>>>>>>> origin/master
         :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
@@ -236,8 +239,11 @@
       <MobileNumberPad
         :visible="showMobilePad"
         :counts="digitCounts"
+<<<<<<< HEAD
+=======
         :pencil-mode="pencilMode"
 
+>>>>>>> origin/master
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
@@ -304,6 +310,10 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+<<<<<<< HEAD
+import { updateFavicon } from './favicon'
+=======
+>>>>>>> origin/master
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
@@ -584,6 +594,11 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
+<<<<<<< HEAD
+          const filled = val.split('').filter(c => c !== '.').length
+          updateFavicon(puzzleDifficulty.value, filled)
+=======
+>>>>>>> origin/master
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
