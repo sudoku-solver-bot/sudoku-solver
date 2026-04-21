@@ -6,7 +6,7 @@
           v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
           :key="num"
           class="pad-btn"
-          :class="{ complete: counts[num] >= 9, suggested: num === suggested }"
+          :class="{ complete: counts[num] >= 9 }"
           @click="$emit('input', num)"
         >
           {{ num }}
@@ -17,6 +17,9 @@
         </button>
         <button class="pad-btn pad-hint" @click="$emit('hint')">
           💡
+        </button>
+        <button class="pad-btn" :class="{ 'pencil-active': pencilMode }" @click="$emit('toggle-pencil')">
+          ✏️
         </button>
       </div>
     </div>
@@ -35,12 +38,12 @@ export default {
       type: Object,
       default: () => ({})
     },
-    suggested: {
-      type: Number,
-      default: null
+    pencilMode: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['input', 'clear', 'hint']
+  emits: ['input', 'clear', 'hint', 'toggle-pencil']
 }
 </script>
 
@@ -101,17 +104,6 @@ export default {
   border-color: #c8e6c9;
 }
 
-.pad-btn.suggested {
-  border-color: #4285f4;
-  box-shadow: 0 0 0 3px rgba(66,133,244,0.3);
-  animation: pulse-suggest 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse-suggest {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(66,133,244,0.3); }
-  50% { box-shadow: 0 0 0 5px rgba(66,133,244,0.15); }
-}
-
 .pad-btn { position: relative; }
 
 @media (hover: hover) {
@@ -133,6 +125,12 @@ export default {
   border-color: #ffecb3;
   color: #f57f17;
   font-size: 20px;
+}
+
+.pad-btn.pencil-active {
+  background: #e3f2fd;
+  border-color: #4285f4;
+  box-shadow: 0 0 0 2px rgba(66,133,244,0.3);
 }
 
 .slide-up-enter-active,
