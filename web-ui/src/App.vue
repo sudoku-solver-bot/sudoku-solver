@@ -1,9 +1,8 @@
 <template>
   <div class="app" :class="{ dark: isDark }">
-    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container" :class="{ loading }">
       <!-- Header with dark mode toggle -->
-      <div class="header" role="banner">
+      <div class="header">
         <h1>🧩 Sudoku Solver</h1>
         <div class="header-actions">
           <button v-if="playMode" class="home-btn" @click="playMode = false" title="Home">
@@ -54,10 +53,12 @@
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
         :theme="boardTheme"
+        :challenge-mode="challengeMode"
         @exit="settingsOpen = false"
         @toggle-dark="toggleDarkMode"
         @toggle-colorblind="toggleColorBlind"
         @toggle-highcontrast="toggleHighContrast"
+        @toggle-challenge="toggleChallenge"
         @change-theme="boardTheme = $event"
       />
 
@@ -171,7 +172,6 @@
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
         :difficulty="puzzleDifficulty"
-        :new-record="newRecord"
       />
 
       <!-- Result display -->
@@ -193,7 +193,6 @@
 
       <!-- Sudoku grid -->
       <SudokuGrid
-        id="main-content"
         :puzzle="puzzle"
         :given-cells="givenCells"
         :solved-cells="solvedCells"
@@ -203,7 +202,11 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
-        :cell-colors="cellColors"
+<<<<<<< HEAD
+=======
+        :challenge-mode="challengeMode"
+
+>>>>>>> origin/master
         :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
@@ -226,7 +229,6 @@
         @import="importModalOpen = true"
         @share="sharePuzzle"
         @print="handlePrint"
-        @color-cell="handleColorCell"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -237,10 +239,15 @@
       <MobileNumberPad
         :visible="showMobilePad"
         :counts="digitCounts"
-        :suggested="suggestedNumber"
+<<<<<<< HEAD
+=======
+        :pencil-mode="pencilMode"
+
+>>>>>>> origin/master
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
+        @toggle-pencil="pencilMode = !pencilMode"
       />
 
       <!-- Hint modal -->
@@ -303,8 +310,10 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
-import { haptics } from './haptics'
-import { savePersonalBest, getPersonalBests, formatTimeMs } from './personal-bests'
+<<<<<<< HEAD
+import { updateFavicon } from './favicon'
+=======
+>>>>>>> origin/master
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
@@ -361,7 +370,6 @@ export default {
     const puzzle = ref('.'.repeat(81))
     const givenCells = ref(new Set())
     const solvedCells = ref(new Set())
-    const cellColors = reactive({})
 
     // Digit counts for numpad
     const digitCounts = computed(() => {
@@ -370,15 +378,6 @@ export default {
         if (c >= '1' && c <= '9') counts[c]++
       }
       return counts
-    })
-
-    // Suggested number — single candidate for selected cell
-    const suggestedNumber = computed(() => {
-      const cell = selectedCell.value
-      if (cell < 0 || givenCells.value.has(cell) || puzzle.value[cell] !== '.') return null
-      const cands = candidates.value[String(cell)]
-      if (cands && cands.length === 1) return cands[0]
-      return null
     })
 
     // UI state
@@ -398,6 +397,7 @@ export default {
     const mistakes = ref(0)
     const hintsUsed = ref(0)
     const puzzleDifficulty = ref('')
+    const puzzleSolution = ref('')
 
     // Undo/Redo state
     const canUndo = ref(false)
@@ -430,6 +430,7 @@ export default {
     // Candidates (pencil marks) state
     const candidates = ref({})
     const showCandidates = ref(true)
+    const pencilMode = ref(false)
 
     // Tutorial state
     const tutorialMode = ref(false)
@@ -441,6 +442,7 @@ export default {
     const settingsOpen = ref(false)
     const colorBlindMode = ref(false)
     const highContrastMode = ref(false)
+    const challengeMode = ref(localStorage.getItem('sudoku-challenge') === 'true')
     const completedTutorials = ref(new Set())
 
     // Quiz & Practice state
@@ -454,8 +456,6 @@ export default {
     const whatsNewOpen = ref(false)
     const savesOpen = ref(false)
     const confettiVisible = ref(false)
-    const newRecord = ref(false)
-    const personalBests = ref(getPersonalBests())
     const importModalOpen = ref(false)
     const keyboardHelpOpen = ref(false)
     const achievementsOpen = ref(false)
@@ -559,10 +559,6 @@ export default {
       // Load initial undo/redo state
       loadHistoryState()
 
-      // Check for shared puzzle in URL (must be before savedGame check)
-      const params = new URLSearchParams(window.location.search)
-      const sharedPuzzle = params.get('p')
-
       // Restore saved game state
       const savedGame = localStorage.getItem('sudoku-current-game')
       if (savedGame && !sharedPuzzle) {
@@ -577,7 +573,9 @@ export default {
         } catch (e) {}
       }
 
-      // Handle shared puzzle
+      // Check for shared puzzle in URL
+      const params = new URLSearchParams(window.location.search)
+      const sharedPuzzle = params.get('p')
       if (sharedPuzzle) {
         try {
           const decoded = atob(sharedPuzzle).replace(/0/g, '.')
@@ -597,10 +595,11 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
-          // Update page title with progress
+<<<<<<< HEAD
           const filled = val.split('').filter(c => c !== '.').length
-          document.title = `🧩 ${filled}/81 · ${puzzleDifficulty.value || 'Sudoku'} | Sudoku Dojo`
-
+          updateFavicon(puzzleDifficulty.value, filled)
+=======
+>>>>>>> origin/master
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
@@ -659,8 +658,15 @@ export default {
       // Sound feedback + auto-remove pencil marks
       if (value && value !== '.') {
         playSound('place')
-        haptics.tap()
         autoRemovePencilMarks(index, value)
+        // Challenge mode: detect mistakes
+        if (challengeMode.value && puzzleSolution.value && puzzleSolution.value[index] !== value) {
+          mistakes.value++
+          if (mistakes.value >= 3) {
+            stopTimer()
+            showResult('💀 Game Over! 3 mistakes reached.', 'error')
+          }
+        }
       }
 
       // Show mobile pad on mobile if value was cleared
@@ -712,10 +718,7 @@ export default {
         const solved = await solvePuzzle(puzzle.value, false).catch(() => null)
         if (solved && solved.solved) {
           stopTimer()
-          playSound('solved'); haptics.success()
-          const isNewRecord = savePersonalBest(puzzleDifficulty.value, elapsedTime.value)
-          newRecord.value = isNewRecord
-          personalBests.value = getPersonalBests()
+          playSound('solved')
           confettiVisible,
       formatTime.value = true
         }
@@ -738,7 +741,6 @@ export default {
     // Cell selection
     const selectCell = (index) => {
       selectedCell.value = index
-      if (index >= 0) haptics.tap()
       // Show mobile pad when cell is selected on mobile
       if (isMobile.value && index >= 0 && !givenCells.value.has(index)) {
         showMobilePad.value = true
@@ -909,7 +911,7 @@ export default {
       try {
         const data = await solvePuzzle(puzzle.value, true)
         if (data.solved) {
-          playSound('solved'); haptics.success()
+          playSound('solved')
           setPuzzle(data.solution, false)
           showResult(
             `Solved in ${data.metrics.solveTimeMs.toFixed(2)}ms`,
@@ -944,6 +946,11 @@ export default {
           setPuzzle(data.puzzle, true)
           showResult(`Generated ${data.difficulty} puzzle!`, 'success')
           puzzleDifficulty.value = data.difficulty || difficulty
+          // Get solution for challenge mode
+          try {
+            const sol = await solvePuzzle(data.puzzle, false)
+            if (sol && sol.solved) puzzleSolution.value = sol.solution
+          } catch(e) {}
           selectedCell.value = -1
           showMobilePad.value = false
           lastSavedState = data.puzzle
@@ -1008,15 +1015,6 @@ export default {
       playSound('click')
     }
 
-    const handleColorCell = (color) => {
-      if (selectedCell.value < 0) return
-      if (color === null) {
-        delete cellColors[selectedCell.value]
-      } else {
-        cellColors[selectedCell.value] = color
-      }
-    }
-
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -1077,6 +1075,11 @@ export default {
     const toggleHighContrast = () => {
       highContrastMode.value = !highContrastMode.value
       localStorage.setItem('sudokuHighContrast', highContrastMode.value.toString())
+    }
+
+    const toggleChallenge = () => {
+      challengeMode.value = !challengeMode.value
+      localStorage.setItem('sudoku-challenge', challengeMode.value.toString())
     }
 
     const toggleTutorialMode = async () => {
@@ -1193,7 +1196,6 @@ export default {
       givenCells,
       solvedCells,
       digitCounts,
-      suggestedNumber,
       loading,
       loadingMessage,
       selectedCell,
@@ -1217,6 +1219,7 @@ export default {
       currentHint,
       candidates,
       showCandidates,
+      pencilMode,
       tutorialMode,
       tutorialList,
       currentTutorialLesson,
@@ -1231,6 +1234,8 @@ export default {
       toggleDarkMode,
       toggleColorBlind,
       toggleHighContrast,
+      toggleChallenge,
+      challengeMode,
       toggleTutorialMode,
       onTutorialSelected,
       exitTutorialMode,
@@ -1274,24 +1279,13 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
-      handleColorCell,
-      cellColors,
-      handleKeyDown,
-      newRecord,
-      personalBests
+      handleKeyDown
     }
   }
 }
 </script>
 
 <style>
-.skip-link {
-  position: absolute; top: -40px; left: 0; background: #4285f4; color: white;
-  padding: 8px 16px; z-index: 9999; transition: top 0.2s;
-  border-radius: 0 0 8px 0; font-size: 14px;
-}
-.skip-link:focus { top: 0; }
-
 * {
   box-sizing: border-box;
   margin: 0;
