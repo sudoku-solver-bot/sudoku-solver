@@ -585,6 +585,7 @@ export default {
             setPuzzle(game.puzzle, true)
             if (game.playMode) playMode.value = true
             if (game.difficulty) puzzleDifficulty.value = game.difficulty
+            showToast('Game Resumed', 'Picked up where you left off!', 'info')
           }
         } catch (e) {}
       }
