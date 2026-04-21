@@ -53,10 +53,12 @@
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
         :theme="boardTheme"
+        :challenge-mode="challengeMode"
         @exit="settingsOpen = false"
         @toggle-dark="toggleDarkMode"
         @toggle-colorblind="toggleColorBlind"
         @toggle-highcontrast="toggleHighContrast"
+        @toggle-challenge="toggleChallenge"
         @change-theme="boardTheme = $event"
       />
 
@@ -200,6 +202,11 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
+<<<<<<< HEAD
+=======
+        :challenge-mode="challengeMode"
+
+>>>>>>> origin/master
         :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
@@ -232,9 +239,15 @@
       <MobileNumberPad
         :visible="showMobilePad"
         :counts="digitCounts"
+<<<<<<< HEAD
+=======
+        :pencil-mode="pencilMode"
+
+>>>>>>> origin/master
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
+        @toggle-pencil="pencilMode = !pencilMode"
       />
 
       <!-- Hint modal -->
@@ -297,7 +310,10 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
+<<<<<<< HEAD
 import { updateFavicon } from './favicon'
+=======
+>>>>>>> origin/master
 import { printPuzzle } from './print'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
@@ -381,6 +397,7 @@ export default {
     const mistakes = ref(0)
     const hintsUsed = ref(0)
     const puzzleDifficulty = ref('')
+    const puzzleSolution = ref('')
 
     // Undo/Redo state
     const canUndo = ref(false)
@@ -413,6 +430,7 @@ export default {
     // Candidates (pencil marks) state
     const candidates = ref({})
     const showCandidates = ref(true)
+    const pencilMode = ref(false)
 
     // Tutorial state
     const tutorialMode = ref(false)
@@ -424,6 +442,7 @@ export default {
     const settingsOpen = ref(false)
     const colorBlindMode = ref(false)
     const highContrastMode = ref(false)
+    const challengeMode = ref(localStorage.getItem('sudoku-challenge') === 'true')
     const completedTutorials = ref(new Set())
 
     // Quiz & Practice state
@@ -575,8 +594,11 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
+<<<<<<< HEAD
           const filled = val.split('').filter(c => c !== '.').length
           updateFavicon(puzzleDifficulty.value, filled)
+=======
+>>>>>>> origin/master
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
@@ -636,6 +658,14 @@ export default {
       if (value && value !== '.') {
         playSound('place')
         autoRemovePencilMarks(index, value)
+        // Challenge mode: detect mistakes
+        if (challengeMode.value && puzzleSolution.value && puzzleSolution.value[index] !== value) {
+          mistakes.value++
+          if (mistakes.value >= 3) {
+            stopTimer()
+            showResult('💀 Game Over! 3 mistakes reached.', 'error')
+          }
+        }
       }
 
       // Show mobile pad on mobile if value was cleared
@@ -915,6 +945,11 @@ export default {
           setPuzzle(data.puzzle, true)
           showResult(`Generated ${data.difficulty} puzzle!`, 'success')
           puzzleDifficulty.value = data.difficulty || difficulty
+          // Get solution for challenge mode
+          try {
+            const sol = await solvePuzzle(data.puzzle, false)
+            if (sol && sol.solved) puzzleSolution.value = sol.solution
+          } catch(e) {}
           selectedCell.value = -1
           showMobilePad.value = false
           lastSavedState = data.puzzle
@@ -1039,6 +1074,11 @@ export default {
     const toggleHighContrast = () => {
       highContrastMode.value = !highContrastMode.value
       localStorage.setItem('sudokuHighContrast', highContrastMode.value.toString())
+    }
+
+    const toggleChallenge = () => {
+      challengeMode.value = !challengeMode.value
+      localStorage.setItem('sudoku-challenge', challengeMode.value.toString())
     }
 
     const toggleTutorialMode = async () => {
@@ -1178,6 +1218,7 @@ export default {
       currentHint,
       candidates,
       showCandidates,
+      pencilMode,
       tutorialMode,
       tutorialList,
       currentTutorialLesson,
@@ -1192,6 +1233,8 @@ export default {
       toggleDarkMode,
       toggleColorBlind,
       toggleHighContrast,
+      toggleChallenge,
+      challengeMode,
       toggleTutorialMode,
       onTutorialSelected,
       exitTutorialMode,
