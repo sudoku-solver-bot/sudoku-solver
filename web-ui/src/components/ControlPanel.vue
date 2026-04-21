@@ -86,14 +86,12 @@
       <span class="btn-icon">🖨️</span>
       Print
     </button>
+    <button class="btn-image" @click="$emit('share-image')">
+      <span class="btn-icon">📸</span>
+      Image
+    </button>
 
     <!-- Pencil marks toggle -->
-    <div class="color-row">
-      <span class="color-label">🎨</span>
-      <button v-for="c in colors" :key="c.id" class="color-dot" :class="'dot-' + c.id" @click="$emit('color-cell', c.id)" :title="c.name"></button>
-      <button class="color-dot dot-clear" @click="$emit('color-cell', null)" title="Clear color">✕</button>
-    </div>
-
     <button
       class="btn-toggle"
       :class="{ active: showCandidates }"
@@ -134,17 +132,7 @@ export default {
       default: true
     }
   },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print', 'color-cell'],
-  setup() {
-    const colors = [
-      { id: 'blue', name: 'Blue' },
-      { id: 'green', name: 'Green' },
-      { id: 'yellow', name: 'Yellow' },
-      { id: 'red', name: 'Red' },
-      { id: 'purple', name: 'Purple' },
-    ]
-    return { colors }
-  }
+  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print', 'share-image']
 }
 </script>
 
@@ -316,25 +304,13 @@ button:active:not(:disabled) {
   margin-top: 4px;
 }
 
-.color-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.btn-image {
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  color: #2e7d32;
+  padding: 14px;
+  font-size: 15px;
   margin-top: 4px;
-  padding: 4px 0;
 }
-.color-label { font-size: 16px; }
-.color-dot {
-  width: 24px; height: 24px; border-radius: 50%; border: 2px solid #ddd;
-  cursor: pointer; transition: transform 0.15s;
-}
-.color-dot:hover { transform: scale(1.2); }
-.dot-blue { background: #4285f4; }
-.dot-green { background: #34a853; }
-.dot-yellow { background: #fbbc04; }
-.dot-red { background: #ea4335; }
-.dot-purple { background: #ab47bc; }
-.dot-clear { background: #f5f5f5; font-size: 10px; color: #999; display: flex; align-items: center; justify-content: center; border: none; }
 
 .btn-toggle {
   background: #f0f0f0;
