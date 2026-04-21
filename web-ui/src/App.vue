@@ -278,6 +278,7 @@
 
       <!-- PWA install prompt -->
       <InstallPrompt :is-dark="isDark" />
+      <OfflineIndicator />
     </div>
   </div>
 </template>
@@ -311,6 +312,7 @@ import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
 
 import WhatsNew from './components/WhatsNew.vue'
+import OfflineIndicator from './components/OfflineIndicator.vue'
 import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
 import {
@@ -353,6 +355,7 @@ export default {
     InstallPrompt,
 
     WhatsNew,
+    OfflineIndicator,
     KeyboardHelp,
     Settings
   },
