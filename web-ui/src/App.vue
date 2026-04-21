@@ -1,9 +1,8 @@
 <template>
   <div class="app" :class="{ dark: isDark }">
-    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="container" :class="{ loading }">
       <!-- Header with dark mode toggle -->
-      <div class="header" role="banner">
+      <div class="header">
         <h1>🧩 Sudoku Solver</h1>
         <div class="header-actions">
           <button v-if="playMode" class="home-btn" @click="playMode = false" title="Home">
@@ -171,7 +170,6 @@
         :hints-used="hintsUsed"
         :elapsed-time="elapsedTime"
         :difficulty="puzzleDifficulty"
-        :new-record="newRecord"
       />
 
       <!-- Result display -->
@@ -193,7 +191,6 @@
 
       <!-- Sudoku grid -->
       <SudokuGrid
-        id="main-content"
         :puzzle="puzzle"
         :given-cells="givenCells"
         :solved-cells="solvedCells"
@@ -203,7 +200,6 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
-        :cell-colors="cellColors"
         :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
@@ -226,7 +222,7 @@
         @import="importModalOpen = true"
         @share="sharePuzzle"
         @print="handlePrint"
-        @color-cell="handleColorCell"
+        @share-image="handleShareImage"
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -237,7 +233,6 @@
       <MobileNumberPad
         :visible="showMobilePad"
         :counts="digitCounts"
-        :suggested="suggestedNumber"
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
@@ -303,9 +298,8 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
-import { haptics } from './haptics'
-import { savePersonalBest, getPersonalBests, formatTimeMs } from './personal-bests'
 import { printPuzzle } from './print'
+import { generatePuzzleImage, downloadImage } from './share-image'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
@@ -361,7 +355,6 @@ export default {
     const puzzle = ref('.'.repeat(81))
     const givenCells = ref(new Set())
     const solvedCells = ref(new Set())
-    const cellColors = reactive({})
 
     // Digit counts for numpad
     const digitCounts = computed(() => {
@@ -370,15 +363,6 @@ export default {
         if (c >= '1' && c <= '9') counts[c]++
       }
       return counts
-    })
-
-    // Suggested number — single candidate for selected cell
-    const suggestedNumber = computed(() => {
-      const cell = selectedCell.value
-      if (cell < 0 || givenCells.value.has(cell) || puzzle.value[cell] !== '.') return null
-      const cands = candidates.value[String(cell)]
-      if (cands && cands.length === 1) return cands[0]
-      return null
     })
 
     // UI state
@@ -454,8 +438,6 @@ export default {
     const whatsNewOpen = ref(false)
     const savesOpen = ref(false)
     const confettiVisible = ref(false)
-    const newRecord = ref(false)
-    const personalBests = ref(getPersonalBests())
     const importModalOpen = ref(false)
     const keyboardHelpOpen = ref(false)
     const achievementsOpen = ref(false)
@@ -559,10 +541,6 @@ export default {
       // Load initial undo/redo state
       loadHistoryState()
 
-      // Check for shared puzzle in URL (must be before savedGame check)
-      const params = new URLSearchParams(window.location.search)
-      const sharedPuzzle = params.get('p')
-
       // Restore saved game state
       const savedGame = localStorage.getItem('sudoku-current-game')
       if (savedGame && !sharedPuzzle) {
@@ -576,7 +554,9 @@ export default {
         } catch (e) {}
       }
 
-      // Handle shared puzzle
+      // Check for shared puzzle in URL
+      const params = new URLSearchParams(window.location.search)
+      const sharedPuzzle = params.get('p')
       if (sharedPuzzle) {
         try {
           const decoded = atob(sharedPuzzle).replace(/0/g, '.')
@@ -596,10 +576,6 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
-          // Update page title with progress
-          const filled = val.split('').filter(c => c !== '.').length
-          document.title = `🧩 ${filled}/81 · ${puzzleDifficulty.value || 'Sudoku'} | Sudoku Dojo`
-
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
@@ -658,7 +634,6 @@ export default {
       // Sound feedback + auto-remove pencil marks
       if (value && value !== '.') {
         playSound('place')
-        haptics.tap()
         autoRemovePencilMarks(index, value)
       }
 
@@ -711,10 +686,7 @@ export default {
         const solved = await solvePuzzle(puzzle.value, false).catch(() => null)
         if (solved && solved.solved) {
           stopTimer()
-          playSound('solved'); haptics.success()
-          const isNewRecord = savePersonalBest(puzzleDifficulty.value, elapsedTime.value)
-          newRecord.value = isNewRecord
-          personalBests.value = getPersonalBests()
+          playSound('solved')
           confettiVisible,
       formatTime.value = true
         }
@@ -737,7 +709,6 @@ export default {
     // Cell selection
     const selectCell = (index) => {
       selectedCell.value = index
-      if (index >= 0) haptics.tap()
       // Show mobile pad when cell is selected on mobile
       if (isMobile.value && index >= 0 && !givenCells.value.has(index)) {
         showMobilePad.value = true
@@ -908,7 +879,7 @@ export default {
       try {
         const data = await solvePuzzle(puzzle.value, true)
         if (data.solved) {
-          playSound('solved'); haptics.success()
+          playSound('solved')
           setPuzzle(data.solution, false)
           showResult(
             `Solved in ${data.metrics.solveTimeMs.toFixed(2)}ms`,
@@ -1007,13 +978,11 @@ export default {
       playSound('click')
     }
 
-    const handleColorCell = (color) => {
-      if (selectedCell.value < 0) return
-      if (color === null) {
-        delete cellColors[selectedCell.value]
-      } else {
-        cellColors[selectedCell.value] = color
-      }
+    const handleShareImage = () => {
+      const img = generatePuzzleImage(puzzle.value, puzzleDifficulty.value)
+      downloadImage(img)
+      playSound('click')
+      showToast('Image Saved!', 'Share it with friends!', 'success')
     }
 
     // Get a hint
@@ -1192,7 +1161,6 @@ export default {
       givenCells,
       solvedCells,
       digitCounts,
-      suggestedNumber,
       loading,
       loadingMessage,
       selectedCell,
@@ -1273,24 +1241,14 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
-      handleColorCell,
-      cellColors,
-      handleKeyDown,
-      newRecord,
-      personalBests
+      handleShareImage,
+      handleKeyDown
     }
   }
 }
 </script>
 
 <style>
-.skip-link {
-  position: absolute; top: -40px; left: 0; background: #4285f4; color: white;
-  padding: 8px 16px; z-index: 9999; transition: top 0.2s;
-  border-radius: 0 0 8px 0; font-size: 14px;
-}
-.skip-link:focus { top: 0; }
-
 * {
   box-sizing: border-box;
   margin: 0;
