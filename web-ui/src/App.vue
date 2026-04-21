@@ -202,14 +202,8 @@
         :show-candidates="showCandidates"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
         :challenge-mode="challengeMode"
 
->>>>>>> origin/master
->>>>>>> origin/master
         :theme="boardTheme"
         @update="onCellUpdate"
         @select="selectCell"
@@ -232,10 +226,7 @@
         @import="importModalOpen = true"
         @share="sharePuzzle"
         @print="handlePrint"
-<<<<<<< HEAD
         @share-image="handleShareImage"
-=======
->>>>>>> origin/master
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -246,14 +237,8 @@
       <MobileNumberPad
         :visible="showMobilePad"
         :counts="digitCounts"
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
         :pencil-mode="pencilMode"
 
->>>>>>> origin/master
->>>>>>> origin/master
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
         @hint="getHint"
@@ -321,13 +306,7 @@ import Achievements from './components/Achievements.vue'
 import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
 import { updateFavicon } from './favicon'
-=======
->>>>>>> origin/master
->>>>>>> origin/master
 import { printPuzzle } from './print'
 import { generatePuzzleImage, downloadImage } from './share-image'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
@@ -612,14 +591,8 @@ export default {
       // Auto-save game state on puzzle changes
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
           const filled = val.split('').filter(c => c !== '.').length
           updateFavicon(puzzleDifficulty.value, filled)
-=======
->>>>>>> origin/master
->>>>>>> origin/master
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
             playMode: playMode.value,
@@ -1038,7 +1011,6 @@ export default {
       playSound('click')
     }
 
-<<<<<<< HEAD
     const handleShareImage = () => {
       const img = generatePuzzleImage(puzzle.value, puzzleDifficulty.value)
       downloadImage(img)
@@ -1046,8 +1018,6 @@ export default {
       showToast('Image Saved!', 'Share it with friends!', 'success')
     }
 
-=======
->>>>>>> origin/master
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -1312,10 +1282,7 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
-<<<<<<< HEAD
       handleShareImage,
-=======
->>>>>>> origin/master
       handleKeyDown
     }
   }
