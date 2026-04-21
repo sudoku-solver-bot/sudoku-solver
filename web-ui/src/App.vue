@@ -204,8 +204,11 @@
         :high-contrast="highContrastMode"
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
         :challenge-mode="challengeMode"
 
+>>>>>>> origin/master
 >>>>>>> origin/master
         :theme="boardTheme"
         @update="onCellUpdate"
@@ -229,6 +232,10 @@
         @import="importModalOpen = true"
         @share="sharePuzzle"
         @print="handlePrint"
+<<<<<<< HEAD
+        @share-image="handleShareImage"
+=======
+>>>>>>> origin/master
         @hint="getHint"
         @undo="undo"
         @redo="redo"
@@ -241,8 +248,11 @@
         :counts="digitCounts"
 <<<<<<< HEAD
 =======
+<<<<<<< HEAD
+=======
         :pencil-mode="pencilMode"
 
+>>>>>>> origin/master
 >>>>>>> origin/master
         @input="onNumberPadInput"
         @clear="clearSelectedCell"
@@ -285,6 +295,7 @@
 
       <!-- PWA install prompt -->
       <InstallPrompt :is-dark="isDark" />
+      <OfflineIndicator />
     </div>
   </div>
 </template>
@@ -311,15 +322,20 @@ import StatsPage from './components/StatsPage.vue'
 import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
 import { updateFavicon } from './favicon'
 =======
 >>>>>>> origin/master
+>>>>>>> origin/master
 import { printPuzzle } from './print'
+import { generatePuzzleImage, downloadImage } from './share-image'
 import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
 
 import WhatsNew from './components/WhatsNew.vue'
+import OfflineIndicator from './components/OfflineIndicator.vue'
 import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
 import {
@@ -362,6 +378,7 @@ export default {
     InstallPrompt,
 
     WhatsNew,
+    OfflineIndicator,
     KeyboardHelp,
     Settings
   },
@@ -568,6 +585,7 @@ export default {
             setPuzzle(game.puzzle, true)
             if (game.playMode) playMode.value = true
             if (game.difficulty) puzzleDifficulty.value = game.difficulty
+            showToast('Game Resumed', 'Picked up where you left off!', 'info')
           }
         } catch (e) {}
       }
@@ -595,9 +613,12 @@ export default {
       watch(puzzle, (val) => {
         if (val && val !== '.'.repeat(81)) {
 <<<<<<< HEAD
+=======
+<<<<<<< HEAD
           const filled = val.split('').filter(c => c !== '.').length
           updateFavicon(puzzleDifficulty.value, filled)
 =======
+>>>>>>> origin/master
 >>>>>>> origin/master
           localStorage.setItem('sudoku-current-game', JSON.stringify({
             puzzle: val,
@@ -1017,6 +1038,16 @@ export default {
       playSound('click')
     }
 
+<<<<<<< HEAD
+    const handleShareImage = () => {
+      const img = generatePuzzleImage(puzzle.value, puzzleDifficulty.value)
+      downloadImage(img)
+      playSound('click')
+      showToast('Image Saved!', 'Share it with friends!', 'success')
+    }
+
+=======
+>>>>>>> origin/master
     // Get a hint
     const getHint = async () => {
       loading.value = true
@@ -1281,6 +1312,10 @@ export default {
       onImportPuzzle,
       sharePuzzle,
       handlePrint,
+<<<<<<< HEAD
+      handleShareImage,
+=======
+>>>>>>> origin/master
       handleKeyDown
     }
   }
