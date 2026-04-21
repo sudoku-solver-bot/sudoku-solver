@@ -78,6 +78,17 @@
 
       <!-- About section -->
       <div class="settings-section">
+        <h3>Gameplay</h3>
+        <label class="setting-row">
+          <div class="setting-info">
+            <span class="setting-name">Challenge mode</span>
+            <span class="setting-desc">3 mistakes = game over. Are you brave enough?</span>
+          </div>
+          <input type="checkbox" :checked="challengeMode" @change="$emit('toggle-challenge')" class="toggle">
+        </label>
+      </div>
+
+      <div class="settings-section">
         <h3>About</h3>
         <div class="about-text">
           <p><strong>Sudoku Dojo</strong> — Learn Sudoku step by step</p>
@@ -100,9 +111,10 @@ export default {
     isDark: { type: Boolean, default: false },
     colorBlind: { type: Boolean, default: false },
     highContrast: { type: Boolean, default: false },
+    challengeMode: { type: Boolean, default: false },
     theme: { type: String, default: 'default' }
   },
-  emits: ['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast', 'change-theme'],
+  emits: ['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast', 'change-theme', 'toggle-challenge'],
   setup(props, { emit }) {
     const soundEnabled = ref(isSoundEnabled())
     const { currentLocale, setLocale } = useI18n()
