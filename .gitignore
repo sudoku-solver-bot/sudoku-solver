@@ -56,3 +56,9 @@ Thumbs.db
 *~
 .tmp/
 temp/.kotlin/
+
+# Playwright
+web-ui/playwright-report/
+web-ui/test-results/
+web-ui/e2e/**/*-diff.png
+web-ui/e2e/**/*-actual.png
