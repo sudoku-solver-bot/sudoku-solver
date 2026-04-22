@@ -25,6 +25,7 @@
 
       <!-- Actions -->
       <div class="cert-actions">
+        <button class="cert-btn download" @click="downloadCert">🖼️ Save Image</button>
         <button class="cert-btn print" @click="printCert">🖨️ Print</button>
         <button class="cert-btn share" @click="shareCert">📤 Share</button>
         <button class="cert-btn close" @click="$emit('close')">✓ Done</button>
@@ -36,6 +37,7 @@
 <script setup>
 
 import { ref, computed } from 'vue'
+import { generateCertificateImage, downloadCertificateImage } from '../certificate-image.js'
 
 const props = defineProps({
     technique: { type: String, required: true },
@@ -54,6 +56,18 @@ const formattedDate = computed(() => {
     year: 'numeric', month: 'long', day: 'numeric'
   })
 })
+
+const downloadCert = () => {
+  const dataUrl = generateCertificateImage({
+    technique: props.technique,
+    beltName: props.beltName,
+    beltEmoji: props.beltEmoji,
+    beltColor: props.beltColor,
+    tutorialsCompleted: props.tutorialsCompleted,
+    totalTutorials: props.totalTutorials
+  })
+  downloadCertificateImage(dataUrl, props.beltName)
+}
 
 const printCert = () => {
   const printWindow = window.open('', '_blank')
@@ -112,14 +126,37 @@ const printCert = () => {
 }
 
 const shareCert = async () => {
+  // Try sharing the certificate image file first
+  const dataUrl = generateCertificateImage({
+    technique: props.technique,
+    beltName: props.beltName,
+    beltEmoji: props.beltEmoji,
+    beltColor: props.beltColor,
+    tutorialsCompleted: props.tutorialsCompleted,
+    totalTutorials: props.totalTutorials
+  })
   const text = `🏆 Sudoku Dojo Certificate!\n\nI earned my ${props.beltName} in ${props.technique}!\n\n${props.beltEmoji} ${props.tutorialsCompleted}/${props.totalTutorials} lessons complete\n\nPlay at: https://sudoku-solver-r5y8.onrender.com`
-  if (navigator.share) {
+
+  if (navigator.share && navigator.canShare) {
+    try {
+      // Try to share with image file
+      const blob = await (await fetch(dataUrl)).blob()
+      const file = new File([blob], `sudoku-dojo-${props.beltName.toLowerCase().replace(/\s+/g, '-')}-certificate.png`, { type: 'image/png' })
+      const shareData = { title: 'Sudoku Dojo Certificate', text, files: [file] }
+      if (navigator.canShare(shareData)) {
+        await navigator.share(shareData)
+        return
+      }
+    } catch (e) { /* cancelled or not supported */ }
+    // Fallback: share text only
     try {
       await navigator.share({ title: 'Sudoku Dojo Certificate', text })
     } catch (e) { /* cancelled */ }
   } else {
+    // No Web Share API — download image + copy text
+    downloadCertificateImage(dataUrl, props.beltName)
     await navigator.clipboard.writeText(text)
-    alert('Certificate copied to clipboard!')
+    alert('Certificate image saved! Text copied to clipboard.')
   }
 }
 </script>
@@ -208,6 +245,8 @@ const shareCert = async () => {
   font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
 }
 
+.cert-btn.download { background: #c9a94e; color: white; }
+.cert-btn.download:hover { background: #b8952e; }
 .cert-btn.print { background: white; color: #333; }
 .cert-btn.print:hover { background: #f0f0f0; }
 .cert-btn.share { background: #4285f4; color: white; }
