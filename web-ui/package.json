@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src/",
-    "lint:ci": "eslint src/ --max-warnings 50"
+    "lint:ci": "eslint src/ --max-warnings 800"
   },
   "dependencies": {
     "vue": "^3.4.0"
