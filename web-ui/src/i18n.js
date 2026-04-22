@@ -112,7 +112,8 @@ const translations = {
 
     language: 'Language',
     english: 'English',
-    chinese: '中文'
+    chinese: '中文',
+    japanese: '日本語'
   },
 
   'zh-Hant': {
@@ -223,7 +224,120 @@ const translations = {
 
     language: '語言',
     english: 'English',
-    chinese: '中文'
+    chinese: '中文',
+    japanese: '日本語'
+  },
+
+  ja: {
+    // Header
+    appTitle: '🧩 数独ソルバー',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: '数独道場',
+    dashboardSubtitle: '学ぶ。練習する。極める。',
+    play: '▶ プレイ',
+    dailyChallenge: '📅 デイリーチャレンジ',
+    learnTechniques: '📚 テクニックを学ぶ',
+    quickSolve: '🧩 クイックソルブ',
+
+    // Game
+    progress: '進捗',
+    time: '時間',
+    mistakes: 'ミス',
+    hints: 'ヒント',
+    filled: '記入済',
+    solve: '🧩 解く',
+    clear: '🗑️ クリア',
+    import: '📥 インポート',
+    share: '🔗 パズルを共有',
+    getHint: '💡 ヒントを見る！',
+    pencilMarks: 'ペンシルメモ',
+    newPuzzle: '新しいパズル：',
+    easy: '簡単',
+    medium: '普通',
+    hard: '難しい',
+    undo: '元に戻す',
+    redo: 'やり直す',
+
+    // Settings
+    settingsTitle: '⚙️ 設定',
+    accessibility: 'アクセシビリティ',
+    colorBlind: '色覚サポート',
+    colorBlindDesc: 'パターンと識別しやすい色を使用',
+    highContrast: 'ハイコントラスト',
+    highContrastDesc: '見やすさを向上する太い枠線とテキスト',
+    darkModeLabel: 'ダークモード',
+    darkModeDesc: '夜間の使用時に目に優しい',
+    soundEffects: 'サウンドエフェクト',
+    soundEffectsDesc: '操作時の音声フィードバック',
+    boardTheme: 'ボードテーマ',
+    data: 'データ',
+    resetProgress: '進捗をリセット',
+    resetProgressDesc: 'すべてのレッスンの進捗とストリークをクリア',
+    about: 'について',
+    aboutText: '数独道場 — 一步步に数独を学ぶ',
+    back: '← 戻る',
+
+    // Import
+    importTitle: '📥 パズルをインポート',
+    importDesc: '下に数独パズルを貼り付けてください。. または 0 を空マスに使用。',
+    singleLine: '1行入力',
+    grid9x9: '9×9 グリッド',
+    loadExample: '例を読み込む',
+    cancel: 'キャンセル',
+
+    // Achievements
+    achievementsTitle: '🏆 実績',
+    statsTitle: '📊 統計',
+
+    // Belt levels
+    whiteBelt: '白帯',
+    yellowBelt: '黄帯',
+    orangeBelt: '橙帯',
+    greenBelt: '緑帯',
+    blueBelt: '青帯',
+    purpleBelt: '紫帯',
+    brownBelt: '茶帯',
+    blackBelt: '黒帯',
+
+    // Messages
+    puzzleImported: 'パズルをインポートしました！解くをタップするか自分で解いてください。',
+    puzzleGenerated: '{difficulty}パズルを生成しました！',
+    puzzleSolved: '{time}msで解けました',
+    noSolution: '解が見つかりません',
+    linkCopied: 'リンクをコピーしました！',
+    shareText: 'このリンクを共有して誰かをチャレンジ！',
+    sharedLoaded: '共有パズルを読み込みました！自分で解くか解くをタップ。',
+    puzzleComplete: 'パズル完成！',
+    perfect: '✨ パーフェクト！',
+    noHints: '🧠 ヒントなし',
+    continueBtn: '続ける',
+    resetAll: 'すべての統計をリセット',
+    exportCSV: '📥 CSVでエクスポート',
+    savePuzzle: '💾 現在のパズルを保存',
+    loadBtn: '▶ 読み込む',
+    savedPuzzles: '💾 保存したパズル',
+    noSavedPuzzles: '保存したパズルはまだありません！',
+    saveHint: 'プレイ中に「パズルを保存」をクリックして進捗を保存。',
+
+    // Difficulty
+    EASY: '簡単',
+    MEDIUM: '普通',
+    HARD: '難しい',
+    EXPERT: 'エキスパート',
+    MASTER: 'マスター',
+
+    language: '言語',
+    english: 'English',
+    chinese: '中文',
+    japanese: '日本語'
   }
 }
 
