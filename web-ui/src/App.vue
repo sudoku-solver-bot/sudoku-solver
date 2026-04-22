@@ -37,7 +37,7 @@
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen""
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen"
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
