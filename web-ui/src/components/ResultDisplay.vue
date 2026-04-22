@@ -20,9 +20,17 @@
 <script setup>
 import { computed } from 'vue'
 
+const props = defineProps({
+  message: { type: String, default: '' },
+  type: { type: String, default: 'info' },
+  visible: { type: Boolean, default: false },
+  difficulty: { type: String, default: '' },
+  techniques: { type: Array, default: () => [] }
+})
+
 const difficultyClass = computed(() => {
-      return props.difficulty.toLowerCase()
-    })
+  return props.difficulty.toLowerCase()
+})
 </script>
 
 <style scoped>

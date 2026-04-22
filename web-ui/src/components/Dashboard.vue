@@ -2,8 +2,8 @@
   <div class="dashboard" :class="{ dark: isDark }">
     <!-- Welcome -->
     <div class="welcome">
-      <h2>{{ t('dashboardTitle') }} 👋</h2>
-      <p class="subtitle">{{ t('dashboardSubtitle') }}</p>
+      <h2>Welcome back! 👋</h2>
+      <p class="subtitle">What would you like to do today?</p>
     </div>
 
     <!-- Quick stats -->
@@ -13,27 +13,16 @@
         <span class="stat-number">{{ completedTutorials.size }}/{{ totalTutorials }}</span>
         <span class="stat-label">Lessons</span>
       </div>
-      <div class="stat-card streak-card" :class="{ 'on-fire': streak >= 3 }">
-        <span class="stat-icon">{{ streak >= 7 ? '🔥' : streak >= 3 ? '⚡' : '📅' }}</span>
+      <div class="stat-card">
+        <span class="stat-icon">🔥</span>
         <span class="stat-number">{{ streak }}</span>
         <span class="stat-label">Day Streak</span>
-        <span v-if="streak >= 3" class="streak-msg">{{ streakMsg }}</span>
       </div>
       <div class="stat-card">
         <span class="stat-icon">🏆</span>
         <span class="stat-number">{{ currentBelt }}</span>
         <span class="stat-label">Rank</span>
       </div>
-    </div>
-
-    <!-- Tip of the day -->
-    <div class="tip-card" :class="{ dark: isDark }">
-      <span class="tip-icon">💡</span>
-      <div class="tip-content">
-        <strong>Tip #{{ tipIndex + 1 }}</strong>
-        <p>{{ tips[tipIndex] }}</p>
-      </div>
-      <button class="tip-next" @click="tipIndex = (tipIndex + 1) % tips.length">→</button>
     </div>
 
     <!-- Action cards -->
@@ -107,104 +96,81 @@
 import { computed, ref } from 'vue'
 import BeltCertificate from './BeltCertificate.vue'
 
-import { useI18n } from '../i18n'
+const props = defineProps({
+    completedTutorials: { type: Set, default: () => new Set() },
+    totalTutorials: { type: Number, default: 15 },
+    isDark: { type: Boolean, default: false }
+  })
 
 const emit = defineEmits(['daily', 'learn', 'play'])
 
-const { t } = useI18n()
-    const showCert = ref(false)
-    const certBelt = ref({})
+const showCert = ref(false)
+const certBelt = ref({})
 
-    const openCert = (belt) => {
-      certBelt.value = belt
-      showCert.value = true
+const openCert = (belt) => {
+  certBelt.value = belt
+  showCert.value = true
+}
+const streak = computed(() => {
+  try {
+    const saved = localStorage.getItem('sudokuDailyStreak')
+    if (saved) {
+      const data = JSON.parse(saved)
+      const today = new Date().toISOString().split('T')[0]
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+      if (data.lastDate === today || data.lastDate === yesterday) return data.count
     }
-    const streak = computed(() => {
-      try {
-        const saved = localStorage.getItem('sudokuDailyStreak')
-        if (saved) {
-          const data = JSON.parse(saved)
-          const today = new Date().toISOString().split('T')[0]
-          const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-          if (data.lastDate === today || data.lastDate === yesterday) return data.count
-        }
-      } catch (e) {}
-      return 0
-    })
+  } catch (e) {}
+  return 0
+})
 
-    const streakMsg = computed(() => {
-      const s = streak.value
-      if (s >= 30) return 'Legendary! 🌟'
-      if (s >= 14) return 'Unstoppable! 💪'
-      if (s >= 7) return 'On fire! 🔥'
-      if (s >= 5) return 'Keep going! 🚀'
-      if (s >= 3) return 'Nice streak! ✨'
-      return ''
-    })
+const beltOrder = [
+  { name: 'White Belt', shortName: 'Wht', emoji: '⬜', color: '#E0E0E0', lessons: 1 },
+  { name: 'Yellow Belt', shortName: 'Yel', emoji: '🟡', color: '#FFD700', lessons: 2 },
+  { name: 'Orange Belt', shortName: 'Org', emoji: '🟠', color: '#FF8C00', lessons: 4 },
+  { name: 'Green Belt', shortName: 'Grn', emoji: '🟢', color: '#34A853', lessons: 6 },
+  { name: 'Blue Belt', shortName: 'Blu', emoji: '🔵', color: '#4285F4', lessons: 8 },
+  { name: 'Purple Belt', shortName: 'Pur', emoji: '🟣', color: '#9C27B0', lessons: 10 },
+  { name: 'Brown Belt', shortName: 'Brn', emoji: '🟤', color: '#795548', lessons: 12 },
+  { name: 'Black Belt', shortName: 'Blk', emoji: '⬛', color: '#333333', lessons: 15 },
+]
 
-    const tipIndex = ref(0)
-    const tips = [
-      'Start with rows/columns/boxes that have the most given numbers.',
-      'Use pencil marks to track candidates in each cell.',
-      'Look for "naked singles" — cells with only one possible value.',
-      'Hidden singles: a number that can only go in one place in a row/col/box.',
-      'Scan for pairs — two cells with the same two candidates eliminate them elsewhere.',
-      'Press ? to see all keyboard shortcuts.',
-      'Challenge mode: 3 mistakes = game over. Train your accuracy!',
-      'Try cell colors to track patterns and groups.',
-      'The daily challenge resets at midnight — keep your streak alive!',
-      'Press Ctrl+Z to undo. You can undo multiple times.',
-      'Print your puzzle for old-school paper solving.',
-      'Share a puzzle link with friends to compete.',
-    ]
+const currentBelt = computed(() => {
+  const count = props.completedTutorials.size
+  for (let i = beltOrder.length - 1; i >= 0; i--) {
+    if (count >= beltOrder[i].lessons) return beltOrder[i].emoji
+  }
+  return '⬜'
+})
 
-    const beltOrder = [
-      { name: 'White Belt', shortName: 'Wht', emoji: '⬜', color: '#E0E0E0', lessons: 1 },
-      { name: 'Yellow Belt', shortName: 'Yel', emoji: '🟡', color: '#FFD700', lessons: 2 },
-      { name: 'Orange Belt', shortName: 'Org', emoji: '🟠', color: '#FF8C00', lessons: 4 },
-      { name: 'Green Belt', shortName: 'Grn', emoji: '🟢', color: '#34A853', lessons: 6 },
-      { name: 'Blue Belt', shortName: 'Blu', emoji: '🔵', color: '#4285F4', lessons: 8 },
-      { name: 'Purple Belt', shortName: 'Pur', emoji: '🟣', color: '#9C27B0', lessons: 10 },
-      { name: 'Brown Belt', shortName: 'Brn', emoji: '🟤', color: '#795548', lessons: 12 },
-      { name: 'Black Belt', shortName: 'Blk', emoji: '⬛', color: '#333333', lessons: 15 },
-    ]
+const belts = computed(() => {
+  const count = props.completedTutorials.size
+  return beltOrder.map(b => ({
+    ...b,
+    earned: count >= b.lessons,
+    current: count < b.lessons && (beltOrder.indexOf(b) === 0 || count >= beltOrder[beltOrder.indexOf(b) - 1].lessons)
+  }))
+})
 
-    const currentBelt = computed(() => {
-      const count = props.completedTutorials.size
-      for (let i = beltOrder.length - 1; i >= 0; i--) {
-        if (count >= beltOrder[i].lessons) return beltOrder[i].emoji
-      }
-      return '⬜'
-    })
+const dailyInfo = computed(() => {
+  const now = new Date()
+  const today = now.toISOString().split('T')[0]
+  try {
+    const saved = localStorage.getItem('sudokuDailyCompleted')
+    if (saved === today) return '✅ Completed today!'
+  } catch (e) {}
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  return `${dayNames[now.getDay()]}'s puzzle is waiting`
+})
 
-    const belts = computed(() => {
-      const count = props.completedTutorials.size
-      return beltOrder.map(b => ({
-        ...b,
-        earned: count >= b.lessons,
-        current: count < b.lessons && (beltOrder.indexOf(b) === 0 || count >= beltOrder[beltOrder.indexOf(b) - 1].lessons)
-      }))
-    })
+const learnInfo = computed(() => {
+  const count = props.completedTutorials.size
+  if (count === 0) return 'Start with Naked Single ⬜'
+  if (count >= props.totalTutorials) return 'All lessons complete! 🎓'
+  return `${props.totalTutorials - count} lessons remaining`
+})
 
-    const dailyInfo = computed(() => {
-      const now = new Date()
-      const today = now.toISOString().split('T')[0]
-      try {
-        const saved = localStorage.getItem('sudokuDailyCompleted')
-        if (saved === today) return '✅ Completed today!'
-      } catch (e) {}
-      const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-      return `${dayNames[now.getDay()]}'s puzzle is waiting`
-    })
-
-    const learnInfo = computed(() => {
-      const count = props.completedTutorials.size
-      if (count === 0) return 'Start with Naked Single ⬜'
-      if (count >= props.totalTutorials) return 'All lessons complete! 🎓'
-      return `${props.totalTutorials - count} lessons remaining`
-    })
-
-    const earnedBelts = computed(() => belts.value.filter(b => b.earned))
+const earnedBelts = computed(() => belts.value.filter(b => b.earned))
 </script>
 
 <style scoped>
@@ -261,22 +227,6 @@ const { t } = useI18n()
   background: #2a2a2a;
 }
 
-.streak-card.on-fire {
-  background: linear-gradient(135deg, #fff3e0, #ffe0b2) !important;
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.streak-msg {
-  font-size: 11px;
-  color: #e65100;
-  font-weight: 600;
-}
-
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,152,0,0.4); }
-  50% { box-shadow: 0 0 12px 4px rgba(255,152,0,0.2); }
-}
-
 .stat-icon {
   font-size: 20px;
 }
@@ -305,25 +255,6 @@ const { t } = useI18n()
   gap: 10px;
   margin-bottom: 24px;
 }
-
-/* Tip card */
-.tip-card {
-  display: flex; align-items: center; gap: 10px;
-  padding: 12px 16px; margin-bottom: 12px;
-  background: #fffde7; border-radius: 12px;
-  border: 1px solid #fff9c4;
-}
-.tip-card.dark { background: #33291a; border-color: #5d4627; }
-.tip-icon { font-size: 24px; }
-.tip-content { flex: 1; }
-.tip-content strong { font-size: 12px; color: #f57f17; display: block; }
-.tip-content p { font-size: 13px; margin: 2px 0 0; color: #555; }
-.tip-card.dark .tip-content p { color: #ccc; }
-.tip-next {
-  background: #fff8e1; border: none; border-radius: 50%;
-  width: 28px; height: 28px; cursor: pointer; font-size: 16px;
-}
-.tip-card.dark .tip-next { background: #5d4627; color: #ccc; }
 
 .action-card {
   display: flex;
@@ -497,4 +428,3 @@ const { t } = useI18n()
   }
 }
 </style>
-
