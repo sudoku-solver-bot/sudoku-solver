@@ -91,9 +91,9 @@ jobs:
             sleep 2
           done
 
-      - name: Run E2E smoke tests
+      - name: Run E2E tests
         working-directory: web-ui
-        run: npx playwright test e2e/
+        run: npx playwright test
 
       - name: Stop server
         if: always()

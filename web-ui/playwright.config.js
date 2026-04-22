@@ -2,10 +2,8 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: '**/visual-regression.spec.js',
   timeout: 60_000,
   expect: {
-    // Visual regression: allow up to 3% pixel diff for anti-aliasing/font variance
     toHaveScreenshot({ maxDiffPixelRatio: 0.03 }),
   },
   use: {
