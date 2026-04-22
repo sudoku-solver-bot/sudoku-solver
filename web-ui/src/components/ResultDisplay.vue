@@ -17,43 +17,12 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed } from 'vue'
 
-export default {
-  name: 'ResultDisplay',
-  props: {
-    message: {
-      type: String,
-      default: ''
-    },
-    type: {
-      type: String,
-      default: 'info'
-    },
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    difficulty: {
-      type: String,
-      default: ''
-    },
-    techniques: {
-      type: Array,
-      default: () => []
-    }
-  },
-  setup(props) {
-    const difficultyClass = computed(() => {
+const difficultyClass = computed(() => {
       return props.difficulty.toLowerCase()
     })
-
-    return {
-      difficultyClass
-    }
-  }
-}
 </script>
 
 <style scoped>
@@ -154,3 +123,4 @@ export default {
   }
 }
 </style>
+

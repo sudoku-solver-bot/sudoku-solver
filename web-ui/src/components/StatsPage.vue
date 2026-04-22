@@ -88,155 +88,147 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { computed, onMounted, ref } from 'vue'
 
 const STATS_KEY = 'sudoku-dojo-stats'
 const HISTORY_KEY = 'sudoku-dojo-history'
 
-export default {
-  name: 'StatsPage',
-  props: {
+const props = defineProps({
     isDark: { type: Boolean, default: false }
-  },
-  emits: ['back', 'reset-stats'],
-  setup(props, { emit }) {
-    const stats = ref({})
-    const history = ref([])
+  })
+const emit = defineEmits(['back', 'reset-stats'])
 
-    onMounted(() => {
-      try {
-        const s = localStorage.getItem(STATS_KEY)
-        if (s) stats.value = JSON.parse(s)
-      } catch (e) {}
-      try {
-        const h = localStorage.getItem(HISTORY_KEY)
-        if (h) history.value = JSON.parse(h)
-      } catch (e) {}
-    })
+const stats = ref({})
+const history = ref([])
 
-    const totalSolved = computed(() => stats.value.totalSolved || 0)
-    const bestTime = computed(() => stats.value.bestTime || 0)
-    const avgTime = computed(() => {
-      const t = stats.value.totalTime || 0
-      const n = stats.value.totalSolved || 0
-      return n > 0 ? Math.round(t / n) : 0
-    })
-    const currentStreak = computed(() => stats.value.currentStreak || 0)
-    const bestStreak = computed(() => stats.value.bestStreak || 0)
-    const perfectSolves = computed(() => stats.value.perfectSolves || 0)
+onMounted(() => {
+  try {
+    const s = localStorage.getItem(STATS_KEY)
+    if (s) stats.value = JSON.parse(s)
+  } catch (e) {}
+  try {
+    const h = localStorage.getItem(HISTORY_KEY)
+    if (h) history.value = JSON.parse(h)
+  } catch (e) {}
+})
 
-    const difficultyStats = computed(() => {
-      const byDiff = stats.value.byDifficulty || {}
-      const bestByDiff = stats.value.bestTimeByDifficulty || {}
-      const max = Math.max(1, ...Object.values(byDiff))
-      return [
-        { name: 'Easy', icon: '🟢', color: '#34a853', count: byDiff.easy || 0, percent: ((byDiff.easy || 0) / max) * 100, best: bestByDiff.easy },
-        { name: 'Medium', icon: '🟡', color: '#fbbc04', count: byDiff.medium || 0, percent: ((byDiff.medium || 0) / max) * 100, best: bestByDiff.medium },
-        { name: 'Hard', icon: '🟠', color: '#ff6d01', count: byDiff.hard || 0, percent: ((byDiff.hard || 0) / max) * 100, best: bestByDiff.hard },
-        { name: 'Expert', icon: '🔴', color: '#ea4335', count: byDiff.expert || 0, percent: ((byDiff.expert || 0) / max) * 100, best: bestByDiff.expert },
-      ]
-    })
+const totalSolved = computed(() => stats.value.totalSolved || 0)
+const bestTime = computed(() => stats.value.bestTime || 0)
+const avgTime = computed(() => {
+  const t = stats.value.totalTime || 0
+  const n = stats.value.totalSolved || 0
+  return n > 0 ? Math.round(t / n) : 0
+})
+const currentStreak = computed(() => stats.value.currentStreak || 0)
+const bestStreak = computed(() => stats.value.bestStreak || 0)
+const perfectSolves = computed(() => stats.value.perfectSolves || 0)
 
-    const timeDistribution = computed(() => {
-      const h = history.value
-      const buckets = { '< 1 min': 0, '1-3 min': 0, '3-5 min': 0, '5-10 min': 0, '> 10 min': 0 }
-      for (const entry of h) {
-        const t = entry.time || 0
-        if (t < 60000) buckets['< 1 min']++
-        else if (t < 180000) buckets['1-3 min']++
-        else if (t < 300000) buckets['3-5 min']++
-        else if (t < 600000) buckets['5-10 min']++
-        else buckets['> 10 min']++
-      }
-      const max = Math.max(1, ...Object.values(buckets))
-      return Object.entries(buckets).map(([label, count]) => ({
-        label, count, percent: (count / max) * 100
-      }))
-    })
+const difficultyStats = computed(() => {
+  const byDiff = stats.value.byDifficulty || {}
+  const bestByDiff = stats.value.bestTimeByDifficulty || {}
+  const max = Math.max(1, ...Object.values(byDiff))
+  return [
+    { name: 'Easy', icon: '🟢', color: '#34a853', count: byDiff.easy || 0, percent: ((byDiff.easy || 0) / max) * 100, best: bestByDiff.easy },
+    { name: 'Medium', icon: '🟡', color: '#fbbc04', count: byDiff.medium || 0, percent: ((byDiff.medium || 0) / max) * 100, best: bestByDiff.medium },
+    { name: 'Hard', icon: '🟠', color: '#ff6d01', count: byDiff.hard || 0, percent: ((byDiff.hard || 0) / max) * 100, best: bestByDiff.hard },
+    { name: 'Expert', icon: '🔴', color: '#ea4335', count: byDiff.expert || 0, percent: ((byDiff.expert || 0) / max) * 100, best: bestByDiff.expert },
+  ]
+})
 
-    const recentActivity = computed(() => {
-      return history.value.slice(-20).reverse().map(entry => ({
-        id: entry.id || entry.timestamp,
-        icon: entry.type === 'daily' ? '📅' : entry.type === 'tutorial' ? '📚' : '🧩',
-        text: entry.text || `${entry.difficulty || ''} puzzle solved`,
-        timeAgo: formatTimeAgo(entry.timestamp)
-      }))
-    })
-
-    const formatTime = (ms) => {
-      if (!ms) return '—'
-      const s = Math.floor(ms / 1000)
-      const m = Math.floor(s / 60)
-      const sec = s % 60
-      return m > 0 ? `${m}m ${sec}s` : `${sec}s`
-    }
-
-    const formatTimeAgo = (ts) => {
-      if (!ts) return ''
-      const diff = Date.now() - ts
-      const mins = Math.floor(diff / 60000)
-      if (mins < 1) return 'just now'
-      if (mins < 60) return `${mins}m ago`
-      const hours = Math.floor(mins / 60)
-      if (hours < 24) return `${hours}h ago`
-      const days = Math.floor(hours / 24)
-      return `${days}d ago`
-    }
-
-    const confirmReset = () => {
-      if (confirm('Reset all statistics? This cannot be undone.')) {
-        localStorage.removeItem(STATS_KEY)
-        localStorage.removeItem(HISTORY_KEY)
-        stats.value = {}
-        history.value = []
-        emit('reset-stats')
-      }
-    }
-
-    const exportCSV = () => {
-      const s = stats.value
-      const h = history.value
-      let csv = 'Sudoku Dojo Statistics Export\n'
-      csv += `Generated,${new Date().toISOString()}\n\n`
-      csv += 'Summary\n'
-      csv += `Total Solved,${s.totalSolved || 0}\n`
-      csv += `Best Time (ms),${s.bestTime || 0}\n`
-      csv += `Average Time (ms),${s.totalSolved ? Math.round((s.totalTime || 0) / s.totalSolved) : 0}\n`
-      csv += `Current Streak,${s.currentStreak || 0}\n`
-      csv += `Best Streak,${s.bestStreak || 0}\n`
-      csv += `Perfect Solves,${s.perfectSolves || 0}\n`
-      csv += `Dailies Completed,${s.dailiesCompleted || 0}\n\n`
-
-      csv += 'Difficulty Breakdown\n'
-      csv += 'Difficulty,Count\n'
-      const byDiff = s.byDifficulty || {}
-      for (const [k, v] of Object.entries(byDiff)) {
-        csv += `${k},${v}\n`
-      }
-      csv += '\n'
-
-      csv += 'History\n'
-      csv += 'Timestamp,Date,Type,Time (ms),Hints,Difficulty\n'
-      for (const entry of h) {
-        const d = new Date(entry.timestamp).toISOString()
-        csv += `${entry.timestamp},${d},${entry.type || 'free'},${entry.time || 0},${entry.hints || 0},${entry.difficulty || ''}\n`
-      }
-
-      const blob = new Blob([csv], { type: 'text/csv' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `sudoku-dojo-stats-${new Date().toISOString().split('T')[0]}.csv`
-      a.click()
-      URL.revokeObjectURL(url)
-    }
-
-    return {
-      totalSolved, bestTime, avgTime, currentStreak, bestStreak, perfectSolves,
-      difficultyStats, timeDistribution, recentActivity, formatTime, confirmReset, exportCSV
-    }
+const timeDistribution = computed(() => {
+  const h = history.value
+  const buckets = { '< 1 min': 0, '1-3 min': 0, '3-5 min': 0, '5-10 min': 0, '> 10 min': 0 }
+  for (const entry of h) {
+    const t = entry.time || 0
+    if (t < 60000) buckets['< 1 min']++
+    else if (t < 180000) buckets['1-3 min']++
+    else if (t < 300000) buckets['3-5 min']++
+    else if (t < 600000) buckets['5-10 min']++
+    else buckets['> 10 min']++
   }
+  const max = Math.max(1, ...Object.values(buckets))
+  return Object.entries(buckets).map(([label, count]) => ({
+    label, count, percent: (count / max) * 100
+  }))
+})
+
+const recentActivity = computed(() => {
+  return history.value.slice(-20).reverse().map(entry => ({
+    id: entry.id || entry.timestamp,
+    icon: entry.type === 'daily' ? '📅' : entry.type === 'tutorial' ? '📚' : '🧩',
+    text: entry.text || `${entry.difficulty || ''} puzzle solved`,
+    timeAgo: formatTimeAgo(entry.timestamp)
+  }))
+})
+
+const formatTime = (ms) => {
+  if (!ms) return '—'
+  const s = Math.floor(ms / 1000)
+  const m = Math.floor(s / 60)
+  const sec = s % 60
+  return m > 0 ? `${m}m ${sec}s` : `${sec}s`
+}
+
+const formatTimeAgo = (ts) => {
+  if (!ts) return ''
+  const diff = Date.now() - ts
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return 'just now'
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
+
+const confirmReset = () => {
+  if (confirm('Reset all statistics? This cannot be undone.')) {
+    localStorage.removeItem(STATS_KEY)
+    localStorage.removeItem(HISTORY_KEY)
+    stats.value = {}
+    history.value = []
+    emit('reset-stats')
+  }
+}
+
+const exportCSV = () => {
+  const s = stats.value
+  const h = history.value
+  let csv = 'Sudoku Dojo Statistics Export\n'
+  csv += `Generated,${new Date().toISOString()}\n\n`
+  csv += 'Summary\n'
+  csv += `Total Solved,${s.totalSolved || 0}\n`
+  csv += `Best Time (ms),${s.bestTime || 0}\n`
+  csv += `Average Time (ms),${s.totalSolved ? Math.round((s.totalTime || 0) / s.totalSolved) : 0}\n`
+  csv += `Current Streak,${s.currentStreak || 0}\n`
+  csv += `Best Streak,${s.bestStreak || 0}\n`
+  csv += `Perfect Solves,${s.perfectSolves || 0}\n`
+  csv += `Dailies Completed,${s.dailiesCompleted || 0}\n\n`
+
+  csv += 'Difficulty Breakdown\n'
+  csv += 'Difficulty,Count\n'
+  const byDiff = s.byDifficulty || {}
+  for (const [k, v] of Object.entries(byDiff)) {
+    csv += `${k},${v}\n`
+  }
+  csv += '\n'
+
+  csv += 'History\n'
+  csv += 'Timestamp,Date,Type,Time (ms),Hints,Difficulty\n'
+  for (const entry of h) {
+    const d = new Date(entry.timestamp).toISOString()
+    csv += `${entry.timestamp},${d},${entry.type || 'free'},${entry.time || 0},${entry.hints || 0},${entry.difficulty || ''}\n`
+  }
+
+  const blob = new Blob([csv], { type: 'text/csv' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `sudoku-dojo-stats-${new Date().toISOString().split('T')[0]}.csv`
+  a.click()
+  URL.revokeObjectURL(url)
 }
 </script>
 

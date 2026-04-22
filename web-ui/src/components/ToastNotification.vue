@@ -16,12 +16,11 @@
   </transition>
 </template>
 
-<script>
-import { computed } from 'vue'
+<script setup>
 
-export default {
-  name: 'ToastNotification',
-  props: {
+import { watch, computed } from 'vue'
+
+const props = defineProps({
     visible: {
       type: Boolean,
       default: false
@@ -47,49 +46,40 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  emits: ['close', 'retry'],
-  setup(props, { emit }) {
-    const icon = computed(() => {
-      const icons = {
-        success: '✓',
-        error: '✕',
-        warning: '⚠',
-        info: 'ℹ'
-      }
-      return icons[props.type] || icons.info
-    })
+  })
+const emit = defineEmits(['close', 'retry'])
 
-    let timeout = null
+const icon = computed(() => {
+  const icons = {
+    success: '✓',
+    error: '✕',
+    warning: '⚠',
+    info: 'ℹ'
+  }
+  return icons[props.type] || icons.info
+})
 
-    const startTimer = () => {
-      if (timeout) clearTimeout(timeout)
-      if (props.duration > 0) {
-        timeout = setTimeout(() => {
-          close()
-        }, props.duration)
-      }
-    }
+let timeout = null
 
-    const close = () => {
-      if (timeout) clearTimeout(timeout)
-      emit('close')
-    }
-
-    return {
-      icon,
-      close,
-      startTimer
-    }
-  },
-  watch: {
-    visible(newVal) {
-      if (newVal) {
-        this.startTimer()
-      }
-    }
+const startTimer = () => {
+  if (timeout) clearTimeout(timeout)
+  if (props.duration > 0) {
+    timeout = setTimeout(() => {
+      close()
+    }, props.duration)
   }
 }
+
+const close = () => {
+  if (timeout) clearTimeout(timeout)
+  emit('close')
+}
+
+watch(() => props.visible, (newVal) => {
+      if (newVal) {
+        startTimer()
+      }
+    })
 </script>
 
 <style scoped>

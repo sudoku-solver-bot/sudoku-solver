@@ -103,23 +103,15 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed, ref } from 'vue'
 import BeltCertificate from './BeltCertificate.vue'
 
 import { useI18n } from '../i18n'
 
-export default {
-  name: 'Dashboard',
-  props: {
-    completedTutorials: { type: Set, default: () => new Set() },
-    totalTutorials: { type: Number, default: 15 },
-    isDark: { type: Boolean, default: false }
-  },
-  emits: ['daily', 'learn', 'play'],
-  components: { BeltCertificate },
-  setup(props) {
-    const { t } = useI18n()
+const emit = defineEmits(['daily', 'learn', 'play'])
+
+const { t } = useI18n()
     const showCert = ref(false)
     const certBelt = ref({})
 
@@ -213,10 +205,6 @@ export default {
     })
 
     const earnedBelts = computed(() => belts.value.filter(b => b.earned))
-
-    return { t, streak, streakMsg, currentBelt, belts, earnedBelts, dailyInfo, learnInfo, showCert, certBelt, openCert, tips, tipIndex }
-  }
-}
 </script>
 
 <style scoped>
@@ -509,3 +497,4 @@ export default {
   }
 }
 </style>
+

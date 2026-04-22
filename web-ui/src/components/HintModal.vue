@@ -59,12 +59,11 @@
   </transition>
 </template>
 
-<script>
+<script setup>
+
 import { ref } from 'vue'
 
-export default {
-  name: 'HintModal',
-  props: {
+const props = defineProps({
     visible: {
       type: Boolean,
       default: false
@@ -77,49 +76,40 @@ export default {
       type: Number,
       default: 0
     }
-  },
-  emits: ['close'],
-  setup() {
-    const showExplanation = ref(false)
+  })
+const emit = defineEmits(['close'])
 
-    const formatTechnique = (technique) => {
-      return technique
-        .replace(/([A-Z])/g, ' $1')
-        .replace(/^./, (str) => str.toUpperCase())
-        .trim()
-    }
+const showExplanation = ref(false)
 
-    const getTechniqueExplanation = (technique) => {
-      const explanations = {
-        'SINGLE_CANDIDATE': 'This cell has only one possible value that doesn\'t conflict with its row, column, or 3x3 box.',
-        'HIDDEN_SINGLE': 'While this cell may have multiple candidates, one value can only go in this specific cell within its row, column, or box.',
-        'NAKED_PAIR': 'Two cells in the same group have only the same two candidates. These values can be removed from other cells in the group.',
-        'NAKED_TRIPLE': 'Three cells in the same group share only three candidates between them. These values can be removed from other cells.',
-        'POINTING_PAIR': 'A candidate in a 3x3 box is restricted to a single row or column, allowing us to eliminate it from the rest of that row/column outside the box.',
-        'BOX_LINE_REDUCTION': 'When a candidate in a row or column is restricted to one 3x3 box, it can be eliminated from other cells in that box.'
-      }
-      return explanations[technique] || 'This is a valid logical deduction for solving the puzzle.'
-    }
+const formatTechnique = (technique) => {
+  return technique
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim()
+}
 
-    const getKidFriendlyExplanation = (technique) => {
-      const kidFriendly = {
-        'SINGLE_CANDIDATE': '🎯 Think of it like a game of "what\'s left"? Only one number fits here!',
-        'HIDDEN_SINGLE': '🔍 This number has nowhere else to go in this row, column, or box. It\'s like musical chairs!',
-        'NAKED_PAIR': '👯 Two best friends that always hang out together - they only go in these two spots!',
-        'NAKED_TRIPLE': '👯👯 Three numbers that are best buddies and only hang out in these three spots!',
-        'POINTING_PAIR': '👆 These two spots point the way - we know where a number can\'t go!',
-        'BOX_LINE_REDUCTION': '📦 In this square box, a number is stuck in one line - so it can\'t be anywhere else in the box!'
-      }
-      return kidFriendly[technique] || '🧩 Keep practicing and you\'ll spot these patterns!'
-    }
-
-    return {
-      showExplanation,
-      formatTechnique,
-      getTechniqueExplanation,
-      getKidFriendlyExplanation
-    }
+const getTechniqueExplanation = (technique) => {
+  const explanations = {
+    'SINGLE_CANDIDATE': 'This cell has only one possible value that doesn\'t conflict with its row, column, or 3x3 box.',
+    'HIDDEN_SINGLE': 'While this cell may have multiple candidates, one value can only go in this specific cell within its row, column, or box.',
+    'NAKED_PAIR': 'Two cells in the same group have only the same two candidates. These values can be removed from other cells in the group.',
+    'NAKED_TRIPLE': 'Three cells in the same group share only three candidates between them. These values can be removed from other cells.',
+    'POINTING_PAIR': 'A candidate in a 3x3 box is restricted to a single row or column, allowing us to eliminate it from the rest of that row/column outside the box.',
+    'BOX_LINE_REDUCTION': 'When a candidate in a row or column is restricted to one 3x3 box, it can be eliminated from other cells in that box.'
   }
+  return explanations[technique] || 'This is a valid logical deduction for solving the puzzle.'
+}
+
+const getKidFriendlyExplanation = (technique) => {
+  const kidFriendly = {
+    'SINGLE_CANDIDATE': '🎯 Think of it like a game of "what\'s left"? Only one number fits here!',
+    'HIDDEN_SINGLE': '🔍 This number has nowhere else to go in this row, column, or box. It\'s like musical chairs!',
+    'NAKED_PAIR': '👯 Two best friends that always hang out together - they only go in these two spots!',
+    'NAKED_TRIPLE': '👯👯 Three numbers that are best buddies and only hang out in these three spots!',
+    'POINTING_PAIR': '👆 These two spots point the way - we know where a number can\'t go!',
+    'BOX_LINE_REDUCTION': '📦 In this square box, a number is stuck in one line - so it can\'t be anywhere else in the box!'
+  }
+  return kidFriendly[technique] || '🧩 Keep practicing and you\'ll spot these patterns!'
 }
 </script>
 

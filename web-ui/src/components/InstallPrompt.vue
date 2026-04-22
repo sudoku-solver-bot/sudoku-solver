@@ -12,16 +12,12 @@
   </transition>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
 
 const DISMISS_KEY = 'sudoku-install-dismissed'
 
-export default {
-  name: 'InstallPrompt',
-  props: { isDark: Boolean },
-  setup() {
-    const visible = ref(false)
+const visible = ref(false)
     let deferredPrompt = null
 
     onMounted(() => {
@@ -48,10 +44,6 @@ export default {
       visible.value = false
       localStorage.setItem(DISMISS_KEY, 'true')
     }
-
-    return { visible, install, dismiss }
-  }
-}
 </script>
 
 <style scoped>
@@ -81,3 +73,4 @@ export default {
 .slide-up-enter-active, .slide-up-leave-active { transition: transform 0.3s ease; }
 .slide-up-enter-from, .slide-up-leave-to { transform: translateY(100%); }
 </style>
+

@@ -6,13 +6,10 @@
   </transition>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
-export default {
-  name: 'OfflineIndicator',
-  setup() {
-    const online = ref(navigator.onLine)
+const online = ref(navigator.onLine)
     const onOnline = () => { online.value = true }
     const onOffline = () => { online.value = false }
     onMounted(() => {
@@ -23,9 +20,6 @@ export default {
       window.removeEventListener('online', onOnline)
       window.removeEventListener('offline', onOffline)
     })
-    return { online }
-  }
-}
 </script>
 
 <style scoped>
@@ -43,3 +37,4 @@ export default {
   transform: translateY(-100%);
 }
 </style>
+

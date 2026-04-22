@@ -97,180 +97,152 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref, computed, onMounted, watch } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
 import { fetchQuizBoard } from '../api'
 
-export default {
-  name: 'QuizMode',
-  components: { SudokuGrid },
-  props: {
+const props = defineProps({
     quiz: { type: Object, required: true },
     isDark: { type: Boolean, default: false }
-  },
-  emits: ['exit', 'completed'],
-  setup(props, { emit }) {
-    const currentQuestionIndex = ref(0)
-    const boardPuzzle = ref('')
-    const boardCandidates = ref({})
-    const givenCells = ref(new Set())
-    const solvedCells = ref(new Set())
-    const selectedCell = ref(-1)
-    const answered = ref(false)
-    const isCorrect = ref(false)
-    const showHint = ref(false)
-    const score = ref(0)
-    const totalAnswered = ref(0)
-    const showResults = ref(false)
+  })
+const emit = defineEmits(['exit', 'completed'])
 
-    const currentQuestion = computed(() => props.quiz.questions[currentQuestionIndex.value])
+const currentQuestionIndex = ref(0)
+const boardPuzzle = ref('')
+const boardCandidates = ref({})
+const givenCells = ref(new Set())
+const solvedCells = ref(new Set())
+const selectedCell = ref(-1)
+const answered = ref(false)
+const isCorrect = ref(false)
+const showHint = ref(false)
+const score = ref(0)
+const totalAnswered = ref(0)
+const showResults = ref(false)
 
-    const currentHighlight = computed(() => {
-      const q = currentQuestion.value
-      if (q && q.highlightCells && q.highlightCells.length > 0 && !answered.value) {
-        return [{ cells: q.highlightCells, color: q.highlightColor }]
-      }
-      if (answered.value && q) {
-        return [{ cells: [q.answerCell], color: isCorrect.value ? 'green' : 'red' }]
-      }
-      return []
-    })
+const currentQuestion = computed(() => props.quiz.questions[currentQuestionIndex.value])
 
-    const scorePercent = computed(() => {
-      if (totalAnswered.value === 0) return 0
-      return Math.round((score.value / totalAnswered.value) * 100)
-    })
+const currentHighlight = computed(() => {
+  const q = currentQuestion.value
+  if (q && q.highlightCells && q.highlightCells.length > 0 && !answered.value) {
+    return [{ cells: q.highlightCells, color: q.highlightColor }]
+  }
+  if (answered.value && q) {
+    return [{ cells: [q.answerCell], color: isCorrect.value ? 'green' : 'red' }]
+  }
+  return []
+})
 
-    const answerRow = computed(() => {
-      const q = currentQuestion.value
-      return q ? Math.floor(q.answerCell / 9) + 1 : 0
-    })
+const scorePercent = computed(() => {
+  if (totalAnswered.value === 0) return 0
+  return Math.round((score.value / totalAnswered.value) * 100)
+})
 
-    const answerCol = computed(() => {
-      const q = currentQuestion.value
-      return q ? (q.answerCell % 9) + 1 : 0
-    })
+const answerRow = computed(() => {
+  const q = currentQuestion.value
+  return q ? Math.floor(q.answerCell / 9) + 1 : 0
+})
 
-    const loadQuestion = async () => {
-      const q = currentQuestion.value
-      if (!q) return
+const answerCol = computed(() => {
+  const q = currentQuestion.value
+  return q ? (q.answerCell % 9) + 1 : 0
+})
 
-      boardPuzzle.value = q.puzzle
-      givenCells.value = new Set()
-      solvedCells.value = new Set()
-      selectedCell.value = -1
-      answered.value = false
-      isCorrect.value = false
-      showHint.value = false
+const loadQuestion = async () => {
+  const q = currentQuestion.value
+  if (!q) return
 
-      for (let i = 0; i < 81; i++) {
-        if (q.puzzle[i] !== '.') givenCells.value.add(i)
-      }
+  boardPuzzle.value = q.puzzle
+  givenCells.value = new Set()
+  solvedCells.value = new Set()
+  selectedCell.value = -1
+  answered.value = false
+  isCorrect.value = false
+  showHint.value = false
 
-      try {
-        const data = await fetchQuizBoard(props.quiz.belt)
-        if (data.candidates) boardCandidates.value = data.candidates
-      } catch (e) {
-        console.error('Failed to load quiz board:', e)
-      }
-    }
+  for (let i = 0; i < 81; i++) {
+    if (q.puzzle[i] !== '.') givenCells.value.add(i)
+  }
 
-    const onCellSelect = (index) => {
-      if (answered.value) return
-      selectedCell.value = index
-
-      const q = currentQuestion.value
-      if (index === q.answerCell) {
-        isCorrect.value = true
-        score.value++
-      } else {
-        isCorrect.value = false
-      }
-      answered.value = true
-      totalAnswered.value++
-
-      // Save score to localStorage
-      saveScore()
-    }
-
-    const nextQuestion = () => {
-      if (currentQuestionIndex.value < props.quiz.questions.length - 1) {
-        currentQuestionIndex.value++
-        loadQuestion()
-      }
-    }
-
-    const saveScore = () => {
-      try {
-        const key = 'sudoku-dojo-quiz-scores'
-        const saved = JSON.parse(localStorage.getItem(key) || '{}')
-        const qId = currentQuestion.value.id
-        saved[qId] = {
-          correct: isCorrect.value,
-          attempts: (saved[qId]?.attempts || 0) + 1,
-          lastAttempt: Date.now()
-        }
-        localStorage.setItem(key, JSON.stringify(saved))
-      } catch (e) {
-        console.error('Failed to save quiz score:', e)
-      }
-    }
-
-    const finishQuiz = () => {
-      showResults.value = true
-      emit('completed', {
-        quizId: props.quiz.id,
-        score: score.value,
-        total: props.quiz.questions.length
-      })
-    }
-
-    const retryQuiz = () => {
-      currentQuestionIndex.value = 0
-      score.value = 0
-      totalAnswered.value = 0
-      showResults.value = false
-      loadQuestion()
-    }
-
-    watch(() => props.quiz.id, () => {
-      currentQuestionIndex.value = 0
-      score.value = 0
-      totalAnswered.value = 0
-      showResults.value = false
-      loadQuestion()
-    })
-
-    onMounted(() => {
-      loadQuestion()
-    })
-
-    return {
-      currentQuestionIndex,
-      currentQuestion,
-      boardPuzzle,
-      boardCandidates,
-      givenCells,
-      solvedCells,
-      selectedCell,
-      currentHighlight,
-      answered,
-      isCorrect,
-      showHint,
-      score,
-      totalAnswered,
-      scorePercent,
-      answerRow,
-      answerCol,
-      showResults,
-      onCellSelect,
-      nextQuestion,
-      finishQuiz,
-      retryQuiz
-    }
+  try {
+    const data = await fetchQuizBoard(props.quiz.belt)
+    if (data.candidates) boardCandidates.value = data.candidates
+  } catch (e) {
+    console.error('Failed to load quiz board:', e)
   }
 }
+
+const onCellSelect = (index) => {
+  if (answered.value) return
+  selectedCell.value = index
+
+  const q = currentQuestion.value
+  if (index === q.answerCell) {
+    isCorrect.value = true
+    score.value++
+  } else {
+    isCorrect.value = false
+  }
+  answered.value = true
+  totalAnswered.value++
+
+  // Save score to localStorage
+  saveScore()
+}
+
+const nextQuestion = () => {
+  if (currentQuestionIndex.value < props.quiz.questions.length - 1) {
+    currentQuestionIndex.value++
+    loadQuestion()
+  }
+}
+
+const saveScore = () => {
+  try {
+    const key = 'sudoku-dojo-quiz-scores'
+    const saved = JSON.parse(localStorage.getItem(key) || '{}')
+    const qId = currentQuestion.value.id
+    saved[qId] = {
+      correct: isCorrect.value,
+      attempts: (saved[qId]?.attempts || 0) + 1,
+      lastAttempt: Date.now()
+    }
+    localStorage.setItem(key, JSON.stringify(saved))
+  } catch (e) {
+    console.error('Failed to save quiz score:', e)
+  }
+}
+
+const finishQuiz = () => {
+  showResults.value = true
+  emit('completed', {
+    quizId: props.quiz.id,
+    score: score.value,
+    total: props.quiz.questions.length
+  })
+}
+
+const retryQuiz = () => {
+  currentQuestionIndex.value = 0
+  score.value = 0
+  totalAnswered.value = 0
+  showResults.value = false
+  loadQuestion()
+}
+
+watch(() => props.quiz.id, () => {
+  currentQuestionIndex.value = 0
+  score.value = 0
+  totalAnswered.value = 0
+  showResults.value = false
+  loadQuestion()
+})
+
+onMounted(() => {
+  loadQuestion()
+})
 </script>
 
 <style scoped>
