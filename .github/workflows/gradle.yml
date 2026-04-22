@@ -54,6 +54,63 @@ jobs:
             ./gradlew build --info --no-daemon
           fi
 
+      # ── Frontend Lint ──────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web-ui/package-lock.json
+
+      - name: Lint frontend
+        working-directory: web-ui
+        run: npm ci && npm run lint:ci
+
+      # ── E2E Smoke Tests ────────────────────────────────────
+      - name: Build frontend for E2E
+        working-directory: web-ui
+        run: npm run build
+
+      - name: Install Playwright browsers
+        working-directory: web-ui
+        run: npx playwright install --with-deps chromium
+
+      - name: Start server for E2E
+        run: |
+          ./gradlew :web:installDist --no-daemon
+          PORT=25321 ./web/build/install/web/bin/web &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          # Wait for server to be ready
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:25321/ > /dev/null 2>&1; then
+              echo "Server ready on port 25321"
+              break
+            fi
+            echo "Waiting for server... ($i/30)"
+            sleep 2
+          done
+
+      - name: Run E2E smoke tests
+        working-directory: web-ui
+        run: npx playwright test e2e/
+
+      - name: Stop server
+        if: always()
+        run: |
+          if [ -n "$SERVER_PID" ]; then
+            kill $SERVER_PID 2>/dev/null || true
+          fi
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: web-ui/playwright-report/
+          retention-days: 7
+
+      # ── Original Artifacts ─────────────────────────────────
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         if: always()
