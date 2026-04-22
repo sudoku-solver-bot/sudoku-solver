@@ -319,6 +319,7 @@ export default {
       candidateGrids,
       cellCandidates,
       getCellClasses,
+      getCellLabel,
       isBottomBorder,
       selectCell,
       focusCell,
