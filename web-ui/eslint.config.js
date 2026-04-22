@@ -11,6 +11,7 @@ export default [
     files: ['**/*.{js,mjs,cjs,vue}'],
     languageOptions: {
       globals: {
+        // Browser globals
         window: 'readonly',
         document: 'readonly',
         navigator: 'readonly',
@@ -46,7 +47,6 @@ export default [
         File: 'readonly',
         FileReader: 'readonly',
         Image: 'readonly',
-        canvas: 'readonly',
         AudioContext: 'readonly',
         Intl: 'readonly',
         crypto: 'readonly',
@@ -58,6 +58,14 @@ export default [
         DOMParser: 'readonly',
         atob: 'readonly',
         btoa: 'readonly',
+        // Vue compiler macros (available in <script setup>)
+        defineProps: 'readonly',
+        defineEmits: 'readonly',
+        defineExpose: 'readonly',
+        defineOptions: 'readonly',
+        defineSlots: 'readonly',
+        defineModel: 'readonly',
+        withDefaults: 'readonly',
       },
     },
     rules: {
