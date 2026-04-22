@@ -10,14 +10,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'NumberBar',
-  props: {
+<script setup>
+const props = defineProps({
     counts: { type: Object, default: () => ({}) },
     isDark: { type: Boolean, default: false }
-  }
-}
+  })
 </script>
 
 <style scoped>

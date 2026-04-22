@@ -91,174 +91,148 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref, computed, onMounted, watch } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
 import { fetchTutorialBoard, completeTutorial } from '../api'
 
-export default {
-  name: 'TutorialMode',
-  components: { SudokuGrid },
-  props: {
+const props = defineProps({
     lesson: { type: Object, required: true },
     isDark: { type: Boolean, default: false }
-  },
-  emits: ['exit', 'completed'],
-  setup(props, { emit }) {
-    const boardPuzzle = ref(props.lesson.examplePuzzle)
-    const boardCandidates = ref({})
-    const givenCells = ref(new Set())
-    const solvedCells = ref(new Set())
-    const selectedCell = ref(-1)
-    const currentStepIndex = ref(0)
-    const feedback = ref('')
-    const feedbackType = ref('info')
-    const celebrating = ref(false)
+  })
+const emit = defineEmits(['exit', 'completed'])
 
-    const currentStep = computed(() => props.lesson.steps[currentStepIndex.value] || props.lesson.steps[0])
+const boardPuzzle = ref(props.lesson.examplePuzzle)
+const boardCandidates = ref({})
+const givenCells = ref(new Set())
+const solvedCells = ref(new Set())
+const selectedCell = ref(-1)
+const currentStepIndex = ref(0)
+const feedback = ref('')
+const feedbackType = ref('info')
+const celebrating = ref(false)
 
-    const currentHighlight = computed(() => {
-      const step = currentStep.value
-      if (step.cells && step.cells.length > 0) {
-        return [{ cells: step.cells, color: step.highlightColor }]
-      }
-      return []
-    })
+const currentStep = computed(() => props.lesson.steps[currentStepIndex.value] || props.lesson.steps[0])
 
-    const progressPercent = computed(() => {
-      return ((currentStepIndex.value + 1) / props.lesson.steps.length) * 100
-    })
+const currentHighlight = computed(() => {
+  const step = currentStep.value
+  if (step.cells && step.cells.length > 0) {
+    return [{ cells: step.cells, color: step.highlightColor }]
+  }
+  return []
+})
 
-    // Initialize puzzle
-    const initPuzzle = () => {
-      const puzzle = props.lesson.examplePuzzle
-      boardPuzzle.value = puzzle
-      givenCells.value = new Set()
-      solvedCells.value = new Set()
-      for (let i = 0; i < 81; i++) {
-        if (puzzle[i] !== '.') {
-          givenCells.value.add(i)
-        }
-      }
-      loadBoardCandidates()
+const progressPercent = computed(() => {
+  return ((currentStepIndex.value + 1) / props.lesson.steps.length) * 100
+})
+
+// Initialize puzzle
+const initPuzzle = () => {
+  const puzzle = props.lesson.examplePuzzle
+  boardPuzzle.value = puzzle
+  givenCells.value = new Set()
+  solvedCells.value = new Set()
+  for (let i = 0; i < 81; i++) {
+    if (puzzle[i] !== '.') {
+      givenCells.value.add(i)
     }
+  }
+  loadBoardCandidates()
+}
 
-    const loadBoardCandidates = async () => {
-      try {
-        const data = await fetchTutorialBoard(props.lesson.id)
-        if (data.candidates) {
-          boardCandidates.value = data.candidates
-        }
-      } catch (e) {
-        console.error('Failed to load tutorial board:', e)
-      }
+const loadBoardCandidates = async () => {
+  try {
+    const data = await fetchTutorialBoard(props.lesson.id)
+    if (data.candidates) {
+      boardCandidates.value = data.candidates
     }
+  } catch (e) {
+    console.error('Failed to load tutorial board:', e)
+  }
+}
 
-    const nextStep = () => {
-      if (currentStepIndex.value < props.lesson.steps.length - 1) {
-        currentStepIndex.value++
-        feedback.value = ''
-      }
-    }
+const nextStep = () => {
+  if (currentStepIndex.value < props.lesson.steps.length - 1) {
+    currentStepIndex.value++
+    feedback.value = ''
+  }
+}
 
-    const prevStep = () => {
-      if (currentStepIndex.value > 0) {
-        currentStepIndex.value--
-        feedback.value = ''
-      }
-    }
+const prevStep = () => {
+  if (currentStepIndex.value > 0) {
+    currentStepIndex.value--
+    feedback.value = ''
+  }
+}
 
-    const showAnswer = () => {
-      const step = currentStep.value
-      if (step.type === 'question') {
-        feedback.value = `The answer: ${step.answerValue} goes in the highlighted cell!`
-        feedbackType.value = 'hint'
-      }
-    }
+const showAnswer = () => {
+  const step = currentStep.value
+  if (step.type === 'question') {
+    feedback.value = `The answer: ${step.answerValue} goes in the highlighted cell!`
+    feedbackType.value = 'hint'
+  }
+}
 
-    const onCellSelect = (index) => {
-      selectedCell.value = index
-      const step = currentStep.value
-      if (step.type === 'question' && step.answer !== undefined) {
-        // Check if they clicked the right cell
-        // answer field is 1-based index in the highlighted cells array
-        const targetCell = step.cells[step.answer]
-        if (index === targetCell) {
-          feedback.value = `Correct! 🎯 The answer is ${step.answerValue}!`
-          feedbackType.value = 'success'
-        } else {
-          feedback.value = 'Not quite — try another cell!'
-          feedbackType.value = 'error'
-        }
-      }
-    }
-
-    // Swipe gesture support
-    let touchStartX = ref(0)
-    let touchStartY = ref(0)
-
-    const onTouchStart = (e) => {
-      touchStartX.value = e.touches[0].clientX
-      touchStartY.value = e.touches[0].clientY
-    }
-
-    const onTouchEnd = (e) => {
-      const dx = e.changedTouches[0].clientX - touchStartX.value
-      const dy = e.changedTouches[0].clientY - touchStartY.value
-      // Only trigger if horizontal swipe is dominant and long enough
-      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
-        if (dx < 0) nextStep()  // Swipe left → next
-        else prevStep()          // Swipe right → prev
-      }
-    }
-
-    const completeLesson = async () => {
-      try {
-        await completeTutorial(props.lesson.id)
-        celebrating.value = true
-        emit('completed', props.lesson.id)
-      } catch (e) {
-        console.error('Failed to complete tutorial:', e)
-        celebrating.value = true // Still celebrate
-        emit('completed', props.lesson.id)
-      }
-    }
-
-    // Watch for lesson changes
-    watch(() => props.lesson.id, () => {
-      currentStepIndex.value = 0
-      feedback.value = ''
-      celebrating.value = false
-      initPuzzle()
-    })
-
-    onMounted(() => {
-      initPuzzle()
-    })
-
-    return {
-      boardPuzzle,
-      boardCandidates,
-      givenCells,
-      solvedCells,
-      selectedCell,
-      currentStepIndex,
-      currentStep,
-      currentHighlight,
-      progressPercent,
-      feedback,
-      feedbackType,
-      celebrating,
-      nextStep,
-      prevStep,
-      showAnswer,
-      onCellSelect,
-      completeLesson,
-      onTouchStart,
-      onTouchEnd
+const onCellSelect = (index) => {
+  selectedCell.value = index
+  const step = currentStep.value
+  if (step.type === 'question' && step.answer !== undefined) {
+    // Check if they clicked the right cell
+    // answer field is 1-based index in the highlighted cells array
+    const targetCell = step.cells[step.answer]
+    if (index === targetCell) {
+      feedback.value = `Correct! 🎯 The answer is ${step.answerValue}!`
+      feedbackType.value = 'success'
+    } else {
+      feedback.value = 'Not quite — try another cell!'
+      feedbackType.value = 'error'
     }
   }
 }
+
+// Swipe gesture support
+let touchStartX = ref(0)
+let touchStartY = ref(0)
+
+const onTouchStart = (e) => {
+  touchStartX.value = e.touches[0].clientX
+  touchStartY.value = e.touches[0].clientY
+}
+
+const onTouchEnd = (e) => {
+  const dx = e.changedTouches[0].clientX - touchStartX.value
+  const dy = e.changedTouches[0].clientY - touchStartY.value
+  // Only trigger if horizontal swipe is dominant and long enough
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+    if (dx < 0) nextStep()  // Swipe left → next
+    else prevStep()          // Swipe right → prev
+  }
+}
+
+const completeLesson = async () => {
+  try {
+    await completeTutorial(props.lesson.id)
+    celebrating.value = true
+    emit('completed', props.lesson.id)
+  } catch (e) {
+    console.error('Failed to complete tutorial:', e)
+    celebrating.value = true // Still celebrate
+    emit('completed', props.lesson.id)
+  }
+}
+
+// Watch for lesson changes
+watch(() => props.lesson.id, () => {
+  currentStepIndex.value = 0
+  feedback.value = ''
+  celebrating.value = false
+  initPuzzle()
+})
+
+onMounted(() => {
+  initPuzzle()
+})
 </script>
 
 <style scoped>

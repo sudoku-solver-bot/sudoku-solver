@@ -1,4 +1,4 @@
-// Lightweight i18n — English + Traditional Chinese
+// Lightweight i18n — English + Traditional Chinese + Japanese + Korean
 import { ref, computed } from 'vue'
 
 const locale = ref(localStorage.getItem('sudoku-locale') || 'en')
@@ -112,7 +112,9 @@ const translations = {
 
     language: 'Language',
     english: 'English',
-    chinese: '中文'
+    chinese: '中文',
+    japanese: '日本語',
+    korean: '한국어'
   },
 
   'zh-Hant': {
@@ -223,7 +225,235 @@ const translations = {
 
     language: '語言',
     english: 'English',
-    chinese: '中文'
+    chinese: '中文',
+    japanese: '日本語',
+    korean: '한국어'
+  },
+
+  ja: {
+    // Header
+    appTitle: '🧩 数独ソルバー',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: '数独道場',
+    dashboardSubtitle: '学ぶ。練習する。極める。',
+    play: '▶ プレイ',
+    dailyChallenge: '📅 デイリーチャレンジ',
+    learnTechniques: '📚 テクニックを学ぶ',
+    quickSolve: '🧩 クイックソルブ',
+
+    // Game
+    progress: '進捗',
+    time: '時間',
+    mistakes: 'ミス',
+    hints: 'ヒント',
+    filled: '記入済',
+    solve: '🧩 解く',
+    clear: '🗑️ クリア',
+    import: '📥 インポート',
+    share: '🔗 パズルを共有',
+    getHint: '💡 ヒントを見る！',
+    pencilMarks: 'ペンシルメモ',
+    newPuzzle: '新しいパズル：',
+    easy: '簡単',
+    medium: '普通',
+    hard: '難しい',
+    undo: '元に戻す',
+    redo: 'やり直す',
+
+    // Settings
+    settingsTitle: '⚙️ 設定',
+    accessibility: 'アクセシビリティ',
+    colorBlind: '色覚サポート',
+    colorBlindDesc: 'パターンと識別しやすい色を使用',
+    highContrast: 'ハイコントラスト',
+    highContrastDesc: '見やすさを向上する太い枠線とテキスト',
+    darkModeLabel: 'ダークモード',
+    darkModeDesc: '夜間の使用時に目に優しい',
+    soundEffects: 'サウンドエフェクト',
+    soundEffectsDesc: '操作時の音声フィードバック',
+    boardTheme: 'ボードテーマ',
+    data: 'データ',
+    resetProgress: '進捗をリセット',
+    resetProgressDesc: 'すべてのレッスンの進捗とストリークをクリア',
+    about: 'について',
+    aboutText: '数独道場 — 一步步に数独を学ぶ',
+    back: '← 戻る',
+
+    // Import
+    importTitle: '📥 パズルをインポート',
+    importDesc: '下に数独パズルを貼り付けてください。. または 0 を空マスに使用。',
+    singleLine: '1行入力',
+    grid9x9: '9×9 グリッド',
+    loadExample: '例を読み込む',
+    cancel: 'キャンセル',
+
+    // Achievements
+    achievementsTitle: '🏆 実績',
+    statsTitle: '📊 統計',
+
+    // Belt levels
+    whiteBelt: '白帯',
+    yellowBelt: '黄帯',
+    orangeBelt: '橙帯',
+    greenBelt: '緑帯',
+    blueBelt: '青帯',
+    purpleBelt: '紫帯',
+    brownBelt: '茶帯',
+    blackBelt: '黒帯',
+
+    // Messages
+    puzzleImported: 'パズルをインポートしました！解くをタップするか自分で解いてください。',
+    puzzleGenerated: '{difficulty}パズルを生成しました！',
+    puzzleSolved: '{time}msで解けました',
+    noSolution: '解が見つかりません',
+    linkCopied: 'リンクをコピーしました！',
+    shareText: 'このリンクを共有して誰かをチャレンジ！',
+    sharedLoaded: '共有パズルを読み込みました！自分で解くか解くをタップ。',
+    puzzleComplete: 'パズル完成！',
+    perfect: '✨ パーフェクト！',
+    noHints: '🧠 ヒントなし',
+    continueBtn: '続ける',
+    resetAll: 'すべての統計をリセット',
+    exportCSV: '📥 CSVでエクスポート',
+    savePuzzle: '💾 現在のパズルを保存',
+    loadBtn: '▶ 読み込む',
+    savedPuzzles: '💾 保存したパズル',
+    noSavedPuzzles: '保存したパズルはまだありません！',
+    saveHint: 'プレイ中に「パズルを保存」をクリックして進捗を保存。',
+
+    // Difficulty
+    EASY: '簡単',
+    MEDIUM: '普通',
+    HARD: '難しい',
+    EXPERT: 'エキスパート',
+    MASTER: 'マスター',
+
+    language: '言語',
+    english: 'English',
+    chinese: '中文',
+    japanese: '日本語',
+    korean: '한국어'
+  },
+
+  ko: {
+    // Header
+    appTitle: '🧩 스도쿠 솔버',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: '스도쿠 도장',
+    dashboardSubtitle: '배우기. 연습하기. 마스터하기.',
+    play: '▶ 플레이',
+    dailyChallenge: '📅 데일리 챌린지',
+    learnTechniques: '📚 기술 배우기',
+    quickSolve: '🧩 빠른 풀이',
+
+    // Game
+    progress: '진행',
+    time: '시간',
+    mistakes: '실수',
+    hints: '힌트',
+    filled: '채움',
+    solve: '🧩 풀기',
+    clear: '🗑️ 지우기',
+    import: '📥 가져오기',
+    share: '🔗 퍼즐 공유',
+    getHint: '💡 힌트 보기!',
+    pencilMarks: '연필 메모',
+    newPuzzle: '새 퍼즐:',
+    easy: '쉬움',
+    medium: '보통',
+    hard: '어려움',
+    undo: '되돌리기',
+    redo: '다시 실행',
+
+    // Settings
+    settingsTitle: '⚙️ 설정',
+    accessibility: '접근성',
+    colorBlind: '색각 지원',
+    colorBlindDesc: '패턴과 구별하기 쉬운 색상 사용',
+    highContrast: '고대비',
+    highContrastDesc: '선명한 테두리와 텍스트로 가시성 향상',
+    darkModeLabel: '다크 모드',
+    darkModeDesc: '야간 사용 시 눈이 편안합니다',
+    soundEffects: '효과음',
+    soundEffectsDesc: '작업 시 오디오 피드백',
+    boardTheme: '보드 테마',
+    data: '데이터',
+    resetProgress: '진행 초기화',
+    resetProgressDesc: '모든 저장된 레슨 진행도와 연속 기록 삭제',
+    about: '정보',
+    aboutText: '스도쿠 도장 — 단계별 스도쿠 학습',
+    back: '← 돌아가기',
+
+    // Import
+    importTitle: '📥 퍼즐 가져오기',
+    importDesc: '아래에 스도쿠 퍼즐을 붙여넣으세요. 빈칸은 . 또는 0을 사용하세요.',
+    singleLine: '한 줄 입력',
+    grid9x9: '9×9 격자',
+    loadExample: '예제 불러오기',
+    cancel: '취소',
+
+    // Achievements
+    achievementsTitle: '🏆 업적',
+    statsTitle: '📊 통계',
+
+    // Belt levels
+    whiteBelt: '백색 띠',
+    yellowBelt: '노란 띠',
+    orangeBelt: '주황 띠',
+    greenBelt: '초록 띠',
+    blueBelt: '파란 띠',
+    purpleBelt: '보라 띠',
+    brownBelt: '갈색 띠',
+    blackBelt: '검정 띠',
+
+    // Messages
+    puzzleImported: '퍼즐을 가져왔습니다! 풀기를 탭하거나 직접 푸세요.',
+    puzzleGenerated: '{difficulty} 퍼즐이 생성되었습니다!',
+    puzzleSolved: '{time}ms 만에 해결',
+    noSolution: '해결책을 찾을 수 없습니다',
+    linkCopied: '링크가 복사되었습니다!',
+    shareText: '이 링크를 공유하여 누군가에게 도전하세요!',
+    sharedLoaded: '공유된 퍼즐을 불러왔습니다! 직접 풀거나 풀기를 탭하세요.',
+    puzzleComplete: '퍼즐 완성!',
+    perfect: '✨ 퍼펙트!',
+    noHints: '🧠 힌트 없음',
+    continueBtn: '계속',
+    resetAll: '모든 통계 초기화',
+    exportCSV: '📥 CSV 내보내기',
+    savePuzzle: '💾 현재 퍼즐 저장',
+    loadBtn: '▶ 불러오기',
+    savedPuzzles: '💾 저장된 퍼즐',
+    noSavedPuzzles: '아직 저장된 퍼즐이 없습니다!',
+    saveHint: '플레이 중 "퍼즐 저장"을 클릭하여 진행 상황을 저장하세요.',
+
+    // Difficulty
+    EASY: '쉬움',
+    MEDIUM: '보통',
+    HARD: '어려움',
+    EXPERT: '전문가',
+    MASTER: '마스터',
+
+    language: '언어',
+    english: 'English',
+    chinese: '中文',
+    japanese: '日本語',
+    korean: '한국어'
   }
 }
 

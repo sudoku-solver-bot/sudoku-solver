@@ -73,229 +73,204 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref, onMounted, watch } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
 import { fetchPracticeBoard, fetchCandidates } from '../api'
 
-export default {
-  name: 'PracticeMode',
-  components: { SudokuGrid },
-  props: {
+const props = defineProps({
     practiceSet: { type: Object, required: true },
     isDark: { type: Boolean, default: false }
-  },
-  emits: ['exit', 'completed'],
-  setup(props, { emit }) {
-    const currentPuzzleIndex = ref(0)
-    const boardPuzzle = ref('')
-    const originalPuzzle = ref('')
-    const boardCandidates = ref({})
-    const givenCells = ref(new Set())
-    const solvedCells = ref(new Set())
-    const selectedCell = ref(-1)
-    const hintText = ref('')
-    const feedback = ref('')
-    const feedbackType = ref('info')
-    const showComplete = ref(false)
-    const completedPuzzles = ref(new Set())
+  })
+const emit = defineEmits(['exit', 'completed'])
 
-    const loadPuzzle = async () => {
-      const puzzle = props.practiceSet.puzzles[currentPuzzleIndex.value]
-      if (!puzzle) return
+const currentPuzzleIndex = ref(0)
+const boardPuzzle = ref('')
+const originalPuzzle = ref('')
+const boardCandidates = ref({})
+const givenCells = ref(new Set())
+const solvedCells = ref(new Set())
+const selectedCell = ref(-1)
+const hintText = ref('')
+const feedback = ref('')
+const feedbackType = ref('info')
+const showComplete = ref(false)
+const completedPuzzles = ref(new Set())
 
-      boardPuzzle.value = puzzle.puzzle
-      originalPuzzle.value = puzzle.puzzle
-      givenCells.value = new Set()
-      solvedCells.value = new Set()
-      selectedCell.value = -1
-      hintText.value = ''
-      feedback.value = ''
+const loadPuzzle = async () => {
+  const puzzle = props.practiceSet.puzzles[currentPuzzleIndex.value]
+  if (!puzzle) return
 
-      for (let i = 0; i < 81; i++) {
-        if (puzzle.puzzle[i] !== '.') givenCells.value.add(i)
-      }
+  boardPuzzle.value = puzzle.puzzle
+  originalPuzzle.value = puzzle.puzzle
+  givenCells.value = new Set()
+  solvedCells.value = new Set()
+  selectedCell.value = -1
+  hintText.value = ''
+  feedback.value = ''
 
-      try {
-        const data = await fetchPracticeBoard(props.practiceSet.tutorialId, puzzle.id)
-        if (data.candidates) boardCandidates.value = data.candidates
-      } catch (e) {
-        console.error('Failed to load practice board:', e)
-      }
-    }
+  for (let i = 0; i < 81; i++) {
+    if (puzzle.puzzle[i] !== '.') givenCells.value.add(i)
+  }
 
-    const onCellSelect = (index) => {
-      selectedCell.value = index
-    }
-
-    const onCellUpdate = async (index, value) => {
-      const chars = boardPuzzle.value.split('')
-      chars[index] = value || '.'
-      boardPuzzle.value = chars.join('')
-
-      // Refresh candidates
-      try {
-        const data = await fetchCandidates(boardPuzzle.value)
-        if (data.candidates) boardCandidates.value = data.candidates
-      } catch (e) {
-        // Silently fail
-      }
-
-      // Check if puzzle is complete
-      if (!boardPuzzle.value.includes('.')) {
-        checkSolution()
-      }
-    }
-
-    const getHint = async () => {
-      hintText.value = 'Loading hint...'
-      try {
-        const data = await fetchCandidates(boardPuzzle.value)
-        if (data.candidates) {
-          // Find a cell with only one candidate as a hint
-          const entries = Object.entries(data.candidates)
-          const singleCand = entries.find(([_, vals]) => vals.length === 1)
-          if (singleCand) {
-            const idx = parseInt(singleCand[0])
-            const val = singleCand[1][0]
-            const row = Math.floor(idx / 9) + 1
-            const col = (idx % 9) + 1
-            hintText.value = `Try cell at row ${row}, column ${col} — it has only one candidate: ${val}`
-          } else {
-            hintText.value = 'No obvious hint found. Try eliminating candidates using ' + props.practiceSet.technique + '.'
-          }
-        }
-      } catch (e) {
-        hintText.value = 'Could not load hint.'
-      }
-    }
-
-    const checkSolution = () => {
-      if (boardPuzzle.value.includes('.')) {
-        feedback.value = 'Puzzle is not complete yet. Keep going!'
-        feedbackType.value = 'info'
-        return
-      }
-
-      // Basic validation: check rows, cols, boxes
-      let valid = true
-      for (let i = 0; i < 9; i++) {
-        const row = new Set()
-        const col = new Set()
-        const box = new Set()
-        for (let j = 0; j < 9; j++) {
-          const rv = boardPuzzle.value[i * 9 + j]
-          const cv = boardPuzzle.value[j * 9 + i]
-          const br = Math.floor(i / 3) * 3 + Math.floor(j / 3)
-          const bc = (i % 3) * 3 + (j % 3)
-          const bv = boardPuzzle.value[br * 9 + bc]
-
-          if (row.has(rv) || col.has(cv) || box.has(bv)) {
-            valid = false
-            break
-          }
-          row.add(rv)
-          col.add(cv)
-          box.add(bv)
-        }
-        if (!valid) break
-      }
-
-      if (valid) {
-        feedback.value = ''
-        showComplete.value = true
-        const puzzle = props.practiceSet.puzzles[currentPuzzleIndex.value]
-        completedPuzzles.value.add(puzzle.id)
-        saveProgress(puzzle.id)
-        emit('completed', { puzzleId: puzzle.id, tutorialId: props.practiceSet.tutorialId })
-      } else {
-        feedback.value = 'Something is wrong — check for duplicates!'
-        feedbackType.value = 'error'
-      }
-    }
-
-    const saveProgress = (puzzleId) => {
-      try {
-        const key = 'sudoku-dojo-practice-progress'
-        const saved = JSON.parse(localStorage.getItem(key) || '{}')
-        const setId = props.practiceSet.id
-        if (!saved[setId]) saved[setId] = []
-        if (!saved[setId].includes(puzzleId)) saved[setId].push(puzzleId)
-        localStorage.setItem(key, JSON.stringify(saved))
-      } catch (e) {
-        console.error('Failed to save practice progress:', e)
-      }
-    }
-
-    const loadProgress = () => {
-      try {
-        const key = 'sudoku-dojo-practice-progress'
-        const saved = JSON.parse(localStorage.getItem(key) || '{}')
-        const setId = props.practiceSet.id
-        if (saved[setId]) {
-          completedPuzzles.value = new Set(saved[setId])
-        }
-      } catch (e) {}
-    }
-
-    const resetPuzzle = () => {
-      boardPuzzle.value = originalPuzzle.value
-      givenCells.value = new Set()
-      solvedCells.value = new Set()
-      for (let i = 0; i < 81; i++) {
-        if (originalPuzzle.value[i] !== '.') givenCells.value.add(i)
-      }
-      hintText.value = ''
-      feedback.value = ''
-      loadPuzzle()
-    }
-
-    const selectPuzzle = (idx) => {
-      currentPuzzleIndex.value = idx
-      loadPuzzle()
-    }
-
-    const nextPuzzle = () => {
-      if (currentPuzzleIndex.value < props.practiceSet.puzzles.length - 1) {
-        currentPuzzleIndex.value++
-        showComplete.value = false
-        loadPuzzle()
-      }
-    }
-
-    watch(() => props.practiceSet.id, () => {
-      currentPuzzleIndex.value = 0
-      loadProgress()
-      loadPuzzle()
-    })
-
-    onMounted(() => {
-      loadProgress()
-      loadPuzzle()
-    })
-
-    return {
-      currentPuzzleIndex,
-      boardPuzzle,
-      boardCandidates,
-      givenCells,
-      solvedCells,
-      selectedCell,
-      hintText,
-      feedback,
-      feedbackType,
-      showComplete,
-      completedPuzzles,
-      onCellSelect,
-      onCellUpdate,
-      getHint,
-      checkSolution,
-      resetPuzzle,
-      selectPuzzle,
-      nextPuzzle
-    }
+  try {
+    const data = await fetchPracticeBoard(props.practiceSet.tutorialId, puzzle.id)
+    if (data.candidates) boardCandidates.value = data.candidates
+  } catch (e) {
+    console.error('Failed to load practice board:', e)
   }
 }
+
+const onCellSelect = (index) => {
+  selectedCell.value = index
+}
+
+const onCellUpdate = async (index, value) => {
+  const chars = boardPuzzle.value.split('')
+  chars[index] = value || '.'
+  boardPuzzle.value = chars.join('')
+
+  // Refresh candidates
+  try {
+    const data = await fetchCandidates(boardPuzzle.value)
+    if (data.candidates) boardCandidates.value = data.candidates
+  } catch (e) {
+    // Silently fail
+  }
+
+  // Check if puzzle is complete
+  if (!boardPuzzle.value.includes('.')) {
+    checkSolution()
+  }
+}
+
+const getHint = async () => {
+  hintText.value = 'Loading hint...'
+  try {
+    const data = await fetchCandidates(boardPuzzle.value)
+    if (data.candidates) {
+      // Find a cell with only one candidate as a hint
+      const entries = Object.entries(data.candidates)
+      const singleCand = entries.find(([_, vals]) => vals.length === 1)
+      if (singleCand) {
+        const idx = parseInt(singleCand[0])
+        const val = singleCand[1][0]
+        const row = Math.floor(idx / 9) + 1
+        const col = (idx % 9) + 1
+        hintText.value = `Try cell at row ${row}, column ${col} — it has only one candidate: ${val}`
+      } else {
+        hintText.value = 'No obvious hint found. Try eliminating candidates using ' + props.practiceSet.technique + '.'
+      }
+    }
+  } catch (e) {
+    hintText.value = 'Could not load hint.'
+  }
+}
+
+const checkSolution = () => {
+  if (boardPuzzle.value.includes('.')) {
+    feedback.value = 'Puzzle is not complete yet. Keep going!'
+    feedbackType.value = 'info'
+    return
+  }
+
+  // Basic validation: check rows, cols, boxes
+  let valid = true
+  for (let i = 0; i < 9; i++) {
+    const row = new Set()
+    const col = new Set()
+    const box = new Set()
+    for (let j = 0; j < 9; j++) {
+      const rv = boardPuzzle.value[i * 9 + j]
+      const cv = boardPuzzle.value[j * 9 + i]
+      const br = Math.floor(i / 3) * 3 + Math.floor(j / 3)
+      const bc = (i % 3) * 3 + (j % 3)
+      const bv = boardPuzzle.value[br * 9 + bc]
+
+      if (row.has(rv) || col.has(cv) || box.has(bv)) {
+        valid = false
+        break
+      }
+      row.add(rv)
+      col.add(cv)
+      box.add(bv)
+    }
+    if (!valid) break
+  }
+
+  if (valid) {
+    feedback.value = ''
+    showComplete.value = true
+    const puzzle = props.practiceSet.puzzles[currentPuzzleIndex.value]
+    completedPuzzles.value.add(puzzle.id)
+    saveProgress(puzzle.id)
+    emit('completed', { puzzleId: puzzle.id, tutorialId: props.practiceSet.tutorialId })
+  } else {
+    feedback.value = 'Something is wrong — check for duplicates!'
+    feedbackType.value = 'error'
+  }
+}
+
+const saveProgress = (puzzleId) => {
+  try {
+    const key = 'sudoku-dojo-practice-progress'
+    const saved = JSON.parse(localStorage.getItem(key) || '{}')
+    const setId = props.practiceSet.id
+    if (!saved[setId]) saved[setId] = []
+    if (!saved[setId].includes(puzzleId)) saved[setId].push(puzzleId)
+    localStorage.setItem(key, JSON.stringify(saved))
+  } catch (e) {
+    console.error('Failed to save practice progress:', e)
+  }
+}
+
+const loadProgress = () => {
+  try {
+    const key = 'sudoku-dojo-practice-progress'
+    const saved = JSON.parse(localStorage.getItem(key) || '{}')
+    const setId = props.practiceSet.id
+    if (saved[setId]) {
+      completedPuzzles.value = new Set(saved[setId])
+    }
+  } catch (e) {}
+}
+
+const resetPuzzle = () => {
+  boardPuzzle.value = originalPuzzle.value
+  givenCells.value = new Set()
+  solvedCells.value = new Set()
+  for (let i = 0; i < 81; i++) {
+    if (originalPuzzle.value[i] !== '.') givenCells.value.add(i)
+  }
+  hintText.value = ''
+  feedback.value = ''
+  loadPuzzle()
+}
+
+const selectPuzzle = (idx) => {
+  currentPuzzleIndex.value = idx
+  loadPuzzle()
+}
+
+const nextPuzzle = () => {
+  if (currentPuzzleIndex.value < props.practiceSet.puzzles.length - 1) {
+    currentPuzzleIndex.value++
+    showComplete.value = false
+    loadPuzzle()
+  }
+}
+
+watch(() => props.practiceSet.id, () => {
+  currentPuzzleIndex.value = 0
+  loadProgress()
+  loadPuzzle()
+})
+
+onMounted(() => {
+  loadProgress()
+  loadPuzzle()
+})
 </script>
 
 <style scoped>

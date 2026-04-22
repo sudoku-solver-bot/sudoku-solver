@@ -112,113 +112,108 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { computed, ref } from 'vue'
 
-export default {
-  name: 'TutorialSelector',
-  props: {
+const props = defineProps({
     tutorials: { type: Array, required: true },
     completedIds: { type: Set, default: () => new Set() },
     isDark: { type: Boolean, default: false },
     quizData: { type: Array, default: () => [] },
     practiceData: { type: Array, default: () => [] }
-  },
-  emits: ['exit', 'select', 'quiz', 'practice'],
-  setup(props, { emit }) {
-    const searchQuery = ref('')
-    const completedCount = computed(() => props.completedIds.size)
+  })
+const emit = defineEmits(['exit', 'select', 'quiz', 'practice'])
 
-    const overallProgress = computed(() => {
-      if (props.tutorials.length === 0) return 0
-      return (completedCount.value / props.tutorials.length) * 100
-    })
+const searchQuery = ref('')
+const completedCount = computed(() => props.completedIds.size)
 
-    const beltGroups = computed(() => {
-      const groups = {}
-      for (const t of props.tutorials) {
-        if (!groups[t.belt]) {
-          groups[t.belt] = {
-            belt: t.belt,
-            name: t.beltName,
-            emoji: t.beltEmoji,
-            color: t.beltColor,
-            lessons: [],
-            completed: 0,
-            total: 0,
-            allComplete: false,
-            quizData: null
-          }
-        }
-        const completed = props.completedIds.has(t.id)
-        // Lock lessons that are 3+ orders ahead of the highest completed
-        const maxCompletedOrder = Math.max(
-          ...props.tutorials
-            .filter(tt => props.completedIds.has(tt.id))
-            .map(tt => tt.order),
-          0
-        )
-        const locked = !completed && t.order > maxCompletedOrder + 1
+const overallProgress = computed(() => {
+  if (props.tutorials.length === 0) return 0
+  return (completedCount.value / props.tutorials.length) * 100
+})
 
-        groups[t.belt].lessons.push({ ...t, completed, locked })
-        groups[t.belt].total++
-        if (completed) groups[t.belt].completed++
-      }
-
-      // Check which belt groups are fully complete and attach quiz data
-      for (const group of Object.values(groups)) {
-        group.allComplete = group.completed === group.total
-        if (group.allComplete) {
-          group.quizData = props.quizData.find(q => q.belt === group.belt) || null
-        }
-      }
-
-      return Object.values(groups)
-    })
-
-    const getPracticeSet = (lessonId) => {
-      return props.practiceData.find(p => p.tutorialId === lessonId)
-    }
-
-    const selectLesson = (lesson) => {
-      if (!lesson.locked) {
-        emit('select', lesson)
+const beltGroups = computed(() => {
+  const groups = {}
+  for (const t of props.tutorials) {
+    if (!groups[t.belt]) {
+      groups[t.belt] = {
+        belt: t.belt,
+        name: t.beltName,
+        emoji: t.beltEmoji,
+        color: t.beltColor,
+        lessons: [],
+        completed: 0,
+        total: 0,
+        allComplete: false,
+        quizData: null
       }
     }
+    const completed = props.completedIds.has(t.id)
+    // Lock lessons that are 3+ orders ahead of the highest completed
+    const maxCompletedOrder = Math.max(
+      ...props.tutorials
+        .filter(tt => props.completedIds.has(tt.id))
+        .map(tt => tt.order),
+      0
+    )
+    const locked = !completed && t.order > maxCompletedOrder + 1
 
-    const allLessons = computed(() => {
-      const maxCompletedOrder = Math.max(
-        ...props.tutorials
-          .filter(tt => props.completedIds.has(tt.id))
-          .map(tt => tt.order),
-        0
-      )
-      return props.tutorials.map(t => ({
-        ...t,
-        completed: props.completedIds.has(t.id),
-        locked: !props.completedIds.has(t.id) && t.order > maxCompletedOrder + 1
-      }))
-    })
-
-    const filteredLessons = computed(() => {
-      const q = searchQuery.value.toLowerCase().trim()
-      if (!q) return []
-      return allLessons.value.filter(l =>
-        l.title.toLowerCase().includes(q) ||
-        l.description.toLowerCase().includes(q) ||
-        (l.beltName && l.beltName.toLowerCase().includes(q))
-      )
-    })
-
-    const highlightMatch = (text) => {
-      const q = searchQuery.value.trim()
-      if (!q) return text
-      const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-      return text.replace(regex, '<mark>$1</mark>')
-    }
-
-    return { searchQuery, completedCount, overallProgress, beltGroups, getPracticeSet, selectLesson, filteredLessons, highlightMatch }
+    groups[t.belt].lessons.push({ ...t, completed, locked })
+    groups[t.belt].total++
+    if (completed) groups[t.belt].completed++
   }
+
+  // Check which belt groups are fully complete and attach quiz data
+  for (const group of Object.values(groups)) {
+    group.allComplete = group.completed === group.total
+    if (group.allComplete) {
+      group.quizData = props.quizData.find(q => q.belt === group.belt) || null
+    }
+  }
+
+  return Object.values(groups)
+})
+
+const getPracticeSet = (lessonId) => {
+  return props.practiceData.find(p => p.tutorialId === lessonId)
+}
+
+const selectLesson = (lesson) => {
+  if (!lesson.locked) {
+    emit('select', lesson)
+  }
+}
+
+const allLessons = computed(() => {
+  const maxCompletedOrder = Math.max(
+    ...props.tutorials
+      .filter(tt => props.completedIds.has(tt.id))
+      .map(tt => tt.order),
+    0
+  )
+  return props.tutorials.map(t => ({
+    ...t,
+    completed: props.completedIds.has(t.id),
+    locked: !props.completedIds.has(t.id) && t.order > maxCompletedOrder + 1
+  }))
+})
+
+const filteredLessons = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim()
+  if (!q) return []
+  return allLessons.value.filter(l =>
+    l.title.toLowerCase().includes(q) ||
+    l.description.toLowerCase().includes(q) ||
+    (l.beltName && l.beltName.toLowerCase().includes(q))
+  )
+})
+
+const highlightMatch = (text) => {
+  const q = searchQuery.value.trim()
+  if (!q) return text
+  const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+  return text.replace(regex, '<mark>$1</mark>')
 }
 </script>
 

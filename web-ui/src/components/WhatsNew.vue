@@ -29,13 +29,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'WhatsNew',
-  props: { isDark: Boolean },
-  emits: ['close'],
-  setup() {
-    const totalPRs = 136
+<script setup>
+
+const emit = defineEmits(['close'])
+
+const totalPRs = 136
     const features = [
       { icon: '🎨', title: 'Board Themes', desc: 'Default, Wood, Neon, Minimal — switch in Settings' },
       { icon: '🎉', title: 'Confetti Celebration', desc: 'Puzzle completion triggers a particle show!' },
@@ -49,9 +47,6 @@ export default {
       { icon: '⌨️', title: 'Keyboard Shortcuts', desc: 'Press ? to see all shortcuts' },
       { icon: '📱', title: 'PWA Install', desc: 'Add to home screen for app-like experience' },
     ]
-    return { features, totalPRs }
-  }
-}
 </script>
 
 <style scoped>
@@ -95,3 +90,4 @@ export default {
   font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px;
 }
 </style>
+

@@ -16,20 +16,12 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, watch, nextTick } from 'vue'
 
-export default {
-  name: 'ConfettiCelebration',
-  props: {
-    visible: Boolean,
-    time: String,
-    mistakes: { type: Number, default: 0 },
-    hints: { type: Number, default: 0 }
-  },
-  emits: ['done'],
-  setup(props) {
-    const canvas = ref(null)
+const emit = defineEmits(['done'])
+
+const canvas = ref(null)
     const showText = ref(false)
     let animationId = null
 
@@ -109,10 +101,6 @@ export default {
       if (v) startConfetti()
       else stopConfetti()
     })
-
-    return { canvas, showText }
-  }
-}
 </script>
 
 <style scoped>
@@ -193,3 +181,4 @@ export default {
   transform: scale(1.05);
 }
 </style>
+

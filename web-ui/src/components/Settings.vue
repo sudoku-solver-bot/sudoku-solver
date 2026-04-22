@@ -56,10 +56,12 @@
 
       <!-- Language section -->
       <div class="settings-section">
-        <h3>Language / 語言</h3>
+        <h3>Language / 語言 / 言語 / 언어</h3>
         <div class="lang-selector">
           <button class="lang-btn" :class="{ active: currentLocale === 'en' }" @click="setLocale('en')">🇬🇧 English</button>
           <button class="lang-btn" :class="{ active: currentLocale === 'zh-Hant' }" @click="setLocale('zh-Hant')">🇭🇰 繁體中文</button>
+          <button class="lang-btn" :class="{ active: currentLocale === 'ja' }" @click="setLocale('ja')">🇯🇵 日本語</button>
+          <button class="lang-btn" :class="{ active: currentLocale === 'ko' }" @click="setLocale('ko')">🇰🇷 한국어</button>
         </div>
       </div>
 
@@ -100,55 +102,51 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref } from 'vue'
 import { isSoundEnabled, setSoundEnabled, playSound } from '../sounds'
 import { useI18n } from '../i18n'
 
-export default {
-  name: 'Settings',
-  props: {
+const props = defineProps({
     isDark: { type: Boolean, default: false },
     colorBlind: { type: Boolean, default: false },
     highContrast: { type: Boolean, default: false },
     challengeMode: { type: Boolean, default: false },
     theme: { type: String, default: 'default' }
-  },
-  emits: ['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast', 'change-theme', 'toggle-challenge'],
-  setup(props, { emit }) {
-    const soundEnabled = ref(isSoundEnabled())
-    const { currentLocale, setLocale } = useI18n()
+  })
+const emit = defineEmits(['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast', 'change-theme', 'toggle-challenge'])
 
-    const themes = [
-      { id: 'default', name: 'Default' },
-      { id: 'wood', name: '🪵 Wood' },
-      { id: 'neon', name: '💜 Neon' },
-      { id: 'minimal', name: '⬜ Minimal' }
-    ]
-    const currentTheme = ref(localStorage.getItem('sudoku-theme') || 'default')
+const soundEnabled = ref(isSoundEnabled())
+const { currentLocale, setLocale } = useI18n()
 
-    const selectTheme = (id) => {
-      currentTheme.value = id
-      localStorage.setItem('sudoku-theme', id)
-      emit('change-theme', id)
-      playSound('click')
-    }
+const themes = [
+  { id: 'default', name: 'Default' },
+  { id: 'wood', name: '🪵 Wood' },
+  { id: 'neon', name: '💜 Neon' },
+  { id: 'minimal', name: '⬜ Minimal' }
+]
+const currentTheme = ref(localStorage.getItem('sudoku-theme') || 'default')
 
-    const toggleSound = () => {
-      soundEnabled.value = !soundEnabled.value
-      setSoundEnabled(soundEnabled.value)
-      if (soundEnabled.value) playSound('click')
-    }
+const selectTheme = (id) => {
+  currentTheme.value = id
+  localStorage.setItem('sudoku-theme', id)
+  emit('change-theme', id)
+  playSound('click')
+}
 
-    const resetProgress = () => {
-      if (confirm('Reset all progress? This cannot be undone.')) {
-        localStorage.removeItem('sudokuCompletedTutorials')
-        localStorage.removeItem('sudokuDailyStreak')
-        localStorage.removeItem('sudokuDailyCompleted')
-        emit('exit')
-      }
-    }
-    return { resetProgress, soundEnabled, toggleSound, themes, currentTheme, selectTheme, currentLocale, setLocale }
+const toggleSound = () => {
+  soundEnabled.value = !soundEnabled.value
+  setSoundEnabled(soundEnabled.value)
+  if (soundEnabled.value) playSound('click')
+}
+
+const resetProgress = () => {
+  if (confirm('Reset all progress? This cannot be undone.')) {
+    localStorage.removeItem('sudokuCompletedTutorials')
+    localStorage.removeItem('sudokuDailyStreak')
+    localStorage.removeItem('sudokuDailyCompleted')
+    emit('exit')
   }
 }
 </script>

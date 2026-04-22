@@ -26,10 +26,8 @@
   </transition>
 </template>
 
-<script>
-export default {
-  name: 'MobileNumberPad',
-  props: {
+<script setup>
+const props = defineProps({
     visible: {
       type: Boolean,
       default: false
@@ -42,9 +40,9 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  emits: ['input', 'clear', 'hint', 'toggle-pencil']
-}
+  })
+
+const emit = defineEmits(['input', 'clear', 'hint', 'toggle-pencil'])
 </script>
 
 <style scoped>

@@ -15,13 +15,11 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'KeyboardHelp',
-  props: { isDark: Boolean },
-  emits: ['close'],
-  setup() {
-    const shortcuts = [
+<script setup>
+
+const emit = defineEmits(['close'])
+
+const shortcuts = [
       { key: '↑ ↓ ← →', desc: 'Navigate cells' },
       { key: '1-9', desc: 'Enter number' },
       { key: 'Delete / ⌫', desc: 'Clear cell' },
@@ -30,9 +28,6 @@ export default {
       { key: '?', desc: 'Show this help' },
       { key: 'Esc', desc: 'Deselect cell' },
     ]
-    return { shortcuts }
-  }
-}
 </script>
 
 <style scoped>
@@ -58,3 +53,4 @@ kbd {
 }
 .help-card.dark kbd { background: #3a3a3a; border-color: #555; }
 </style>
+

@@ -37,12 +37,11 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { computed } from 'vue'
 
-export default {
-  name: 'ProgressIndicator',
-  props: {
+const props = defineProps({
     puzzle: {
       type: String,
       required: true
@@ -75,47 +74,38 @@ export default {
       type: Boolean,
       default: false
     }
-  },
-  emits: ['toggle-pause'],
-  setup(props) {
-    const filledCells = computed(() => {
-      let count = 0
-      for (let i = 0; i < props.puzzle.length; i++) {
-        if (props.puzzle[i] !== '.') {
-          count++
-        }
-      }
-      return count
-    })
+  })
+const emit = defineEmits(['toggle-pause'])
 
-    const percentage = computed(() => {
-      return Math.round((filledCells.value / 81) * 100)
-    })
-
-    const formattedTime = computed(() => {
-      const seconds = Math.floor(props.elapsedTime / 1000)
-      const minutes = Math.floor(seconds / 60)
-      const remainingSeconds = seconds % 60
-
-      if (minutes > 0) {
-        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
-      }
-      return `${seconds}s`
-    })
-
-    const difficultyStars = computed(() => {
-      const map = { EASY: '⭐', MEDIUM: '⭐⭐', HARD: '⭐⭐⭐', EXPERT: '⭐⭐⭐⭐', MASTER: '⭐⭐⭐⭐⭐' }
-      return map[props.difficulty.toUpperCase()] || '⭐'
-    })
-
-    return {
-      filledCells,
-      percentage,
-      formattedTime,
-      difficultyStars
+const filledCells = computed(() => {
+  let count = 0
+  for (let i = 0; i < props.puzzle.length; i++) {
+    if (props.puzzle[i] !== '.') {
+      count++
     }
   }
-}
+  return count
+})
+
+const percentage = computed(() => {
+  return Math.round((filledCells.value / 81) * 100)
+})
+
+const formattedTime = computed(() => {
+  const seconds = Math.floor(props.elapsedTime / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+
+  if (minutes > 0) {
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
+  return `${seconds}s`
+})
+
+const difficultyStars = computed(() => {
+  const map = { EASY: '⭐', MEDIUM: '⭐⭐', HARD: '⭐⭐⭐', EXPERT: '⭐⭐⭐⭐', MASTER: '⭐⭐⭐⭐⭐' }
+  return map[props.difficulty.toUpperCase()] || '⭐'
+})
 </script>
 
 <style scoped>

@@ -44,12 +44,11 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref, computed, nextTick } from 'vue'
 
-export default {
-  name: 'SudokuGrid',
-  props: {
+const props = defineProps({
     puzzle: {
       type: String,
       required: true
@@ -102,229 +101,215 @@ export default {
       type: String,
       default: 'default' // default, wood, neon, minimal
     }
-  },
-  emits: ['update', 'select', 'navigate', 'undo', 'redo', 'color-cell'],
-  setup(props, { emit }) {
-    const inputs = ref([])
-    const candidateGrids = ref([])
+  })
+const emit = defineEmits(['update', 'select', 'navigate', 'undo', 'redo', 'color-cell'])
 
-    const cellCandidates = (index, n) => {
-      const key = String(index)
-      return props.candidates[key]?.includes(n) ?? false
-    }
+const inputs = ref([])
+const candidateGrids = ref([])
 
-    const getRow = (index) => Math.floor(index / 9)
-    const getCol = (index) => index % 9
-    const getRegion = (index) => {
-      const row = getRow(index)
-      const col = getCol(index)
-      return Math.floor(row / 3) * 3 + Math.floor(col / 3)
-    }
+const cellCandidates = (index, n) => {
+  const key = String(index)
+  return props.candidates[key]?.includes(n) ?? false
+}
 
-    // Detect conflicts (duplicate values in row/col/box)
-    const conflicts = computed(() => {
-      if (!props.showConflicts) return new Set()
-      const set = new Set()
-      for (let i = 0; i < 81; i++) {
-        if (props.puzzle[i] === '.') continue
-        const val = props.puzzle[i]
-        const row = getRow(i), col = getCol(i), region = getRegion(i)
-        for (let j = 0; j < 81; j++) {
-          if (i === j || props.puzzle[j] !== val) continue
-          if (getRow(j) === row || getCol(j) === col || getRegion(j) === region) {
-            set.add(i)
-            set.add(j)
-          }
-        }
-      }
-      return set
-    })
+const getRow = (index) => Math.floor(index / 9)
+const getCol = (index) => index % 9
+const getRegion = (index) => {
+  const row = getRow(index)
+  const col = getCol(index)
+  return Math.floor(row / 3) * 3 + Math.floor(col / 3)
+}
 
-    const getCellClasses = (index) => {
-      const classes = {
-        given: props.givenCells.has(index),
-        solved: props.solvedCells.has(index),
-        selected: props.selectedCell === index,
-        'border-right': (index + 1) % 3 === 0 && (index + 1) % 9 !== 0,
-        'border-bottom': isBottomBorder(index)
-      }
-
-      // Highlight related cells when one is selected
-      if (props.selectedCell >= 0) {
-        const selectedRow = getRow(props.selectedCell)
-        const selectedCol = getCol(props.selectedCell)
-        const selectedRegion = getRegion(props.selectedCell)
-
-        classes['related-row'] = getRow(index) === selectedRow && index !== props.selectedCell
-        classes['related-col'] = getCol(index) === selectedCol && index !== props.selectedCell
-        classes['related-region'] = getRegion(index) === selectedRegion && index !== props.selectedCell
-        classes['same-value'] =
-          props.puzzle[index] !== '.' &&
-          props.puzzle[index] === props.puzzle[props.selectedCell] &&
-          index !== props.selectedCell
-      }
-
-      // Tutorial highlighting (always active)
-      classes['highlight-blue'] = isHighlighted(index, 'blue')
-      classes['highlight-green'] = isHighlighted(index, 'green')
-      classes['highlight-red'] = isHighlighted(index, 'red')
-      classes['highlight-yellow'] = isHighlighted(index, 'yellow')
-
-      // Conflict highlighting
-      classes['conflict'] = conflicts.value.has(index)
-
-      // User cell coloring
-      if (props.cellColors[index]) {
-        classes['color-' + props.cellColors[index]] = true
-      }
-
-      return classes
-    }
-
-    const isHighlighted = (index, color) => {
-      return props.highlightedCells.some(h =>
-        h.cells.includes(index) && h.color === color
-      )
-    }
-
-    const isBottomBorder = (index) => {
-      const row = Math.floor(index / 9)
-      return row === 2 || row === 5
-    }
-
-    const getCellLabel = (index) => {
-      const row = Math.floor(index / 9) + 1
-      const col = (index % 9) + 1
-      const value = props.puzzle[index]
-      if (value !== '.') {
-        return `Row ${row}, Column ${col}: ${value}`
-      }
-      const key = String(index)
-      const cands = props.candidates[key] || []
-      return `Row ${row}, Column ${col}: empty, candidates ${cands.join(', ') || 'none'}`
-    }
-
-    const selectCell = (index) => {
-      emit('select', index)
-      focusCell(index)
-    }
-
-    const focusCell = async (index) => {
-      await nextTick()
-      const input = inputs.value[index]
-      if (input) {
-        input.focus()
-      } else if (candidateGrids.value) {
-        // Find the candidate grid element with matching data-index
-        const grids = Array.isArray(candidateGrids.value) ? candidateGrids.value : [candidateGrids.value]
-        const grid = grids.find(el => el?.dataset?.index === String(index))
-        if (grid) {
-          grid.focus()
-        }
+// Detect conflicts (duplicate values in row/col/box)
+const conflicts = computed(() => {
+  if (!props.showConflicts) return new Set()
+  const set = new Set()
+  for (let i = 0; i < 81; i++) {
+    if (props.puzzle[i] === '.') continue
+    const val = props.puzzle[i]
+    const row = getRow(i), col = getCol(i), region = getRegion(i)
+    for (let j = 0; j < 81; j++) {
+      if (i === j || props.puzzle[j] !== val) continue
+      if (getRow(j) === row || getCol(j) === col || getRegion(j) === region) {
+        set.add(i)
+        set.add(j)
       }
     }
+  }
+  return set
+})
 
-    const onInput = (index, event) => {
-      const value = event.target.value
-      if (/^[1-9]$/.test(value) || value === '') {
-        emit('update', index, value)
+const getCellClasses = (index) => {
+  const classes = {
+    given: props.givenCells.has(index),
+    solved: props.solvedCells.has(index),
+    selected: props.selectedCell === index,
+    'border-right': (index + 1) % 3 === 0 && (index + 1) % 9 !== 0,
+    'border-bottom': isBottomBorder(index)
+  }
+
+  // Highlight related cells when one is selected
+  if (props.selectedCell >= 0) {
+    const selectedRow = getRow(props.selectedCell)
+    const selectedCol = getCol(props.selectedCell)
+    const selectedRegion = getRegion(props.selectedCell)
+
+    classes['related-row'] = getRow(index) === selectedRow && index !== props.selectedCell
+    classes['related-col'] = getCol(index) === selectedCol && index !== props.selectedCell
+    classes['related-region'] = getRegion(index) === selectedRegion && index !== props.selectedCell
+    classes['same-value'] =
+      props.puzzle[index] !== '.' &&
+      props.puzzle[index] === props.puzzle[props.selectedCell] &&
+      index !== props.selectedCell
+  }
+
+  // Tutorial highlighting (always active)
+  classes['highlight-blue'] = isHighlighted(index, 'blue')
+  classes['highlight-green'] = isHighlighted(index, 'green')
+  classes['highlight-red'] = isHighlighted(index, 'red')
+  classes['highlight-yellow'] = isHighlighted(index, 'yellow')
+
+  // Conflict highlighting
+  classes['conflict'] = conflicts.value.has(index)
+
+  // User cell coloring
+  if (props.cellColors[index]) {
+    classes['color-' + props.cellColors[index]] = true
+  }
+
+  return classes
+}
+
+const isHighlighted = (index, color) => {
+  return props.highlightedCells.some(h =>
+    h.cells.includes(index) && h.color === color
+  )
+}
+
+const isBottomBorder = (index) => {
+  const row = Math.floor(index / 9)
+  return row === 2 || row === 5
+}
+
+const getCellLabel = (index) => {
+  const row = Math.floor(index / 9) + 1
+  const col = (index % 9) + 1
+  const value = props.puzzle[index]
+  if (value !== '.') {
+    return `Row ${row}, Column ${col}: ${value}`
+  }
+  const key = String(index)
+  const cands = props.candidates[key] || []
+  return `Row ${row}, Column ${col}: empty, candidates ${cands.join(', ') || 'none'}`
+}
+
+const selectCell = (index) => {
+  emit('select', index)
+  focusCell(index)
+}
+
+const focusCell = async (index) => {
+  await nextTick()
+  const input = inputs.value[index]
+  if (input) {
+    input.focus()
+  } else if (candidateGrids.value) {
+    // Find the candidate grid element with matching data-index
+    const grids = Array.isArray(candidateGrids.value) ? candidateGrids.value : [candidateGrids.value]
+    const grid = grids.find(el => el?.dataset?.index === String(index))
+    if (grid) {
+      grid.focus()
+    }
+  }
+}
+
+const onInput = (index, event) => {
+  const value = event.target.value
+  if (/^[1-9]$/.test(value) || value === '') {
+    emit('update', index, value)
+  } else {
+    event.target.value = ''
+    emit('update', index, '')
+  }
+}
+
+const onKeyDown = (event, index) => {
+  const row = getRow(index)
+  const col = getCol(index)
+
+  // Number keys
+  if (/^[1-9]$/.test(event.key)) {
+    event.preventDefault()
+    if (!props.givenCells.has(index)) {
+      emit('update', index, event.key)
+    }
+    return
+  }
+
+  // Navigation
+  switch (event.key) {
+    case 'ArrowUp':
+      event.preventDefault()
+      if (row > 0) emit('navigate', index - 9)
+      break
+    case 'ArrowDown':
+      event.preventDefault()
+      if (row < 8) emit('navigate', index + 9)
+      break
+    case 'ArrowLeft':
+      event.preventDefault()
+      if (col > 0) emit('navigate', index - 1)
+      break
+    case 'ArrowRight':
+      event.preventDefault()
+      if (col < 8) emit('navigate', index + 1)
+      break
+    case 'Tab':
+      event.preventDefault()
+      if (event.shiftKey) {
+        // Previous cell
+        if (index > 0) emit('navigate', index - 1)
       } else {
-        event.target.value = ''
+        // Next cell
+        if (index < 80) emit('navigate', index + 1)
+      }
+      break
+    case 'Backspace':
+    case 'Delete':
+      event.preventDefault()
+      if (!props.givenCells.has(index)) {
         emit('update', index, '')
       }
-    }
-
-    const onKeyDown = (event, index) => {
-      const row = getRow(index)
-      const col = getCol(index)
-
-      // Number keys
-      if (/^[1-9]$/.test(event.key)) {
+      break
+    case 'Enter':
+      event.preventDefault()
+      // Move to next cell or stay if at end
+      if (index < 80) {
+        emit('navigate', index + 1)
+      }
+      break
+    case 'Escape':
+      event.preventDefault()
+      emit('select', -1)
+      break
+    case 'z':
+    case 'Z':
+      if (event.ctrlKey || event.metaKey) {
         event.preventDefault()
-        if (!props.givenCells.has(index)) {
-          emit('update', index, event.key)
+        if (event.shiftKey) {
+          emit('redo')
+        } else {
+          emit('undo')
         }
-        return
       }
-
-      // Navigation
-      switch (event.key) {
-        case 'ArrowUp':
-          event.preventDefault()
-          if (row > 0) emit('navigate', index - 9)
-          break
-        case 'ArrowDown':
-          event.preventDefault()
-          if (row < 8) emit('navigate', index + 9)
-          break
-        case 'ArrowLeft':
-          event.preventDefault()
-          if (col > 0) emit('navigate', index - 1)
-          break
-        case 'ArrowRight':
-          event.preventDefault()
-          if (col < 8) emit('navigate', index + 1)
-          break
-        case 'Tab':
-          event.preventDefault()
-          if (event.shiftKey) {
-            // Previous cell
-            if (index > 0) emit('navigate', index - 1)
-          } else {
-            // Next cell
-            if (index < 80) emit('navigate', index + 1)
-          }
-          break
-        case 'Backspace':
-        case 'Delete':
-          event.preventDefault()
-          if (!props.givenCells.has(index)) {
-            emit('update', index, '')
-          }
-          break
-        case 'Enter':
-          event.preventDefault()
-          // Move to next cell or stay if at end
-          if (index < 80) {
-            emit('navigate', index + 1)
-          }
-          break
-        case 'Escape':
-          event.preventDefault()
-          emit('select', -1)
-          break
-        case 'z':
-        case 'Z':
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault()
-            if (event.shiftKey) {
-              emit('redo')
-            } else {
-              emit('undo')
-            }
-          }
-          break
-        case 'y':
-        case 'Y':
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault()
-            emit('redo')
-          }
-          break
+      break
+    case 'y':
+    case 'Y':
+      if (event.ctrlKey || event.metaKey) {
+        event.preventDefault()
+        emit('redo')
       }
-    }
-
-    return {
-      inputs,
-      candidateGrids,
-      cellCandidates,
-      getCellClasses,
-      isBottomBorder,
-      selectCell,
-      focusCell,
-      onInput,
-      onKeyDown
-    }
+      break
   }
 }
 </script>
