@@ -714,8 +714,7 @@ export default {
         if (solved && solved.solved) {
           stopTimer()
           playSound('solved')
-          confettiVisible,
-      formatTime.value = true
+          confettiVisible.value = true
         }
       }
     }
@@ -1285,7 +1284,9 @@ export default {
       sharePuzzle,
       handlePrint,
       handleShareImage,
-      handleKeyDown
+      handleKeyDown,
+      confettiVisible,
+      formatTime
     }
   }
 }
