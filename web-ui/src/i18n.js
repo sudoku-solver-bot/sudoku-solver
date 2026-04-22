@@ -1,4 +1,4 @@
-// Lightweight i18n — English + Traditional Chinese + Japanese + Korean
+// Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean
 import { ref, computed } from 'vue'
 
 const locale = ref(localStorage.getItem('sudoku-locale') || 'en')
@@ -112,7 +112,8 @@ const translations = {
 
     language: 'Language',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
     korean: '한국어'
   },
@@ -225,7 +226,122 @@ const translations = {
 
     language: '語言',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어'
+  },
+
+  'zh-Hans': {
+    // Header
+    appTitle: '🧩 数独求解器',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: '数独道场',
+    dashboardSubtitle: '学习。练习。精通。',
+    play: '▶ 开始',
+    dailyChallenge: '📅 每日挑战',
+    learnTechniques: '📚 学习技巧',
+    quickSolve: '🧩 快速求解',
+
+    // Game
+    progress: '进度',
+    time: '时间',
+    mistakes: '错误',
+    hints: '提示',
+    filled: '已填',
+    solve: '🧩 求解',
+    clear: '🗑️ 清除',
+    import: '📥 导入',
+    share: '🔗 分享谜题',
+    getHint: '💡 获取提示！',
+    pencilMarks: '铅笔标记',
+    newPuzzle: '新谜题：',
+    easy: '简单',
+    medium: '中等',
+    hard: '困难',
+    undo: '撤销',
+    redo: '重做',
+
+    // Settings
+    settingsTitle: '⚙️ 设置',
+    accessibility: '无障碍',
+    colorBlind: '色盲友好模式',
+    colorBlindDesc: '使用图案和明确的颜色标记',
+    highContrast: '高对比度',
+    highContrastDesc: '更强的边框和文字',
+    darkModeLabel: '深色模式',
+    darkModeDesc: '夜间使用更舒适',
+    soundEffects: '音效',
+    soundEffectsDesc: '操作时的音频反馈',
+    boardTheme: '棋盘主题',
+    data: '数据',
+    resetProgress: '重置进度',
+    resetProgressDesc: '清除所有已保存的课程进度和连续记录',
+    about: '关于',
+    aboutText: '数独道场 — 一步步学习数独',
+    back: '← 返回',
+
+    // Import
+    importTitle: '📥 导入谜题',
+    importDesc: '在下方粘贴数独谜题。用 . 或 0 表示空格。',
+    singleLine: '单行',
+    grid9x9: '9×9 格子',
+    loadExample: '载入示例',
+    cancel: '取消',
+
+    // Achievements
+    achievementsTitle: '🏆 成就',
+    statsTitle: '📊 统计',
+
+    // Belt levels
+    whiteBelt: '白带',
+    yellowBelt: '黄带',
+    orangeBelt: '橙带',
+    greenBelt: '绿带',
+    blueBelt: '蓝带',
+    purpleBelt: '紫带',
+    brownBelt: '棕带',
+    blackBelt: '黑带',
+
+    // Messages
+    puzzleImported: '谜题已导入！点击求解或自己解题。',
+    puzzleGenerated: '已生成{difficulty}谜题！',
+    puzzleSolved: '在{time}毫秒内解决',
+    noSolution: '找不到解答',
+    linkCopied: '链接已复制！',
+    shareText: '分享此链接来挑战他人！',
+    sharedLoaded: '已载入分享的谜题！自己解或点击求解。',
+    puzzleComplete: '谜题完成！',
+    perfect: '✨ 完美！',
+    noHints: '🧠 无提示',
+    continueBtn: '继续',
+    resetAll: '重置所有统计',
+    exportCSV: '📥 导出CSV',
+    savePuzzle: '💾 保存当前谜题',
+    loadBtn: '▶ 载入',
+    savedPuzzles: '💾 已保存的谜题',
+    noSavedPuzzles: '还没有保存的谜题！',
+    saveHint: '游戏中点击「保存谜题」来保存进度。',
+
+    // Difficulty
+    EASY: '简单',
+    MEDIUM: '中等',
+    HARD: '困难',
+    EXPERT: '专家',
+    MASTER: '大师',
+
+    language: '语言',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
     korean: '한국어'
   },
@@ -338,7 +454,8 @@ const translations = {
 
     language: '言語',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
     korean: '한국어'
   },
@@ -451,7 +568,8 @@ const translations = {
 
     language: '언어',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
     korean: '한국어'
   }
