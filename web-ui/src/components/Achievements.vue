@@ -34,7 +34,8 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { computed, onMounted, ref } from 'vue'
 
 const ACH_KEY = 'sudoku-dojo-achievements'
@@ -60,65 +61,54 @@ const BADGE_DEFINITIONS = [
   { id: 'early-bird', name: 'Early Bird', icon: '🐦', description: 'Solve a puzzle before 7am', check: (s) => s.earlySolve },
 ]
 
-export default {
-  name: 'Achievements',
-  props: {
+const props = defineProps({
     isDark: { type: Boolean, default: false },
     stats: { type: Object, default: () => ({}) }
-  },
-  emits: ['back'],
-  setup(props) {
-    const earnedDates = ref({})
+  })
+const emit = defineEmits(['back'])
 
-    const stats = computed(() => ({
-      totalSolved: props.stats.totalSolved || 0,
-      dailiesCompleted: props.stats.dailiesCompleted || 0,
-      currentStreak: props.stats.currentStreak || 0,
-      bestTime: props.stats.bestTime || 0,
-      perfectSolves: props.stats.perfectSolves || 0,
-      tutorialsCompleted: props.stats.tutorialsCompleted || 0,
-      nightSolve: props.stats.nightSolve || false,
-      earlySolve: props.stats.earlySolve || false,
-    }))
+const earnedDates = ref({})
 
-    const badges = computed(() => {
-      return BADGE_DEFINITIONS.map(def => {
-        const earned = def.check(stats.value)
-        return {
-          ...def,
-          earned,
-          earnedDate: earnedDates.value[def.id] || ''
-        }
-      })
-    })
+const stats = computed(() => ({
+  totalSolved: props.stats.totalSolved || 0,
+  dailiesCompleted: props.stats.dailiesCompleted || 0,
+  currentStreak: props.stats.currentStreak || 0,
+  bestTime: props.stats.bestTime || 0,
+  perfectSolves: props.stats.perfectSolves || 0,
+  tutorialsCompleted: props.stats.tutorialsCompleted || 0,
+  nightSolve: props.stats.nightSolve || false,
+  earlySolve: props.stats.earlySolve || false,
+}))
 
-    const earned = computed(() => badges.value.filter(b => b.earned).length)
-    const total = computed(() => badges.value.length)
-    const progressPercent = computed(() => total.value ? (earned.value / total.value) * 100 : 0)
+const badges = computed(() => {
+  return BADGE_DEFINITIONS.map(def => {
+    const earned = def.check(stats.value)
+  })
+})
 
-    // Load saved achievement dates
-    onMounted(() => {
-      try {
-        const saved = localStorage.getItem(ACH_KEY)
-        if (saved) earnedDates.value = JSON.parse(saved)
-      } catch (e) {}
+const earned = computed(() => badges.value.filter(b => b.earned).length)
+const total = computed(() => badges.value.length)
+const progressPercent = computed(() => total.value ? (earned.value / total.value) * 100 : 0)
 
-      // Check for newly earned badges and save dates
-      let changed = false
-      for (const badge of badges.value) {
-        if (badge.earned && !earnedDates.value[badge.id]) {
-          earnedDates.value[badge.id] = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-          changed = true
-        }
-      }
-      if (changed) {
-        localStorage.setItem(ACH_KEY, JSON.stringify(earnedDates.value))
-      }
-    })
+// Load saved achievement dates
+onMounted(() => {
+  try {
+    const saved = localStorage.getItem(ACH_KEY)
+    if (saved) earnedDates.value = JSON.parse(saved)
+  } catch (e) {}
 
-    return { badges, earned, total, progressPercent }
+  // Check for newly earned badges and save dates
+  let changed = false
+  for (const badge of badges.value) {
+    if (badge.earned && !earnedDates.value[badge.id]) {
+      earnedDates.value[badge.id] = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      changed = true
+    }
   }
-}
+  if (changed) {
+    localStorage.setItem(ACH_KEY, JSON.stringify(earnedDates.value))
+  }
+})
 </script>
 
 <style scoped>

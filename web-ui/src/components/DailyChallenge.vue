@@ -75,20 +75,14 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
 import { fetchDailyChallenge, solvePuzzle } from '../api'
 
-export default {
-  name: 'DailyChallenge',
-  components: { SudokuGrid },
-  props: {
-    isDark: { type: Boolean, default: false }
-  },
-  emits: ['exit'],
-  setup(props, { emit }) {
-    const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'easy', beltColor: '#e0e0e0' })
+const emit = defineEmits(['exit'])
+
+const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'easy', beltColor: '#e0e0e0' })
     const puzzle = ref('.'.repeat(81))
     const givenCells = ref(new Set())
     const solvedCells = ref(new Set())
@@ -227,15 +221,6 @@ export default {
         })
       }
     }
-
-    return {
-      challenge, puzzle, givenCells, solvedCells, candidates,
-      selectedCell, elapsedTime, hintsUsed, completed, streak,
-      formattedDate, formatTime,
-      onCellUpdate, onCellSelect, inputNumber, eraseCell, shareResult
-    }
-  }
-}
 </script>
 
 <style scoped>
@@ -482,3 +467,4 @@ export default {
   }
 }
 </style>
+

@@ -103,10 +103,8 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'ControlPanel',
-  props: {
+<script setup>
+const props = defineProps({
     loading: {
       type: Boolean,
       default: false
@@ -131,9 +129,9 @@ export default {
       type: Boolean,
       default: true
     }
-  },
-  emits: ['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print', 'share-image']
-}
+  })
+
+const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print', 'share-image'])
 </script>
 
 <style scoped>

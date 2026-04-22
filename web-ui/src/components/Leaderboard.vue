@@ -67,163 +67,155 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref, computed, onMounted } from 'vue'
 
 const STORAGE_KEY = 'sudoku-dojo-leaderboard'
 const OPT_IN_KEY = 'sudoku-dojo-lb-optin'
 const NAME_KEY = 'sudoku-dojo-lb-name'
 
-export default {
-  name: 'Leaderboard',
-  props: {
+const props = defineProps({
     isDark: { type: Boolean, default: false }
-  },
-  emits: ['back'],
-  setup() {
-    const optedIn = ref(false)
-    const playerName = ref('')
-    const tab = ref('daily')
+  })
+const emit = defineEmits(['back'])
 
-    // Simulated leaderboard data (localStorage-based for MVP)
-    // In a real app, this would be a backend API
-    const rankings = computed(() => {
-      const data = getLeaderboardData()
-      const today = new Date().toISOString().split('T')[0]
+const optedIn = ref(false)
+const playerName = ref('')
+const tab = ref('daily')
 
-      let entries = data.filter(e => {
-        if (tab.value === 'daily') return e.date === today
-        if (tab.value === 'weekly') {
-          const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0]
-          return e.date >= weekAgo
-        }
-        return true
-      })
+// Simulated leaderboard data (localStorage-based for MVP)
+// In a real app, this would be a backend API
+const rankings = computed(() => {
+  const data = getLeaderboardData()
+  const today = new Date().toISOString().split('T')[0]
 
-      // Best time per player
-      const best = new Map()
-      for (const e of entries) {
-        const existing = best.get(e.name)
-        if (!existing || e.time < existing.time) {
-          best.set(e.name, { ...e, isYou: e.name === playerName.value })
-        }
-      }
-
-      return [...best.values()]
-        .sort((a, b) => a.time - b.time)
-        .map(e => ({ ...e, isYou: e.name === playerName.value }))
-    })
-
-    const yourRank = computed(() => {
-      const idx = rankings.value.findIndex(e => e.isYou)
-      return idx >= 0 ? idx + 1 : null
-    })
-
-    const yourStreak = computed(() => {
-      try {
-        const saved = localStorage.getItem('sudokuDailyStreak')
-        if (saved) return JSON.parse(saved).count || 0
-      } catch (e) {}
-      return 0
-    })
-
-    const getLeaderboardData = () => {
-      try {
-        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-      } catch (e) { return [] }
+  let entries = data.filter(e => {
+    if (tab.value === 'daily') return e.date === today
+    if (tab.value === 'weekly') {
+      const weekAgo = new Date(Date.now() - 7 * 86400000).toISOString().split('T')[0]
+      return e.date >= weekAgo
     }
+    return true
+  })
 
-    const saveLeaderboardData = (data) => {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-    }
-
-    const joinLeaderboard = () => {
-      if (!playerName.value.trim()) return
-      optedIn.value = true
-      localStorage.setItem(OPT_IN_KEY, 'true')
-      localStorage.setItem(NAME_KEY, playerName.value.trim())
-      playerName.value = playerName.value.trim()
-    }
-
-    const leaveLeaderboard = () => {
-      optedIn.value = false
-      localStorage.removeItem(OPT_IN_KEY)
-      localStorage.removeItem(NAME_KEY)
-    }
-
-    const getMedal = (i) => {
-      if (i === 0) return '🥇'
-      if (i === 1) return '🥈'
-      if (i === 2) return '🥉'
-      return `#${i + 1}`
-    }
-
-    const formatTime = (ms) => {
-      const s = Math.floor(ms / 1000)
-      const m = Math.floor(s / 60)
-      const sec = s % 60
-      return `${m}:${sec.toString().padStart(2, '0')}`
-    }
-
-    const shareScore = async () => {
-      const rank = yourRank.value
-      const text = rank
-        ? `🏆 Sudoku Dojo Leaderboard\n\nI'm #${rank} today! Can you beat me?\n\nPlay: https://sudoku-solver-r5y8.onrender.com`
-        : `🏆 Sudoku Dojo\n\nCome solve daily puzzles!\n\nPlay: https://sudoku-solver-r5y8.onrender.com`
-
-      if (navigator.share) {
-        try { await navigator.share({ title: 'Sudoku Dojo', text }) } catch (e) {}
-      } else {
-        await navigator.clipboard.writeText(text)
-        alert('Score copied to clipboard!')
-      }
-    }
-
-    // Submit a daily challenge score (called externally)
-    const submitScore = (timeMs, hints) => {
-      if (!optedIn.value) return
-      const data = getLeaderboardData()
-      data.push({
-        id: Date.now().toString(36),
-        name: playerName.value,
-        date: new Date().toISOString().split('T')[0],
-        time: timeMs,
-        hints: hints,
-        timestamp: Date.now()
-      })
-      saveLeaderboardData(data)
-    }
-
-    onMounted(() => {
-      const opted = localStorage.getItem(OPT_IN_KEY) === 'true'
-      const name = localStorage.getItem(NAME_KEY) || ''
-      optedIn.value = opted
-      playerName.value = name
-
-      // Auto-submit today's score if opted in and daily is complete
-      if (opted && name) {
-        try {
-          const today = new Date().toISOString().split('T')[0]
-          const completed = localStorage.getItem('sudokuDailyCompleted')
-          const timeData = localStorage.getItem('sudokuDailyTime')
-          if (completed === today && timeData) {
-            const { time, hints } = JSON.parse(timeData)
-            const data = getLeaderboardData()
-            const alreadySubmitted = data.some(e => e.name === name && e.date === today)
-            if (!alreadySubmitted) {
-              submitScore(time, hints || 0)
-            }
-          }
-        } catch (e) {}
-      }
-    })
-
-    return {
-      optedIn, playerName, tab, rankings, yourRank, yourStreak,
-      joinLeaderboard, leaveLeaderboard, getMedal, formatTime, shareScore, submitScore
+  // Best time per player
+  const best = new Map()
+  for (const e of entries) {
+    const existing = best.get(e.name)
+    if (!existing || e.time < existing.time) {
+      best.set(e.name, { ...e, isYou: e.name === playerName.value })
     }
   }
+
+  return [...best.values()]
+    .sort((a, b) => a.time - b.time)
+    .map(e => ({ ...e, isYou: e.name === playerName.value }))
+})
+
+const yourRank = computed(() => {
+  const idx = rankings.value.findIndex(e => e.isYou)
+  return idx >= 0 ? idx + 1 : null
+})
+
+const yourStreak = computed(() => {
+  try {
+    const saved = localStorage.getItem('sudokuDailyStreak')
+    if (saved) return JSON.parse(saved).count || 0
+  } catch (e) {}
+  return 0
+})
+
+const getLeaderboardData = () => {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+  } catch (e) { return [] }
 }
+
+const saveLeaderboardData = (data) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+}
+
+const joinLeaderboard = () => {
+  if (!playerName.value.trim()) return
+  optedIn.value = true
+  localStorage.setItem(OPT_IN_KEY, 'true')
+  localStorage.setItem(NAME_KEY, playerName.value.trim())
+  playerName.value = playerName.value.trim()
+}
+
+const leaveLeaderboard = () => {
+  optedIn.value = false
+  localStorage.removeItem(OPT_IN_KEY)
+  localStorage.removeItem(NAME_KEY)
+}
+
+const getMedal = (i) => {
+  if (i === 0) return '🥇'
+  if (i === 1) return '🥈'
+  if (i === 2) return '🥉'
+  return `#${i + 1}`
+}
+
+const formatTime = (ms) => {
+  const s = Math.floor(ms / 1000)
+  const m = Math.floor(s / 60)
+  const sec = s % 60
+  return `${m}:${sec.toString().padStart(2, '0')}`
+}
+
+const shareScore = async () => {
+  const rank = yourRank.value
+  const text = rank
+    ? `🏆 Sudoku Dojo Leaderboard\n\nI'm #${rank} today! Can you beat me?\n\nPlay: https://sudoku-solver-r5y8.onrender.com`
+    : `🏆 Sudoku Dojo\n\nCome solve daily puzzles!\n\nPlay: https://sudoku-solver-r5y8.onrender.com`
+
+  if (navigator.share) {
+    try { await navigator.share({ title: 'Sudoku Dojo', text }) } catch (e) {}
+  } else {
+    await navigator.clipboard.writeText(text)
+    alert('Score copied to clipboard!')
+  }
+}
+
+// Submit a daily challenge score (called externally)
+const submitScore = (timeMs, hints) => {
+  if (!optedIn.value) return
+  const data = getLeaderboardData()
+  data.push({
+    id: Date.now().toString(36),
+    name: playerName.value,
+    date: new Date().toISOString().split('T')[0],
+    time: timeMs,
+    hints: hints,
+    timestamp: Date.now()
+  })
+  saveLeaderboardData(data)
+}
+
+onMounted(() => {
+  const opted = localStorage.getItem(OPT_IN_KEY) === 'true'
+  const name = localStorage.getItem(NAME_KEY) || ''
+  optedIn.value = opted
+  playerName.value = name
+
+  // Auto-submit today's score if opted in and daily is complete
+  if (opted && name) {
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      const completed = localStorage.getItem('sudokuDailyCompleted')
+      const timeData = localStorage.getItem('sudokuDailyTime')
+      if (completed === today && timeData) {
+        const { time, hints } = JSON.parse(timeData)
+        const data = getLeaderboardData()
+        const alreadySubmitted = data.some(e => e.name === name && e.date === today)
+        if (!alreadySubmitted) {
+          submitScore(time, hints || 0)
+        }
+      }
+    } catch (e) {}
+  }
+})
 </script>
 
 <style scoped>

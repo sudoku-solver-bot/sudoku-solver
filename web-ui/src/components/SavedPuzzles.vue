@@ -37,52 +37,47 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref, onMounted } from 'vue'
 
 const SAVES_KEY = 'sudoku-dojo-saves'
 
-export default {
-  name: 'SavedPuzzles',
-  props: {
+const props = defineProps({
     isDark: { type: Boolean, default: false },
     currentPuzzle: { type: String, default: '' },
     currentDifficulty: { type: String, default: '' }
-  },
-  emits: ['close', 'load'],
-  setup(props, { emit }) {
-    const saves = ref([])
+  })
+const emit = defineEmits(['close', 'load'])
 
-    const loadSaves = () => {
-      try {
-        saves.value = JSON.parse(localStorage.getItem(SAVES_KEY) || '[]')
-      } catch { saves.value = [] }
-    }
+const saves = ref([])
 
-    onMounted(loadSaves)
+const loadSaves = () => {
+  try {
+    saves.value = JSON.parse(localStorage.getItem(SAVES_KEY) || '[]')
+  } catch { saves.value = [] }
+}
 
-    const saveCurrent = () => {
-      if (!props.currentPuzzle || props.currentPuzzle === '.'.repeat(81)) return
-      const filled = props.currentPuzzle.split('').filter(c => c !== '.').length
-      const save = {
-        puzzle: props.currentPuzzle,
-        difficulty: props.currentDifficulty,
-        progress: filled,
-        date: new Date().toLocaleDateString(),
-        name: `Puzzle ${saves.value.length + 1}`
-      }
-      saves.value.unshift(save)
-      if (saves.value.length > 10) saves.value = saves.value.slice(0, 10) // max 10
-      localStorage.setItem(SAVES_KEY, JSON.stringify(saves.value))
-    }
+onMounted(loadSaves)
 
-    const deleteSave = (index) => {
-      saves.value.splice(index, 1)
-      localStorage.setItem(SAVES_KEY, JSON.stringify(saves.value))
-    }
-
-    return { saves, saveCurrent, deleteSave }
+const saveCurrent = () => {
+  if (!props.currentPuzzle || props.currentPuzzle === '.'.repeat(81)) return
+  const filled = props.currentPuzzle.split('').filter(c => c !== '.').length
+  const save = {
+    puzzle: props.currentPuzzle,
+    difficulty: props.currentDifficulty,
+    progress: filled,
+    date: new Date().toLocaleDateString(),
+    name: `Puzzle ${saves.value.length + 1}`
   }
+  saves.value.unshift(save)
+  if (saves.value.length > 10) saves.value = saves.value.slice(0, 10) // max 10
+  localStorage.setItem(SAVES_KEY, JSON.stringify(saves.value))
+}
+
+const deleteSave = (index) => {
+  saves.value.splice(index, 1)
+  localStorage.setItem(SAVES_KEY, JSON.stringify(saves.value))
 }
 </script>
 

@@ -42,78 +42,73 @@
   </div>
 </template>
 
-<script>
+<script setup>
+
 import { ref } from 'vue'
 
-export default {
-  name: 'ImportPuzzle',
-  props: {
+const props = defineProps({
     isDark: { type: Boolean, default: false }
-  },
-  emits: ['close', 'import'],
-  setup(props, { emit }) {
-    const input = ref('')
-    const format = ref('single')
-    const parsedPuzzle = ref(null)
-    const error = ref('')
-    const givenCount = ref(0)
+  })
+const emit = defineEmits(['close', 'import'])
 
-    const parsePuzzle = (text) => {
-      // Remove all whitespace, separators (!, -, |, spaces)
-      let cleaned = text.replace(/[\s!\-|]/g, '').replace(/0/g, '.')
-      // Only keep valid chars
-      cleaned = cleaned.replace(/[^1-9.]/g, '')
+const input = ref('')
+const format = ref('single')
+const parsedPuzzle = ref(null)
+const error = ref('')
+const givenCount = ref(0)
 
-      if (cleaned.length !== 81) {
-        return null
-      }
+const parsePuzzle = (text) => {
+  // Remove all whitespace, separators (!, -, |, spaces)
+  let cleaned = text.replace(/[\s!\-|]/g, '').replace(/0/g, '.')
+  // Only keep valid chars
+  cleaned = cleaned.replace(/[^1-9.]/g, '')
 
-      // Basic validation: each row should have valid structure
-      return cleaned
-    }
-
-    const validate = () => {
-      error.value = ''
-      if (!input.value.trim()) {
-        parsedPuzzle.value = null
-        return
-      }
-
-      const parsed = parsePuzzle(input.value)
-      if (!parsed) {
-        const cleaned = input.value.replace(/[\s!\-|]/g, '').replace(/0/g, '.').replace(/[^1-9.]/g, '')
-        if (cleaned.length < 81) {
-          error.value = `Need 81 cells, got ${cleaned.length}. Keep going!`
-        } else {
-          error.value = `Too many cells (${cleaned.length}). Need exactly 81.`
-        }
-        parsedPuzzle.value = null
-        return
-      }
-
-      // Check for duplicates in rows/cols/boxes
-      parsedPuzzle.value = parsed
-      givenCount.value = parsed.split('').filter(c => c !== '.').length
-
-      if (givenCount.value < 17) {
-        error.value = 'Puzzle needs at least 17 given cells to have a unique solution.'
-      }
-    }
-
-    const doImport = () => {
-      if (parsedPuzzle.value) {
-        emit('import', parsedPuzzle.value)
-      }
-    }
-
-    const loadExample = () => {
-      format.value = 'single'
-      input.value = '530070000600195000098000060800060003400803001700020006060000280000419005000080079'
-      validate()
-    }
-
-    return { input, format, parsedPuzzle, error, givenCount, validate, doImport, loadExample }
+  if (cleaned.length !== 81) {
+    return null
   }
+
+  // Basic validation: each row should have valid structure
+  return cleaned
+}
+
+const validate = () => {
+  error.value = ''
+  if (!input.value.trim()) {
+    parsedPuzzle.value = null
+    return
+  }
+
+  const parsed = parsePuzzle(input.value)
+  if (!parsed) {
+    const cleaned = input.value.replace(/[\s!\-|]/g, '').replace(/0/g, '.').replace(/[^1-9.]/g, '')
+    if (cleaned.length < 81) {
+      error.value = `Need 81 cells, got ${cleaned.length}. Keep going!`
+    } else {
+      error.value = `Too many cells (${cleaned.length}). Need exactly 81.`
+    }
+    parsedPuzzle.value = null
+    return
+  }
+
+  // Check for duplicates in rows/cols/boxes
+  parsedPuzzle.value = parsed
+  givenCount.value = parsed.split('').filter(c => c !== '.').length
+
+  if (givenCount.value < 17) {
+    error.value = 'Puzzle needs at least 17 given cells to have a unique solution.'
+  }
+}
+
+const doImport = () => {
+  if (parsedPuzzle.value) {
+    emit('import', parsedPuzzle.value)
+  }
+}
+
+const loadExample = () => {
+  format.value = 'single'
+  input.value = '530070000600195000098000060800060003400803001700020006060000280000419005000080079'
+  validate()
 }
 </script>
 
