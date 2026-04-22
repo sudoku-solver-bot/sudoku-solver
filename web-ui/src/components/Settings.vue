@@ -56,11 +56,12 @@
 
       <!-- Language section -->
       <div class="settings-section">
-        <h3>Language / 語言 / 言語</h3>
+        <h3>Language / 語言 / 言語 / 언어</h3>
         <div class="lang-selector">
           <button class="lang-btn" :class="{ active: currentLocale === 'en' }" @click="setLocale('en')">🇬🇧 English</button>
           <button class="lang-btn" :class="{ active: currentLocale === 'zh-Hant' }" @click="setLocale('zh-Hant')">🇭🇰 繁體中文</button>
           <button class="lang-btn" :class="{ active: currentLocale === 'ja' }" @click="setLocale('ja')">🇯🇵 日本語</button>
+          <button class="lang-btn" :class="{ active: currentLocale === 'ko' }" @click="setLocale('ko')">🇰🇷 한국어</button>
         </div>
       </div>
 
