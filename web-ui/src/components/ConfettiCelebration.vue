@@ -21,6 +21,13 @@ import { ref, watch, nextTick } from 'vue'
 
 const emit = defineEmits(['done'])
 
+const props = defineProps({
+  visible: Boolean,
+  time: String,
+  mistakes: { type: Number, default: 0 },
+  hints: { type: Number, default: 0 }
+})
+
 const canvas = ref(null)
     const showText = ref(false)
     let animationId = null

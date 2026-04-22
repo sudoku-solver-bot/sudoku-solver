@@ -1,4 +1,4 @@
-// Lightweight i18n — English + Traditional Chinese + Japanese + Korean
+// Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
 const locale = ref(localStorage.getItem('sudoku-locale') || 'en')
@@ -112,9 +112,12 @@ const translations = {
 
     language: 'Language',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
-    korean: '한국어'
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español'
   },
 
   'zh-Hant': {
@@ -225,9 +228,128 @@ const translations = {
 
     language: '語言',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
-    korean: '한국어'
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español'
+  },
+
+  'zh-Hans': {
+    // Header
+    appTitle: '🧩 数独求解器',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: '数独道场',
+    dashboardSubtitle: '学习。练习。精通。',
+    play: '▶ 开始',
+    dailyChallenge: '📅 每日挑战',
+    learnTechniques: '📚 学习技巧',
+    quickSolve: '🧩 快速求解',
+
+    // Game
+    progress: '进度',
+    time: '时间',
+    mistakes: '错误',
+    hints: '提示',
+    filled: '已填',
+    solve: '🧩 求解',
+    clear: '🗑️ 清除',
+    import: '📥 导入',
+    share: '🔗 分享谜题',
+    getHint: '💡 获取提示！',
+    pencilMarks: '铅笔标记',
+    newPuzzle: '新谜题：',
+    easy: '简单',
+    medium: '中等',
+    hard: '困难',
+    undo: '撤销',
+    redo: '重做',
+
+    // Settings
+    settingsTitle: '⚙️ 设置',
+    accessibility: '无障碍',
+    colorBlind: '色盲友好模式',
+    colorBlindDesc: '使用图案和明确的颜色标记',
+    highContrast: '高对比度',
+    highContrastDesc: '更强的边框和文字',
+    darkModeLabel: '深色模式',
+    darkModeDesc: '夜间使用更舒适',
+    soundEffects: '音效',
+    soundEffectsDesc: '操作时的音频反馈',
+    boardTheme: '棋盘主题',
+    data: '数据',
+    resetProgress: '重置进度',
+    resetProgressDesc: '清除所有已保存的课程进度和连续记录',
+    about: '关于',
+    aboutText: '数独道场 — 一步步学习数独',
+    back: '← 返回',
+
+    // Import
+    importTitle: '📥 导入谜题',
+    importDesc: '在下方粘贴数独谜题。用 . 或 0 表示空格。',
+    singleLine: '单行',
+    grid9x9: '9×9 格子',
+    loadExample: '载入示例',
+    cancel: '取消',
+
+    // Achievements
+    achievementsTitle: '🏆 成就',
+    statsTitle: '📊 统计',
+
+    // Belt levels
+    whiteBelt: '白带',
+    yellowBelt: '黄带',
+    orangeBelt: '橙带',
+    greenBelt: '绿带',
+    blueBelt: '蓝带',
+    purpleBelt: '紫带',
+    brownBelt: '棕带',
+    blackBelt: '黑带',
+
+    // Messages
+    puzzleImported: '谜题已导入！点击求解或自己解题。',
+    puzzleGenerated: '已生成{difficulty}谜题！',
+    puzzleSolved: '在{time}毫秒内解决',
+    noSolution: '找不到解答',
+    linkCopied: '链接已复制！',
+    shareText: '分享此链接来挑战他人！',
+    sharedLoaded: '已载入分享的谜题！自己解或点击求解。',
+    puzzleComplete: '谜题完成！',
+    perfect: '✨ 完美！',
+    noHints: '🧠 无提示',
+    continueBtn: '继续',
+    resetAll: '重置所有统计',
+    exportCSV: '📥 导出CSV',
+    savePuzzle: '💾 保存当前谜题',
+    loadBtn: '▶ 载入',
+    savedPuzzles: '💾 已保存的谜题',
+    noSavedPuzzles: '还没有保存的谜题！',
+    saveHint: '游戏中点击「保存谜题」来保存进度。',
+
+    // Difficulty
+    EASY: '简单',
+    MEDIUM: '中等',
+    HARD: '困难',
+    EXPERT: '专家',
+    MASTER: '大师',
+
+    language: '语言',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español'
   },
 
   ja: {
@@ -338,7 +460,8 @@ const translations = {
 
     language: '言語',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
     korean: '한국어'
   },
@@ -451,9 +574,242 @@ const translations = {
 
     language: '언어',
     english: 'English',
-    chinese: '中文',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
     japanese: '日本語',
     korean: '한국어'
+  },
+
+  fr: {
+    // Header
+    appTitle: '🧩 Solveur de Sudoku',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Dojo Sudoku',
+    dashboardSubtitle: 'Apprendre. Pratiquer. Maîtriser.',
+    play: '▶ Jouer',
+    dailyChallenge: '📅 Défi quotidien',
+    learnTechniques: '📚 Apprendre les techniques',
+    quickSolve: '🧩 Résolution rapide',
+
+    // Game
+    progress: 'Progression',
+    time: 'Temps',
+    mistakes: 'Erreurs',
+    hints: 'Indices',
+    filled: 'Rempli',
+    solve: '🧩 Résoudre',
+    clear: '🗑️ Effacer',
+    import: '📥 Importer',
+    share: '🔗 Partager le puzzle',
+    getHint: '💡 Obtenir un indice !',
+    pencilMarks: 'Notes au crayon',
+    newPuzzle: 'Nouveau puzzle :',
+    easy: 'Facile',
+    medium: 'Moyen',
+    hard: 'Difficile',
+    undo: 'Annuler',
+    redo: 'Rétablir',
+
+    // Settings
+    settingsTitle: '⚙️ Paramètres',
+    accessibility: 'Accessibilité',
+    colorBlind: 'Mode daltonien',
+    colorBlindDesc: 'Utilise des motifs et des couleurs distinctes',
+    highContrast: 'Contraste élevé',
+    highContrastDesc: 'Bordures et texte plus marqués',
+    darkModeLabel: 'Mode sombre',
+    darkModeDesc: 'Plus doux pour les yeux la nuit',
+    soundEffects: 'Effets sonores',
+    soundEffectsDesc: 'Retour audio pour les actions',
+    boardTheme: 'Thème du plateau',
+    data: 'Données',
+    resetProgress: 'Réinitialiser la progression',
+    resetProgressDesc: 'Effacer toutes les leçons et séries',
+    about: 'À propos',
+    aboutText: 'Dojo Sudoku — Apprenez le Sudoku étape par étape',
+    back: '← Retour',
+
+    // Import
+    importTitle: '📥 Importer un puzzle',
+    importDesc: 'Collez un puzzle Sudoku ci-dessous. Utilisez . ou 0 pour les cases vides.',
+    singleLine: 'Ligne unique',
+    grid9x9: 'Grille 9×9',
+    loadExample: 'Charger un exemple',
+    cancel: 'Annuler',
+
+    // Achievements
+    achievementsTitle: '🏆 Succès',
+    statsTitle: '📊 Statistiques',
+
+    // Belt levels
+    whiteBelt: 'Ceinture blanche',
+    yellowBelt: 'Ceinture jaune',
+    orangeBelt: 'Ceinture orange',
+    greenBelt: 'Ceinture verte',
+    blueBelt: 'Ceinture bleue',
+    purpleBelt: 'Ceinture violette',
+    brownBelt: 'Ceinture marron',
+    blackBelt: 'Ceinture noire',
+
+    // Messages
+    puzzleImported: 'Puzzle importé ! Appuyez sur Résoudre ou résolvez-le vous-même.',
+    puzzleGenerated: 'Puzzle {difficulty} généré !',
+    puzzleSolved: 'Résolu en {time}ms',
+    noSolution: 'Aucune solution trouvée',
+    linkCopied: 'Lien copié !',
+    shareText: 'Partagez ce lien pour défier quelqu\'un !',
+    sharedLoaded: 'Puzzle partagé chargé ! Résolvez-le ou appuyez sur Résoudre.',
+    puzzleComplete: 'Puzzle terminé !',
+    perfect: '✨ Parfait !',
+    noHints: '🧠 Sans indice',
+    continueBtn: 'Continuer',
+    resetAll: 'Réinitialiser toutes les statistiques',
+    exportCSV: '📥 Exporter en CSV',
+    savePuzzle: '💾 Sauvegarder le puzzle',
+    loadBtn: '▶ Charger',
+    savedPuzzles: '💾 Puzzles sauvegardés',
+    noSavedPuzzles: 'Aucun puzzle sauvegardé !',
+    saveHint: 'Cliquez sur « Sauvegarder » pendant une partie pour sauvegarder.',
+
+    // Difficulty
+    EASY: 'Facile',
+    MEDIUM: 'Moyen',
+    HARD: 'Difficile',
+    EXPERT: 'Expert',
+    MASTER: 'Maître',
+
+    language: 'Langue',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español'
+  },
+
+  es: {
+    // Header
+    appTitle: '🧩 Solucionador de Sudoku',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Dojo de Sudoku',
+    dashboardSubtitle: 'Aprender. Practicar. Dominar.',
+    play: '▶ Jugar',
+    dailyChallenge: '📅 Desafío diario',
+    learnTechniques: '📚 Aprender técnicas',
+    quickSolve: '🧩 Resolución rápida',
+
+    // Game
+    progress: 'Progreso',
+    time: 'Tiempo',
+    mistakes: 'Errores',
+    hints: 'Pistas',
+    filled: 'Llenado',
+    solve: '🧩 Resolver',
+    clear: '🗑️ Limpiar',
+    import: '📥 Importar',
+    share: '🔗 Compartir puzzle',
+    getHint: '💡 ¡Obtener pista!',
+    pencilMarks: 'Notas a lápiz',
+    newPuzzle: 'Nuevo puzzle:',
+    easy: 'Fácil',
+    medium: 'Medio',
+    hard: 'Difícil',
+    undo: 'Deshacer',
+    redo: 'Rehacer',
+
+    // Settings
+    settingsTitle: '⚙️ Configuración',
+    accessibility: 'Accesibilidad',
+    colorBlind: 'Modo daltónico',
+    colorBlindDesc: 'Usa patrones y colores distintos',
+    highContrast: 'Alto contraste',
+    highContrastDesc: 'Bordes y texto más marcados',
+    darkModeLabel: 'Modo oscuro',
+    darkModeDesc: 'Más suave para los ojos por la noche',
+    soundEffects: 'Efectos de sonido',
+    soundEffectsDesc: 'Retorno de audio para las acciones',
+    boardTheme: 'Tema del tablero',
+    data: 'Datos',
+    resetProgress: 'Reiniciar progreso',
+    resetProgressDesc: 'Borrar todas las lecciones y rachas guardadas',
+    about: 'Acerca de',
+    aboutText: 'Dojo de Sudoku — Aprende Sudoku paso a paso',
+    back: '← Volver',
+
+    // Import
+    importTitle: '📥 Importar puzzle',
+    importDesc: 'Pegue un puzzle de Sudoku abajo. Use . o 0 para las celdas vacías.',
+    singleLine: 'Línea única',
+    grid9x9: 'Cuadrícula 9×9',
+    loadExample: 'Cargar ejemplo',
+    cancel: 'Cancelar',
+
+    // Achievements
+    achievementsTitle: '🏆 Logros',
+    statsTitle: '📊 Estadísticas',
+
+    // Belt levels
+    whiteBelt: 'Cinturón blanco',
+    yellowBelt: 'Cinturón amarillo',
+    orangeBelt: 'Cinturón naranja',
+    greenBelt: 'Cinturón verde',
+    blueBelt: 'Cinturón azul',
+    purpleBelt: 'Cinturón morado',
+    brownBelt: 'Cinturón marrón',
+    blackBelt: 'Cinturón negro',
+
+    // Messages
+    puzzleImported: '¡Puzzle importado! Pulsa Resolver o resuélvelo tú mismo.',
+    puzzleGenerated: '¡Puzzle {difficulty} generado!',
+    puzzleSolved: 'Resuelto en {time}ms',
+    noSolution: 'No se encontró solución',
+    linkCopied: '¡Enlace copiado!',
+    shareText: '¡Comparte este enlace para desafiar a alguien!',
+    sharedLoaded: '¡Puzzle compartido cargado! Resuélvelo o pulsa Resolver.',
+    puzzleComplete: '¡Puzzle completado!',
+    perfect: '✨ ¡Perfecto!',
+    noHints: '🧠 Sin pistas',
+    continueBtn: 'Continuar',
+    resetAll: 'Reiniciar todas las estadísticas',
+    exportCSV: '📥 Exportar como CSV',
+    savePuzzle: '💾 Guardar puzzle actual',
+    loadBtn: '▶ Cargar',
+    savedPuzzles: '💾 Puzzles guardados',
+    noSavedPuzzles: '¡No hay puzzles guardados!',
+    saveHint: 'Haz clic en «Guardar puzzle» durante la partida para guardar.',
+
+    // Difficulty
+    EASY: 'Fácil',
+    MEDIUM: 'Medio',
+    HARD: 'Difícil',
+    EXPERT: 'Experto',
+    MASTER: 'Maestro',
+
+    language: 'Idioma',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español'
   }
 }
 

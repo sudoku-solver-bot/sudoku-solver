@@ -60,8 +60,11 @@
         <div class="lang-selector">
           <button class="lang-btn" :class="{ active: currentLocale === 'en' }" @click="setLocale('en')">🇬🇧 English</button>
           <button class="lang-btn" :class="{ active: currentLocale === 'zh-Hant' }" @click="setLocale('zh-Hant')">🇭🇰 繁體中文</button>
+          <button class="lang-btn" :class="{ active: currentLocale === 'zh-Hans' }" @click="setLocale('zh-Hans')">🇨🇳 简体中文</button>
           <button class="lang-btn" :class="{ active: currentLocale === 'ja' }" @click="setLocale('ja')">🇯🇵 日本語</button>
           <button class="lang-btn" :class="{ active: currentLocale === 'ko' }" @click="setLocale('ko')">🇰🇷 한국어</button>
+          <button class="lang-btn" :class="{ active: currentLocale === 'fr' }" @click="setLocale('fr')">🇫🇷 Français</button>
+          <button class="lang-btn" :class="{ active: currentLocale === 'es' }" @click="setLocale('es')">🇪🇸 Español</button>
         </div>
       </div>
 

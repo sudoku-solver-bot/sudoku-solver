@@ -2,21 +2,33 @@ name: JMH with Gradle
 
 on:
   workflow_dispatch:
+    inputs:
+      quick:
+        description: 'Quick mode (fewer iterations)'
+        required: false
+        default: 'false'
+        type: boolean
+      benchmark_filter:
+        description: 'Benchmark filter regex'
+        required: false
+        default: '.*'
+        type: string
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: 21
           distribution: temurin
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -26,5 +38,133 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', 'gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Execute JMH
-        run: ./gradlew jmh --no-daemon
+
+      - name: Run Basic Eliminator Benchmarks
+        run: |
+          if [[ "${{ inputs.quick }}" == "true" ]]; then
+            ./gradlew jmh --no-daemon \
+              -Djmh.include=".*EliminatorBenchmark.*" \
+              -Djmh.warmup.iterations=1 -Djmh.warmup.time=1s \
+              -Djmh.measurement.iterations=1 -Djmh.measurement.time=1s \
+              -Djmh.fork=1 \
+              -Djmh.json=build/reports/jmh/basic-results.json
+          else
+            ./gradlew jmh --no-daemon \
+              -Djmh.include=".*EliminatorBenchmark.*" \
+              -Djmh.json=build/reports/jmh/basic-results.json
+          fi
+
+      - name: Run Advanced Eliminator Benchmarks
+        run: |
+          if [[ "${{ inputs.quick }}" == "true" ]]; then
+            ./gradlew jmh --no-daemon \
+              -Djmh.include=".*AdvancedEliminatorBenchmark.*" \
+              -Djmh.warmup.iterations=1 -Djmh.warmup.time=1s \
+              -Djmh.measurement.iterations=1 -Djmh.measurement.time=1s \
+              -Djmh.fork=1 \
+              -Djmh.json=build/reports/jmh/advanced-results.json
+          else
+            ./gradlew jmh --no-daemon \
+              -Djmh.include=".*AdvancedEliminatorBenchmark.*" \
+              -Djmh.json=build/reports/jmh/advanced-results.json
+          fi
+
+      - name: Run Solver Benchmarks
+        run: |
+          if [[ "${{ inputs.quick }}" == "true" ]]; then
+            ./gradlew jmh --no-daemon \
+              -Djmh.include=".*SolverBenchmark.*" \
+              -Djmh.warmup.iterations=1 -Djmh.warmup.time=1s \
+              -Djmh.measurement.iterations=1 -Djmh.measurement.time=1s \
+              -Djmh.fork=1 \
+              -Djmh.json=build/reports/jmh/solver-results.json
+          else
+            ./gradlew jmh --no-daemon \
+              -Djmh.include=".*SolverBenchmark.*" \
+              -Djmh.json=build/reports/jmh/solver-results.json
+          fi
+
+      - name: Upload Benchmark Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: jmh-benchmark-results
+          path: build/reports/jmh/
+          retention-days: 30
+
+      - name: Generate Comparison Report
+        run: |
+          python3 - <<'PYTHON_SCRIPT'
+          import json
+          import os
+          import glob
+
+          report_dir = "build/reports/jmh"
+          results_files = glob.glob(os.path.join(report_dir, "*-results.json"))
+
+          all_results = []
+          for f in results_files:
+              if os.path.exists(f):
+                  with open(f) as fh:
+                      all_results.extend(json.load(fh))
+
+          if not all_results:
+              print("No benchmark results found.")
+              exit(0)
+
+          print("╔══════════════════════════════════════════════════════════╗")
+          print("║     🧩 Sudoku Solver — Benchmark Comparison Report      ║")
+          print("╚══════════════════════════════════════════════════════════╝")
+          print()
+
+          # Group by benchmark
+          by_bench = {}
+          for r in all_results:
+              bench = r.get("benchmark", "unknown")
+              method = bench.split(".")[-1]
+              params = r.get("params", {})
+              board = params.get("boardName", "?")
+              threshold = params.get("groupExecutionEliminatorThreshold", "")
+
+              label = f"{method} [board={board}"
+              if threshold:
+                  label += f", threshold={threshold}"
+              label += "]"
+
+              if label not in by_bench:
+                  by_bench[label] = []
+              by_bench[label].append({
+                  "score": r.get("primaryMetric", {}).get("score", 0),
+                  "unit": r.get("primaryMetric", {}).get("scoreUnit", "?"),
+                  "error": r.get("primaryMetric", {}).get("scoreError", 0),
+              })
+
+          print(f"{'Benchmark':<60} {'Score':>12} {'± Error':>12} {'Unit':<10}")
+          print(f"{'─'*60} {'─'*12} {'─'*12} {'─'*10}")
+          for label in sorted(by_bench.keys()):
+              for run in by_bench[label]:
+                  print(f"{label:<60} {run['score']:>12.3f} {run['error']:>12.3f} {run['unit']:<10}")
+
+          print()
+          print(f"📈 Total benchmarks run: {len(all_results)}")
+          print(f"📈 Unique configurations: {len(by_bench)}")
+
+          # Save summary
+          summary_path = os.path.join(report_dir, "comparison-summary.json")
+          with open(summary_path, "w") as f:
+              json.dump({
+                  "totalBenchmarks": len(all_results),
+                  "uniqueConfigs": len(by_bench),
+                  "results": all_results
+              }, f, indent=2)
+          print(f"📊 Summary saved to: {summary_path}")
+          PYTHON_SCRIPT
+
+      - name: Post Summary
+        if: always()
+        run: |
+          echo "## 🧩 Benchmark Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Run completed with **${{ inputs.quick == 'true' && 'quick' || 'standard' }}** mode" >> $GITHUB_STEP_SUMMARY
+          echo "Filter: \`${{ inputs.benchmark_filter }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📊 Results uploaded as artifact \`jmh-benchmark-results\`" >> $GITHUB_STEP_SUMMARY
