@@ -2,6 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
+  testMatch: '**/visual-regression.spec.js',
   timeout: 60000,
   use: {
     baseURL: 'http://localhost:25321',
