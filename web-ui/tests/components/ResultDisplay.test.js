@@ -120,7 +120,7 @@ describe('ResultDisplay', () => {
     })
 
     expect(wrapper.find('.techniques').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Techniques:')
+    expect(wrapper.text()).toContain('Techniques used:')
     expect(wrapper.text()).toContain('Naked Singles')
     expect(wrapper.text()).toContain('Hidden Singles')
   })
