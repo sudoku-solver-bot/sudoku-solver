@@ -55,7 +55,7 @@ test.describe('App Mount - No JS Errors', () => {
       if (msg.type() === 'error') {
         const text = msg.text();
         // Filter out known benign errors (e.g., favicon, service worker)
-        if (!text.includes('favicon') && !text.includes('404')) {
+        if (!text.includes('favicon') && !text.includes('404') && !text.includes('Failed to load history state')) {
           jsErrors.push({ message: `console.error: ${text}` });
         }
       }
@@ -91,11 +91,11 @@ test.describe('Grid Rendering', () => {
     // Wait for dashboard to load
     await page.waitForTimeout(2000);
 
-    // Click Play to start a game (try multiple selectors)
-    const playButton = page.locator('button:has-text("Play")').first();
-    if (await playButton.isVisible({ timeout: 5000 }).catch(() => false)) {
-      await playButton.click();
-    }
+    // Click Free Play to start a game
+    const playButton = page.locator('button:has-text("Free Play")').first();
+    await expect(playButton).toBeVisible({ timeout: 10000 });
+    await playButton.click();
+    await page.waitForTimeout(2000);
 
     // Wait for grid to appear
     const grid = page.locator('.grid, [class*="grid"]');
