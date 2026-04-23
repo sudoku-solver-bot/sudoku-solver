@@ -25,7 +25,7 @@ data class DashboardResponse(
 fun Route.dashboardRoutes() {
     val dashboardSystem = DashboardSystem()
 
-    post("/api/v1/dashboard/report") {
+    post("/dashboard/report") {
         val request = call.receive<DashboardRequest>()
         
         val report = dashboardSystem.getStudentReport(request.studentId)
