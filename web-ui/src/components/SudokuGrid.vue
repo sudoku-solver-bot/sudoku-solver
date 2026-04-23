@@ -423,17 +423,26 @@ const onKeyDown = (event, index) => {
 .cell.related-row,
 .cell.related-col,
 .cell.related-region {
-  background: #e8f0fe;
+  background: #d4e6fc;
+}
+
+.cell.related-row.related-col {
+  background: #bdd9f9;
 }
 
 .grid.dark .cell.related-row,
 .grid.dark .cell.related-col,
 .grid.dark .cell.related-region {
-  background: #3d3d3d;
+  background: #3a4a5c;
+}
+
+.grid.dark .cell.related-row.related-col {
+  background: #3a5070;
 }
 
 .cell.same-value {
-  background: #fff8e1;
+  background: #c8e6c9;
+  font-weight: 800;
 }
 
 .cell.conflict {
@@ -449,7 +458,8 @@ const onKeyDown = (event, index) => {
 }
 
 .grid.dark .cell.same-value {
-  background: #4d4d3d;
+  background: #2d4a2d;
+  color: #a5d6a7;
 }
 
 .grid.dark .cell.conflict {
