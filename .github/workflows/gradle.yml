@@ -66,6 +66,11 @@ jobs:
         working-directory: web-ui
         run: npm ci && npm run lint:ci
 
+      # ── Unit Tests ────────────────────────────────────────
+      - name: Run unit tests
+        working-directory: web-ui
+        run: npm test
+
       # ── E2E Smoke Tests ────────────────────────────────────
       - name: Build frontend for E2E
         working-directory: web-ui

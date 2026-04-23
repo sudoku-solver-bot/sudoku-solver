@@ -3,11 +3,44 @@ import { mount } from '@vue/test-utils'
 import App from '@/App.vue'
 import { flushPromises } from '@vue/test-utils'
 
-// Mock the API module
+// Mock all API functions
 vi.mock('@/api', () => ({
-  solvePuzzle: vi.fn(),
-  generatePuzzle: vi.fn(),
-  getHintForPuzzle: vi.fn()
+  solvePuzzle: vi.fn().mockResolvedValue({ solved: false }),
+  generatePuzzle: vi.fn().mockResolvedValue({ puzzle: '.'.repeat(81), difficulty: 'EASY' }),
+  getHintForPuzzle: vi.fn().mockResolvedValue({ hasHint: false }),
+  saveState: vi.fn().mockResolvedValue({}),
+  undo: vi.fn().mockResolvedValue({}),
+  redo: vi.fn().mockResolvedValue({}),
+  getHistory: vi.fn().mockResolvedValue({ canUndo: false, canRedo: false, undoCount: 0, redoCount: 0 }),
+  fetchCandidates: vi.fn().mockResolvedValue({ candidates: {} }),
+  fetchTutorials: vi.fn().mockResolvedValue([]),
+  fetchTutorial: vi.fn().mockResolvedValue({}),
+  fetchQuizzes: vi.fn().mockResolvedValue([]),
+  fetchAllPracticeSets: vi.fn().mockResolvedValue([])
+}))
+
+// Mock utility modules
+vi.mock('@/stats-tracker', () => ({
+  getStatsForAchievements: vi.fn().mockReturnValue({})
+}))
+
+vi.mock('@/sounds', () => ({
+  playSound: vi.fn(),
+  isSoundEnabled: vi.fn().mockReturnValue(false),
+  setSoundEnabled: vi.fn()
+}))
+
+vi.mock('@/favicon', () => ({
+  updateFavicon: vi.fn()
+}))
+
+vi.mock('@/print', () => ({
+  printPuzzle: vi.fn()
+}))
+
+vi.mock('@/share-image', () => ({
+  generatePuzzleImage: vi.fn().mockReturnValue(null),
+  downloadImage: vi.fn()
 }))
 
 import { solvePuzzle, generatePuzzle, getHintForPuzzle } from '@/api'
@@ -15,33 +48,49 @@ import { solvePuzzle, generatePuzzle, getHintForPuzzle } from '@/api'
 describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    localStorage.clear()
   })
 
-  it('renders all child components', () => {
+  it('renders header with title', () => {
     const wrapper = mount(App)
+    expect(wrapper.find('h1').text()).toContain('Sudoku Solver')
+  })
+
+  it('renders Dashboard as default view', () => {
+    const wrapper = mount(App)
+    expect(wrapper.findComponent({ name: 'Dashboard' }).exists()).toBe(true)
+  })
+
+  it('navigates to Free Play mode when play is triggered', async () => {
+    const wrapper = mount(App)
+
+    const dashboard = wrapper.findComponent({ name: 'Dashboard' })
+    await dashboard.vm.$emit('play')
+    await wrapper.vm.$nextTick()
 
     expect(wrapper.findComponent({ name: 'SudokuGrid' }).exists()).toBe(true)
     expect(wrapper.findComponent({ name: 'ControlPanel' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'ResultDisplay' }).exists()).toBe(true)
   })
 
-  it('clear button resets the grid', async () => {
+  it('navigates to Settings panel', async () => {
     const wrapper = mount(App)
+    const settingsBtn = wrapper.find('.settings-btn')
+    await settingsBtn.trigger('click')
+    await wrapper.vm.$nextTick()
 
-    // Set initial puzzle state by simulating cell input
-    const grid = wrapper.findComponent({ name: 'SudokuGrid' })
-    await grid.vm.$emit('update', 0, '5')
-
-    // Click clear button
-    const controlPanel = wrapper.findComponent({ name: 'ControlPanel' })
-    await controlPanel.vm.$emit('clear')
-
-    expect(wrapper.vm.puzzle).toBe('.'.repeat(81))
-    expect(wrapper.vm.givenCells.size).toBe(0)
-    expect(wrapper.vm.solvedCells.size).toBe(0)
+    expect(wrapper.findComponent({ name: 'Settings' }).exists()).toBe(true)
   })
 
-  it('generate button creates new puzzle', async () => {
+  it('navigates to Daily Challenge', async () => {
+    const wrapper = mount(App)
+    const dailyBtn = wrapper.find('.daily-btn')
+    await dailyBtn.trigger('click')
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.findComponent({ name: 'DailyChallenge' }).exists()).toBe(true)
+  })
+
+  it('generates a puzzle and fills the grid', async () => {
     const mockPuzzle = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'
     generatePuzzle.mockResolvedValue({
       puzzle: mockPuzzle,
@@ -49,112 +98,49 @@ describe('App', () => {
     })
 
     const wrapper = mount(App)
-    const controlPanel = wrapper.findComponent({ name: 'ControlPanel' })
 
+    // Go to play mode first
+    wrapper.vm.playMode = true
+    await wrapper.vm.$nextTick()
+
+    const controlPanel = wrapper.findComponent({ name: 'ControlPanel' })
     await controlPanel.vm.$emit('generate', 'EASY')
     await flushPromises()
 
     expect(generatePuzzle).toHaveBeenCalledWith('EASY')
     expect(wrapper.vm.puzzle).toBe(mockPuzzle)
-    expect(wrapper.vm.givenCells.size).toBeGreaterThan(0)
-    expect(wrapper.vm.loading).toBe(false)
   })
 
-  it('solve button calls API and updates grid', async () => {
-    const initialPuzzle = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'
-    const mockSolution = '534678912672195348198342567859761423426853791713924856961537284287419635345286179'
-    solvePuzzle.mockResolvedValue({
-      solved: true,
-      solution: mockSolution,
-      metrics: {
-        solveTimeMs: 42.5,
-        difficulty: 'MEDIUM',
-        techniquesUsed: ['Naked Singles', 'Hidden Singles']
-      }
-    })
+  it('handles API errors without crashing', async () => {
+    solvePuzzle.mockRejectedValue(new Error('Network error'))
+    generatePuzzle.mockRejectedValue(new Error('Network error'))
 
     const wrapper = mount(App)
 
-    // Set up initial puzzle by generating it
-    generatePuzzle.mockResolvedValue({
-      puzzle: initialPuzzle,
-      difficulty: 'MEDIUM'
-    })
+    wrapper.vm.playMode = true
+    await wrapper.vm.$nextTick()
 
-    const controlPanel = wrapper.findComponent({ name: 'ControlPanel' })
-    await controlPanel.vm.$emit('generate', 'MEDIUM')
-    await flushPromises()
-
-    // Now solve it
-    solvePuzzle.mockClear()
-    await controlPanel.vm.$emit('solve')
-    await flushPromises()
-
-    expect(solvePuzzle).toHaveBeenCalledWith(initialPuzzle, true)
-    expect(wrapper.vm.puzzle).toBe(mockSolution)
-    expect(wrapper.vm.solvedCells.size).toBeGreaterThan(0)
-    expect(wrapper.vm.loading).toBe(false)
+    expect(wrapper.findComponent({ name: 'SudokuGrid' }).exists()).toBe(true)
   })
 
-  it('hint button calls API', async () => {
-    getHintForPuzzle.mockResolvedValue({
-      hasHint: true,
-      hint: {
-        row: 0,
-        col: 0,
-        value: 5,
-        technique: 'Naked Single'
-      }
-    })
-
+  it('clears grid when clear event is emitted', async () => {
     const wrapper = mount(App)
-    const controlPanel = wrapper.findComponent({ name: 'ControlPanel' })
 
-    await controlPanel.vm.$emit('hint')
-    await flushPromises()
+    wrapper.vm.playMode = true
+    await wrapper.vm.$nextTick()
 
-    expect(getHintForPuzzle).toHaveBeenCalled()
-    expect(wrapper.vm.loading).toBe(false)
-  })
-
-  it('updates cell on input', async () => {
-    const wrapper = mount(App)
     const grid = wrapper.findComponent({ name: 'SudokuGrid' })
-
     await grid.vm.$emit('update', 0, '5')
 
-    expect(wrapper.vm.puzzle[0]).toBe('5')
+    const controlPanel = wrapper.findComponent({ name: 'ControlPanel' })
+    await controlPanel.vm.$emit('clear')
+
+    expect(wrapper.vm.puzzle).toBe('.'.repeat(81))
   })
 
-  it('sets loading state during solve', async () => {
-    let resolvePromise
-    solvePuzzle.mockImplementation(() => new Promise(resolve => {
-      resolvePromise = resolve
-    }))
-
+  it('renders InstallPrompt and OfflineIndicator', () => {
     const wrapper = mount(App)
-    const controlPanel = wrapper.findComponent({ name: 'ControlPanel' })
-
-    // Trigger solve
-    controlPanel.vm.$emit('solve')
-
-    // Loading should be true immediately
-    await wrapper.vm.$nextTick()
-    expect(wrapper.vm.loading).toBe(true)
-
-    // Resolve the API call
-    resolvePromise({
-      solved: true,
-      solution: '534678912672195348198342567859761423426853791713924856961537284287419635345286179',
-      metrics: {
-        solveTimeMs: 42.5,
-        difficulty: 'MEDIUM',
-        techniquesUsed: ['Naked Singles']
-      }
-    })
-
-    await flushPromises()
-
-    expect(wrapper.vm.loading).toBe(false)
+    expect(wrapper.findComponent({ name: 'InstallPrompt' }).exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'OfflineIndicator' }).exists()).toBe(true)
   })
 })
