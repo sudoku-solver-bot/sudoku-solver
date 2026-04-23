@@ -19,10 +19,12 @@ export async function generatePuzzle(difficulty = 'MEDIUM') {
 }
 
 export async function getHintForPuzzle(puzzle) {
+  // Backend expects digits only: 1-9 for filled, 0 for empty
+  const normalized = puzzle.replace(/\./g, '0')
   const response = await fetch(`${API_BASE}/hint`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ puzzle })
+    body: JSON.stringify({ puzzle: normalized })
   })
   return response.json()
 }
