@@ -88,8 +88,15 @@ test.describe('Grid Rendering', () => {
 
     await page.goto('http://localhost:25321/', { waitUntil: 'networkidle' });
 
+    // Dismiss "What's New" modal if it appears (first visit)
+    const gotItBtn = page.locator('button:has-text("Let\'s play")');
+    if (await gotItBtn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      await gotItBtn.click();
+      await page.waitForTimeout(500);
+    }
+
     // Wait for dashboard to load
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(1000);
 
     // Click Free Play to start a game
     const playButton = page.locator('button:has-text("Free Play")').first();
