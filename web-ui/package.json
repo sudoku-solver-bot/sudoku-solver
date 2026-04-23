@@ -6,13 +6,19 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "lint": "eslint src/",
+    "lint:ci": "eslint src/ --max-warnings 800"
   },
   "dependencies": {
     "vue": "^3.4.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
     "@vitejs/plugin-vue": "^5.0.0",
+    "eslint": "^10.2.1",
+    "eslint-plugin-vue": "^10.9.0",
     "vite": "^5.0.0",
     "vite-plugin-pwa": "^1.2.0"
   }
