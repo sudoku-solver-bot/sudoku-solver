@@ -93,7 +93,7 @@ jobs:
 
       - name: Run E2E smoke tests
         working-directory: web-ui
-        run: npx playwright test e2e/splash.spec.js
+        run: npx playwright test --config playwright-smoke.config.js
 
       - name: Stop server
         if: always()
