@@ -31,7 +31,7 @@ data class CellCoordinate(
 fun Route.hintRoutes() {
     val hintProvider = TeachingHintProvider()
 
-    post("/api/v1/hint") {
+    post("/hint") {
         val request = call.receive<HintRequest>()
         
         val puzzle = request.puzzle.filter { it.isDigit() }

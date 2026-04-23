@@ -23,7 +23,7 @@ data class ProgressResponse(
 fun Route.progressRoutes() {
     val progressSystem = ProgressSystem()
 
-    post("/api/v1/progress") {
+    post("/progress") {
         val request = call.receive<ProgressRequest>()
         val progress = progressSystem.getProgress(request.userId)
         call.respond(

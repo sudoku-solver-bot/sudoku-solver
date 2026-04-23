@@ -27,7 +27,7 @@ data class CelebrationResponse(
 fun Route.celebrationRoutes() {
     val celebrationSystem = CelebrationSystem()
 
-    post("/api/v1/celebration") {
+    post("/celebration") {
         val request = call.receive<CelebrationRequest>()
         
         val celebration = celebrationSystem.getCelebration(

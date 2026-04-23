@@ -22,7 +22,7 @@ data class GenerateDifficultyResponse(
 )
 
 fun Route.difficultyRoutes() {
-    post("/api/v1/generate/difficulty") {
+    post("/generate/difficulty") {
         val request = call.receive<GenerateDifficultyRequest>()
         
         val difficulty = when {
@@ -58,7 +58,7 @@ fun Route.difficultyRoutes() {
         )
     }
     
-    get("/api/v1/generate/difficulty/{level}") {
+    get("/generate/difficulty/{level}") {
         val level = call.parameters["level"] ?: return@get call.respond(
             HttpStatusCode.BadRequest,
             mapOf("error" to "Missing difficulty level")

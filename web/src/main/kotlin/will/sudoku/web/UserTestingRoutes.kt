@@ -16,7 +16,7 @@ fun Route.userTestingRoutes() {
     val surveySubmissions = mutableMapOf<String, SurveySubmission>()
     val learningMetrics = mutableMapOf<String, List<LearningMetrics>>()
     
-    post("/api/v1/user-testing/participant") {
+    post("/user-testing/participant") {
         try {
             val request = call.receive<CreateParticipantRequest>()
             
@@ -45,7 +45,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    post("/api/v1/user-testing/session") {
+    post("/user-testing/session") {
         try {
             val request = call.receive<CreateSessionRequest>()
             
@@ -74,7 +74,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    post("/api/v1/user-testing/session/{sessionId}/complete") {
+    post("/user-testing/session/{sessionId}/complete") {
         try {
             val sessionId = call.parameters["sessionId"] ?: throw IllegalArgumentException("Session ID required")
             val session = sessions[sessionId] ?: throw IllegalArgumentException("Session not found")
@@ -103,7 +103,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    post("/api/v1/user-testing/action") {
+    post("/user-testing/action") {
         try {
             val request = call.receive<RecordActionRequest>()
             
@@ -130,7 +130,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    post("/api/v1/user-testing/survey/submit") {
+    post("/user-testing/survey/submit") {
         try {
             val request = call.receive<SubmitSurveyRequest>()
             
@@ -159,7 +159,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    get("/api/v1/user-testing/protocol/{ageGroup}") {
+    get("/user-testing/protocol/{ageGroup}") {
         try {
             val ageGroupParam = call.parameters["ageGroup"] ?: throw IllegalArgumentException("Age group required")
             val ageGroup = AgeGroup.valueOf(ageGroupParam)
@@ -175,7 +175,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    get("/api/v1/user-testing/survey/{surveyId}") {
+    get("/user-testing/survey/{surveyId}") {
         try {
             val surveyId = call.parameters["surveyId"] ?: throw IllegalArgumentException("Survey ID required")
             val ageGroupParam = call.parameters["ageGroup"] ?: throw IllegalArgumentException("Age group required")
@@ -197,7 +197,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    get("/api/v1/user-testing/participant/{participantId}/progress") {
+    get("/user-testing/participant/{participantId}/progress") {
         try {
             val participantId = call.parameters["participantId"] ?: throw IllegalArgumentException("Participant ID required")
             
@@ -222,7 +222,7 @@ fun Route.userTestingRoutes() {
         }
     }
     
-    get("/api/v1/user-testing/features/{variant}") {
+    get("/user-testing/features/{variant}") {
         try {
             val variantParam = call.parameters["variant"] ?: throw IllegalArgumentException("Variant required")
             val variant = ABTestVariant.valueOf(variantParam)
