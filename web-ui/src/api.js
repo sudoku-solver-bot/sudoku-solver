@@ -43,7 +43,8 @@ export async function saveState(puzzle) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ puzzle })
   })
-  return response.json()
+  if (!response.ok) return { error: 'Undo/redo not available' }
+  return response.json().catch(() => ({}))
 }
 
 export async function undo() {
@@ -51,7 +52,8 @@ export async function undo() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
-  return response.json()
+  if (!response.ok) return { error: 'Undo not available' }
+  return response.json().catch(() => ({}))
 }
 
 export async function redo() {
@@ -59,7 +61,8 @@ export async function redo() {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' }
   })
-  return response.json()
+  if (!response.ok) return { error: 'Redo not available' }
+  return response.json().catch(() => ({}))
 }
 
 export async function getHistory() {
@@ -67,7 +70,8 @@ export async function getHistory() {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' }
   })
-  return response.json()
+  if (!response.ok) return { canUndo: false, canRedo: false, undoCount: 0, redoCount: 0 }
+  return response.json().catch(() => ({ canUndo: false, canRedo: false, undoCount: 0, redoCount: 0 }))
 }
 
 export async function fetchCandidates(puzzle) {
