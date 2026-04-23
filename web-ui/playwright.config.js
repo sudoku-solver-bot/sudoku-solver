@@ -2,10 +2,7 @@ import { defineConfig } from '@playwright/test'
 
 export default defineConfig({
   testDir: './e2e',
-  timeout: 60_000,
-  expect: {
-    toHaveScreenshot({ maxDiffPixelRatio: 0.03 }),
-  },
+  timeout: 60000,
   use: {
     baseURL: 'http://localhost:25321',
     screenshot: 'on',
