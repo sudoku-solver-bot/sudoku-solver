@@ -210,11 +210,16 @@ const selectCell = (index) => {
 
 const focusCell = async (index) => {
   await nextTick()
-  const input = inputs.value[index]
+  // Find the correct element by data-index, not by array position.
+  // The inputs/candidateGrids ref arrays may not align with cell indices
+  // because cells with candidates render <div> instead of <input>.
+  const allInputs = Array.isArray(inputs.value) ? inputs.value : [inputs.value]
+  const input = allInputs.find(el => el?.dataset?.index === String(index))
   if (input) {
     input.focus()
-  } else if (candidateGrids.value) {
-    // Find the candidate grid element with matching data-index
+    return
+  }
+  if (candidateGrids.value) {
     const grids = Array.isArray(candidateGrids.value) ? candidateGrids.value : [candidateGrids.value]
     const grid = grids.find(el => el?.dataset?.index === String(index))
     if (grid) {
