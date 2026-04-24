@@ -222,4 +222,114 @@ describe('SudokuGrid', () => {
       expect(wrapper.emitted('select').at(-1)).toEqual([10])
     })
   })
+
+  describe('row/column highlighting', () => {
+    it('highlights cells in the same row as selected cell', () => {
+      const wrapper = mount(SudokuGrid, {
+        props: { ...defaultProps, selectedCell: 10 } // row 1, col 1
+      })
+      const cells = wrapper.findAll('.cell')
+
+      // Same row (row 1) should be highlighted
+      expect(cells[9].classes()).toContain('related-row')   // row 1, col 0
+      expect(cells[11].classes()).toContain('related-row')  // row 1, col 2
+      expect(cells[17].classes()).toContain('related-row')  // row 1, col 8
+
+      // Different row should NOT be highlighted
+      expect(cells[0].classes()).not.toContain('related-row')  // row 0
+      expect(cells[18].classes()).not.toContain('related-row') // row 2
+    })
+
+    it('highlights cells in the same column as selected cell', () => {
+      const wrapper = mount(SudokuGrid, {
+        props: { ...defaultProps, selectedCell: 10 } // row 1, col 1
+      })
+      const cells = wrapper.findAll('.cell')
+
+      // Same column (col 1) should be highlighted
+      expect(cells[1].classes()).toContain('related-col')   // row 0, col 1
+      expect(cells[19].classes()).toContain('related-col')  // row 2, col 1
+      expect(cells[73].classes()).toContain('related-col')  // row 8, col 1
+
+      // Different column should NOT be highlighted
+      expect(cells[0].classes()).not.toContain('related-col')  // col 0
+      expect(cells[2].classes()).not.toContain('related-col')  // col 2
+    })
+
+    it('highlights cells in the same 3x3 region', () => {
+      const wrapper = mount(SudokuGrid, {
+        props: { ...defaultProps, selectedCell: 10 } // row 1, col 1 (region 0)
+      })
+      const cells = wrapper.findAll('.cell')
+
+      // Same region (top-left 3x3)
+      expect(cells[0].classes()).toContain('related-region')   // row 0, col 0
+      expect(cells[2].classes()).toContain('related-region')   // row 0, col 2
+      expect(cells[20].classes()).toContain('related-region')  // row 2, col 2
+
+      // Different region
+      expect(cells[27].classes()).not.toContain('related-region') // row 3, col 0 (region 3)
+    })
+
+    it('does not highlight selected cell itself as related', () => {
+      const wrapper = mount(SudokuGrid, {
+        props: { ...defaultProps, selectedCell: 10 }
+      })
+      const cells = wrapper.findAll('.cell')
+
+      // The selected cell should have 'selected' but NOT 'related-row'/'related-col'
+      expect(cells[10].classes()).toContain('selected')
+      expect(cells[10].classes()).not.toContain('related-row')
+      expect(cells[10].classes()).not.toContain('related-col')
+      expect(cells[10].classes()).not.toContain('related-region')
+    })
+
+    it('removes highlights when selectedCell is -1', async () => {
+      const wrapper = mount(SudokuGrid, {
+        props: { ...defaultProps, selectedCell: 10 }
+      })
+
+      // Verify highlights exist
+      const cells = wrapper.findAll('.cell')
+      expect(cells[9].classes()).toContain('related-row')
+      expect(cells[1].classes()).toContain('related-col')
+
+      // Deselect
+      await wrapper.setProps({ selectedCell: -1 })
+
+      // Highlights should be gone
+      const updatedCells = wrapper.findAll('.cell')
+      expect(updatedCells[9].classes()).not.toContain('related-row')
+      expect(updatedCells[1].classes()).not.toContain('related-col')
+    })
+
+    it('highlights same-value cells in green', () => {
+      const puzzle = '5' + '.'.repeat(8) + '5' + '.'.repeat(71) // cells 0 and 9 have '5'
+      const wrapper = mount(SudokuGrid, {
+        props: { ...defaultProps, puzzle, selectedCell: 0 }
+      })
+      const cells = wrapper.findAll('.cell')
+
+      // Cell 9 has same value '5' — should get same-value class
+      expect(cells[9].classes()).toContain('same-value')
+      // Cell 1 is empty — should NOT get same-value
+      expect(cells[1].classes()).not.toContain('same-value')
+    })
+
+    it('cross-highlights row+col intersection with stronger color', () => {
+      const wrapper = mount(SudokuGrid, {
+        props: { ...defaultProps, selectedCell: 10 } // row 1, col 1
+      })
+      const cells = wrapper.findAll('.cell')
+
+      // Cell at row intersection + col intersection
+      // e.g. cell 1 (row 0, col 1) is same-col, not same-row
+      expect(cells[1].classes()).toContain('related-col')
+      expect(cells[1].classes()).not.toContain('related-row')
+
+      // Cell 9 (row 1, col 0) is same-row, not same-col
+      expect(cells[9].classes()).toContain('related-row')
+      expect(cells[9].classes()).not.toContain('related-col')
+    })
+  })
 })
