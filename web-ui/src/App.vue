@@ -46,6 +46,10 @@
                 <span class="menu-icon">⚙️</span>
                 <span class="menu-label">Settings</span>
               </button>
+              <button class="menu-item" @click="aboutOpen = true; moreMenuOpen = false">
+                <span class="menu-icon">ℹ️</span>
+                <span class="menu-label">About</span>
+              </button>
             </div>
           </div>
         </div>
@@ -53,7 +57,7 @@
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen"
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !aboutOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen"
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
@@ -76,6 +80,13 @@
         @toggle-highcontrast="toggleHighContrast"
         @toggle-challenge="toggleChallenge"
         @change-theme="boardTheme = $event"
+      />
+
+      <!-- About -->
+      <AboutPage
+        v-if="aboutOpen && !tutorialMode && !dailyMode"
+        :is-dark="isDark"
+        @exit="aboutOpen = false"
       />
 
       <!-- Leaderboard -->
@@ -333,6 +344,7 @@ import WhatsNew from './components/WhatsNew.vue'
 import OfflineIndicator from './components/OfflineIndicator.vue'
 import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
+import AboutPage from './components/AboutPage.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -375,7 +387,8 @@ export default {
     WhatsNew,
     OfflineIndicator,
     KeyboardHelp,
-    Settings
+    Settings,
+    AboutPage
   },
   setup() {
     // Puzzle state
@@ -452,6 +465,7 @@ export default {
     const dailyMode = ref(false)
     const playMode = ref(false)
     const settingsOpen = ref(false)
+    const aboutOpen = ref(false)
     const moreMenuOpen = ref(false)
     const colorBlindMode = ref(false)
     const highContrastMode = ref(false)
@@ -1269,6 +1283,7 @@ export default {
       dailyMode,
       playMode,
       settingsOpen,
+      aboutOpen,
       colorBlindMode,
       highContrastMode,
       boardTheme,
