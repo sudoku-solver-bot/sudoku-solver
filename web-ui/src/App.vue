@@ -1,5 +1,5 @@
 <template>
-  <div class="app" :class="{ dark: isDark }" @click="closeMoreMenu">
+  <div class="app" :class="{ dark: isDark }" @click="handleAppClick">
     <div class="container" :class="{ loading }">
       <!-- Header -->
       <div class="header">
@@ -649,6 +649,18 @@ export default {
       moreMenuOpen.value = false
     }
 
+    const handleAppClick = (e) => {
+      moreMenuOpen.value = false
+      // Close mobile pad when clicking outside grid/pad area
+      if (showMobilePad.value) {
+        const grid = e.target.closest('.grid, .number-bar, .pad-btn, .bar-btn')
+        if (!grid) {
+          showMobilePad.value = false
+          selectedCell.value = -1
+        }
+      }
+    }
+
     const startTimer = () => {
       stopTimer()
       elapsedTime.value = 0
@@ -756,8 +768,10 @@ export default {
     // Cell selection
     const selectCell = (index) => {
       selectedCell.value = index
-      // Show mobile pad when cell is selected on mobile
-      if (isMobile.value && index >= 0 && !givenCells.value.has(index)) {
+      if (index < 0) {
+        // Deselect — close pad
+        showMobilePad.value = false
+      } else if (isMobile.value && !givenCells.value.has(index)) {
         showMobilePad.value = true
       }
     }
@@ -1247,6 +1261,7 @@ export default {
       pencilMode,
       moreMenuOpen,
       closeMoreMenu,
+      handleAppClick,
       tutorialMode,
       tutorialList,
       currentTutorialLesson,

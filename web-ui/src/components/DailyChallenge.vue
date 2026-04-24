@@ -1,5 +1,5 @@
 <template>
-  <div class="daily-challenge" :class="{ dark: isDark }">
+  <div class="daily-challenge" :class="{ dark: isDark }" @click="handleClick">
     <div class="daily-header">
       <button class="back-btn" @click="$emit('exit')">← Back</button>
       <div class="daily-title">
@@ -39,16 +39,16 @@
       @select="onCellSelect"
     />
 
-    <!-- Number pad -->
-    <div class="number-pad">
-      <button
-        v-for="n in 9"
-        :key="n"
-        class="num-btn"
-        @click="inputNumber(n)"
-      >{{ n }}</button>
-      <button class="num-btn erase" @click="eraseCell">⌫</button>
-    </div>
+    <!-- Number pad (same component as Free Play) -->
+    <MobileNumberPad
+      :visible="true"
+      :counts="digitCounts"
+      :pencil-mode="pencilMode"
+      @input="inputNumber"
+      @clear="eraseCell"
+      @hint="getHint"
+      @toggle-pencil="pencilMode = !pencilMode"
+    />
 
     <!-- Completion overlay -->
     <div v-if="completed" class="completion-overlay" @click="$emit('exit')">
@@ -76,9 +76,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
-import { fetchDailyChallenge, solvePuzzle } from '../api'
+import MobileNumberPad from './MobileNumberPad.vue'
+import { fetchDailyChallenge, solvePuzzle, getHintForPuzzle } from '../api'
 
 const emit = defineEmits(['exit'])
 
@@ -92,6 +93,7 @@ const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'e
     const hintsUsed = ref(0)
     const completed = ref(false)
     const streak = ref(0)
+    const pencilMode = ref(false)
     let timerInterval = null
 
     const formattedDate = ref('')
@@ -165,6 +167,14 @@ const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'e
       selectedCell.value = index
     }
 
+    const handleClick = (e) => {
+      // Deselect and close pad when tapping outside grid/pad
+      const target = e.target.closest('.grid, .number-bar, .bar-btn, .pad-btn')
+      if (!target) {
+        selectedCell.value = -1
+      }
+    }
+
     const inputNumber = (n) => {
       if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
         onCellUpdate(selectedCell.value, n.toString())
@@ -174,6 +184,37 @@ const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'e
     const eraseCell = () => {
       if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
         onCellUpdate(selectedCell.value, '')
+      }
+    }
+
+    // Digit counts for MobileNumberPad (remaining count per digit)
+    const digitCounts = computed(() => {
+      const counts = {}
+      for (let n = 1; n <= 9; n++) counts[n] = 0
+      for (let i = 0; i < 81; i++) {
+        const ch = puzzle.value[i]
+        if (ch !== '.' && ch >= '1' && ch <= '9') {
+          counts[parseInt(ch)]++
+        }
+      }
+      return counts
+    })
+
+    const getHint = async () => {
+      if (selectedCell.value < 0 || givenCells.value.has(selectedCell.value)) return
+      try {
+        const data = await getHintForPuzzle(puzzle.value)
+        if (data.hasHint && data.hint) {
+          const { row, col, value } = data.hint
+          // Fill in the hinted cell
+          const idx = row * 9 + col
+          if (idx >= 0 && idx < 81) {
+            onCellUpdate(idx, value.toString())
+            hintsUsed.value++
+          }
+        }
+      } catch (e) {
+        console.error('Hint failed:', e)
       }
     }
 
@@ -325,43 +366,6 @@ const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'e
   margin-right: 8px;
 }
 
-.number-pad {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  margin-top: 12px;
-  flex-wrap: wrap;
-}
-
-.num-btn {
-  width: 40px;
-  height: 40px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: white;
-  font-size: 18px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-  color: #333;
-}
-
-.daily-challenge.dark .num-btn {
-  background: #333;
-  border-color: #555;
-  color: #e0e0e0;
-}
-
-.num-btn:hover {
-  background: #e8f0fe;
-  border-color: #4285f4;
-}
-
-.num-btn.erase {
-  background: #f5f5f5;
-  font-size: 16px;
-}
-
 .completion-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -457,14 +461,6 @@ const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'e
   background: #2d2d2d;
   color: #81c995;
   border-color: #81c995;
-}
-
-@media (max-width: 400px) {
-  .num-btn {
-    width: 34px;
-    height: 34px;
-    font-size: 15px;
-  }
 }
 </style>
 
