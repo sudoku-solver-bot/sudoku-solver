@@ -783,9 +783,8 @@ export default {
     const selectCell = (index) => {
       selectedCell.value = index
       if (index < 0) {
-        // Deselect — close pad
         showMobilePad.value = false
-      } else if (isMobile.value && !givenCells.value.has(index)) {
+      } else {
         showMobilePad.value = true
       }
     }

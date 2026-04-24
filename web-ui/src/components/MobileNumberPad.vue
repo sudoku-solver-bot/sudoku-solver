@@ -101,13 +101,13 @@ const emit = defineEmits(['input', 'clear', 'hint', 'toggle-pencil'])
 }
 
 .bar-clear {
-  background: #fff5f5;
-  border-color: #ffcdd2;
+  background: white;
+  border-color: #ddd;
 }
 
 .bar-hint {
-  background: #fffde7;
-  border-color: #ffecb3;
+  background: white;
+  border-color: #ddd;
 }
 
 .bar-btn.pencil-active {
