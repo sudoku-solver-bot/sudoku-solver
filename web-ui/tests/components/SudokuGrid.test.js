@@ -200,4 +200,26 @@ describe('SudokuGrid', () => {
       }
     })
   })
+
+  describe('cell deselect', () => {
+    it('deselects cell when tapping the already-selected cell', async () => {
+      // Simulate: cell 5 is already selected by the parent
+      const wrapper = mount(SudokuGrid, { props: { ...defaultProps, selectedCell: 5 } })
+      const cells = wrapper.findAll('.cell')
+
+      // Click same cell again — should deselect (emit -1)
+      await cells[5].trigger('click')
+      expect(wrapper.emitted('select')).toBeTruthy()
+      expect(wrapper.emitted('select').at(-1)).toEqual([-1])
+    })
+
+    it('does not deselect when clicking a different cell', async () => {
+      const wrapper = mount(SudokuGrid, { props: { ...defaultProps, selectedCell: 5 } })
+      const cells = wrapper.findAll('.cell')
+
+      // Click different cell
+      await cells[10].trigger('click')
+      expect(wrapper.emitted('select').at(-1)).toEqual([10])
+    })
+  })
 })
