@@ -9,7 +9,7 @@
     "beltName": "White Belt",
     "description": "When a cell has only ONE candidate left, that must be the answer!",
     "concept": "After eliminating all numbers that appear in the same row, column, and 3x3 box, if a cell has only ONE candidate remaining, that is the only possibility.",
-    "examplePuzzle": "2...7..38.....6.7.3...4.6....8.2.7..1.......6..7.3.4....4.8...9.6.4.....91..6...2",
+    "examplePuzzle": "5.46.8.12672..5.4819.342567859...4..4268...91713...8.6961...2.4287...6.5345...1.9",
     "steps": [
       {
         "order": 1,
@@ -38,7 +38,7 @@
           26
         ],
         "highlightColor": "blue",
-        "text": "Let's look at row 3 (highlighted in blue). It already has 3, 4, 6 filled in. The empty cells need: 1, 2, 5, 7, 8, 9."
+        "text": "Let's look at row 3 (highlighted in blue). It already has 1, 3, 4, 5, 6, 7, 9 filled in. Only ONE number is missing!"
       },
       {
         "order": 4,
@@ -47,7 +47,7 @@
           20
         ],
         "highlightColor": "yellow",
-        "text": "Look at this cell's pencil marks. Check what numbers are already in its row, column, AND 3x3 box..."
+        "text": "Look at this cell. It has NO pencil marks! That means after checking its row, column, and box..."
       },
       {
         "order": 5,
@@ -56,7 +56,7 @@
           20
         ],
         "highlightColor": "red",
-        "text": "After checking row + column + box, most numbers are eliminated. If only ONE candidate remains, that's a Naked Single! \ud83c\udfaf"
+        "text": "After checking row + column + box, every number except 8 has been eliminated. Only ONE candidate remains — that's a Naked Single! \ud83c\udfaf"
       },
       {
         "order": 6,
@@ -66,7 +66,7 @@
         ],
         "highlightColor": "green",
         "text": "A Naked Single is the simplest technique \u2014 when only one number can possibly fit. As you solve more cells, more naked singles appear! \u2705",
-        "eliminatedValue": 1
+        "eliminatedValue": 8
       }
     ]
   },
@@ -109,48 +109,36 @@
         "order": 3,
         "type": "highlight",
         "cells": [
-          0,
-          1,
-          2
+          7,
+          8
         ],
         "highlightColor": "yellow",
-        "text": "Check the first 3 cells \u2014 they're in box 1 (top-left). Column by column, which columns already have a 1 placed somewhere?"
+        "text": "Check where the number 6 can go in this row. Columns 1 and 2 already have a 6. So 6 can only go in these last two cells."
       },
       {
         "order": 4,
         "type": "explain",
         "cells": [],
-        "text": "Column 3 has a 1 (row 4). Column 5 has a 1. So in row 1, 1 can't go in those columns. Keep eliminating!"
+        "text": "Now check the 3x3 boxes too. Box 3 (top-right) already has a 6. So 6 can't go in cells in that box."
       },
       {
         "order": 5,
         "type": "highlight",
         "cells": [
-          0,
-          1,
-          2,
-          6
+          7
         ],
         "highlightColor": "green",
-        "text": "After checking ALL columns and boxes, there's only ONE cell where 1 can go. The number is 'hidden' among many candidates! \ud83c\udfaf"
+        "text": "After checking rows, columns, AND boxes \u2014 6 can only go in ONE cell! Even though this cell has other candidates, 6 is 'hidden' here. \ud83c\udfaf"
       },
       {
         "order": 6,
         "type": "reveal",
         "cells": [
-          0,
-          1,
-          2,
-          3,
-          4,
-          5,
-          6,
-          7,
-          8
+          7
         ],
         "highlightColor": "green",
         "text": "Scan each row, column, and box asking: 'Where can number X go?' If only ONE place \u2014 that's a Hidden Single! \u2705",
-        "eliminatedValue": 1
+        "eliminatedValue": 6
       }
     ]
   },
@@ -164,7 +152,7 @@
     "beltName": "Orange Belt",
     "description": "When two cells in the same group have the same two candidates, eliminate those numbers from other cells.",
     "concept": "If two cells in a row, column, or box have exactly the same two candidates, those two numbers MUST occupy those two cells. Remove them from all other cells in the group!",
-    "examplePuzzle": "4......38..2..41....53..24..7.6.9..4.2.....7.6..7.3.9..57..83....39..4..24......9",
+    "examplePuzzle": "4.....938.32.941...953..24..7.6.9..4.2.....7.6..7.3.9..57..83....39..4..24......9",
     "steps": [
       {
         "order": 1,
@@ -457,12 +445,12 @@
         "order": 2,
         "type": "highlight",
         "cells": [
-          36,
-          37,
-          38
+          39,
+          40,
+          41
         ],
         "highlightColor": "yellow",
-        "text": "Look at these three cells in the center row. They collectively contain only {5, 8, 9}."
+        "text": "Look at these three cells in row 5. They collectively contain only {5, 8, 9}."
       },
       {
         "order": 3,
@@ -474,9 +462,9 @@
         "order": 4,
         "type": "highlight",
         "cells": [
-          36,
-          37,
-          38
+          39,
+          40,
+          41
         ],
         "highlightColor": "red",
         "text": "Since 5, 8, 9 are locked in these three cells, eliminate them from the rest of the row."
@@ -485,9 +473,9 @@
         "order": 5,
         "type": "highlight",
         "cells": [
-          36,
-          37,
-          38
+          39,
+          40,
+          41
         ],
         "highlightColor": "green",
         "text": "This often triggers a chain reaction \u2014 removing candidates here may create naked singles or pairs elsewhere!"
@@ -873,7 +861,7 @@
           13
         ],
         "highlightColor": "yellow",
-        "text": "Look for four cells forming a rectangle. If three corners have the same two candidates and the fourth has those plus extras..."
+        "text": "Look for four cells forming a rectangle across 2 rows and 2 columns. If the same pair of candidates appears in multiple corners, that could create a deadly pattern."
       },
       {
         "order": 4,
