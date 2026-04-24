@@ -362,7 +362,9 @@ onMounted(() => {
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
-  min-height: 80px;
+  min-height: 120px;
+  max-height: 120px;
+  overflow-y: auto;
 }
 
 .tutorial-mode.dark .step-content {
