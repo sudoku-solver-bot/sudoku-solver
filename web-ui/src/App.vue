@@ -1,37 +1,53 @@
 <template>
-  <div class="app" :class="{ dark: isDark }">
+  <div class="app" :class="{ dark: isDark }" @click="closeMoreMenu">
     <div class="container" :class="{ loading }">
-      <!-- Header with dark mode toggle -->
+      <!-- Header -->
       <div class="header">
         <h1>🧩 Sudoku Solver</h1>
         <div class="header-actions">
-          <button v-if="playMode" class="home-btn" @click="playMode = false" title="Home">
+          <!-- Primary actions always visible -->
+          <button v-if="playMode" class="header-btn home-btn" @click="playMode = false" title="Home">
             🏠
           </button>
-          <button class="daily-btn" @click="dailyMode = !dailyMode" :title="dailyMode ? 'Exit Daily' : 'Daily Challenge'">
+          <button class="header-btn daily-btn" @click="dailyMode = !dailyMode" :title="dailyMode ? 'Exit Daily' : 'Daily Challenge'">
             📅
           </button>
-          <button class="learn-btn" @click="toggleTutorialMode" :title="tutorialMode ? 'Exit Tutorial' : 'Learn Techniques'">
-            📚
-          </button>
-          <button class="dark-toggle" @click="toggleDarkMode" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          <button class="header-btn dark-toggle" @click="toggleDarkMode" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
             {{ isDark ? '☀️' : '🌙' }}
           </button>
-          <button class="settings-btn" @click="settingsOpen = !settingsOpen" title="Settings">
-            ⚙️
-          </button>
-          <button class="lb-btn" @click="leaderboardOpen = !leaderboardOpen" title="Leaderboard">
-            🏆
-          </button>
-          <button class="save-btn" @click="savesOpen = !savesOpen" title="Saved Puzzles">
-            💾
-          </button>
-          <button class="ach-btn" @click="openAchievements" title="Achievements">
-            🏅
-          </button>
-          <button class="stats-btn" @click="openStats" title="Statistics">
-            📊
-          </button>
+
+          <!-- More menu -->
+          <div class="header-more">
+            <button class="header-btn more-btn" @click.stop="moreMenuOpen = !moreMenuOpen" title="More">
+              ⋯
+            </button>
+            <div v-if="moreMenuOpen" class="more-dropdown" :class="{ dark: isDark }" @click.stop>
+              <button class="menu-item" @click="toggleTutorialMode(); moreMenuOpen = false">
+                <span class="menu-icon">📚</span>
+                <span class="menu-label">Learn Techniques</span>
+              </button>
+              <button class="menu-item" @click="leaderboardOpen = !leaderboardOpen; moreMenuOpen = false">
+                <span class="menu-icon">🏆</span>
+                <span class="menu-label">Leaderboard</span>
+              </button>
+              <button class="menu-item" @click="savesOpen = !savesOpen; moreMenuOpen = false">
+                <span class="menu-icon">💾</span>
+                <span class="menu-label">Saved Puzzles</span>
+              </button>
+              <button class="menu-item" @click="openAchievements(); moreMenuOpen = false">
+                <span class="menu-icon">🏅</span>
+                <span class="menu-label">Achievements</span>
+              </button>
+              <button class="menu-item" @click="openStats(); moreMenuOpen = false">
+                <span class="menu-icon">📊</span>
+                <span class="menu-label">Statistics</span>
+              </button>
+              <button class="menu-item" @click="settingsOpen = !settingsOpen; moreMenuOpen = false">
+                <span class="menu-icon">⚙️</span>
+                <span class="menu-label">Settings</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -436,6 +452,7 @@ export default {
     const dailyMode = ref(false)
     const playMode = ref(false)
     const settingsOpen = ref(false)
+    const moreMenuOpen = ref(false)
     const colorBlindMode = ref(false)
     const highContrastMode = ref(false)
     const challengeMode = ref(localStorage.getItem('sudoku-challenge') === 'true')
@@ -626,6 +643,10 @@ export default {
     const toggleDarkMode = () => {
       isDark.value = !isDark.value
       localStorage.setItem('sudokuDarkMode', isDark.value.toString())
+    }
+
+    const closeMoreMenu = () => {
+      moreMenuOpen.value = false
     }
 
     const startTimer = () => {
@@ -1224,6 +1245,8 @@ export default {
       candidates,
       showCandidates,
       pencilMode,
+      moreMenuOpen,
+      closeMoreMenu,
       tutorialMode,
       tutorialList,
       currentTutorialLesson,
@@ -1351,9 +1374,11 @@ body {
 .header-actions {
   display: flex;
   gap: 8px;
+  position: relative;
 }
 
-.learn-btn {
+/* Unified header button style */
+.header-btn {
   width: 44px;
   height: 44px;
   border: none;
@@ -1367,82 +1392,89 @@ body {
   justify-content: center;
 }
 
-.learn-btn:hover {
+.header-btn:hover {
   background: #d2e3fc;
   transform: scale(1.1);
 }
 
-.app.dark .learn-btn {
+.app.dark .header-btn {
   background: #333;
 }
 
-.daily-btn {
-  width: 44px;
-  height: 44px;
-  border: none;
-  background: #fce4ec;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
+.app.dark .header-btn:hover {
+  background: #444;
+}
+
+/* More menu dropdown */
+.header-more {
+  position: relative;
+}
+
+.more-btn {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.more-dropdown {
+  position: absolute;
+  right: 0;
+  top: 52px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 100;
+  overflow: hidden;
+  animation: fadeIn 0.15s ease;
+}
+
+.more-dropdown.dark {
+  background: #2d2d2d;
+  border-color: #444;
+}
+
+.menu-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-}
-
-.daily-btn:hover {
-  background: #f8bbd0;
-  transform: scale(1.1);
-}
-
-.app.dark .daily-btn {
-  background: #333;
-}
-
-.home-btn {
-  width: 44px;
-  height: 44px;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
   border: none;
-  background: #e8f5e9;
-  border-radius: 50%;
-  font-size: 20px;
+  background: transparent;
   cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 14px;
+  color: #333;
+  transition: background 0.15s;
 }
 
-.home-btn:hover {
-  background: #c8e6c9;
-  transform: scale(1.1);
+.menu-item:hover {
+  background: #f0f0f0;
 }
 
-.app.dark .home-btn {
-  background: #333;
+.more-dropdown.dark .menu-item {
+  color: #e0e0e0;
 }
 
-.settings-btn {
-  width: 44px;
-  height: 44px;
-  border: none;
-  background: #f3e5f5;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.more-dropdown.dark .menu-item:hover {
+  background: #383838;
 }
 
-.settings-btn:hover {
-  background: #e1bee7;
-  transform: scale(1.1);
+.menu-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
 }
 
-.app.dark .settings-btn {
-  background: #333;
+.menu-label {
+  flex: 1;
+  text-align: left;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 h1 {
@@ -1453,32 +1485,6 @@ h1 {
 
 .app.dark h1 {
   color: #e0e0e0;
-}
-
-.dark-toggle {
-  width: 44px;
-  height: 44px;
-  border: none;
-  background: #f5f5f5;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.app.dark .dark-toggle {
-  background: #333;
-}
-
-.dark-toggle:hover {
-  transform: scale(1.1);
-}
-
-.dark-toggle:active {
-  transform: scale(0.95);
 }
 
 .loading-overlay {
@@ -1556,7 +1562,7 @@ h1 {
     font-size: 22px;
   }
 
-  .dark-toggle {
+  .header-btn {
     width: 40px;
     height: 40px;
     font-size: 18px;

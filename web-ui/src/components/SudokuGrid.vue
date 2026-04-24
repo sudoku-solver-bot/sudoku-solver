@@ -204,6 +204,11 @@ const getCellLabel = (index) => {
 }
 
 const selectCell = (index) => {
+  // Toggle: tapping already-selected cell deselects it
+  if (props.selectedCell === index) {
+    emit('select', -1)
+    return
+  }
   emit('select', index)
   focusCell(index)
 }

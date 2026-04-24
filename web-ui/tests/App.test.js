@@ -74,8 +74,14 @@ describe('App', () => {
 
   it('navigates to Settings panel', async () => {
     const wrapper = mount(App)
-    const settingsBtn = wrapper.find('.settings-btn')
-    await settingsBtn.trigger('click')
+    // Open the more menu first
+    const moreBtn = wrapper.find('.more-btn')
+    await moreBtn.trigger('click')
+    await wrapper.vm.$nextTick()
+    // Find Settings in the dropdown
+    const menuItems = wrapper.findAll('.menu-item')
+    const settingsItem = menuItems.find(el => el.text().includes('Settings'))
+    await settingsItem.trigger('click')
     await wrapper.vm.$nextTick()
 
     expect(wrapper.findComponent({ name: 'Settings' }).exists()).toBe(true)
