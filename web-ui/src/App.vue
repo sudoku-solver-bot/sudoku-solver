@@ -239,6 +239,18 @@
         @redo="redo"
       />
 
+      <!-- Mobile number pad (right below grid) -->
+      <MobileNumberPad
+        :visible="showMobilePad"
+        :counts="digitCounts"
+        :pencil-mode="pencilMode"
+
+        @input="onNumberPadInput"
+        @clear="clearSelectedCell"
+        @hint="getHint"
+        @toggle-pencil="pencilMode = !pencilMode"
+      />
+
       <!-- Control panel -->
       <ControlPanel
         :loading="loading"
@@ -258,18 +270,6 @@
         @undo="undo"
         @redo="redo"
         @toggle-candidates="showCandidates = !showCandidates"
-      />
-
-      <!-- Mobile number pad -->
-      <MobileNumberPad
-        :visible="showMobilePad"
-        :counts="digitCounts"
-        :pencil-mode="pencilMode"
-
-        @input="onNumberPadInput"
-        @clear="clearSelectedCell"
-        @hint="getHint"
-        @toggle-pencil="pencilMode = !pencilMode"
       />
 
       <!-- Hint modal -->
