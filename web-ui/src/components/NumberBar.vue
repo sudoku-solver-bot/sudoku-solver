@@ -51,7 +51,7 @@ const props = defineProps({
 .number-bar.dark .digit-progress { background: #555; }
 .digit-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4285f4, #34a853);
+  background: #4285f4;
   border-radius: 2px;
   transition: width 0.3s ease;
 }

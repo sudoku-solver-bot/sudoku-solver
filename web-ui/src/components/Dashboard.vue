@@ -281,17 +281,15 @@ const earnedBelts = computed(() => belts.value.filter(b => b.earned))
 }
 
 .action-card.daily {
-  border-color: #ff6b6b;
-  background: #fff5f5;
+  border-color: #4285f4;
 }
 
 .dashboard.dark .action-card.daily {
-  background: #2d1f1f;
+  background: #1f1f2d;
 }
 
 .action-card.learn {
   border-color: #4285f4;
-  background: #f0f4ff;
 }
 
 .dashboard.dark .action-card.learn {
@@ -299,12 +297,7 @@ const earnedBelts = computed(() => belts.value.filter(b => b.earned))
 }
 
 .action-card.play {
-  border-color: #34a853;
-  background: #f0fff4;
-}
-
-.dashboard.dark .action-card.play {
-  background: #1f2d1f;
+  border-color: #4285f4;
 }
 
 .action-icon {

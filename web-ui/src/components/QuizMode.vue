@@ -471,7 +471,7 @@ onMounted(() => {
 }
 
 .done-btn {
-  background: linear-gradient(135deg, #f093fb, #f5576c);
+  background: #4285f4;
   color: white;
 }
 

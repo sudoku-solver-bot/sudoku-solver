@@ -347,7 +347,7 @@ onMounted(() => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4285f4, #34a853);
+  background: #4285f4;
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -419,8 +419,9 @@ onMounted(() => {
 }
 
 .nav-btn.celebrate {
-  background: linear-gradient(135deg, #f093fb, #f5576c);
+  background: #4285f4;
   color: white;
+  border-color: #4285f4;
 }
 
 .nav-btn.celebrate:hover {

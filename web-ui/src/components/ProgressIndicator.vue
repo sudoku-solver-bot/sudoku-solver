@@ -131,7 +131,7 @@ const difficultyStars = computed(() => {
 
 .new-record-badge {
   display: inline-block;
-  background: linear-gradient(135deg, #fbbc04, #ea4335);
+  background: #4285f4;
   color: white;
   font-size: 10px;
   font-weight: 700;
@@ -197,7 +197,7 @@ const difficultyStars = computed(() => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4285f4, #34a853);
+  background: #4285f4;
   border-radius: 4px;
   transition: width 0.3s ease;
 }

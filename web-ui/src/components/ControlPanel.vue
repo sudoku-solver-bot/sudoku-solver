@@ -208,13 +208,15 @@ const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 
 }
 
 button {
-  padding: 12px 16px;
-  border: none;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
   border-radius: 8px;
+  background: white;
+  color: #555;
   font-size: clamp(13px, 3vw, 15px);
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   display: flex;
@@ -224,18 +226,18 @@ button {
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 button:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 @media (hover: hover) {
   button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #4285f4;
+    color: #4285f4;
   }
 }
 
@@ -246,83 +248,65 @@ button:active:not(:disabled) {
 .btn-primary {
   background: #4285f4;
   color: white;
+  border-color: #4285f4;
 }
 
 .btn-secondary {
-  background: #fbbc05;
-  color: #333;
+  background: white;
+  color: #555;
+  border-color: #ddd;
 }
 
 .btn-difficulty {
   font-size: clamp(12px, 2.8vw, 14px);
   padding: 10px 12px;
+  border-left: 3px solid;
 }
 
 .btn-difficulty.easy {
-  background: #4caf50;
-  color: white;
+  border-left-color: #4caf50;
 }
 
 .btn-difficulty.medium {
-  background: #ff9800;
-  color: white;
+  border-left-color: #ff9800;
 }
 
 .btn-difficulty.hard {
-  background: #f44336;
-  color: white;
+  border-left-color: #f44336;
 }
 
 .btn-difficulty.expert {
-  background: #9c27b0;
-  color: white;
+  border-left-color: #9c27b0;
 }
 
 .btn-hint {
-  background: linear-gradient(135deg, #fff8e1, #ffecb3);
-  color: #f57f17;
-  padding: 14px;
+  background: #4285f4;
+  color: white;
+  border-color: #4285f4;
+  padding: 12px;
   font-size: 15px;
-  margin-top: 4px;
 }
 
-.btn-share {
-  background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
-  color: #4285f4;
-  padding: 14px;
-  font-size: 15px;
-  margin-top: 4px;
-}
-
-.btn-print {
-  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
-  color: #7b1fa2;
-  padding: 14px;
-  font-size: 15px;
-  margin-top: 4px;
-}
-
+.btn-share,
+.btn-print,
 .btn-image {
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-  color: #2e7d32;
-  padding: 14px;
-  font-size: 15px;
-  margin-top: 4px;
+  background: white;
+  color: #555;
+  border-color: #ddd;
+  padding: 10px 14px;
 }
 
 .btn-toggle {
-  background: #f0f0f0;
-  color: #666;
-  padding: 12px 16px;
+  background: white;
+  color: #555;
+  padding: 10px 14px;
   font-size: clamp(12px, 2.8vw, 14px);
-  margin-top: 4px;
-  border: 2px solid #e0e0e0;
+  border: 1px solid #ddd;
 }
 
 .btn-toggle.active {
-  background: #e8f0fe;
-  color: #4285f4;
   border-color: #4285f4;
+  color: #4285f4;
 }
 
 /* Mobile responsive */

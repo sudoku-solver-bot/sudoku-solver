@@ -426,7 +426,7 @@ export default {
 }
 
 .survey-header {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: #4285f4;
   color: white;
   padding: 2rem;
   text-align: center;

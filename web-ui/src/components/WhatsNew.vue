@@ -86,7 +86,7 @@ const totalPRs = 136
 .whats-new-card.dark .stats-row { border-color: #444; color: #aaa; }
 .got-it-btn {
   width: 100%; padding: 12px; border: none; border-radius: 12px;
-  background: linear-gradient(135deg, #4285f4, #34a853); color: white;
+  background: #4285f4; color: white;
   font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 8px;
 }
 </style>
