@@ -173,7 +173,7 @@ const canvas = ref(null)
 }
 
 .celebration-btn {
-  background: linear-gradient(135deg, #4285f4, #34a853);
+  background: #4285f4;
   color: white;
   border: none;
   padding: 12px 32px;

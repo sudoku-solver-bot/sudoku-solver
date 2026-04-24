@@ -320,10 +320,10 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  background: linear-gradient(135deg, #667eea22, #764ba222);
+  background: #f8f9fa;
   padding: 12px 16px;
   border-radius: 12px;
-  border: 1px solid #667eea33;
+  border: 1px solid #e0e0e0;
 }
 
 .player-rank {

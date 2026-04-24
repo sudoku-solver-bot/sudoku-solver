@@ -318,7 +318,7 @@ const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'e
 }
 
 .streak-badge {
-  background: linear-gradient(135deg, #ff6b6b, #ffa500);
+  background: #4285f4;
   color: white;
   padding: 4px 12px;
   border-radius: 20px;

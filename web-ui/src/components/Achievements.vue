@@ -171,7 +171,7 @@ onMounted(() => {
 
 .ach-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4285f4, #34a853);
+  background: #4285f4;
   border-radius: 4px;
   transition: width 0.5s ease;
 }
@@ -199,7 +199,7 @@ onMounted(() => {
 }
 
 .ach-card.earned {
-  background: linear-gradient(135deg, #fffde7, #fff8e1);
+  background: #f8f9fa;
   border: 1px solid #ffd54f44;
 }
 .achievements.dark .ach-card.earned { background: #2a2510; border-color: #ffd54f33; }

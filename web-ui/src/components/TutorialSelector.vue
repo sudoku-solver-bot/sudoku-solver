@@ -286,7 +286,7 @@ const highlightMatch = (text) => {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4285f4, #34a853, #fbbc05);
+  background: #4285f4;
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -460,8 +460,8 @@ const highlightMatch = (text) => {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: linear-gradient(135deg, #e8f0fe, #f3e5f5);
-  border: 2px solid #9c27b0;
+  background: white;
+  border: 1px solid #ddd;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s;
@@ -470,8 +470,8 @@ const highlightMatch = (text) => {
 }
 
 .tutorial-selector.dark .quiz-card {
-  background: linear-gradient(135deg, #1a1a3c, #2a1a2a);
-  border-color: #9c27b0;
+  background: #2d2d2d;
+  border-color: #444;
 }
 
 .quiz-card:hover {

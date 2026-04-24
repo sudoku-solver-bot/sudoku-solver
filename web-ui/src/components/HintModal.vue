@@ -184,7 +184,7 @@ const getKidFriendlyExplanation = (technique) => {
 }
 
 .hint-cell-highlight {
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  background: white;
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
