@@ -138,7 +138,7 @@ const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 
 .control-panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .undo-redo-row {
@@ -150,14 +150,14 @@ const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 
 .btn-undo,
 .btn-redo {
   padding: 10px 16px;
-  border: 2px solid #e0e0e0;
+  border: 1px solid #ddd;
   background: white;
   border-radius: 8px;
   font-size: 14px;
   font-weight: 600;
-  color: #666;
+  color: #555;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -167,19 +167,18 @@ const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 
 .btn-undo:not(:disabled):hover,
 .btn-redo:not(:disabled):hover {
   border-color: #4285f4;
-  background: #e8f0fe;
   color: #4285f4;
 }
 
 .btn-undo:disabled,
 .btn-redo:disabled {
-  opacity: 0.4;
+  opacity: 0.35;
   cursor: not-allowed;
 }
 
 .count {
   font-size: 11px;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
 .main-buttons {
@@ -189,16 +188,16 @@ const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 
 }
 
 .difficulty-section {
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .section-label {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  color: #888;
+  color: #999;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 }
 
 .difficulty-buttons {
@@ -207,14 +206,17 @@ const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 
   gap: 8px;
 }
 
+/* Unified button base */
 button {
-  padding: 12px 16px;
-  border: none;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
   border-radius: 8px;
+  background: white;
+  color: #555;
   font-size: clamp(13px, 3vw, 15px);
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.1s, box-shadow 0.1s;
+  transition: all 0.15s;
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   display: flex;
@@ -224,18 +226,18 @@ button {
 }
 
 button:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 
 button:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: scale(0.97);
 }
 
 @media (hover: hover) {
   button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #4285f4;
+    color: #4285f4;
   }
 }
 
@@ -243,97 +245,109 @@ button:active:not(:disabled) {
   font-size: 16px;
 }
 
+/* Primary action — Solve */
 .btn-primary {
   background: #4285f4;
   color: white;
+  border-color: #4285f4;
 }
 
+/* Secondary action — Clear */
 .btn-secondary {
-  background: #fbbc05;
-  color: #333;
+  background: #f5f5f5;
+  color: #555;
+  border-color: #ddd;
 }
 
+/* Difficulty buttons — subtle left border accent, same base style */
 .btn-difficulty {
   font-size: clamp(12px, 2.8vw, 14px);
-  padding: 10px 12px;
+  padding: 8px 12px;
+  border-left: 3px solid;
 }
 
 .btn-difficulty.easy {
-  background: #4caf50;
-  color: white;
+  border-left-color: #4caf50;
 }
 
 .btn-difficulty.medium {
-  background: #ff9800;
-  color: white;
+  border-left-color: #ff9800;
 }
 
 .btn-difficulty.hard {
-  background: #f44336;
-  color: white;
+  border-left-color: #f44336;
 }
 
 .btn-difficulty.expert {
-  background: #9c27b0;
-  color: white;
+  border-left-color: #9c27b0;
 }
 
+/* Hint — primary blue to match Solve */
 .btn-hint {
-  background: linear-gradient(135deg, #fff8e1, #ffecb3);
-  color: #f57f17;
-  padding: 14px;
+  background: #4285f4;
+  color: white;
+  border-color: #4285f4;
+  padding: 12px;
   font-size: 15px;
-  margin-top: 4px;
 }
 
-.btn-share {
-  background: linear-gradient(135deg, #e8f0fe, #d2e3fc);
-  color: #4285f4;
-  padding: 14px;
-  font-size: 15px;
-  margin-top: 4px;
-}
-
-.btn-print {
-  background: linear-gradient(135deg, #f3e5f5, #e1bee7);
-  color: #7b1fa2;
-  padding: 14px;
-  font-size: 15px;
-  margin-top: 4px;
-}
-
+/* Utility buttons — all same neutral style */
+.btn-share,
+.btn-print,
 .btn-image {
-  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-  color: #2e7d32;
-  padding: 14px;
-  font-size: 15px;
-  margin-top: 4px;
+  background: white;
+  color: #555;
+  border-color: #ddd;
+  padding: 10px 14px;
 }
 
+/* Toggle — outline style */
 .btn-toggle {
-  background: #f0f0f0;
-  color: #666;
-  padding: 12px 16px;
+  background: white;
+  color: #555;
+  padding: 10px 14px;
   font-size: clamp(12px, 2.8vw, 14px);
-  margin-top: 4px;
-  border: 2px solid #e0e0e0;
+  border: 1px solid #ddd;
 }
 
 .btn-toggle.active {
-  background: #e8f0fe;
-  color: #4285f4;
   border-color: #4285f4;
+  color: #4285f4;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .btn-undo,
+  .btn-redo,
+  button {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #ccc;
+  }
+  .btn-primary,
+  .btn-hint {
+    background: #4285f4;
+    color: white;
+    border-color: #4285f4;
+  }
+  .btn-secondary {
+    background: #333;
+    color: #ccc;
+  }
+  .btn-toggle.active {
+    background: #1a2a3a;
+  }
 }
 
 /* Mobile responsive */
 @media (max-width: 500px) {
   .control-panel {
-    gap: 10px;
+    gap: 8px;
   }
 
   button {
-    padding: 10px 12px;
-    min-height: 44px;
+    padding: 8px 10px;
+    min-height: 42px;
   }
 
   .difficulty-buttons {
@@ -341,7 +355,7 @@ button:active:not(:disabled) {
   }
 
   .btn-difficulty {
-    padding: 8px 10px;
+    padding: 6px 10px;
     font-size: 12px;
   }
 }
@@ -353,7 +367,7 @@ button:active:not(:disabled) {
   }
 
   button {
-    padding: 8px 10px;
+    padding: 6px 8px;
     font-size: 12px;
   }
 }
@@ -365,7 +379,7 @@ button:active:not(:disabled) {
   }
 
   .btn-difficulty {
-    padding: 10px;
+    padding: 8px;
   }
 }
 </style>
