@@ -127,18 +127,28 @@
 import { computed, ref } from 'vue'
 import BeltCertificate from './BeltCertificate.vue'
 
-const props = defineProps({
-    completedTutorials: { type: Set, default: () => new Set() },
-    totalTutorials: { type: Number, default: 15 },
-    isDark: { type: Boolean, default: false }
+interface BeltInfo {
+    name: string; shortName: string; emoji: string; color: string; lessons: number;
+    technique?: string; earned?: boolean; current?: boolean
+  }
+
+  interface Props {
+    completedTutorials?: Set<number>
+    totalTutorials?: number
+    isDark?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    completedTutorials: () => new Set<number>(),
+    totalTutorials: 15,
+    isDark: false
   })
 
-const emit = defineEmits(['daily', 'learn', 'play'])
+const emit = defineEmits<{ daily: []; learn: []; play: [] }>()
 
-const showCert = ref(false)
-const certBelt = ref({})
+const showCert = ref<boolean>(false)
+const certBelt = ref<BeltInfo>({} as BeltInfo)
 
-const openCert = (belt) => {
+const openCert = (belt: BeltInfo): void => {
   certBelt.value = belt
   showCert.value = true
 }

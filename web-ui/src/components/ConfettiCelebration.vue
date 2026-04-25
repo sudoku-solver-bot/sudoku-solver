@@ -36,22 +36,34 @@
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
 
-const emit = defineEmits(['done'])
+const emit = defineEmits<{ done: [] }>()
 
-const props = defineProps({
-  visible: Boolean,
-  time: String,
-  mistakes: { type: Number, default: 0 },
-  hints: { type: Number, default: 0 }
+interface Props {
+  visible?: boolean
+  time?: string
+  mistakes?: number
+  hints?: number
+}
+const props = withDefaults(defineProps<Props>(), {
+  visible: false,
+  time: '',
+  mistakes: 0,
+  hints: 0
 })
 
-const canvas = ref(null)
-    const showText = ref(false)
-    let animationId = null
+const canvas = ref<HTMLCanvasElement | null>(null)
+    const showText = ref<boolean>(false)
+    let animationId: number | null = null
 
     const colors = ['#4285f4', '#34a853', '#fbbc05', '#ea4335', '#ff6d00', '#ab47bc']
 
-    const startConfetti = async () => {
+    interface Particle {
+      x: number; y: number; w: number; h: number;
+      color: string; vx: number; vy: number;
+      rotation: number; rotationSpeed: number; opacity: number
+    }
+
+    const startConfetti = async (): Promise<void> => {
       showText.value = false
       await nextTick()
 
@@ -62,7 +74,7 @@ const canvas = ref(null)
       cvs.height = window.innerHeight
       const ctx = cvs.getContext('2d')
 
-      const particles = []
+      const particles: Particle[] = []
       for (let i = 0; i < 150; i++) {
         particles.push({
           x: Math.random() * cvs.width,
@@ -78,8 +90,8 @@ const canvas = ref(null)
         })
       }
 
-      let frame = 0
-      const animate = () => {
+      let frame: number = 0
+      const animate = (): void => {
         ctx.clearRect(0, 0, cvs.width, cvs.height)
         frame++
 
@@ -113,7 +125,7 @@ const canvas = ref(null)
       animate()
     }
 
-    const stopConfetti = () => {
+    const stopConfetti = (): void => {
       if (animationId) {
         cancelAnimationFrame(animationId)
         animationId = null
@@ -121,7 +133,7 @@ const canvas = ref(null)
       showText.value = false
     }
 
-    watch(() => props.visible, (v) => {
+    watch(() => props.visible, (v: boolean) => {
       if (v) startConfetti()
       else stopConfetti()
     })

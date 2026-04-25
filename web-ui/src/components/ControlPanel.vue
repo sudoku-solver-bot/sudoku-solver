@@ -135,35 +135,27 @@
   </div>
 </template>
 
+
 <script setup lang="ts">
-const props = defineProps({
-    loading: {
-      type: Boolean,
-      default: false
-    },
-    canUndo: {
-      type: Boolean,
-      default: false
-    },
-    canRedo: {
-      type: Boolean,
-      default: false
-    },
-    undoCount: {
-      type: Number,
-      default: 0
-    },
-    redoCount: {
-      type: Number,
-      default: 0
-    },
-    showCandidates: {
-      type: Boolean,
-      default: true
-    }
+interface Props {
+    loading?: boolean
+    canUndo?: boolean
+    canRedo?: boolean
+    undoCount?: number
+    redoCount?: number
+    showCandidates?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    loading: false,
+    canUndo: false,
+    canRedo: false,
+    undoCount: 0,
+    redoCount: 0,
+    showCandidates: true
+
   })
 
-const emit = defineEmits(['solve', 'clear', 'generate', 'hint', 'undo', 'redo', 'toggle-candidates', 'import', 'share', 'print', 'share-image'])
+const emit = defineEmits<{ solve: []; clear: []; generate: [difficulty: string]; hint: []; undo: []; redo: []; 'toggle-candidates': []; import: []; share: []; print: []; 'share-image': [] }>()
 </script>
 
 <style scoped>

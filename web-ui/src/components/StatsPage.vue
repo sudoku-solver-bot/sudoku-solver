@@ -139,13 +139,16 @@ import { computed, onMounted, ref } from 'vue'
 const STATS_KEY = 'sudoku-dojo-stats'
 const HISTORY_KEY = 'sudoku-dojo-history'
 
-const props = defineProps({
-    isDark: { type: Boolean, default: false }
+interface Props {
+    isDark?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    isDark: false
   })
-const emit = defineEmits(['back', 'reset-stats'])
+const emit = defineEmits<{ back: []; 'reset-stats': [] }>()
 
-const stats = ref({})
-const history = ref([])
+const stats = ref<Record<string, any>>({})
+const history = ref<any[]>([])
 
 onMounted(() => {
   try {
@@ -207,7 +210,7 @@ const recentActivity = computed(() => {
   }))
 })
 
-const formatTime = (ms) => {
+const formatTime = (ms: number): string => {
   if (!ms) return '—'
   const s = Math.floor(ms / 1000)
   const m = Math.floor(s / 60)
@@ -215,7 +218,7 @@ const formatTime = (ms) => {
   return m > 0 ? `${m}m ${sec}s` : `${sec}s`
 }
 
-const formatTimeAgo = (ts) => {
+const formatTimeAgo = (ts: number): string => {
   if (!ts) return ''
   const diff = Date.now() - ts
   const mins = Math.floor(diff / 60000)
@@ -227,7 +230,7 @@ const formatTimeAgo = (ts) => {
   return `${days}d ago`
 }
 
-const confirmReset = () => {
+const confirmReset = (): void => {
   if (confirm('Reset all statistics? This cannot be undone.')) {
     localStorage.removeItem(STATS_KEY)
     localStorage.removeItem(HISTORY_KEY)
@@ -237,7 +240,7 @@ const confirmReset = () => {
   }
 }
 
-const exportCSV = () => {
+const exportCSV = (): void => {
   const s = stats.value
   const h = history.value
   let csv = 'Sudoku Dojo Statistics Export\n'

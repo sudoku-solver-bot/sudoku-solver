@@ -127,14 +127,17 @@ const STORAGE_KEY = 'sudoku-dojo-leaderboard'
 const OPT_IN_KEY = 'sudoku-dojo-lb-optin'
 const NAME_KEY = 'sudoku-dojo-lb-name'
 
-const props = defineProps({
-    isDark: { type: Boolean, default: false }
+interface Props {
+    isDark?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    isDark: false
   })
-const emit = defineEmits(['back'])
+const emit = defineEmits<{ back: [] }>()
 
-const optedIn = ref(false)
-const playerName = ref('')
-const tab = ref('daily')
+const optedIn = ref<boolean>(false)
+const playerName = ref<string>('')
+const tab = ref<string>('daily')
 
 // Simulated leaderboard data (localStorage-based for MVP)
 // In a real app, this would be a backend API
@@ -178,17 +181,17 @@ const yourStreak = computed(() => {
   return 0
 })
 
-const getLeaderboardData = () => {
+const getLeaderboardData = (): any[] => {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
   } catch (e) { return [] }
 }
 
-const saveLeaderboardData = (data) => {
+const saveLeaderboardData = (data: any[]): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
 }
 
-const joinLeaderboard = () => {
+const joinLeaderboard = (): void => {
   if (!playerName.value.trim()) return
   optedIn.value = true
   localStorage.setItem(OPT_IN_KEY, 'true')
@@ -196,13 +199,13 @@ const joinLeaderboard = () => {
   playerName.value = playerName.value.trim()
 }
 
-const leaveLeaderboard = () => {
+const leaveLeaderboard = (): void => {
   optedIn.value = false
   localStorage.removeItem(OPT_IN_KEY)
   localStorage.removeItem(NAME_KEY)
 }
 
-const getMedal = (i) => {
+const getMedal = (i: number): string => {
   if (i === 0) return '🥇'
   if (i === 1) return '🥈'
   if (i === 2) return '🥉'

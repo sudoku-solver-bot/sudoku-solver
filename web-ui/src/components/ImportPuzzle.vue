@@ -94,18 +94,21 @@
 
 import { ref } from 'vue'
 
-const props = defineProps({
-    isDark: { type: Boolean, default: false }
+interface Props {
+    isDark?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    isDark: false
   })
-const emit = defineEmits(['close', 'import'])
+const emit = defineEmits<{ close: []; import: [puzzle: string] }>()
 
-const input = ref('')
-const format = ref('single')
-const parsedPuzzle = ref(null)
-const error = ref('')
-const givenCount = ref(0)
+const input = ref<string>('')
+const format = ref<string>('single')
+const parsedPuzzle = ref<string | null>(null)
+const error = ref<string>('')
+const givenCount = ref<number>(0)
 
-const parsePuzzle = (text) => {
+const parsePuzzle = (text: string): string | null => {
   // Remove all whitespace, separators (!, -, |, spaces)
   let cleaned = text.replace(/[\s!\-|]/g, '').replace(/0/g, '.')
   // Only keep valid chars
@@ -119,7 +122,7 @@ const parsePuzzle = (text) => {
   return cleaned
 }
 
-const validate = () => {
+const validate = (): void => {
   error.value = ''
   if (!input.value.trim()) {
     parsedPuzzle.value = null
@@ -147,13 +150,13 @@ const validate = () => {
   }
 }
 
-const doImport = () => {
+const doImport = (): void => {
   if (parsedPuzzle.value) {
     emit('import', parsedPuzzle.value)
   }
 }
 
-const loadExample = () => {
+const loadExample = (): void => {
   format.value = 'single'
   input.value = '530070000600195000098000060800060003400803001700020006060000280000419005000080079'
   validate()

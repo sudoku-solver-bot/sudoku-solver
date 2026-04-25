@@ -64,41 +64,25 @@
 
 import { computed } from 'vue'
 
-const props = defineProps({
-    puzzle: {
-      type: String,
-      required: true
-    },
-    givenCells: {
-      type: Set,
-      required: true
-    },
-    mistakes: {
-      type: Number,
-      default: 0
-    },
-    hintsUsed: {
-      type: Number,
-      default: 0
-    },
-    elapsedTime: {
-      type: Number,
-      default: 0
-    },
-    timerPaused: {
-      type: Boolean,
-      default: false
-    },
-    difficulty: {
-      type: String,
-      default: ''
-    },
-    newRecord: {
-      type: Boolean,
-      default: false
-    }
+interface Props {
+    puzzle: string
+    givenCells: Set<number>
+    mistakes?: number
+    hintsUsed?: number
+    elapsedTime?: number
+    timerPaused?: boolean
+    difficulty?: string
+    newRecord?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    mistakes: 0,
+    hintsUsed: 0,
+    elapsedTime: 0,
+    timerPaused: false,
+    difficulty: '',
+    newRecord: false
   })
-const emit = defineEmits(['toggle-pause'])
+const emit = defineEmits<{ 'toggle-pause': [] }>()
 
 const filledCells = computed(() => {
   let count = 0

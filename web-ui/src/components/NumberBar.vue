@@ -22,9 +22,14 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    counts: { type: Object, default: () => ({}) },
-    isDark: { type: Boolean, default: false }
+interface Props {
+    counts?: Record<number, number>
+    isDark?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    counts: () => ({}),
+    isDark: false
+
   })
 </script>
 

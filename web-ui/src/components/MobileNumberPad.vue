@@ -45,22 +45,18 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps({
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    counts: {
-      type: Object,
-      default: () => ({})
-    },
-    pencilMode: {
-      type: Boolean,
-      default: false
-    }
+interface Props {
+    visible?: boolean
+    counts?: Record<number, number>
+    pencilMode?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    visible: false,
+    counts: () => ({}),
+    pencilMode: false
   })
 
-const emit = defineEmits(['input', 'clear', 'hint', 'toggle-pencil'])
+const emit = defineEmits<{ input: [num: number]; clear: []; hint: []; 'toggle-pencil': [] }>()
 </script>
 
 <style scoped>

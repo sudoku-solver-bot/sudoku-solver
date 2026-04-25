@@ -82,16 +82,25 @@ import { ref, onMounted } from 'vue'
 
 const SAVES_KEY = 'sudoku-dojo-saves'
 
-const props = defineProps({
-    isDark: { type: Boolean, default: false },
-    currentPuzzle: { type: String, default: '' },
-    currentDifficulty: { type: String, default: '' }
+interface SaveData {
+    puzzle: string; difficulty: string; progress: number; date: string; name: string
+  }
+
+  interface Props {
+    isDark?: boolean
+    currentPuzzle?: string
+    currentDifficulty?: string
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    isDark: false,
+    currentPuzzle: '',
+    currentDifficulty: ''
   })
-const emit = defineEmits(['close', 'load'])
+const emit = defineEmits<{ close: []; load: [save: SaveData] }>()
 
-const saves = ref([])
+const saves = ref<SaveData[]>([])
 
-const loadSaves = () => {
+const loadSaves = (): void => {
   try {
     saves.value = JSON.parse(localStorage.getItem(SAVES_KEY) || '[]')
   } catch { saves.value = [] }
@@ -99,7 +108,7 @@ const loadSaves = () => {
 
 onMounted(loadSaves)
 
-const saveCurrent = () => {
+const saveCurrent = (): void => {
   if (!props.currentPuzzle || props.currentPuzzle === '.'.repeat(81)) return
   const filled = props.currentPuzzle.split('').filter(c => c !== '.').length
   const save = {
@@ -114,7 +123,7 @@ const saveCurrent = () => {
   localStorage.setItem(SAVES_KEY, JSON.stringify(saves.value))
 }
 
-const deleteSave = (index) => {
+const deleteSave = (index: number): void => {
   saves.value.splice(index, 1)
   localStorage.setItem(SAVES_KEY, JSON.stringify(saves.value))
 }

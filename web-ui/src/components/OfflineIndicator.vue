@@ -12,9 +12,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const online = ref(navigator.onLine)
-    const onOnline = () => { online.value = true }
-    const onOffline = () => { online.value = false }
+const online = ref<boolean>(navigator.onLine)
+    const onOnline = (): void => { online.value = true }
+    const onOffline = (): void => { online.value = false }
     onMounted(() => {
       window.addEventListener('online', onOnline)
       window.addEventListener('offline', onOffline)

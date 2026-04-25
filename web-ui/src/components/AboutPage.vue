@@ -91,12 +91,15 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
-const props = defineProps({
-  isDark: { type: Boolean, default: false }
+interface Props {
+  isDark?: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  isDark: false
 })
 
-const emit = defineEmits(['exit'])
-const qrCanvas = ref(null)
+const emit = defineEmits<{ exit: [] }>()
+const qrCanvas = ref<HTMLCanvasElement | null>(null)
 const siteUrl = window.location.origin
 
 // Minimal QR code generator (Level M, alphanumeric)
@@ -104,7 +107,7 @@ onMounted(() => {
   generateQR(qrCanvas.value, siteUrl)
 })
 
-function generateQR(canvas, text) {
+function generateQR(canvas: HTMLCanvasElement | null, text: string): void {
   // Use a simple approach: fetch QR from a free API or render inline
   const ctx = canvas.getContext('2d')
   const size = 200

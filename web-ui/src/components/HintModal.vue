@@ -91,32 +91,28 @@
 
 import { ref } from 'vue'
 
-const props = defineProps({
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    hint: {
-      type: Object,
-      default: null
-    },
-    totalHints: {
-      type: Number,
-      default: 0
-    }
+interface Props {
+    visible?: boolean
+    hint?: { row: number; col: number; value: number; technique: string } | null
+    totalHints?: number
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    visible: false,
+    hint: null,
+    totalHints: 0
   })
-const emit = defineEmits(['close'])
+const emit = defineEmits<{ close: [] }>()
 
-const showExplanation = ref(false)
+const showExplanation = ref<boolean>(false)
 
-const formatTechnique = (technique) => {
+const formatTechnique = (technique: string): string => {
   return technique
     .replace(/([A-Z])/g, ' $1')
-    .replace(/^./, (str) => str.toUpperCase())
+    .replace(/^./, (str: string) => str.toUpperCase())
     .trim()
 }
 
-const getTechniqueExplanation = (technique) => {
+const getTechniqueExplanation = (technique: string): string => {
   const explanations = {
     'SINGLE_CANDIDATE': 'This cell has only one possible value that doesn\'t conflict with its row, column, or 3x3 box.',
     'HIDDEN_SINGLE': 'While this cell may have multiple candidates, one value can only go in this specific cell within its row, column, or box.',
@@ -128,7 +124,7 @@ const getTechniqueExplanation = (technique) => {
   return explanations[technique] || 'This is a valid logical deduction for solving the puzzle.'
 }
 
-const getKidFriendlyExplanation = (technique) => {
+const getKidFriendlyExplanation = (technique: string): string => {
   const kidFriendly = {
     'SINGLE_CANDIDATE': '🎯 Think of it like a game of "what\'s left"? Only one number fits here!',
     'HIDDEN_SINGLE': '🔍 This number has nowhere else to go in this row, column, or box. It\'s like musical chairs!',

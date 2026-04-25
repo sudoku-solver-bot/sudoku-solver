@@ -31,13 +31,13 @@ import { ref, onMounted } from 'vue'
 
 const DISMISS_KEY = 'sudoku-install-dismissed'
 
-const visible = ref(false)
-    let deferredPrompt = null
+const visible = ref<boolean>(false)
+    let deferredPrompt: any = null
 
     onMounted(() => {
       if (localStorage.getItem(DISMISS_KEY)) return
 
-      window.addEventListener('beforeinstallprompt', (e) => {
+      window.addEventListener('beforeinstallprompt', (e: Event) => {
         e.preventDefault()
         deferredPrompt = e
         // Show after 30 seconds
@@ -45,7 +45,7 @@ const visible = ref(false)
       })
     })
 
-    const install = async () => {
+    const install = async (): Promise<void> => {
       if (deferredPrompt) {
         deferredPrompt.prompt()
         await deferredPrompt.userChoice
@@ -54,7 +54,7 @@ const visible = ref(false)
       visible.value = false
     }
 
-    const dismiss = () => {
+    const dismiss = (): void => {
       visible.value = false
       localStorage.setItem(DISMISS_KEY, 'true')
     }

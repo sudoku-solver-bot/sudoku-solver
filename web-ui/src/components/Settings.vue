@@ -200,16 +200,23 @@ import { ref } from 'vue'
 import { isSoundEnabled, setSoundEnabled, playSound } from '../sounds'
 import { useI18n } from '../i18n'
 
-const props = defineProps({
-    isDark: { type: Boolean, default: false },
-    colorBlind: { type: Boolean, default: false },
-    highContrast: { type: Boolean, default: false },
-    challengeMode: { type: Boolean, default: false },
-    theme: { type: String, default: 'default' }
+interface Props {
+    isDark?: boolean
+    colorBlind?: boolean
+    highContrast?: boolean
+    challengeMode?: boolean
+    theme?: string
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    isDark: false,
+    colorBlind: false,
+    highContrast: false,
+    challengeMode: false,
+    theme: 'default'
   })
-const emit = defineEmits(['exit', 'toggle-dark', 'toggle-colorblind', 'toggle-highcontrast', 'change-theme', 'toggle-challenge'])
+const emit = defineEmits<{ exit: []; 'toggle-dark': []; 'toggle-colorblind': []; 'toggle-highcontrast': []; 'change-theme': [id: string]; 'toggle-challenge': [] }>()
 
-const soundEnabled = ref(isSoundEnabled())
+const soundEnabled = ref<boolean>(isSoundEnabled())
 const { currentLocale, setLocale } = useI18n()
 
 const themes = [
@@ -218,22 +225,22 @@ const themes = [
   { id: 'neon', name: '💜 Neon' },
   { id: 'minimal', name: '⬜ Minimal' }
 ]
-const currentTheme = ref(localStorage.getItem('sudoku-theme') || 'default')
+const currentTheme = ref<string>(localStorage.getItem('sudoku-theme') || 'default')
 
-const selectTheme = (id) => {
+const selectTheme = (id: string): void => {
   currentTheme.value = id
   localStorage.setItem('sudoku-theme', id)
   emit('change-theme', id)
   playSound('click')
 }
 
-const toggleSound = () => {
+const toggleSound = (): void => {
   soundEnabled.value = !soundEnabled.value
   setSoundEnabled(soundEnabled.value)
   if (soundEnabled.value) playSound('click')
 }
 
-const resetProgress = () => {
+const resetProgress = (): void => {
   if (confirm('Reset all progress? This cannot be undone.')) {
     localStorage.removeItem('sudokuCompletedTutorials')
     localStorage.removeItem('sudokuDailyStreak')
