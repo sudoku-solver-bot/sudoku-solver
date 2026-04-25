@@ -3,7 +3,26 @@ import vue from '@vitejs/plugin-vue'
 import path from 'path'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    {
+      name: 'mock-pwa-register',
+      resolveId(id) {
+        if (id === 'virtual:pwa-register/vue') {
+          return 'virtual:pwa-register/vue'
+        }
+      },
+      load(id) {
+        if (id === 'virtual:pwa-register/vue') {
+          return `
+            export function useRegisterSW() {
+              return { updateSW: () => Promise.resolve() }
+            }
+          `
+        }
+      }
+    }
+  ],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
