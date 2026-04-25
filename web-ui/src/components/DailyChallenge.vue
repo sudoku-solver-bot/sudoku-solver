@@ -116,7 +116,7 @@ import SudokuGrid from './SudokuGrid.vue'
 import MobileNumberPad from './MobileNumberPad.vue'
 import { fetchDailyChallenge, solvePuzzle, getHintForPuzzle } from '../api'
 
-const emit = defineEmits(['exit'])
+const emit = defineEmits<{ exit: [] }>()
 
 const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'easy', beltColor: '#e0e0e0' })
     const puzzle = ref('.'.repeat(81))

@@ -79,11 +79,15 @@ const BADGE_DEFINITIONS = [
   { id: 'early-bird', name: 'Early Bird', icon: '🐦', description: 'Solve a puzzle before 7am', check: (s: any): boolean => s.earlySolve },
 ]
 
-const props = defineProps({
-    isDark: { type: Boolean, default: false },
-    stats: { type: Object, default: () => ({}) }
-  })
-const emit = defineEmits(['back'])
+interface Props {
+  isDark?: boolean
+  stats?: Record<string, any>
+}
+const props = withDefaults(defineProps<Props>(), {
+  isDark: false,
+  stats: () => ({})
+})
+const emit = defineEmits<{ back: [] }>()
 
 const earnedDates = ref({})
 

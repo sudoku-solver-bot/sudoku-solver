@@ -56,11 +56,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 
-const props = defineProps({
-  visible: { type: Boolean, default: false },
-  isDark: { type: Boolean, default: false }
+interface Props {
+  visible?: boolean
+  isDark?: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  visible: false,
+  isDark: false
 })
-const emit = defineEmits(['close', 'done'])
+const emit = defineEmits<{ close: []; done: [] }>()
 
 const currentStep = ref(0)
 

@@ -178,14 +178,20 @@
 
 import { computed, ref } from 'vue'
 
-const props = defineProps({
-    tutorials: { type: Array, required: true },
-    completedIds: { type: Set, default: () => new Set() },
-    isDark: { type: Boolean, default: false },
-    quizData: { type: Array, default: () => [] },
-    practiceData: { type: Array, default: () => [] }
-  })
-const emit = defineEmits(['exit', 'select', 'quiz', 'practice'])
+interface Props {
+  tutorials: any[]
+  completedIds?: Set<string>
+  isDark?: boolean
+  quizData?: any[]
+  practiceData?: any[]
+}
+const props = withDefaults(defineProps<Props>(), {
+  completedIds: () => new Set(),
+  isDark: false,
+  quizData: () => [],
+  practiceData: () => []
+})
+const emit = defineEmits<{ exit: []; select: [lesson: any]; quiz: [quizData: any]; practice: [lesson: any] }>()
 
 const searchQuery = ref('')
 const completedCount = computed(() => props.completedIds.size)

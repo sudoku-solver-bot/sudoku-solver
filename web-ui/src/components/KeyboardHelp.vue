@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{ close: [] }>()
 
 const shortcuts = [
       { key: '↑ ↓ ← →', desc: 'Navigate cells' },

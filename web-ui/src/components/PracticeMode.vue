@@ -125,11 +125,14 @@ import { ref, onMounted, watch } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
 import { fetchPracticeBoard, fetchCandidates } from '../api'
 
-const props = defineProps({
-    practiceSet: { type: Object, required: true },
-    isDark: { type: Boolean, default: false }
-  })
-const emit = defineEmits(['exit', 'completed'])
+interface Props {
+  practiceSet: Record<string, any>
+  isDark?: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  isDark: false
+})
+const emit = defineEmits<{ exit: []; completed: [payload: { puzzleId: string; tutorialId: string }] }>()
 
 const currentPuzzleIndex = ref(0)
 const boardPuzzle = ref('')

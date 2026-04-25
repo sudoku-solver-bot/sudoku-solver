@@ -53,61 +53,41 @@
 
 import { ref, computed, nextTick } from 'vue'
 
-const props = defineProps({
-    puzzle: {
-      type: String,
-      required: true
-    },
-    givenCells: {
-      type: Set,
-      required: true
-    },
-    solvedCells: {
-      type: Set,
-      required: true
-    },
-    selectedCell: {
-      type: Number,
-      default: -1
-    },
-    isDark: {
-      type: Boolean,
-      default: false
-    },
-    candidates: {
-      type: Object,
-      default: () => ({})
-    },
-    showCandidates: {
-      type: Boolean,
-      default: true
-    },
-    highlightedCells: {
-      type: Array,
-      default: () => []
-    },
-    showConflicts: {
-      type: Boolean,
-      default: true
-    },
-    cellColors: {
-      type: Object,
-      default: () => ({})
-    },
-    colorBlind: {
-      type: Boolean,
-      default: false
-    },
-    highContrast: {
-      type: Boolean,
-      default: false
-    },
-    theme: {
-      type: String,
-      default: 'default' // default, wood, neon, minimal
-    }
-  })
-const emit = defineEmits(['update', 'select', 'navigate', 'undo', 'redo', 'color-cell'])
+interface Props {
+  puzzle: string
+  givenCells: Set<number>
+  solvedCells: Set<number>
+  selectedCell?: number
+  isDark?: boolean
+  candidates?: Record<string, number[]>
+  showCandidates?: boolean
+  highlightedCells?: Array<{ cells: number[]; color: string }>
+  showConflicts?: boolean
+  cellColors?: Record<string, string>
+  colorBlind?: boolean
+  highContrast?: boolean
+  theme?: string
+}
+const props = withDefaults(defineProps<Props>(), {
+  selectedCell: -1,
+  isDark: false,
+  candidates: () => ({}),
+  showCandidates: true,
+  highlightedCells: () => [],
+  showConflicts: true,
+  cellColors: () => ({}),
+  colorBlind: false,
+  highContrast: false,
+  theme: 'default'
+})
+const emit = defineEmits<{
+  update: [index: number, value: string]
+  select: [index: number]
+  navigate: [index: number]
+  undo: []
+  redo: []
+  'color-cell': [index: number, color: string]
+}>()
 
 const inputs = ref([])
 const candidateGrids = ref([])

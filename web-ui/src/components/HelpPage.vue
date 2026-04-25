@@ -178,10 +178,13 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
-  isDark: { type: Boolean, default: false }
+interface Props {
+  isDark?: boolean
+}
+withDefaults(defineProps<Props>(), {
+  isDark: false
 })
-defineEmits(['exit'])
+defineEmits<{ exit: [] }>()
 
 const techniques = [
   { name: 'Naked Single', desc: 'Only one candidate left — that must be the answer.', color: '#E0E0E0' },
