@@ -27,15 +27,22 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
-const props = defineProps({
-  message: { type: String, default: '' },
-  type: { type: String, default: 'info' },
-  visible: { type: Boolean, default: false },
-  difficulty: { type: String, default: '' },
-  techniques: { type: Array, default: () => [] }
+interface Props {
+  message?: string
+  type?: string
+  visible?: boolean
+  difficulty?: string
+  techniques?: string[]
+}
+const props = withDefaults(defineProps<Props>(), {
+  message: '',
+  type: 'info',
+  visible: false,
+  difficulty: '',
+  techniques: () => []
 })
 
 const difficultyClass = computed(() => {

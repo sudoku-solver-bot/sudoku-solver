@@ -22,16 +22,19 @@
   </transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 
-const props = defineProps({
-  isDark: { type: Boolean, default: false }
+interface Props {
+  isDark?: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  isDark: false
 })
 
-const needRefresh = ref(false)
-let updateSW = () => {}
+const needRefresh = ref<boolean>(false)
+let updateSW: () => Promise<void> = async () => {}
 
 try {
   const registration = useRegisterSW({
@@ -50,7 +53,7 @@ try {
   // PWA not available (dev mode)
 }
 
-const close = () => {
+const close = (): void => {
   needRefresh.value = false
 }
 </script>

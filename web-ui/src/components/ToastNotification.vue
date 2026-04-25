@@ -32,41 +32,32 @@
   </transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { watch, computed } from 'vue'
 
-const props = defineProps({
-    visible: {
-      type: Boolean,
-      default: false
-    },
-    type: {
-      type: String,
-      default: 'info',
-      validator: (value) => ['success', 'error', 'warning', 'info'].includes(value)
-    },
-    title: {
-      type: String,
-      default: ''
-    },
-    message: {
-      type: String,
-      default: ''
-    },
-    duration: {
-      type: Number,
-      default: 4000
-    },
-    showRetry: {
-      type: Boolean,
-      default: false
-    }
-  })
-const emit = defineEmits(['close', 'retry'])
+type ToastType = 'success' | 'error' | 'warning' | 'info'
+
+const props = withDefaults(defineProps<{
+  visible?: boolean
+  type?: ToastType
+  title?: string
+  message?: string
+  duration?: number
+  showRetry?: boolean
+}>(), {
+  visible: false,
+  type: 'info',
+  title: '',
+  message: '',
+  duration: 4000,
+  showRetry: false
+})
+
+const emit = defineEmits<{ close: []; retry: [] }>()
 
 const icon = computed(() => {
-  const icons = {
+  const icons: Record<ToastType, string> = {
     success: '✓',
     error: '✕',
     warning: '⚠',
@@ -75,7 +66,7 @@ const icon = computed(() => {
   return icons[props.type] || icons.info
 })
 
-let timeout = null
+let timeout: ReturnType<typeof setTimeout> | null = null
 
 const startTimer = () => {
   if (timeout) clearTimeout(timeout)
@@ -92,10 +83,10 @@ const close = () => {
 }
 
 watch(() => props.visible, (newVal) => {
-      if (newVal) {
-        startTimer()
-      }
-    })
+  if (newVal) {
+    startTimer()
+  }
+})
 </script>
 
 <style scoped>

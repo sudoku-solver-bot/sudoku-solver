@@ -21,10 +21,15 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-    counts: { type: Object, default: () => ({}) },
-    isDark: { type: Boolean, default: false }
+<script setup lang="ts">
+interface Props {
+    counts?: Record<number, number>
+    isDark?: boolean
+  }
+  const props = withDefaults(defineProps<Props>(), {
+    counts: () => ({}),
+    isDark: false
+
   })
 </script>
 

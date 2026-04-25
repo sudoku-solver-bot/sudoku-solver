@@ -134,17 +134,20 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { ref, computed, onMounted, watch } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
 import { fetchTutorialBoard, completeTutorial } from '../api'
 
-const props = defineProps({
-    lesson: { type: Object, required: true },
-    isDark: { type: Boolean, default: false }
-  })
-const emit = defineEmits(['exit', 'completed'])
+interface Props {
+  lesson: Record<string, any>
+  isDark?: boolean
+}
+const props = withDefaults(defineProps<Props>(), {
+  isDark: false
+})
+const emit = defineEmits<{ exit: []; completed: [lessonId: string] }>()
 
 const boardPuzzle = ref(props.lesson.examplePuzzle)
 const boardCandidates = ref({})

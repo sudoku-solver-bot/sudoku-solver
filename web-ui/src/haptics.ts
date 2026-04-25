@@ -1,8 +1,8 @@
 // Haptic feedback utility
-export function vibrate(pattern = 10) {
+export function vibrate(pattern: number | number[] = 10): void {
   try {
     if (navigator.vibrate) navigator.vibrate(pattern)
-  } catch (e) {}
+  } catch (_) { /* not supported */ }
 }
 
 export const haptics = {

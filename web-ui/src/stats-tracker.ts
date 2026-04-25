@@ -1,57 +1,83 @@
 // Stats tracking utility for Sudoku Dojo
+
+interface SolveStats {
+  totalSolved?: number
+  totalTime?: number
+  bestTime?: number
+  perfectSolves?: number
+  byDifficulty?: Record<string, number>
+  bestTimeByDifficulty?: Record<string, number>
+  nightSolve?: boolean
+  earlySolve?: boolean
+  dailiesCompleted?: number
+  currentStreak?: number
+  bestStreak?: number
+  lastDailyDate?: string
+  tutorialsCompleted?: number
+}
+
+interface HistoryEntry {
+  id: string
+  timestamp: number
+  type: string
+  time: number
+  hints: number
+  difficulty: string
+  text: string
+}
+
 const STATS_KEY = 'sudoku-dojo-stats'
 const HISTORY_KEY = 'sudoku-dojo-history'
 
-export function getStats() {
+export function getStats(): SolveStats {
   try {
-    return JSON.parse(localStorage.getItem(STATS_KEY) || '{}')
-  } catch (e) { return {} }
+    return JSON.parse(localStorage.getItem(STATS_KEY) || '{}') as SolveStats
+  } catch (_) { return {} }
 }
 
-export function getHistory() {
+export function getHistory(): HistoryEntry[] {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]')
-  } catch (e) { return [] }
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]') as HistoryEntry[]
+  } catch (_) { return [] }
 }
 
-export function recordSolve({ time, hints, difficulty, type = 'free' }) {
+interface RecordSolveOptions {
+  time: number
+  hints: number
+  difficulty?: string
+  type?: string
+}
+
+export function recordSolve({ time, hints, difficulty, type = 'free' }: RecordSolveOptions): void {
   const stats = getStats()
   const history = getHistory()
 
-  // Update totals
   stats.totalSolved = (stats.totalSolved || 0) + 1
   stats.totalTime = (stats.totalTime || 0) + time
 
-  // Best time
   if (!stats.bestTime || time < stats.bestTime) {
     stats.bestTime = time
   }
 
-  // Perfect solves (no hints)
   if (hints === 0) {
     stats.perfectSolves = (stats.perfectSolves || 0) + 1
   }
 
-  // By difficulty
   if (!stats.byDifficulty) stats.byDifficulty = {}
   const diffKey = (difficulty || 'medium').toLowerCase()
   stats.byDifficulty[diffKey] = (stats.byDifficulty[diffKey] || 0) + 1
 
-  // By best time per difficulty
   if (!stats.bestTimeByDifficulty) stats.bestTimeByDifficulty = {}
   if (!stats.bestTimeByDifficulty[diffKey] || time < stats.bestTimeByDifficulty[diffKey]) {
     stats.bestTimeByDifficulty[diffKey] = time
   }
 
-  // Time-of-day tracking
   const hour = new Date().getHours()
   if (hour >= 0 && hour < 5) stats.nightSolve = true
   if (hour >= 5 && hour < 7) stats.earlySolve = true
 
-  // Save stats
   localStorage.setItem(STATS_KEY, JSON.stringify(stats))
 
-  // Add to history
   history.push({
     id: Date.now().toString(36),
     timestamp: Date.now(),
@@ -62,20 +88,22 @@ export function recordSolve({ time, hints, difficulty, type = 'free' }) {
     text: `${diffKey} puzzle solved in ${formatTimeMs(time)}${hints > 0 ? ` (${hints} hints)` : ''}`
   })
 
-  // Keep last 100 entries
   if (history.length > 100) history.splice(0, history.length - 100)
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
 
-  // Check and unlock achievements
-  checkAchievements(stats, history)
+  checkAchievements(stats)
 }
 
-export function recordDailyComplete({ time, hints }) {
+interface RecordDailyOptions {
+  time: number
+  hints: number
+}
+
+export function recordDailyComplete({ time, hints }: RecordDailyOptions): void {
   const stats = getStats()
 
   stats.dailiesCompleted = (stats.dailiesCompleted || 0) + 1
 
-  // Streak tracking
   const today = new Date().toISOString().split('T')[0]
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
 
@@ -86,42 +114,41 @@ export function recordDailyComplete({ time, hints }) {
   }
   stats.lastDailyDate = today
 
-  if (!stats.bestStreak || stats.currentStreak > stats.bestStreak) {
+  if (!stats.bestStreak || (stats.currentStreak || 0) > (stats.bestStreak || 0)) {
     stats.bestStreak = stats.currentStreak
   }
 
   localStorage.setItem(STATS_KEY, JSON.stringify(stats))
 
-  // Also record as a solve
   recordSolve({ time, hints, difficulty: 'daily', type: 'daily' })
 }
 
-export function getStatsForAchievements() {
-  const stats = getStats()
+export function getStatsForAchievements(): SolveStats & { tutorialsCompleted: number } {
+  const stats = getStats() as SolveStats & { tutorialsCompleted: number }
   try {
-    const tutorials = JSON.parse(localStorage.getItem('sudokuCompletedTutorials') || '[]')
+    const tutorials = JSON.parse(localStorage.getItem('sudokuCompletedTutorials') || '[]') as unknown[]
     stats.tutorialsCompleted = Array.isArray(tutorials) ? tutorials.length : (new Set(tutorials)).size
-  } catch (e) {
+  } catch (_) {
     stats.tutorialsCompleted = 0
   }
   return stats
 }
 
-function checkAchievements(stats) {
+function checkAchievements(stats: SolveStats): void {
   const ACH_KEY = 'sudoku-dojo-achievements'
-  let dates = {}
-  try { dates = JSON.parse(localStorage.getItem(ACH_KEY) || '{}') } catch (e) {}
+  let dates: Record<string, string> = {}
+  try { dates = JSON.parse(localStorage.getItem(ACH_KEY) || '{}') as Record<string, string> } catch (_) {}
 
-  const checks = [
-    { id: 'first-solve', cond: stats.totalSolved >= 1 },
-    { id: 'five-solves', cond: stats.totalSolved >= 5 },
-    { id: 'ten-solves', cond: stats.totalSolved >= 10 },
-    { id: 'fifty-solves', cond: stats.totalSolved >= 50 },
+  const checks: Array<{ id: string; cond: boolean }> = [
+    { id: 'first-solve', cond: (stats.totalSolved || 0) >= 1 },
+    { id: 'five-solves', cond: (stats.totalSolved || 0) >= 5 },
+    { id: 'ten-solves', cond: (stats.totalSolved || 0) >= 10 },
+    { id: 'fifty-solves', cond: (stats.totalSolved || 0) >= 50 },
     { id: 'first-daily', cond: (stats.dailiesCompleted || 0) >= 1 },
     { id: 'week-streak', cond: (stats.currentStreak || 0) >= 7 },
     { id: 'month-streak', cond: (stats.currentStreak || 0) >= 30 },
-    { id: 'speed-demon', cond: stats.bestTime > 0 && stats.bestTime < 120000 },
-    { id: 'speed-king', cond: stats.bestTime > 0 && stats.bestTime < 60000 },
+    { id: 'speed-demon', cond: (stats.bestTime ?? 0) > 0 && (stats.bestTime ?? 0) < 120000 },
+    { id: 'speed-king', cond: (stats.bestTime ?? 0) > 0 && (stats.bestTime ?? 0) < 60000 },
     { id: 'no-hints', cond: (stats.perfectSolves || 0) >= 1 },
     { id: 'five-perfect', cond: (stats.perfectSolves || 0) >= 5 },
     { id: 'night-owl', cond: !!stats.nightSolve },
@@ -141,7 +168,7 @@ function checkAchievements(stats) {
   }
 }
 
-function formatTimeMs(ms) {
+function formatTimeMs(ms: number): string {
   const s = Math.floor(ms / 1000)
   const m = Math.floor(s / 60)
   const sec = s % 60

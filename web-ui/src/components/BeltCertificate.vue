@@ -75,20 +75,26 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { ref, computed } from 'vue'
-import { generateCertificateImage, downloadCertificateImage } from '../certificate-image.js'
+import { generateCertificateImage, downloadCertificateImage } from '../certificate-image'
 
-const props = defineProps({
-    technique: { type: String, required: true },
-    beltName: { type: String, required: true },
-    beltEmoji: { type: String, default: '🟡' },
-    beltColor: { type: String, default: '#f1c40f' },
-    tutorialsCompleted: { type: Number, default: 0 },
-    totalTutorials: { type: Number, default: 20 }
-  })
-const emit = defineEmits(['close'])
+interface Props {
+  technique: string
+  beltName: string
+  beltEmoji?: string
+  beltColor?: string
+  tutorialsCompleted?: number
+  totalTutorials?: number
+}
+const props = withDefaults(defineProps<Props>(), {
+  beltEmoji: '🟡',
+  beltColor: '#f1c40f',
+  tutorialsCompleted: 0,
+  totalTutorials: 20
+})
+const emit = defineEmits<{ close: [] }>()
 
 const certEl = ref(null)
 

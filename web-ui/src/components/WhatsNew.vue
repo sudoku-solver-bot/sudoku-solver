@@ -51,9 +51,9 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
-const emit = defineEmits(['close'])
+const emit = defineEmits<{ close: [] }>()
 
 const totalPRs = 136
     const features = [
