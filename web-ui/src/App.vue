@@ -377,6 +377,9 @@
       <InstallPrompt :is-dark="isDark" />
       <OfflineIndicator />
 
+      <!-- PWA update prompt -->
+      <UpdatePrompt :is-dark="isDark" />
+
       <!-- First-time onboarding -->
       <OnboardingTour
         :visible="onboardingOpen"
@@ -423,6 +426,7 @@ import Settings from './components/Settings.vue'
 import AboutPage from './components/AboutPage.vue'
 import HelpPage from './components/HelpPage.vue'
 import OnboardingTour from './components/OnboardingTour.vue'
+import UpdatePrompt from './components/UpdatePrompt.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -468,7 +472,8 @@ export default {
     Settings,
     AboutPage,
     HelpPage,
-    OnboardingTour
+    OnboardingTour,
+    UpdatePrompt
   },
   setup() {
     // Puzzle state
