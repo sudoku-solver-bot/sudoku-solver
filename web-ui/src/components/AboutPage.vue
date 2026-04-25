@@ -1,15 +1,27 @@
 <template>
-  <div class="about-page" :class="{ dark: isDark }">
+  <div
+    class="about-page"
+    :class="{ dark: isDark }"
+  >
     <div class="about-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
       <h2>About</h2>
     </div>
 
     <div class="about-content">
       <div class="logo-section">
-        <div class="app-icon">🧩</div>
+        <div class="app-icon">
+          🧩
+        </div>
         <h1>Sudoku Dojo</h1>
-        <p class="tagline">Learn, Practice & Master Sudoku</p>
+        <p class="tagline">
+          Learn, Practice & Master Sudoku
+        </p>
       </div>
 
       <div class="description">
@@ -52,16 +64,25 @@
       </div>
 
       <div class="qr-section">
-        <p class="qr-label">Scan to share with friends!</p>
+        <p class="qr-label">
+          Scan to share with friends!
+        </p>
         <div class="qr-wrapper">
-          <canvas ref="qrCanvas" class="qr-canvas"></canvas>
+          <canvas
+            ref="qrCanvas"
+            class="qr-canvas"
+          />
         </div>
-        <p class="qr-url">{{ siteUrl }}</p>
+        <p class="qr-url">
+          {{ siteUrl }}
+        </p>
       </div>
 
       <div class="credits">
         <p>Built with ❤️ using Vue.js & Kotlin</p>
-        <p class="version">v1.0.0</p>
+        <p class="version">
+          v1.0.0
+        </p>
       </div>
     </div>
   </div>

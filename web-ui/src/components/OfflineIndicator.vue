@@ -1,6 +1,9 @@
 <template>
   <transition name="slide-down">
-    <div v-if="!online" class="offline-banner">
+    <div
+      v-if="!online"
+      class="offline-banner"
+    >
       <span>📡 You're offline — puzzle still works!</span>
     </div>
   </transition>

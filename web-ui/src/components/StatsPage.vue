@@ -1,8 +1,16 @@
 <template>
-  <div class="stats-page" :class="{ dark: isDark }">
+  <div
+    class="stats-page"
+    :class="{ dark: isDark }"
+  >
     <!-- Header -->
     <div class="stats-header">
-      <button class="back-btn" @click="$emit('back')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('back')"
+      >
+        ← Back
+      </button>
       <h2>📊 Statistics</h2>
     </div>
 
@@ -44,13 +52,23 @@
     <div class="section">
       <h3>By Difficulty</h3>
       <div class="difficulty-bars">
-        <div v-for="d in difficultyStats" :key="d.name" class="diff-row">
+        <div
+          v-for="d in difficultyStats"
+          :key="d.name"
+          class="diff-row"
+        >
           <span class="diff-label">{{ d.icon }} {{ d.name }}</span>
           <div class="diff-bar">
-            <div class="diff-fill" :style="{ width: d.percent + '%', background: d.color }"></div>
+            <div
+              class="diff-fill"
+              :style="{ width: d.percent + '%', background: d.color }"
+            />
           </div>
           <span class="diff-count">{{ d.count }}</span>
-          <span v-if="d.best" class="diff-best">⏱ {{ formatTime(d.best) }}</span>
+          <span
+            v-if="d.best"
+            class="diff-best"
+          >⏱ {{ formatTime(d.best) }}</span>
         </div>
       </div>
     </div>
@@ -59,10 +77,17 @@
     <div class="section">
       <h3>Time Distribution</h3>
       <div class="time-bars">
-        <div v-for="t in timeDistribution" :key="t.label" class="time-row">
+        <div
+          v-for="t in timeDistribution"
+          :key="t.label"
+          class="time-row"
+        >
           <span class="time-label">{{ t.label }}</span>
           <div class="time-bar-track">
-            <div class="time-bar-fill" :style="{ width: t.percent + '%' }"></div>
+            <div
+              class="time-bar-fill"
+              :style="{ width: t.percent + '%' }"
+            />
           </div>
           <span class="time-count">{{ t.count }}</span>
         </div>
@@ -72,8 +97,17 @@
     <!-- Recent activity -->
     <div class="section">
       <h3>Recent Activity</h3>
-      <div v-if="recentActivity.length === 0" class="empty">No activity yet. Start solving!</div>
-      <div v-for="a in recentActivity" :key="a.id" class="activity-row">
+      <div
+        v-if="recentActivity.length === 0"
+        class="empty"
+      >
+        No activity yet. Start solving!
+      </div>
+      <div
+        v-for="a in recentActivity"
+        :key="a.id"
+        class="activity-row"
+      >
         <span class="activity-icon">{{ a.icon }}</span>
         <span class="activity-text">{{ a.text }}</span>
         <span class="activity-time">{{ a.timeAgo }}</span>
@@ -82,8 +116,18 @@
 
     <!-- Reset -->
     <div class="section reset-section">
-      <button class="reset-btn" @click="confirmReset">🗑️ Reset All Statistics</button>
-      <button class="export-btn" @click="exportCSV">📥 Export as CSV</button>
+      <button
+        class="reset-btn"
+        @click="confirmReset"
+      >
+        🗑️ Reset All Statistics
+      </button>
+      <button
+        class="export-btn"
+        @click="exportCSV"
+      >
+        📥 Export as CSV
+      </button>
     </div>
   </div>
 </template>

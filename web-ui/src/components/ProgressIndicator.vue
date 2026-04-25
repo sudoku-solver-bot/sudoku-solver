@@ -2,11 +2,18 @@
   <div class="progress">
     <div class="progress-header">
       <span class="progress-label">Progress</span>
-      <span v-if="difficulty" class="difficulty-badge" :class="difficulty.toLowerCase()">{{ difficultyStars }} {{ difficulty }}</span>
+      <span
+        v-if="difficulty"
+        class="difficulty-badge"
+        :class="difficulty.toLowerCase()"
+      >{{ difficultyStars }} {{ difficulty }}</span>
       <span class="progress-percentage">{{ percentage }}%</span>
     </div>
     <div class="progress-bar">
-      <div class="progress-fill" :style="{ width: percentage + '%' }"></div>
+      <div
+        class="progress-fill"
+        :style="{ width: percentage + '%' }"
+      />
     </div>
     <div class="progress-stats">
       <div class="stat">
@@ -16,19 +23,35 @@
       </div>
       <div class="stat">
         <span class="stat-icon">⏱️</span>
-        <span class="stat-value" :class="{ paused: timerPaused }">{{ formattedTime }}</span>
-        <button v-if="elapsedTime > 0" class="pause-btn" @click="$emit('toggle-pause')">
+        <span
+          class="stat-value"
+          :class="{ paused: timerPaused }"
+        >{{ formattedTime }}</span>
+        <button
+          v-if="elapsedTime > 0"
+          class="pause-btn"
+          @click="$emit('toggle-pause')"
+        >
           {{ timerPaused ? '▶' : '⏸' }}
         </button>
         <span class="stat-label">Time</span>
-        <span v-if="newRecord" class="new-record-badge">🏆 New Record!</span>
+        <span
+          v-if="newRecord"
+          class="new-record-badge"
+        >🏆 New Record!</span>
       </div>
-      <div v-if="mistakes > 0" class="stat">
+      <div
+        v-if="mistakes > 0"
+        class="stat"
+      >
         <span class="stat-icon">❌</span>
         <span class="stat-value">{{ mistakes }}</span>
         <span class="stat-label">Mistakes</span>
       </div>
-      <div v-if="hintsUsed > 0" class="stat">
+      <div
+        v-if="hintsUsed > 0"
+        class="stat"
+      >
         <span class="stat-icon">💡</span>
         <span class="stat-value">{{ hintsUsed }}</span>
         <span class="stat-label">Hints</span>

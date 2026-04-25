@@ -1,15 +1,31 @@
 <template>
   <transition name="toast">
-    <div v-if="visible" :class="['toast', type]" @click="close">
+    <div
+      v-if="visible"
+      :class="['toast', type]"
+      @click="close"
+    >
       <div class="toast-content">
         <span class="toast-icon">{{ icon }}</span>
         <div class="toast-message">
           <span class="toast-title">{{ title }}</span>
-          <span v-if="message" class="toast-text">{{ message }}</span>
+          <span
+            v-if="message"
+            class="toast-text"
+          >{{ message }}</span>
         </div>
-        <button class="toast-close" @click.stop="close">&times;</button>
+        <button
+          class="toast-close"
+          @click.stop="close"
+        >
+          &times;
+        </button>
       </div>
-      <button v-if="showRetry" class="toast-retry" @click.stop="$emit('retry')">
+      <button
+        v-if="showRetry"
+        class="toast-retry"
+        @click.stop="$emit('retry')"
+      >
         Try Again
       </button>
     </div>

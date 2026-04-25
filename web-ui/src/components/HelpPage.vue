@@ -1,27 +1,43 @@
 <template>
-  <div class="help-page" :class="{ dark: isDark }">
+  <div
+    class="help-page"
+    :class="{ dark: isDark }"
+  >
     <div class="help-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
       <h2>Help</h2>
     </div>
 
     <div class="help-content">
       <!-- Getting Started -->
       <section class="help-section">
-        <h3 class="section-title">🚀 Getting Started</h3>
+        <h3 class="section-title">
+          🚀 Getting Started
+        </h3>
         <div class="help-cards">
           <div class="help-card">
-            <div class="card-icon">🧩</div>
+            <div class="card-icon">
+              🧩
+            </div>
             <h4>Free Play</h4>
             <p>Generate puzzles at any difficulty level. Tap <strong>Free Play</strong> on the home screen, choose a difficulty, and start solving.</p>
           </div>
           <div class="help-card">
-            <div class="card-icon">📅</div>
+            <div class="card-icon">
+              📅
+            </div>
             <h4>Daily Challenge</h4>
             <p>A new puzzle every day! Build your streak by solving consecutive days. Same puzzle for everyone worldwide.</p>
           </div>
           <div class="help-card">
-            <div class="card-icon">📚</div>
+            <div class="card-icon">
+              📚
+            </div>
             <h4>Learn Techniques</h4>
             <p>Step-by-step tutorials teach you solving techniques from basic to advanced. Progress through belt levels like martial arts!</p>
           </div>
@@ -30,30 +46,44 @@
 
       <!-- Controls -->
       <section class="help-section">
-        <h3 class="section-title">🎮 Controls</h3>
+        <h3 class="section-title">
+          🎮 Controls
+        </h3>
         <div class="control-list">
           <div class="control-item">
-            <div class="control-key">Tap a cell</div>
+            <div class="control-key">
+              Tap a cell
+            </div>
             <span>Select it. Tap again to deselect.</span>
           </div>
           <div class="control-item">
-            <div class="control-key">Number buttons</div>
+            <div class="control-key">
+              Number buttons
+            </div>
             <span>Place a number in the selected cell.</span>
           </div>
           <div class="control-item">
-            <div class="control-key">✏️ Pencil mode</div>
+            <div class="control-key">
+              ✏️ Pencil mode
+            </div>
             <span>Toggle pencil marks to note possible candidates in a cell.</span>
           </div>
           <div class="control-item">
-            <div class="control-key">✕ Clear</div>
+            <div class="control-key">
+              ✕ Clear
+            </div>
             <span>Remove a number or pencil mark from the selected cell.</span>
           </div>
           <div class="control-item">
-            <div class="control-key">💡 Hint</div>
+            <div class="control-key">
+              💡 Hint
+            </div>
             <span>Get a hint for the selected cell. Uses the solver to suggest a value.</span>
           </div>
           <div class="control-item">
-            <div class="control-key">↩ Undo / ↪ Redo</div>
+            <div class="control-key">
+              ↩ Undo / ↪ Redo
+            </div>
             <span>Undo or redo your last move.</span>
           </div>
         </div>
@@ -61,14 +91,20 @@
 
       <!-- Highlighting -->
       <section class="help-section">
-        <h3 class="section-title">👁️ Highlighting</h3>
+        <h3 class="section-title">
+          👁️ Highlighting
+        </h3>
         <div class="control-list">
           <div class="control-item">
-            <div class="control-key">Tap a filled cell</div>
+            <div class="control-key">
+              Tap a filled cell
+            </div>
             <span>Highlights all other cells with the <strong>same number</strong> so you can quickly spot duplicates or gaps.</span>
           </div>
           <div class="control-item">
-            <div class="control-key">Tap an empty cell</div>
+            <div class="control-key">
+              Tap an empty cell
+            </div>
             <span>Highlights the entire <strong>row, column, and 3×3 box</strong> to help you see what numbers are already placed.</span>
           </div>
         </div>
@@ -76,8 +112,12 @@
 
       <!-- Pencil Marks -->
       <section class="help-section">
-        <h3 class="section-title">✏️ Pencil Marks</h3>
-        <p class="help-text">Pencil marks (also called candidates) are small numbers you write in cells to track which values are still possible.</p>
+        <h3 class="section-title">
+          ✏️ Pencil Marks
+        </h3>
+        <p class="help-text">
+          Pencil marks (also called candidates) are small numbers you write in cells to track which values are still possible.
+        </p>
         <div class="tip-box">
           <strong>💡 Tip:</strong> Enable <strong>Show Candidates</strong> in settings to auto-compute pencil marks. The app calculates which numbers are possible based on the current board state.
         </div>
@@ -85,11 +125,22 @@
 
       <!-- Solving Techniques Overview -->
       <section class="help-section">
-        <h3 class="section-title">🥋 Techniques Overview</h3>
-        <p class="help-text">Sudoku Dojo teaches techniques from beginner to expert. Here's a quick overview:</p>
+        <h3 class="section-title">
+          🥋 Techniques Overview
+        </h3>
+        <p class="help-text">
+          Sudoku Dojo teaches techniques from beginner to expert. Here's a quick overview:
+        </p>
         <div class="technique-list">
-          <div class="technique-item" v-for="t in techniques" :key="t.name">
-            <span class="belt-dot" :style="{ background: t.color }"></span>
+          <div
+            v-for="t in techniques"
+            :key="t.name"
+            class="technique-item"
+          >
+            <span
+              class="belt-dot"
+              :style="{ background: t.color }"
+            />
             <div>
               <strong>{{ t.name }}</strong>
               <p>{{ t.desc }}</p>
@@ -100,7 +151,9 @@
 
       <!-- Tips -->
       <section class="help-section">
-        <h3 class="section-title">💡 Tips & Tricks</h3>
+        <h3 class="section-title">
+          💡 Tips & Tricks
+        </h3>
         <div class="tips-list">
           <div class="tip-item">
             <span class="tip-num">1</span>

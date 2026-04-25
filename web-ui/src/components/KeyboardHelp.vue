@@ -1,12 +1,27 @@
 <template>
-  <div class="help-overlay" @click.self="$emit('close')">
-    <div class="help-card" :class="{ dark: isDark }">
+  <div
+    class="help-overlay"
+    @click.self="$emit('close')"
+  >
+    <div
+      class="help-card"
+      :class="{ dark: isDark }"
+    >
       <div class="help-header">
         <h3>⌨️ Keyboard Shortcuts</h3>
-        <button class="close-btn" @click="$emit('close')">✕</button>
+        <button
+          class="close-btn"
+          @click="$emit('close')"
+        >
+          ✕
+        </button>
       </div>
       <div class="shortcuts">
-        <div class="shortcut-row" v-for="s in shortcuts" :key="s.key">
+        <div
+          v-for="s in shortcuts"
+          :key="s.key"
+          class="shortcut-row"
+        >
           <kbd>{{ s.key }}</kbd>
           <span>{{ s.desc }}</span>
         </div>

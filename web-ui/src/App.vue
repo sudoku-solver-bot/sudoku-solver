@@ -1,56 +1,109 @@
 <template>
-  <div class="app" :class="{ dark: isDark }" @click="handleAppClick">
-    <div class="container" :class="{ loading }">
+  <div
+    class="app"
+    :class="{ dark: isDark }"
+    @click="handleAppClick"
+  >
+    <div
+      class="container"
+      :class="{ loading }"
+    >
       <!-- Header -->
       <div class="header">
         <h1>🧩 Sudoku Solver</h1>
         <div class="header-actions">
           <!-- Primary actions always visible -->
-          <button v-if="playMode" class="header-btn home-btn" @click="playMode = false" title="Home">
+          <button
+            v-if="playMode"
+            class="header-btn home-btn"
+            title="Home"
+            @click="playMode = false"
+          >
             🏠
           </button>
-          <button class="header-btn daily-btn" @click="dailyMode = !dailyMode" :title="dailyMode ? 'Exit Daily' : 'Daily Challenge'">
+          <button
+            class="header-btn daily-btn"
+            :title="dailyMode ? 'Exit Daily' : 'Daily Challenge'"
+            @click="dailyMode = !dailyMode"
+          >
             📅
           </button>
-          <button class="header-btn dark-toggle" @click="toggleDarkMode" :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'">
+          <button
+            class="header-btn dark-toggle"
+            :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
+            @click="toggleDarkMode"
+          >
             {{ isDark ? '☀️' : '🌙' }}
           </button>
 
           <!-- More menu -->
           <div class="header-more">
-            <button class="header-btn more-btn" @click.stop="moreMenuOpen = !moreMenuOpen" title="More">
+            <button
+              class="header-btn more-btn"
+              title="More"
+              @click.stop="moreMenuOpen = !moreMenuOpen"
+            >
               ⋯
             </button>
-            <div v-if="moreMenuOpen" class="more-dropdown" :class="{ dark: isDark }" @click.stop>
-              <button class="menu-item" @click="toggleTutorialMode(); moreMenuOpen = false">
+            <div
+              v-if="moreMenuOpen"
+              class="more-dropdown"
+              :class="{ dark: isDark }"
+              @click.stop
+            >
+              <button
+                class="menu-item"
+                @click="toggleTutorialMode(); moreMenuOpen = false"
+              >
                 <span class="menu-icon">📚</span>
                 <span class="menu-label">Learn Techniques</span>
               </button>
-              <button class="menu-item" @click="leaderboardOpen = !leaderboardOpen; moreMenuOpen = false">
+              <button
+                class="menu-item"
+                @click="leaderboardOpen = !leaderboardOpen; moreMenuOpen = false"
+              >
                 <span class="menu-icon">🏆</span>
                 <span class="menu-label">Leaderboard</span>
               </button>
-              <button class="menu-item" @click="savesOpen = !savesOpen; moreMenuOpen = false">
+              <button
+                class="menu-item"
+                @click="savesOpen = !savesOpen; moreMenuOpen = false"
+              >
                 <span class="menu-icon">💾</span>
                 <span class="menu-label">Saved Puzzles</span>
               </button>
-              <button class="menu-item" @click="openAchievements(); moreMenuOpen = false">
+              <button
+                class="menu-item"
+                @click="openAchievements(); moreMenuOpen = false"
+              >
                 <span class="menu-icon">🏅</span>
                 <span class="menu-label">Achievements</span>
               </button>
-              <button class="menu-item" @click="openStats(); moreMenuOpen = false">
+              <button
+                class="menu-item"
+                @click="openStats(); moreMenuOpen = false"
+              >
                 <span class="menu-icon">📊</span>
                 <span class="menu-label">Statistics</span>
               </button>
-              <button class="menu-item" @click="settingsOpen = !settingsOpen; moreMenuOpen = false">
+              <button
+                class="menu-item"
+                @click="settingsOpen = !settingsOpen; moreMenuOpen = false"
+              >
                 <span class="menu-icon">⚙️</span>
                 <span class="menu-label">Settings</span>
               </button>
-              <button class="menu-item" @click="helpOpen = true; moreMenuOpen = false">
+              <button
+                class="menu-item"
+                @click="helpOpen = true; moreMenuOpen = false"
+              >
                 <span class="menu-icon">❓</span>
                 <span class="menu-label">Help</span>
               </button>
-              <button class="menu-item" @click="aboutOpen = true; moreMenuOpen = false">
+              <button
+                class="menu-item"
+                @click="aboutOpen = true; moreMenuOpen = false"
+              >
                 <span class="menu-icon">ℹ️</span>
                 <span class="menu-label">About</span>
               </button>
@@ -190,130 +243,134 @@
 
       <!-- Normal mode (hidden in tutorial/daily/dashboard) -->
       <template v-if="playMode && !tutorialMode && !tutorialSelectorOpen && !dailyMode">
+        <!-- Toast notification -->
+        <ToastNotification
+          :visible="toast.visible"
+          :type="toast.type"
+          :title="toast.title"
+          :message="toast.message"
+          :show-retry="toast.showRetry"
+          @close="hideToast"
+          @retry="toast.onRetry"
+        />
 
-      <!-- Toast notification -->
-      <ToastNotification
-        :visible="toast.visible"
-        :type="toast.type"
-        :title="toast.title"
-        :message="toast.message"
-        :show-retry="toast.showRetry"
-        @close="hideToast"
-        @retry="toast.onRetry"
-      />
+        <!-- Progress indicator -->
+        <ProgressIndicator
+          :puzzle="puzzle"
+          :given-cells="givenCells"
+          :mistakes="mistakes"
+          :hints-used="hintsUsed"
+          :elapsed-time="elapsedTime"
+          :difficulty="puzzleDifficulty"
+        />
 
-      <!-- Progress indicator -->
-      <ProgressIndicator
-        :puzzle="puzzle"
-        :given-cells="givenCells"
-        :mistakes="mistakes"
-        :hints-used="hintsUsed"
-        :elapsed-time="elapsedTime"
-        :difficulty="puzzleDifficulty"
-      />
+        <!-- Result display -->
+        <ResultDisplay
+          :message="resultMessage"
+          :type="resultType"
+          :visible="resultVisible"
+          :difficulty="resultDifficulty"
+          :techniques="resultTechniques"
+        />
 
-      <!-- Result display -->
-      <ResultDisplay
-        :message="resultMessage"
-        :type="resultType"
-        :visible="resultVisible"
-        :difficulty="resultDifficulty"
-        :techniques="resultTechniques"
-      />
+        <!-- Loading overlay -->
+        <transition name="fade">
+          <div
+            v-if="loading"
+            class="loading-overlay"
+          >
+            <div class="spinner" />
+            <p class="loading-text">
+              {{ loadingMessage }}
+            </p>
+          </div>
+        </transition>
 
-      <!-- Loading overlay -->
-      <transition name="fade">
-        <div v-if="loading" class="loading-overlay">
-          <div class="spinner"></div>
-          <p class="loading-text">{{ loadingMessage }}</p>
-        </div>
-      </transition>
+        <!-- Sudoku grid -->
+        <SudokuGrid
+          :puzzle="puzzle"
+          :given-cells="givenCells"
+          :solved-cells="solvedCells"
+          :selected-cell="selectedCell"
+          :is-dark="isDark"
+          :candidates="candidates"
+          :show-candidates="showCandidates"
+          :color-blind="colorBlindMode"
+          :high-contrast="highContrastMode"
+          :challenge-mode="challengeMode"
 
-      <!-- Sudoku grid -->
-      <SudokuGrid
-        :puzzle="puzzle"
-        :given-cells="givenCells"
-        :solved-cells="solvedCells"
-        :selected-cell="selectedCell"
-        :is-dark="isDark"
-        :candidates="candidates"
-        :show-candidates="showCandidates"
-        :color-blind="colorBlindMode"
-        :high-contrast="highContrastMode"
-        :challenge-mode="challengeMode"
+          :theme="boardTheme"
+          @update="onCellUpdate"
+          @select="selectCell"
+          @navigate="navigateToCell"
+          @undo="undo"
+          @redo="redo"
+        />
 
-        :theme="boardTheme"
-        @update="onCellUpdate"
-        @select="selectCell"
-        @navigate="navigateToCell"
-        @undo="undo"
-        @redo="redo"
-      />
+        <!-- Mobile number pad (right below grid) -->
+        <MobileNumberPad
+          :visible="showMobilePad"
+          :counts="digitCounts"
+          :pencil-mode="pencilMode"
 
-      <!-- Mobile number pad (right below grid) -->
-      <MobileNumberPad
-        :visible="showMobilePad"
-        :counts="digitCounts"
-        :pencil-mode="pencilMode"
+          @input="onNumberPadInput"
+          @clear="clearSelectedCell"
+          @hint="getHint"
+          @toggle-pencil="pencilMode = !pencilMode"
+        />
 
-        @input="onNumberPadInput"
-        @clear="clearSelectedCell"
-        @hint="getHint"
-        @toggle-pencil="pencilMode = !pencilMode"
-      />
+        <!-- Control panel -->
+        <ControlPanel
+          :loading="loading"
+          :can-undo="canUndo"
+          :can-redo="canRedo"
+          :undo-count="undoCount"
+          :redo-count="redoCount"
+          :show-candidates="showCandidates"
+          @solve="solve"
+          @clear="clearGrid"
+          @generate="generate"
+          @import="importModalOpen = true"
+          @share="sharePuzzle"
+          @print="handlePrint"
+          @share-image="handleShareImage"
+          @hint="getHint"
+          @undo="undo"
+          @redo="redo"
+          @toggle-candidates="showCandidates = !showCandidates"
+        />
 
-      <!-- Control panel -->
-      <ControlPanel
-        :loading="loading"
-        :can-undo="canUndo"
-        :can-redo="canRedo"
-        :undo-count="undoCount"
-        :redo-count="redoCount"
-        :show-candidates="showCandidates"
-        @solve="solve"
-        @clear="clearGrid"
-        @generate="generate"
-        @import="importModalOpen = true"
-        @share="sharePuzzle"
-        @print="handlePrint"
-        @share-image="handleShareImage"
-        @hint="getHint"
-        @undo="undo"
-        @redo="redo"
-        @toggle-candidates="showCandidates = !showCandidates"
-      />
+        <!-- Hint modal -->
+        <HintModal
+          :visible="hintModalVisible"
+          :hint="currentHint"
+          :total-hints="hintsUsed"
+          @close="closeHintModal"
+        />
 
-      <!-- Hint modal -->
-      <HintModal
-        :visible="hintModalVisible"
-        :hint="currentHint"
-        :total-hints="hintsUsed"
-        @close="closeHintModal"
-      />
+        <!-- Import puzzle modal -->
+        <ImportPuzzle
+          v-if="importModalOpen"
+          :is-dark="isDark"
+          @close="importModalOpen = false"
+          @import="onImportPuzzle"
+        />
 
-      <!-- Import puzzle modal -->
-      <ImportPuzzle
-        v-if="importModalOpen"
-        :is-dark="isDark"
-        @close="importModalOpen = false"
-        @import="onImportPuzzle"
-      />
+        <!-- Keyboard help -->
+        <KeyboardHelp
+          v-if="keyboardHelpOpen"
+          :is-dark="isDark"
+          @close="keyboardHelpOpen = false"
+        />
 
-      <!-- Keyboard help -->
-      <KeyboardHelp
-        v-if="keyboardHelpOpen"
-        :is-dark="isDark"
-        @close="keyboardHelpOpen = false"
-      />
-
-      <!-- Confetti celebration -->
-      <ConfettiCelebration
-        :visible="confettiVisible"
-        :time="formatTime(elapsedTime)"
-        :mistakes="mistakes"
-        :hints="hintsUsed"
-        @done="confettiVisible = false"
-      />
+        <!-- Confetti celebration -->
+        <ConfettiCelebration
+          :visible="confettiVisible"
+          :time="formatTime(elapsedTime)"
+          :mistakes="mistakes"
+          :hints="hintsUsed"
+          @done="confettiVisible = false"
+        />
       </template>
 
       <!-- PWA install prompt -->

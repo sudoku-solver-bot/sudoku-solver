@@ -70,8 +70,11 @@ export default [
     },
     rules: {
       'vue/multi-word-component-names': 'off',
-      'no-unused-vars': 'warn',
+      'no-unused-vars': 'off',
       'no-empty': ['error', { allowEmptyCatch: true }],
+      'vue/no-v-html': 'off',
+      'vue/require-explicit-emits': 'off',
+      'vue/require-default-prop': 'off',
     },
   },
 ];

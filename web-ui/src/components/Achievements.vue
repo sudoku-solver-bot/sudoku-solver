@@ -1,8 +1,16 @@
 <template>
-  <div class="achievements" :class="{ dark: isDark }">
+  <div
+    class="achievements"
+    :class="{ dark: isDark }"
+  >
     <!-- Header -->
     <div class="ach-header">
-      <button class="back-btn" @click="$emit('back')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('back')"
+      >
+        ← Back
+      </button>
       <h2>🏅 Achievements</h2>
       <span class="ach-count">{{ earned }}/{{ total }}</span>
     </div>
@@ -10,7 +18,10 @@
     <!-- Progress bar -->
     <div class="ach-progress">
       <div class="ach-bar">
-        <div class="ach-fill" :style="{ width: progressPercent + '%' }"></div>
+        <div
+          class="ach-fill"
+          :style="{ width: progressPercent + '%' }"
+        />
       </div>
       <span class="ach-pct">{{ Math.round(progressPercent) }}%</span>
     </div>
@@ -23,12 +34,19 @@
         class="ach-card"
         :class="{ earned: badge.earned, locked: !badge.earned }"
       >
-        <div class="ach-icon">{{ badge.earned ? badge.icon : '🔒' }}</div>
+        <div class="ach-icon">
+          {{ badge.earned ? badge.icon : '🔒' }}
+        </div>
         <div class="ach-info">
           <span class="ach-name">{{ badge.name }}</span>
           <span class="ach-desc">{{ badge.earned ? badge.description : '???' }}</span>
         </div>
-        <div v-if="badge.earned" class="ach-date">{{ badge.earnedDate }}</div>
+        <div
+          v-if="badge.earned"
+          class="ach-date"
+        >
+          {{ badge.earnedDate }}
+        </div>
       </div>
     </div>
   </div>

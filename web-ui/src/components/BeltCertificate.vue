@@ -1,22 +1,43 @@
 <template>
-  <div class="certificate-overlay" @click.self="$emit('close')">
-    <div class="certificate-card" ref="certEl">
+  <div
+    class="certificate-overlay"
+    @click.self="$emit('close')"
+  >
+    <div
+      ref="certEl"
+      class="certificate-card"
+    >
       <div class="cert-border">
         <div class="cert-inner">
-          <div class="cert-ornament">✨🏆✨</div>
-          <h1 class="cert-title">Certificate of Achievement</h1>
-          <div class="cert-divider"></div>
-          <p class="cert-subtitle">This certifies mastery of</p>
-          <h2 class="cert-technique">{{ technique }}</h2>
+          <div class="cert-ornament">
+            ✨🏆✨
+          </div>
+          <h1 class="cert-title">
+            Certificate of Achievement
+          </h1>
+          <div class="cert-divider" />
+          <p class="cert-subtitle">
+            This certifies mastery of
+          </p>
+          <h2 class="cert-technique">
+            {{ technique }}
+          </h2>
           <div class="cert-belt-row">
-            <span class="cert-belt-badge" :style="{ background: beltColor }">
+            <span
+              class="cert-belt-badge"
+              :style="{ background: beltColor }"
+            >
               {{ beltEmoji }}
             </span>
             <span class="cert-belt-name">{{ beltName }}</span>
           </div>
-          <div class="cert-divider"></div>
-          <p class="cert-dojo">Sudoku Dojo</p>
-          <p class="cert-date">{{ formattedDate }}</p>
+          <div class="cert-divider" />
+          <p class="cert-dojo">
+            Sudoku Dojo
+          </p>
+          <p class="cert-date">
+            {{ formattedDate }}
+          </p>
           <div class="cert-footer">
             <span>{{ tutorialsCompleted }} / {{ totalTutorials }} lessons completed</span>
           </div>
@@ -25,10 +46,30 @@
 
       <!-- Actions -->
       <div class="cert-actions">
-        <button class="cert-btn download" @click="downloadCert">🖼️ Save Image</button>
-        <button class="cert-btn print" @click="printCert">🖨️ Print</button>
-        <button class="cert-btn share" @click="shareCert">📤 Share</button>
-        <button class="cert-btn close" @click="$emit('close')">✓ Done</button>
+        <button
+          class="cert-btn download"
+          @click="downloadCert"
+        >
+          🖼️ Save Image
+        </button>
+        <button
+          class="cert-btn print"
+          @click="printCert"
+        >
+          🖨️ Print
+        </button>
+        <button
+          class="cert-btn share"
+          @click="shareCert"
+        >
+          📤 Share
+        </button>
+        <button
+          class="cert-btn close"
+          @click="$emit('close')"
+        >
+          ✓ Done
+        </button>
       </div>
     </div>
   </div>

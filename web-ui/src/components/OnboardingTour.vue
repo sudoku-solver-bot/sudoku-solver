@@ -1,6 +1,12 @@
 <template>
-  <div class="onboarding-overlay" v-if="visible">
-    <div class="onboarding-card" :class="{ dark: isDark }">
+  <div
+    v-if="visible"
+    class="onboarding-overlay"
+  >
+    <div
+      class="onboarding-card"
+      :class="{ dark: isDark }"
+    >
       <!-- Progress dots -->
       <div class="progress-dots">
         <span
@@ -9,22 +15,37 @@
           class="dot"
           :class="{ active: i - 1 === currentStep }"
           :style="i - 1 === currentStep ? { background: '#4285f4' } : {}"
-        ></span>
+        />
       </div>
 
       <!-- Step content -->
       <div class="step-visual">
-        <div class="visual-icon">{{ steps[currentStep].icon }}</div>
+        <div class="visual-icon">
+          {{ steps[currentStep].icon }}
+        </div>
       </div>
 
-      <h3 class="step-title">{{ steps[currentStep].title }}</h3>
-      <p class="step-desc">{{ steps[currentStep].desc }}</p>
+      <h3 class="step-title">
+        {{ steps[currentStep].title }}
+      </h3>
+      <p class="step-desc">
+        {{ steps[currentStep].desc }}
+      </p>
 
       <!-- Actions -->
       <div class="step-actions">
-        <button v-if="currentStep > 0" class="btn-skip" @click="$emit('close')">Skip</button>
-        <span v-else></span>
-        <button class="btn-next" @click="nextStep">
+        <button
+          v-if="currentStep > 0"
+          class="btn-skip"
+          @click="$emit('close')"
+        >
+          Skip
+        </button>
+        <span v-else />
+        <button
+          class="btn-next"
+          @click="nextStep"
+        >
           {{ currentStep === steps.length - 1 ? "Let's go! 🎉" : 'Next →' }}
         </button>
       </div>

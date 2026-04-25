@@ -1,7 +1,15 @@
 <template>
-  <div class="tutorial-selector" :class="{ dark: isDark }">
+  <div
+    class="tutorial-selector"
+    :class="{ dark: isDark }"
+  >
     <div class="selector-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
       <h2>📚 Sudoku Dojo</h2>
       <div class="total-progress">
         {{ completedCount }}/{{ tutorials.length }}
@@ -11,7 +19,10 @@
     <!-- Overall progress bar -->
     <div class="overall-progress">
       <div class="progress-bar">
-        <div class="progress-fill" :style="{ width: overallProgress + '%' }"></div>
+        <div
+          class="progress-fill"
+          :style="{ width: overallProgress + '%' }"
+        />
       </div>
     </div>
 
@@ -22,18 +33,30 @@
         type="text"
         placeholder="🔍 Search techniques..."
         class="search-input"
-      />
-      <button v-if="searchQuery" class="clear-btn" @click="searchQuery = ''">✕</button>
+      >
+      <button
+        v-if="searchQuery"
+        class="clear-btn"
+        @click="searchQuery = ''"
+      >
+        ✕
+      </button>
     </div>
 
     <!-- Belt groups -->
-    <div class="belt-groups" v-if="!searchQuery">
+    <div
+      v-if="!searchQuery"
+      class="belt-groups"
+    >
       <div
         v-for="group in beltGroups"
         :key="group.belt"
         class="belt-group"
       >
-        <div class="belt-group-header" :style="{ borderLeftColor: group.color }">
+        <div
+          class="belt-group-header"
+          :style="{ borderLeftColor: group.color }"
+        >
           <span class="belt-emoji">{{ group.emoji }}</span>
           <span class="belt-name">{{ group.name }}</span>
           <span class="belt-count">{{ group.completed }}/{{ group.lessons.length }}</span>
@@ -52,8 +75,12 @@
               <span v-else>{{ lesson.beltEmoji }}</span>
             </div>
             <div class="lesson-info">
-              <div class="lesson-title">{{ lesson.title }}</div>
-              <div class="lesson-desc">{{ lesson.description }}</div>
+              <div class="lesson-title">
+                {{ lesson.title }}
+              </div>
+              <div class="lesson-desc">
+                {{ lesson.description }}
+              </div>
             </div>
             <div class="lesson-actions">
               <button
@@ -61,8 +88,15 @@
                 class="mini-btn practice-btn"
                 title="Practice puzzles"
                 @click.stop="$emit('practice', lesson)"
-              >🎯</button>
-              <div v-if="!lesson.locked" class="lesson-arrow">→</div>
+              >
+                🎯
+              </button>
+              <div
+                v-if="!lesson.locked"
+                class="lesson-arrow"
+              >
+                →
+              </div>
             </div>
           </button>
           <!-- Quiz button for belt group -->
@@ -71,20 +105,34 @@
             class="quiz-card"
             @click="$emit('quiz', group.quizData)"
           >
-            <div class="lesson-icon">🧠</div>
-            <div class="lesson-info">
-              <div class="lesson-title">Quiz: {{ group.quizData.technique }}</div>
-              <div class="lesson-desc">Test your pattern recognition!</div>
+            <div class="lesson-icon">
+              🧠
             </div>
-            <div class="lesson-arrow">→</div>
+            <div class="lesson-info">
+              <div class="lesson-title">
+                Quiz: {{ group.quizData.technique }}
+              </div>
+              <div class="lesson-desc">
+                Test your pattern recognition!
+              </div>
+            </div>
+            <div class="lesson-arrow">
+              →
+            </div>
           </button>
         </div>
       </div>
     </div>
 
     <!-- Search results -->
-    <div v-if="searchQuery" class="search-results">
-      <div v-if="filteredLessons.length === 0" class="no-results">
+    <div
+      v-if="searchQuery"
+      class="search-results"
+    >
+      <div
+        v-if="filteredLessons.length === 0"
+        class="no-results"
+      >
         No techniques found for "{{ searchQuery }}"
       </div>
       <button
@@ -100,13 +148,27 @@
           <span v-else>{{ lesson.beltEmoji }}</span>
         </div>
         <div class="lesson-info">
-          <div class="lesson-title" v-html="highlightMatch(lesson.title)"></div>
-          <div class="lesson-desc" v-html="highlightMatch(lesson.description)"></div>
+          <div
+            class="lesson-title"
+            v-html="highlightMatch(lesson.title)"
+          />
+          <div
+            class="lesson-desc"
+            v-html="highlightMatch(lesson.description)"
+          />
         </div>
-        <div class="belt-badge" :style="{ background: lesson.beltColor }">
+        <div
+          class="belt-badge"
+          :style="{ background: lesson.beltColor }"
+        >
           {{ lesson.beltEmoji }}
         </div>
-        <div v-if="!lesson.locked" class="lesson-arrow">→</div>
+        <div
+          v-if="!lesson.locked"
+          class="lesson-arrow"
+        >
+          →
+        </div>
       </button>
     </div>
   </div>

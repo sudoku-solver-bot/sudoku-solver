@@ -1,5 +1,8 @@
 <template>
-  <div v-if="visible" class="number-bar">
+  <div
+    v-if="visible"
+    class="number-bar"
+  >
     <div class="bar-row">
       <button
         v-for="num in [1, 2, 3, 4, 5, 6, 7, 8, 9]"
@@ -9,11 +12,34 @@
         @click="$emit('input', num)"
       >
         <span class="bar-num">{{ num }}</span>
-        <span v-if="counts[num] !== undefined" class="bar-count" :class="{ done: counts[num] >= 9 }">{{ 9 - counts[num] }}</span>
+        <span
+          v-if="counts[num] !== undefined"
+          class="bar-count"
+          :class="{ done: counts[num] >= 9 }"
+        >{{ 9 - counts[num] }}</span>
       </button>
-      <button class="bar-btn bar-clear" @click="$emit('clear')" title="Clear">✕</button>
-      <button class="bar-btn bar-hint" @click="$emit('hint')" title="Hint">💡</button>
-      <button class="bar-btn" :class="{ 'pencil-active': pencilMode }" @click="$emit('toggle-pencil')" title="Pencil marks">✏️</button>
+      <button
+        class="bar-btn bar-clear"
+        title="Clear"
+        @click="$emit('clear')"
+      >
+        ✕
+      </button>
+      <button
+        class="bar-btn bar-hint"
+        title="Hint"
+        @click="$emit('hint')"
+      >
+        💡
+      </button>
+      <button
+        class="bar-btn"
+        :class="{ 'pencil-active': pencilMode }"
+        title="Pencil marks"
+        @click="$emit('toggle-pencil')"
+      >
+        ✏️
+      </button>
     </div>
   </div>
 </template>

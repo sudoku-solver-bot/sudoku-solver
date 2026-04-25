@@ -1,28 +1,52 @@
 <template>
-  <div class="leaderboard" :class="{ dark: isDark }">
+  <div
+    class="leaderboard"
+    :class="{ dark: isDark }"
+  >
     <!-- Header -->
     <div class="lb-header">
-      <button class="back-btn" @click="$emit('back')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('back')"
+      >
+        ← Back
+      </button>
       <h2>🏆 Leaderboard</h2>
       <span class="lb-badge">OPT-IN</span>
     </div>
 
     <!-- Opt-in prompt -->
-    <div v-if="!optedIn" class="opt-in-card">
-      <div class="opt-in-icon">🏆</div>
+    <div
+      v-if="!optedIn"
+      class="opt-in-card"
+    >
+      <div class="opt-in-icon">
+        🏆
+      </div>
       <h3>Join the Leaderboard?</h3>
       <p>Share your daily challenge times and see how you rank against other solvers. Completely optional!</p>
       <div class="name-input">
         <label>Display Name</label>
-        <input v-model="playerName" placeholder="Your name" maxlength="20" />
+        <input
+          v-model="playerName"
+          placeholder="Your name"
+          maxlength="20"
+        >
       </div>
-      <button class="join-btn" :disabled="!playerName.trim()" @click="joinLeaderboard">
+      <button
+        class="join-btn"
+        :disabled="!playerName.trim()"
+        @click="joinLeaderboard"
+      >
         Join Leaderboard
       </button>
     </div>
 
     <!-- Leaderboard content -->
-    <div v-else class="lb-content">
+    <div
+      v-else
+      class="lb-content"
+    >
       <!-- Your stats -->
       <div class="your-stats">
         <div class="player-card">
@@ -34,14 +58,32 @@
 
       <!-- Tabs -->
       <div class="lb-tabs">
-        <button :class="{ active: tab === 'daily' }" @click="tab = 'daily'">Today</button>
-        <button :class="{ active: tab === 'weekly' }" @click="tab = 'weekly'">This Week</button>
-        <button :class="{ active: tab === 'alltime' }" @click="tab = 'alltime'">All Time</button>
+        <button
+          :class="{ active: tab === 'daily' }"
+          @click="tab = 'daily'"
+        >
+          Today
+        </button>
+        <button
+          :class="{ active: tab === 'weekly' }"
+          @click="tab = 'weekly'"
+        >
+          This Week
+        </button>
+        <button
+          :class="{ active: tab === 'alltime' }"
+          @click="tab = 'alltime'"
+        >
+          All Time
+        </button>
       </div>
 
       <!-- Rankings -->
       <div class="rankings">
-        <div v-if="rankings.length === 0" class="empty-state">
+        <div
+          v-if="rankings.length === 0"
+          class="empty-state"
+        >
           <span>🎯</span>
           <p>No entries yet. Complete today's daily challenge!</p>
         </div>
@@ -60,8 +102,18 @@
 
       <!-- Actions -->
       <div class="lb-actions">
-        <button class="share-score-btn" @click="shareScore">📤 Share Score</button>
-        <button class="leave-btn" @click="leaveLeaderboard">Leave Leaderboard</button>
+        <button
+          class="share-score-btn"
+          @click="shareScore"
+        >
+          📤 Share Score
+        </button>
+        <button
+          class="leave-btn"
+          @click="leaveLeaderboard"
+        >
+          Leave Leaderboard
+        </button>
       </div>
     </div>
   </div>

@@ -1,20 +1,46 @@
 <template>
-  <div class="saves-modal" @click.self="$emit('close')">
-    <div class="saves-card" :class="{ dark: isDark }">
+  <div
+    class="saves-modal"
+    @click.self="$emit('close')"
+  >
+    <div
+      class="saves-card"
+      :class="{ dark: isDark }"
+    >
       <div class="saves-header">
         <h3>💾 Saved Puzzles</h3>
-        <button class="close-btn" @click="$emit('close')">✕</button>
+        <button
+          class="close-btn"
+          @click="$emit('close')"
+        >
+          ✕
+        </button>
       </div>
 
-      <div v-if="saves.length === 0" class="empty-state">
+      <div
+        v-if="saves.length === 0"
+        class="empty-state"
+      >
         <p>No saved puzzles yet!</p>
-        <p class="hint">Click "Save Puzzle" while playing to save your progress.</p>
+        <p class="hint">
+          Click "Save Puzzle" while playing to save your progress.
+        </p>
       </div>
 
-      <div v-else class="saves-list">
-        <div v-for="(save, i) in saves" :key="i" class="save-item" :class="{ dark: isDark }">
+      <div
+        v-else
+        class="saves-list"
+      >
+        <div
+          v-for="(save, i) in saves"
+          :key="i"
+          class="save-item"
+          :class="{ dark: isDark }"
+        >
           <div class="save-info">
-            <div class="save-name">{{ save.name || `Slot ${i + 1}` }}</div>
+            <div class="save-name">
+              {{ save.name || `Slot ${i + 1}` }}
+            </div>
             <div class="save-meta">
               <span v-if="save.difficulty">{{ save.difficulty }}</span>
               <span>{{ save.progress }}/81 filled</span>
@@ -22,14 +48,27 @@
             </div>
           </div>
           <div class="save-actions">
-            <button class="btn-load" @click="$emit('load', save)">▶ Load</button>
-            <button class="btn-delete" @click="deleteSave(i)">🗑️</button>
+            <button
+              class="btn-load"
+              @click="$emit('load', save)"
+            >
+              ▶ Load
+            </button>
+            <button
+              class="btn-delete"
+              @click="deleteSave(i)"
+            >
+              🗑️
+            </button>
           </div>
         </div>
       </div>
 
       <div class="saves-footer">
-        <button class="btn-save-current" @click="saveCurrent">
+        <button
+          class="btn-save-current"
+          @click="saveCurrent"
+        >
           💾 Save Current Puzzle
         </button>
       </div>

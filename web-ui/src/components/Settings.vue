@@ -1,7 +1,15 @@
 <template>
-  <div class="settings" :class="{ dark: isDark }">
+  <div
+    class="settings"
+    :class="{ dark: isDark }"
+  >
     <div class="settings-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
       <h2>⚙️ Settings</h2>
     </div>
 
@@ -15,7 +23,12 @@
             <span class="setting-name">Color-blind friendly</span>
             <span class="setting-desc">Uses patterns + distinct colors for highlights</span>
           </div>
-          <input type="checkbox" :checked="colorBlind" @change="$emit('toggle-colorblind')" class="toggle">
+          <input
+            type="checkbox"
+            :checked="colorBlind"
+            class="toggle"
+            @change="$emit('toggle-colorblind')"
+          >
         </label>
 
         <label class="setting-row">
@@ -23,7 +36,12 @@
             <span class="setting-name">High contrast</span>
             <span class="setting-desc">Stronger borders and text for visibility</span>
           </div>
-          <input type="checkbox" :checked="highContrast" @change="$emit('toggle-highcontrast')" class="toggle">
+          <input
+            type="checkbox"
+            :checked="highContrast"
+            class="toggle"
+            @change="$emit('toggle-highcontrast')"
+          >
         </label>
 
         <label class="setting-row">
@@ -31,7 +49,12 @@
             <span class="setting-name">Dark mode</span>
             <span class="setting-desc">Easier on the eyes at night</span>
           </div>
-          <input type="checkbox" :checked="isDark" @change="$emit('toggle-dark')" class="toggle">
+          <input
+            type="checkbox"
+            :checked="isDark"
+            class="toggle"
+            @change="$emit('toggle-dark')"
+          >
         </label>
 
         <label class="setting-row">
@@ -39,7 +62,12 @@
             <span class="setting-name">Sound effects</span>
             <span class="setting-desc">Audio feedback for actions</span>
           </div>
-          <input type="checkbox" :checked="soundEnabled" @change="toggleSound" class="toggle">
+          <input
+            type="checkbox"
+            :checked="soundEnabled"
+            class="toggle"
+            @change="toggleSound"
+          >
         </label>
       </div>
 
@@ -47,8 +75,17 @@
       <div class="settings-section">
         <h3>Board Theme</h3>
         <div class="theme-selector">
-          <button v-for="t in themes" :key="t.id" class="theme-btn" :class="{ active: currentTheme === t.id }" @click="selectTheme(t.id)">
-            <span class="theme-preview" :class="'preview-' + t.id"></span>
+          <button
+            v-for="t in themes"
+            :key="t.id"
+            class="theme-btn"
+            :class="{ active: currentTheme === t.id }"
+            @click="selectTheme(t.id)"
+          >
+            <span
+              class="theme-preview"
+              :class="'preview-' + t.id"
+            />
             <span class="theme-name">{{ t.name }}</span>
           </button>
         </div>
@@ -58,13 +95,55 @@
       <div class="settings-section">
         <h3>Language / 語言 / 言語 / 언어</h3>
         <div class="lang-selector">
-          <button class="lang-btn" :class="{ active: currentLocale === 'en' }" @click="setLocale('en')">🇬🇧 English</button>
-          <button class="lang-btn" :class="{ active: currentLocale === 'zh-Hant' }" @click="setLocale('zh-Hant')">🇭🇰 繁體中文</button>
-          <button class="lang-btn" :class="{ active: currentLocale === 'zh-Hans' }" @click="setLocale('zh-Hans')">🇨🇳 简体中文</button>
-          <button class="lang-btn" :class="{ active: currentLocale === 'ja' }" @click="setLocale('ja')">🇯🇵 日本語</button>
-          <button class="lang-btn" :class="{ active: currentLocale === 'ko' }" @click="setLocale('ko')">🇰🇷 한국어</button>
-          <button class="lang-btn" :class="{ active: currentLocale === 'fr' }" @click="setLocale('fr')">🇫🇷 Français</button>
-          <button class="lang-btn" :class="{ active: currentLocale === 'es' }" @click="setLocale('es')">🇪🇸 Español</button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'en' }"
+            @click="setLocale('en')"
+          >
+            🇬🇧 English
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'zh-Hant' }"
+            @click="setLocale('zh-Hant')"
+          >
+            🇭🇰 繁體中文
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'zh-Hans' }"
+            @click="setLocale('zh-Hans')"
+          >
+            🇨🇳 简体中文
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'ja' }"
+            @click="setLocale('ja')"
+          >
+            🇯🇵 日本語
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'ko' }"
+            @click="setLocale('ko')"
+          >
+            🇰🇷 한국어
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'fr' }"
+            @click="setLocale('fr')"
+          >
+            🇫🇷 Français
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'es' }"
+            @click="setLocale('es')"
+          >
+            🇪🇸 Español
+          </button>
         </div>
       </div>
 
@@ -72,7 +151,10 @@
       <div class="settings-section">
         <h3>Data</h3>
 
-        <button class="setting-row clickable" @click="resetProgress">
+        <button
+          class="setting-row clickable"
+          @click="resetProgress"
+        >
           <div class="setting-info">
             <span class="setting-name">Reset progress</span>
             <span class="setting-desc">Clear all saved lesson progress and streaks</span>
@@ -89,7 +171,12 @@
             <span class="setting-name">Challenge mode</span>
             <span class="setting-desc">3 mistakes = game over. Are you brave enough?</span>
           </div>
-          <input type="checkbox" :checked="challengeMode" @change="$emit('toggle-challenge')" class="toggle">
+          <input
+            type="checkbox"
+            :checked="challengeMode"
+            class="toggle"
+            @change="$emit('toggle-challenge')"
+          >
         </label>
       </div>
 
@@ -98,7 +185,9 @@
         <div class="about-text">
           <p><strong>Sudoku Dojo</strong> — Learn Sudoku step by step</p>
           <p>15 techniques across 7 belt levels</p>
-          <p class="version">v1.0.0 · Built with ❤️ by Nova</p>
+          <p class="version">
+            v1.0.0 · Built with ❤️ by Nova
+          </p>
         </div>
       </div>
     </div>

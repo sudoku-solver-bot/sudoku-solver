@@ -4,14 +4,24 @@
     class="result"
     :class="[type, { visible }]"
   >
-    <span v-if="difficulty" :class="['difficulty', difficultyClass]">
+    <span
+      v-if="difficulty"
+      :class="['difficulty', difficultyClass]"
+    >
       {{ difficulty }}
     </span>
     <span class="message">{{ message }}</span>
-    <div v-if="techniques.length > 0" class="techniques">
+    <div
+      v-if="techniques.length > 0"
+      class="techniques"
+    >
       <small>Techniques used:</small>
       <div class="technique-tags">
-        <span v-for="t in techniques" :key="t" class="technique-tag">{{ t }}</span>
+        <span
+          v-for="t in techniques"
+          :key="t"
+          class="technique-tag"
+        >{{ t }}</span>
       </div>
     </div>
   </div>
