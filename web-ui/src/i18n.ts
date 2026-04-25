@@ -6,7 +6,6 @@ type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es'
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
 // The translation strings are identical in structure — we just type the keys
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const translations: Record<string, Record<string, string>> = {
   en: {
     // Header

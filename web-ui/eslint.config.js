@@ -1,15 +1,20 @@
 import js from '@eslint/js';
 import pluginVue from 'eslint-plugin-vue';
+import tseslint from 'typescript-eslint';
 
 export default [
   {
     ignores: ['dist/**', 'node_modules/**'],
   },
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
   {
-    files: ['**/*.{js,mjs,cjs,vue}'],
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
     languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+      },
       globals: {
         // Browser globals
         window: 'readonly',
@@ -58,6 +63,7 @@ export default [
         DOMParser: 'readonly',
         atob: 'readonly',
         btoa: 'readonly',
+        HTMLCanvasElement: 'readonly',
         // Vue compiler macros (available in <script setup>)
         defineProps: 'readonly',
         defineEmits: 'readonly',
@@ -71,6 +77,8 @@ export default [
     rules: {
       'vue/multi-word-component-names': 'off',
       'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
       'no-empty': ['error', { allowEmptyCatch: true }],
       'vue/no-v-html': 'off',
       'vue/require-explicit-emits': 'off',

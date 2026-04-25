@@ -1,6 +1,5 @@
 const API_BASE = '/api'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function apiPost(url: string, body: Record<string, unknown>): Promise<any> {
   const response = await fetch(url, {
     method: 'POST',
@@ -10,7 +9,6 @@ async function apiPost(url: string, body: Record<string, unknown>): Promise<any>
   return response.json()
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function apiGet(url: string): Promise<any> {
   const response = await fetch(url)
   return response.json()
