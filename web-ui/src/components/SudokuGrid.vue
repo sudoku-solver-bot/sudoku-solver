@@ -1,14 +1,19 @@
 <template>
-  <div class="grid" :class="{ dark: isDark, colorblind: colorBlind, 'high-contrast': highContrast, ['theme-' + theme]: theme !== 'default' }" role="grid" aria-label="Sudoku puzzle grid">
+  <div
+    class="grid"
+    :class="{ dark: isDark, colorblind: colorBlind, 'high-contrast': highContrast, ['theme-' + theme]: theme !== 'default' }"
+    role="grid"
+    aria-label="Sudoku puzzle grid"
+  >
     <div
       v-for="(cell, index) in 81"
       :key="index"
       class="cell"
       :class="getCellClasses(index)"
-      @click="selectCell(index)"
       role="gridcell"
       :aria-label="getCellLabel(index)"
       :aria-selected="selectedCell === index"
+      @click="selectCell(index)"
     >
       <input
         v-if="puzzle[index] !== '.' || !showCandidates || givenCells.has(index)"
@@ -23,7 +28,7 @@
         @input="onInput(index, $event)"
         @focus="selectCell(index)"
         @keydown="onKeyDown($event, index)"
-      />
+      >
       <div
         v-else
         ref="candidateGrids"

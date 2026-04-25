@@ -6,19 +6,22 @@
     </div>
 
     <!-- Step 1: Child Information -->
-    <div v-if="currentStep === 1" class="step-content">
+    <div
+      v-if="currentStep === 1"
+      class="step-content"
+    >
       <div class="info-form">
         <h3>Tell us about yourself</h3>
         
         <div class="form-group">
           <label for="childName">What's your name?</label>
           <input 
-            type="text" 
             id="childName" 
             v-model="childName" 
+            type="text" 
             placeholder="Enter your name"
             class="form-input"
-          />
+          >
         </div>
 
         <div class="form-group">
@@ -28,8 +31,14 @@
             v-model="age" 
             class="form-input"
           >
-            <option value="">Select your age</option>
-            <option v-for="ageOption in ageOptions" :key="ageOption" :value="ageOption">
+            <option value="">
+              Select your age
+            </option>
+            <option
+              v-for="ageOption in ageOptions"
+              :key="ageOption"
+              :value="ageOption"
+            >
               {{ ageOption }}
             </option>
           </select>
@@ -38,25 +47,32 @@
         <div class="form-group">
           <label for="parentEmail">Your parent's email</label>
           <input 
-            type="email" 
             id="parentEmail" 
             v-model="parentEmail" 
+            type="email" 
             placeholder="parent@email.com"
             class="form-input"
-          />
+          >
           <small class="form-help">We'll send progress updates to your parent</small>
         </div>
 
-        <div v-if="errors.length" class="error-messages">
-          <div v-for="error in errors" :key="error" class="error-message">
+        <div
+          v-if="errors.length"
+          class="error-messages"
+        >
+          <div
+            v-for="error in errors"
+            :key="error"
+            class="error-message"
+          >
             ⚠️ {{ error }}
           </div>
         </div>
 
         <button 
-          @click="createParticipant" 
-          :disabled="!canCreateParticipant"
+          :disabled="!canCreateParticipant" 
           class="continue-btn"
+          @click="createParticipant"
         >
           Start My Adventure! 🚀
         </button>
@@ -64,28 +80,45 @@
     </div>
 
     <!-- Step 2: Feature Assignment -->
-    <div v-if="currentStep === 2" class="step-content">
+    <div
+      v-if="currentStep === 2"
+      class="step-content"
+    >
       <div class="feature-assignment">
         <h3>Getting Your Sudoku Powers Ready ⚡</h3>
         <p>We're setting up your special features for the adventure!</p>
         
-        <div class="loading-spinner" v-if="isLoading">
-          <div class="spinner"></div>
+        <div
+          v-if="isLoading"
+          class="loading-spinner"
+        >
+          <div class="spinner" />
           <p>Setting up your adventure...</p>
         </div>
 
-        <div v-if="!isLoading && assignmentInfo" class="assignment-complete">
-          <div class="success-icon">✅</div>
+        <div
+          v-if="!isLoading && assignmentInfo"
+          class="assignment-complete"
+        >
+          <div class="success-icon">
+            ✅
+          </div>
           <h4>Adventure Ready!</h4>
           <p>You've been assigned to the <strong>{{ assignmentInfo.variant }}</strong> group.</p>
           <p>You'll have these special features:</p>
           <ul class="feature-list">
-            <li v-for="feature in assignmentInfo.features" :key="feature">
+            <li
+              v-for="feature in assignmentInfo.features"
+              :key="feature"
+            >
               ✨ {{ feature }}
             </li>
           </ul>
           
-          <button @click="startFirstSession" class="continue-btn">
+          <button
+            class="continue-btn"
+            @click="startFirstSession"
+          >
             Start My First Puzzle! 🧩
           </button>
         </div>
@@ -93,7 +126,10 @@
     </div>
 
     <!-- Step 3: First Puzzle -->
-    <div v-if="currentStep === 3" class="step-content">
+    <div
+      v-if="currentStep === 3"
+      class="step-content"
+    >
       <div class="first-puzzle">
         <h3>Welcome to Your First Puzzle! 🌟</h3>
         <p>You're all set! Let's start with a simple puzzle to learn the basics.</p>
@@ -115,7 +151,10 @@
         </div>
 
         <div class="controls">
-          <button @click="continueToPuzzle" class="continue-btn">
+          <button
+            class="continue-btn"
+            @click="continueToPuzzle"
+          >
             Let's Start! 🎮
           </button>
         </div>
@@ -123,12 +162,20 @@
     </div>
 
     <!-- Success Animation -->
-    <div v-if="showSuccess" class="success-overlay">
+    <div
+      v-if="showSuccess"
+      class="success-overlay"
+    >
       <div class="success-content">
-        <div class="success-emoji">🎉</div>
+        <div class="success-emoji">
+          🎉
+        </div>
         <h3>Welcome to the Adventure!</h3>
         <p>Your Sudoku learning journey starts now!</p>
-        <button @click="closeSuccess" class="close-btn">
+        <button
+          class="close-btn"
+          @click="closeSuccess"
+        >
           Awesome! Let's Go!
         </button>
       </div>

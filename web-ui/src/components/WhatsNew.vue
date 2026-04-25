@@ -1,15 +1,32 @@
 <template>
-  <div class="whats-new-overlay" @click.self="$emit('close')">
-    <div class="whats-new-card" :class="{ dark: isDark }">
+  <div
+    class="whats-new-overlay"
+    @click.self="$emit('close')"
+  >
+    <div
+      class="whats-new-card"
+      :class="{ dark: isDark }"
+    >
       <div class="whats-new-header">
         <h3>✨ What's New</h3>
-        <button class="close-btn" @click="$emit('close')">✕</button>
+        <button
+          class="close-btn"
+          @click="$emit('close')"
+        >
+          ✕
+        </button>
       </div>
 
-      <div class="version-badge">v2.0 — April 2026</div>
+      <div class="version-badge">
+        v2.0 — April 2026
+      </div>
 
       <div class="feature-list">
-        <div class="feature" v-for="f in features" :key="f.icon">
+        <div
+          v-for="f in features"
+          :key="f.icon"
+          class="feature"
+        >
           <span class="feature-icon">{{ f.icon }}</span>
           <div>
             <strong>{{ f.title }}</strong>
@@ -24,7 +41,12 @@
         <span>🏆 7 belt levels</span>
       </div>
 
-      <button class="got-it-btn" @click="$emit('close')">Let's play! 🎮</button>
+      <button
+        class="got-it-btn"
+        @click="$emit('close')"
+      >
+        Let's play! 🎮
+      </button>
     </div>
   </div>
 </template>

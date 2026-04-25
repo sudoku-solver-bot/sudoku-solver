@@ -1,9 +1,22 @@
 <template>
-  <div class="tutorial-mode" :class="{ dark: isDark }" @touchstart="onTouchStart" @touchend="onTouchEnd">
+  <div
+    class="tutorial-mode"
+    :class="{ dark: isDark }"
+    @touchstart="onTouchStart"
+    @touchend="onTouchEnd"
+  >
     <!-- Header -->
     <div class="tutorial-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
-      <div class="belt-badge" :style="{ background: lesson.beltColor }">
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
+      <div
+        class="belt-badge"
+        :style="{ background: lesson.beltColor }"
+      >
         <span class="belt-emoji">{{ lesson.beltEmoji }}</span>
       </div>
       <div class="lesson-info">
@@ -34,14 +47,19 @@
         <!-- Progress -->
         <div class="step-progress">
           <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: progressPercent + '%' }"></div>
+            <div
+              class="progress-fill"
+              :style="{ width: progressPercent + '%' }"
+            />
           </div>
           <span class="progress-text">Step {{ currentStepIndex + 1 }} of {{ lesson.steps.length }}</span>
         </div>
 
         <!-- Step content -->
         <div class="step-content">
-          <p class="step-text">{{ currentStep.text }}</p>
+          <p class="step-text">
+            {{ currentStep.text }}
+          </p>
         </div>
 
         <!-- Navigation -->
@@ -50,42 +68,67 @@
             v-if="currentStepIndex > 0"
             class="nav-btn secondary"
             @click="prevStep"
-          >← Back</button>
+          >
+            ← Back
+          </button>
 
           <button
             v-if="currentStep.type === 'question'"
             class="nav-btn hint"
             @click="showAnswer"
-          >💡 Show Me</button>
+          >
+            💡 Show Me
+          </button>
 
           <button
             v-if="currentStepIndex < lesson.steps.length - 1"
             class="nav-btn primary"
             @click="nextStep"
-          >Next →</button>
+          >
+            Next →
+          </button>
 
           <button
             v-if="currentStepIndex === lesson.steps.length - 1"
             class="nav-btn celebrate"
             @click="completeLesson"
-          >🎉 Complete!</button>
+          >
+            🎉 Complete!
+          </button>
         </div>
 
         <!-- Feedback -->
-        <div v-if="feedback" class="feedback" :class="feedbackType">
+        <div
+          v-if="feedback"
+          class="feedback"
+          :class="feedbackType"
+        >
           {{ feedback }}
         </div>
       </div>
     </div>
 
     <!-- Celebration overlay -->
-    <div v-if="celebrating" class="celebration-overlay" @click="celebrating = false">
+    <div
+      v-if="celebrating"
+      class="celebration-overlay"
+      @click="celebrating = false"
+    >
       <div class="celebration-content">
-        <div class="confetti">🎉🎊⭐🏆🎯</div>
+        <div class="confetti">
+          🎉🎊⭐🏆🎯
+        </div>
         <h2>Lesson Complete!</h2>
         <p>You've mastered <strong>{{ lesson.title }}</strong>!</p>
-        <p class="belt-earned">{{ lesson.beltEmoji }} {{ lesson.beltName }} earned!</p>
-        <button class="nav-btn primary" @click="$emit('exit')">Continue</button>
+        <p class="belt-earned">
+          {{ lesson.beltEmoji }} {{ lesson.beltName }} earned!
+        </p>
+        <button
+          class="nav-btn primary"
+          @click="$emit('exit')"
+        >
+          Continue
+        </button>
       </div>
     </div>
   </div>

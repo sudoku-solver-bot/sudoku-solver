@@ -1,8 +1,16 @@
 <template>
-  <div class="practice-mode" :class="{ dark: isDark }">
+  <div
+    class="practice-mode"
+    :class="{ dark: isDark }"
+  >
     <!-- Header -->
     <div class="practice-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
       <div class="practice-info">
         <h2>Practice: {{ practiceSet.technique }}</h2>
         <span class="puzzle-count">Puzzle {{ currentPuzzleIndex + 1 }} of {{ practiceSet.puzzles.length }}</span>
@@ -39,25 +47,56 @@
 
     <!-- Actions -->
     <div class="practice-actions">
-      <button class="action-btn hint-btn" @click="getHint">💡 Hint</button>
-      <button class="action-btn check-btn" @click="checkSolution">✓ Check</button>
-      <button class="action-btn reset-btn" @click="resetPuzzle">↺ Reset</button>
+      <button
+        class="action-btn hint-btn"
+        @click="getHint"
+      >
+        💡 Hint
+      </button>
+      <button
+        class="action-btn check-btn"
+        @click="checkSolution"
+      >
+        ✓ Check
+      </button>
+      <button
+        class="action-btn reset-btn"
+        @click="resetPuzzle"
+      >
+        ↺ Reset
+      </button>
     </div>
 
     <!-- Hint display -->
-    <div v-if="hintText" class="hint-box">
+    <div
+      v-if="hintText"
+      class="hint-box"
+    >
       {{ hintText }}
     </div>
 
     <!-- Feedback -->
-    <div v-if="feedback" class="feedback" :class="feedbackType">
+    <div
+      v-if="feedback"
+      class="feedback"
+      :class="feedbackType"
+    >
       {{ feedback }}
     </div>
 
     <!-- Completion overlay -->
-    <div v-if="showComplete" class="complete-overlay" @click="showComplete = false">
-      <div class="complete-content" @click.stop>
-        <div class="complete-emoji">🎉</div>
+    <div
+      v-if="showComplete"
+      class="complete-overlay"
+      @click="showComplete = false"
+    >
+      <div
+        class="complete-content"
+        @click.stop
+      >
+        <div class="complete-emoji">
+          🎉
+        </div>
         <h2>Puzzle Solved!</h2>
         <p>Great work practicing {{ practiceSet.technique }}!</p>
         <div class="complete-btns">
@@ -65,8 +104,15 @@
             v-if="currentPuzzleIndex < practiceSet.puzzles.length - 1"
             class="action-btn next-btn"
             @click="nextPuzzle"
-          >Next Puzzle →</button>
-          <button class="action-btn done-btn" @click="$emit('exit')">Back to Tutorials</button>
+          >
+            Next Puzzle →
+          </button>
+          <button
+            class="action-btn done-btn"
+            @click="$emit('exit')"
+          >
+            Back to Tutorials
+          </button>
         </div>
       </div>
     </div>

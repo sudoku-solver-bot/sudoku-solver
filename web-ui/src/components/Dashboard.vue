@@ -1,9 +1,14 @@
 <template>
-  <div class="dashboard" :class="{ dark: isDark }">
+  <div
+    class="dashboard"
+    :class="{ dark: isDark }"
+  >
     <!-- Welcome -->
     <div class="welcome">
       <h2>Welcome back! 👋</h2>
-      <p class="subtitle">What would you like to do today?</p>
+      <p class="subtitle">
+        What would you like to do today?
+      </p>
     </div>
 
     <!-- Quick stats -->
@@ -28,33 +33,54 @@
     <!-- Action cards -->
     <div class="actions">
       <!-- Daily Challenge -->
-      <button class="action-card daily" @click="$emit('daily')">
-        <div class="action-icon">📅</div>
+      <button
+        class="action-card daily"
+        @click="$emit('daily')"
+      >
+        <div class="action-icon">
+          📅
+        </div>
         <div class="action-content">
           <h3>Daily Challenge</h3>
           <p>{{ dailyInfo }}</p>
         </div>
-        <div class="action-arrow">→</div>
+        <div class="action-arrow">
+          →
+        </div>
       </button>
 
       <!-- Continue Learning -->
-      <button class="action-card learn" @click="$emit('learn')">
-        <div class="action-icon">📚</div>
+      <button
+        class="action-card learn"
+        @click="$emit('learn')"
+      >
+        <div class="action-icon">
+          📚
+        </div>
         <div class="action-content">
           <h3>Continue Learning</h3>
           <p>{{ learnInfo }}</p>
         </div>
-        <div class="action-arrow">→</div>
+        <div class="action-arrow">
+          →
+        </div>
       </button>
 
       <!-- Free Play -->
-      <button class="action-card play" @click="$emit('play')">
-        <div class="action-icon">🧩</div>
+      <button
+        class="action-card play"
+        @click="$emit('play')"
+      >
+        <div class="action-icon">
+          🧩
+        </div>
         <div class="action-content">
           <h3>Free Play</h3>
           <p>Generate or enter a puzzle</p>
         </div>
-        <div class="action-arrow">→</div>
+        <div class="action-arrow">
+          →
+        </div>
       </button>
     </div>
 
@@ -75,7 +101,12 @@
           <span class="belt-label">{{ belt.shortName }}</span>
         </div>
       </div>
-      <p v-if="earnedBelts.length" class="cert-hint">Click an earned belt to view certificate 🏆</p>
+      <p
+        v-if="earnedBelts.length"
+        class="cert-hint"
+      >
+        Click an earned belt to view certificate 🏆
+      </p>
     </div>
 
     <!-- Certificate modal -->

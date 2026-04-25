@@ -1,23 +1,40 @@
 <template>
-  <div class="daily-challenge" :class="{ dark: isDark }" @click="handleClick">
+  <div
+    class="daily-challenge"
+    :class="{ dark: isDark }"
+    @click="handleClick"
+  >
     <div class="daily-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
       <div class="daily-title">
         <span class="calendar-icon">📅</span>
         <h2>Daily Challenge</h2>
       </div>
-      <div class="streak-badge" v-if="streak > 0">
+      <div
+        v-if="streak > 0"
+        class="streak-badge"
+      >
         🔥 {{ streak }}
       </div>
     </div>
 
     <!-- Puzzle info -->
     <div class="puzzle-info">
-      <div class="info-badge" :style="{ background: challenge.beltColor }">
+      <div
+        class="info-badge"
+        :style="{ background: challenge.beltColor }"
+      >
         <span class="belt-emoji">{{ challenge.beltEmoji }}</span>
         <span class="belt-name">{{ challenge.beltName }}</span>
       </div>
-      <div class="info-date">{{ formattedDate }}</div>
+      <div class="info-date">
+        {{ formattedDate }}
+      </div>
     </div>
 
     <!-- Timer -->
@@ -51,9 +68,15 @@
     />
 
     <!-- Completion overlay -->
-    <div v-if="completed" class="completion-overlay" @click="$emit('exit')">
+    <div
+      v-if="completed"
+      class="completion-overlay"
+      @click="$emit('exit')"
+    >
       <div class="completion-content">
-        <div class="completion-emoji">🏆</div>
+        <div class="completion-emoji">
+          🏆
+        </div>
         <h2>Daily Complete!</h2>
         <div class="completion-stats">
           <div class="stat">
@@ -65,10 +88,22 @@
             <span class="stat-label">Hints</span>
           </div>
         </div>
-        <p class="completion-msg">See you tomorrow! 🌟</p>
+        <p class="completion-msg">
+          See you tomorrow! 🌟
+        </p>
         <div class="completion-actions">
-          <button class="share-btn" @click="shareResult">📤 Share</button>
-          <button class="done-btn" @click="$emit('exit')">🏠 Home</button>
+          <button
+            class="share-btn"
+            @click="shareResult"
+          >
+            📤 Share
+          </button>
+          <button
+            class="done-btn"
+            @click="$emit('exit')"
+          >
+            🏠 Home
+          </button>
         </div>
       </div>
     </div>

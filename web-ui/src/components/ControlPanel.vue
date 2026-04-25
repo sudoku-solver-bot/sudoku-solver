@@ -8,7 +8,10 @@
         @click="$emit('undo')"
       >
         ↶ Undo
-        <span v-if="undoCount > 0" class="count">({{ undoCount }})</span>
+        <span
+          v-if="undoCount > 0"
+          class="count"
+        >({{ undoCount }})</span>
       </button>
       <button
         class="btn-redo"
@@ -16,21 +19,35 @@
         @click="$emit('redo')"
       >
         Redo ↷
-        <span v-if="redoCount > 0" class="count">({{ redoCount }})</span>
+        <span
+          v-if="redoCount > 0"
+          class="count"
+        >({{ redoCount }})</span>
       </button>
     </div>
 
     <!-- Main action buttons -->
     <div class="main-buttons">
-      <button class="btn-primary" :disabled="loading" @click="$emit('solve')">
+      <button
+        class="btn-primary"
+        :disabled="loading"
+        @click="$emit('solve')"
+      >
         <span class="btn-icon">🧩</span>
         Solve
       </button>
-      <button class="btn-secondary" :disabled="loading" @click="$emit('clear')">
+      <button
+        class="btn-secondary"
+        :disabled="loading"
+        @click="$emit('clear')"
+      >
         <span class="btn-icon">🗑️</span>
         Clear
       </button>
-      <button class="btn-secondary" @click="$emit('import')">
+      <button
+        class="btn-secondary"
+        @click="$emit('import')"
+      >
         <span class="btn-icon">📥</span>
         Import
       </button>
@@ -38,7 +55,9 @@
 
     <!-- Difficulty buttons -->
     <div class="difficulty-section">
-      <p class="section-label">New Puzzle:</p>
+      <p class="section-label">
+        New Puzzle:
+      </p>
       <div class="difficulty-buttons">
         <button
           class="btn-difficulty easy"
@@ -72,21 +91,34 @@
     </div>
 
     <!-- Hint button -->
-    <button class="btn-hint" :disabled="loading" @click="$emit('hint')">
+    <button
+      class="btn-hint"
+      :disabled="loading"
+      @click="$emit('hint')"
+    >
       <span class="btn-icon">💡</span>
       Get a Hint!
     </button>
 
-    <button class="btn-share" @click="$emit('share')">
+    <button
+      class="btn-share"
+      @click="$emit('share')"
+    >
       <span class="btn-icon">🔗</span>
       Share Puzzle
     </button>
 
-    <button class="btn-print" @click="$emit('print')">
+    <button
+      class="btn-print"
+      @click="$emit('print')"
+    >
       <span class="btn-icon">🖨️</span>
       Print
     </button>
-    <button class="btn-image" @click="$emit('share-image')">
+    <button
+      class="btn-image"
+      @click="$emit('share-image')"
+    >
       <span class="btn-icon">📸</span>
       Image
     </button>

@@ -6,43 +6,59 @@
         <div class="survey-progress">
           <span class="step-indicator">Question {{ currentQuestionIndex + 1 }} of {{ totalQuestions }}</span>
           <div class="progress-bar">
-            <div class="progress-fill" :style="{ width: progressPercentage + '%' }"></div>
+            <div
+              class="progress-fill"
+              :style="{ width: progressPercentage + '%' }"
+            />
           </div>
         </div>
         <h2>{{ survey.name }}</h2>
-        <p class="survey-description">{{ survey.description }}</p>
+        <p class="survey-description">
+          {{ survey.description }}
+        </p>
       </div>
 
       <!-- Question Content -->
-      <div v-if="currentQuestion" class="question-content">
+      <div
+        v-if="currentQuestion"
+        class="question-content"
+      >
         <div class="question-card">
           <h3>{{ currentQuestion.questionText }}</h3>
           
           <!-- Rating Questions -->
-          <div v-if="currentQuestion.responseType === 'RATING_1_5'" class="rating-question">
+          <div
+            v-if="currentQuestion.responseType === 'RATING_1_5'"
+            class="rating-question"
+          >
             <div class="rating-stars">
               <button 
                 v-for="star in 5" 
                 :key="star"
-                @click="selectRating(star)"
                 :class="['star', { 'filled': rating >= star }]"
                 :disabled="isSubmitting"
+                @click="selectRating(star)"
               >
                 ⭐
               </button>
             </div>
-            <p class="rating-label">{{ rating ? `${rating}/5` : 'Click a star to rate' }}</p>
+            <p class="rating-label">
+              {{ rating ? `${rating}/5` : 'Click a star to rate' }}
+            </p>
           </div>
 
           <!-- Emoji Rating -->
-          <div v-if="currentQuestion.responseType === 'EMOJI_RATING'" class="emoji-question">
+          <div
+            v-if="currentQuestion.responseType === 'EMOJI_RATING'"
+            class="emoji-question"
+          >
             <div class="emoji-options">
               <button 
                 v-for="emoji in emojiOptions" 
                 :key="emoji.value"
-                @click="selectEmoji(emoji.value)"
                 :class="['emoji-option', { 'selected': selectedEmoji === emoji.value }]"
                 :disabled="isSubmitting"
+                @click="selectEmoji(emoji.value)"
               >
                 <span class="emoji">{{ emoji.emoji }}</span>
                 <span class="label">{{ emoji.label }}</span>
@@ -51,19 +67,22 @@
           </div>
 
           <!-- Yes/No Questions -->
-          <div v-if="currentQuestion.responseType === 'YES_NO'" class="yesno-question">
+          <div
+            v-if="currentQuestion.responseType === 'YES_NO'"
+            class="yesno-question"
+          >
             <div class="yesno-options">
               <button 
-                @click="selectBoolean(true)"
                 :class="['yesno-btn', 'yes-btn', { 'selected': selectedBoolean === true }]"
                 :disabled="isSubmitting"
+                @click="selectBoolean(true)"
               >
                 ✅ Yes
               </button>
               <button 
-                @click="selectBoolean(false)"
                 :class="['yesno-btn', 'no-btn', { 'selected': selectedBoolean === false }]"
                 :disabled="isSubmitting"
+                @click="selectBoolean(false)"
               >
                 ❌ No
               </button>
@@ -71,14 +90,17 @@
           </div>
 
           <!-- Multiple Choice Questions -->
-          <div v-if="currentQuestion.responseType === 'MULTIPLE_CHOICE'" class="multiple-choice-question">
+          <div
+            v-if="currentQuestion.responseType === 'MULTIPLE_CHOICE'"
+            class="multiple-choice-question"
+          >
             <div class="choice-options">
               <button 
                 v-for="choice in multipleChoiceOptions" 
                 :key="choice"
-                @click="selectMultipleChoice(choice)"
                 :class="['choice-btn', { 'selected': selectedMultipleChoice === choice }]"
                 :disabled="isSubmitting"
+                @click="selectMultipleChoice(choice)"
               >
                 {{ choice }}
               </button>
@@ -86,27 +108,37 @@
           </div>
 
           <!-- Text Questions -->
-          <div v-if="currentQuestion.responseType === 'TEXT'" class="text-question">
+          <div
+            v-if="currentQuestion.responseType === 'TEXT'"
+            class="text-question"
+          >
             <textarea 
               v-model="textResponse"
               :placeholder="getPlaceholderText()"
               class="text-input"
               rows="4"
               :disabled="isSubmitting"
-            ></textarea>
+            />
           </div>
 
           <!-- Rating 1-10 -->
-          <div v-if="currentQuestion.responseType === 'RATING_1_10'" class="rating-10-question">
+          <div
+            v-if="currentQuestion.responseType === 'RATING_1_10'"
+            class="rating-10-question"
+          >
             <div class="rating-scale">
-              <div v-for="num in 10" :key="num" class="rating-option">
+              <div
+                v-for="num in 10"
+                :key="num"
+                class="rating-option"
+              >
                 <input 
-                  type="radio" 
                   :id="`rating-${num}`" 
-                  :value="num" 
-                  v-model="rating10"
+                  v-model="rating10" 
+                  type="radio" 
+                  :value="num"
                   :disabled="isSubmitting"
-                />
+                >
                 <label :for="`rating-${num}`">{{ num }}</label>
               </div>
             </div>
@@ -118,35 +150,46 @@
       <div class="navigation">
         <button 
           v-if="currentQuestionIndex > 0"
-          @click="previousQuestion"
           :disabled="isSubmitting"
           class="nav-btn previous-btn"
+          @click="previousQuestion"
         >
           ← Previous
         </button>
 
         <button 
-          @click="currentQuestionIndex < totalQuestions - 1 ? nextQuestion() : submitSurvey()"
           :disabled="!canProceed || isSubmitting"
           class="nav-btn continue-btn"
+          @click="currentQuestionIndex < totalQuestions - 1 ? nextQuestion() : submitSurvey()"
         >
           {{ currentQuestionIndex < totalQuestions - 1 ? 'Next →' : 'Submit Survey' }}
         </button>
       </div>
 
       <!-- Loading State -->
-      <div v-if="isSubmitting" class="submitting">
-        <div class="spinner"></div>
+      <div
+        v-if="isSubmitting"
+        class="submitting"
+      >
+        <div class="spinner" />
         <p>Saving your answers...</p>
       </div>
 
       <!-- Success Message -->
-      <div v-if="showSuccess" class="success-message">
+      <div
+        v-if="showSuccess"
+        class="success-message"
+      >
         <div class="success-content">
-          <div class="success-icon">🎉</div>
+          <div class="success-icon">
+            🎉
+          </div>
           <h3>Thank You!</h3>
           <p>Your feedback helps us make Sudoku even more fun!</p>
-          <button @click="closeSurvey" class="close-btn">
+          <button
+            class="close-btn"
+            @click="closeSurvey"
+          >
             Continue Playing
           </button>
         </div>
@@ -230,6 +273,10 @@ export default {
           return true
       }
     }
+  },
+  mounted() {
+    // Initialize with first question
+    this.clearSelection()
   },
   methods: {
     selectRating(value) {
@@ -403,10 +450,6 @@ export default {
     closeSurvey() {
       this.$emit('survey-completed')
     }
-  },
-  mounted() {
-    // Initialize with first question
-    this.clearSelection()
   }
 }
 </script>

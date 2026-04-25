@@ -1,9 +1,20 @@
 <template>
-  <div class="quiz-mode" :class="{ dark: isDark }">
+  <div
+    class="quiz-mode"
+    :class="{ dark: isDark }"
+  >
     <!-- Header -->
     <div class="quiz-header">
-      <button class="back-btn" @click="$emit('exit')">← Back</button>
-      <div class="belt-badge" :style="{ background: quiz.beltColor }">
+      <button
+        class="back-btn"
+        @click="$emit('exit')"
+      >
+        ← Back
+      </button>
+      <div
+        class="belt-badge"
+        :style="{ background: quiz.beltColor }"
+      >
         <span class="belt-emoji">{{ quiz.beltEmoji }}</span>
       </div>
       <div class="quiz-info">
@@ -15,11 +26,17 @@
     <!-- Score -->
     <div class="score-bar">
       <span class="score-text">Score: {{ score }} / {{ totalAnswered }}</span>
-      <span v-if="totalAnswered > 0" class="score-pct">{{ scorePercent }}%</span>
+      <span
+        v-if="totalAnswered > 0"
+        class="score-pct"
+      >{{ scorePercent }}%</span>
     </div>
 
     <!-- Question -->
-    <div v-if="currentQuestion" class="quiz-body">
+    <div
+      v-if="currentQuestion"
+      class="quiz-body"
+    >
       <div class="question-text">
         <span class="q-number">Q{{ currentQuestionIndex + 1 }}/{{ quiz.questions.length }}</span>
         {{ currentQuestion.question }}
@@ -41,15 +58,28 @@
       </div>
 
       <!-- Hint -->
-      <div v-if="showHint && !answered" class="hint-box">
+      <div
+        v-if="showHint && !answered"
+        class="hint-box"
+      >
         {{ currentQuestion.hint }}
       </div>
 
       <!-- Feedback -->
       <transition name="flash">
-        <div v-if="answered" class="answer-feedback" :class="isCorrect ? 'correct' : 'wrong'">
-          <span v-if="isCorrect" class="feedback-icon">✓</span>
-          <span v-else class="feedback-icon">✗</span>
+        <div
+          v-if="answered"
+          class="answer-feedback"
+          :class="isCorrect ? 'correct' : 'wrong'"
+        >
+          <span
+            v-if="isCorrect"
+            class="feedback-icon"
+          >✓</span>
+          <span
+            v-else
+            class="feedback-icon"
+          >✗</span>
           <span>{{ isCorrect ? 'Correct! Great job!' : 'Not quite — the answer was row ' + answerRow + ', col ' + answerCol }}</span>
         </div>
       </transition>
@@ -60,37 +90,77 @@
           v-if="!answered"
           class="action-btn hint-btn"
           @click="showHint = true"
-        >Show Hint</button>
+        >
+          Show Hint
+        </button>
 
         <button
           v-if="answered && currentQuestionIndex < quiz.questions.length - 1"
           class="action-btn next-btn"
           @click="nextQuestion"
-        >Next Question →</button>
+        >
+          Next Question →
+        </button>
 
         <button
           v-if="answered && currentQuestionIndex === quiz.questions.length - 1"
           class="action-btn done-btn"
           @click="finishQuiz"
-        >See Results 🎉</button>
+        >
+          See Results 🎉
+        </button>
       </div>
     </div>
 
     <!-- Results overlay -->
-    <div v-if="showResults" class="results-overlay" @click="showResults = false">
-      <div class="results-content" @click.stop>
-        <div class="results-emoji">🏆</div>
+    <div
+      v-if="showResults"
+      class="results-overlay"
+      @click="showResults = false"
+    >
+      <div
+        class="results-content"
+        @click.stop
+      >
+        <div class="results-emoji">
+          🏆
+        </div>
         <h2>Quiz Complete!</h2>
         <div class="results-score">
           <span class="big-score">{{ score }} / {{ quiz.questions.length }}</span>
           <span class="score-label">Correct Answers</span>
         </div>
-        <p v-if="score === quiz.questions.length" class="results-msg perfect">Perfect score! You've mastered {{ quiz.technique }}!</p>
-        <p v-else-if="score >= quiz.questions.length / 2" class="results-msg good">Good job! Keep practicing {{ quiz.technique }}.</p>
-        <p v-else class="results-msg try-again">Keep practicing — you'll get it next time!</p>
+        <p
+          v-if="score === quiz.questions.length"
+          class="results-msg perfect"
+        >
+          Perfect score! You've mastered {{ quiz.technique }}!
+        </p>
+        <p
+          v-else-if="score >= quiz.questions.length / 2"
+          class="results-msg good"
+        >
+          Good job! Keep practicing {{ quiz.technique }}.
+        </p>
+        <p
+          v-else
+          class="results-msg try-again"
+        >
+          Keep practicing — you'll get it next time!
+        </p>
         <div class="results-btns">
-          <button class="action-btn next-btn" @click="$emit('exit')">Back to Tutorials</button>
-          <button class="action-btn hint-btn" @click="retryQuiz">Try Again</button>
+          <button
+            class="action-btn next-btn"
+            @click="$emit('exit')"
+          >
+            Back to Tutorials
+          </button>
+          <button
+            class="action-btn hint-btn"
+            @click="retryQuiz"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     </div>

@@ -1,13 +1,27 @@
 <template>
   <transition name="slide-up">
-    <div v-if="visible" class="install-banner" :class="{ dark: isDark }">
+    <div
+      v-if="visible"
+      class="install-banner"
+      :class="{ dark: isDark }"
+    >
       <span class="install-icon">📱</span>
       <div class="install-text">
         <strong>Add to Home Screen</strong>
         <span>Install Sudoku Dojo for quick access</span>
       </div>
-      <button class="install-btn" @click="install">Install</button>
-      <button class="dismiss-btn" @click="dismiss">✕</button>
+      <button
+        class="install-btn"
+        @click="install"
+      >
+        Install
+      </button>
+      <button
+        class="dismiss-btn"
+        @click="dismiss"
+      >
+        ✕
+      </button>
     </div>
   </transition>
 </template>

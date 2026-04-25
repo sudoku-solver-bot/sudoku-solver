@@ -1,9 +1,20 @@
 <template>
-  <div class="number-bar" :class="{ dark: isDark }">
-    <div v-for="n in 9" :key="n" class="digit-cell" :class="{ complete: counts[n] >= 9 }">
+  <div
+    class="number-bar"
+    :class="{ dark: isDark }"
+  >
+    <div
+      v-for="n in 9"
+      :key="n"
+      class="digit-cell"
+      :class="{ complete: counts[n] >= 9 }"
+    >
       <span class="digit-num">{{ n }}</span>
       <div class="digit-progress">
-        <div class="digit-fill" :style="{ width: (counts[n] / 9 * 100) + '%' }"></div>
+        <div
+          class="digit-fill"
+          :style="{ width: (counts[n] / 9 * 100) + '%' }"
+        />
       </div>
       <span class="digit-remaining">{{ 9 - counts[n] }}</span>
     </div>

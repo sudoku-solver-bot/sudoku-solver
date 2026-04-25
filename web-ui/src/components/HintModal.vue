@@ -1,15 +1,30 @@
 <template>
   <transition name="modal">
-    <div v-if="visible" class="modal-overlay" @click="$emit('close')">
-      <div class="modal-content" @click.stop>
-        <button class="modal-close" @click="$emit('close')">&times;</button>
+    <div
+      v-if="visible"
+      class="modal-overlay"
+      @click="$emit('close')"
+    >
+      <div
+        class="modal-content"
+        @click.stop
+      >
+        <button
+          class="modal-close"
+          @click="$emit('close')"
+        >
+          &times;
+        </button>
 
         <div class="hint-header">
           <span class="hint-icon">💡</span>
           <h2>Here's a Hint!</h2>
         </div>
 
-        <div v-if="hint" class="hint-body">
+        <div
+          v-if="hint"
+          class="hint-body"
+        >
           <div class="hint-cell-highlight">
             <div class="hint-position">
               Look at cell
@@ -34,9 +49,14 @@
               {{ showExplanation ? '▼' : '▶' }} Why this hint?
             </button>
             <transition name="expand">
-              <div v-if="showExplanation" class="explanation-content">
+              <div
+                v-if="showExplanation"
+                class="explanation-content"
+              >
                 <p>{{ getTechniqueExplanation(hint.technique) }}</p>
-                <p class="kid-friendly">{{ getKidFriendlyExplanation(hint.technique) }}</p>
+                <p class="kid-friendly">
+                  {{ getKidFriendlyExplanation(hint.technique) }}
+                </p>
               </div>
             </transition>
           </div>
@@ -46,12 +66,20 @@
           </div>
         </div>
 
-        <div v-else class="hint-error">
+        <div
+          v-else
+          class="hint-error"
+        >
           <p>No hint available right now.</p>
-          <p class="error-detail">Try solving some more cells first!</p>
+          <p class="error-detail">
+            Try solving some more cells first!
+          </p>
         </div>
 
-        <button class="hint-button" @click="$emit('close')">
+        <button
+          class="hint-button"
+          @click="$emit('close')"
+        >
           Got it, thanks!
         </button>
       </div>

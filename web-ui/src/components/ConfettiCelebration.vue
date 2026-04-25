@@ -1,8 +1,20 @@
 <template>
-  <div v-if="visible" class="confetti-container" @click="$emit('done')">
-    <canvas ref="canvas" class="confetti-canvas"></canvas>
-    <div class="celebration-text" :class="{ visible: showText }">
-      <div class="celebration-emoji">🎉</div>
+  <div
+    v-if="visible"
+    class="confetti-container"
+    @click="$emit('done')"
+  >
+    <canvas
+      ref="canvas"
+      class="confetti-canvas"
+    />
+    <div
+      class="celebration-text"
+      :class="{ visible: showText }"
+    >
+      <div class="celebration-emoji">
+        🎉
+      </div>
       <h2>Puzzle Complete!</h2>
       <div class="celebration-stats">
         <span v-if="time">⏱️ {{ time }}</span>
@@ -11,7 +23,12 @@
         <span v-if="hints === 0">🧠 No hints</span>
         <span v-else>💡 {{ hints }} hint{{ hints > 1 ? 's' : '' }}</span>
       </div>
-      <button class="celebration-btn" @click="$emit('done')">Continue</button>
+      <button
+        class="celebration-btn"
+        @click="$emit('done')"
+      >
+        Continue
+      </button>
     </div>
   </div>
 </template>

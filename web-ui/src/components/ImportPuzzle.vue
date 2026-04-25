@@ -1,13 +1,31 @@
 <template>
-  <div class="import-modal" @click.self="$emit('close')">
-    <div class="import-card" :class="{ dark: isDark }">
+  <div
+    class="import-modal"
+    @click.self="$emit('close')"
+  >
+    <div
+      class="import-card"
+      :class="{ dark: isDark }"
+    >
       <h3>📥 Import Puzzle</h3>
-      <p class="import-desc">Paste a Sudoku puzzle below. Use <code>.</code> or <code>0</code> for empty cells.</p>
+      <p class="import-desc">
+        Paste a Sudoku puzzle below. Use <code>.</code> or <code>0</code> for empty cells.
+      </p>
 
       <!-- Format tabs -->
       <div class="format-tabs">
-        <button :class="{ active: format === 'single' }" @click="format = 'single'">Single Line</button>
-        <button :class="{ active: format === 'grid' }" @click="format = 'grid'">9×9 Grid</button>
+        <button
+          :class="{ active: format === 'single' }"
+          @click="format = 'single'"
+        >
+          Single Line
+        </button>
+        <button
+          :class="{ active: format === 'grid' }"
+          @click="format = 'grid'"
+        >
+          9×9 Grid
+        </button>
       </div>
 
       <!-- Input area -->
@@ -17,26 +35,56 @@
         class="import-input"
         rows="6"
         @input="validate"
-      ></textarea>
+      />
 
       <!-- Preview -->
-      <div v-if="parsedPuzzle" class="preview-section">
-        <p class="preview-label">Preview ({{ givenCount }} given cells):</p>
+      <div
+        v-if="parsedPuzzle"
+        class="preview-section"
+      >
+        <p class="preview-label">
+          Preview ({{ givenCount }} given cells):
+        </p>
         <div class="mini-grid">
-          <span v-for="(c, i) in parsedPuzzle" :key="i" :class="{ given: c !== '.', empty: c === '.' }">
+          <span
+            v-for="(c, i) in parsedPuzzle"
+            :key="i"
+            :class="{ given: c !== '.', empty: c === '.' }"
+          >
             {{ c === '.' ? '' : c }}
           </span>
         </div>
       </div>
 
       <!-- Error -->
-      <div v-if="error" class="import-error">{{ error }}</div>
+      <div
+        v-if="error"
+        class="import-error"
+      >
+        {{ error }}
+      </div>
 
       <!-- Actions -->
       <div class="import-actions">
-        <button class="btn-cancel" @click="$emit('close')">Cancel</button>
-        <button class="btn-example" @click="loadExample">Load Example</button>
-        <button class="btn-import" :disabled="!parsedPuzzle || !!error" @click="doImport">Import</button>
+        <button
+          class="btn-cancel"
+          @click="$emit('close')"
+        >
+          Cancel
+        </button>
+        <button
+          class="btn-example"
+          @click="loadExample"
+        >
+          Load Example
+        </button>
+        <button
+          class="btn-import"
+          :disabled="!parsedPuzzle || !!error"
+          @click="doImport"
+        >
+          Import
+        </button>
       </div>
     </div>
   </div>
