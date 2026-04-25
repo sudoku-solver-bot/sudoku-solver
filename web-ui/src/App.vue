@@ -655,16 +655,18 @@ export default {
       // Check if mobile device
       checkMobile()
 
-      // Show What's New on first visit after update
+      // Show What's New on version change (not for brand new users who get onboarding)
       const seenVersion = localStorage.getItem('sudoku-version')
-      if (seenVersion !== '2.0') {
+      const isNewUser = !seenVersion && !localStorage.getItem('sudoku-seen-onboarding')
+      if (seenVersion && seenVersion !== '2.0') {
         whatsNewOpen.value = true
         localStorage.setItem('sudoku-version', '2.0')
-      }
-
-      // Show onboarding for brand new users
-      if (!hasSeenOnboarding.value && !seenVersion) {
-        onboardingOpen.value = true
+      } else if (!seenVersion) {
+        // First visit ever — set version and show onboarding
+        localStorage.setItem('sudoku-version', '2.0')
+        if (!hasSeenOnboarding.value && !navigator.webdriver) {
+          onboardingOpen.value = true
+        }
       }
       window.addEventListener('resize', checkMobile)
 
