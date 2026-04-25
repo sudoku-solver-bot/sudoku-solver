@@ -110,7 +110,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import SudokuGrid from './SudokuGrid.vue'
 import MobileNumberPad from './MobileNumberPad.vue'

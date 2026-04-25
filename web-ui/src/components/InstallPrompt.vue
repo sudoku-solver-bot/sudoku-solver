@@ -26,7 +26,7 @@
   </transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
 const DISMISS_KEY = 'sudoku-install-dismissed'

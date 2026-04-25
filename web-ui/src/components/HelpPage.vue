@@ -177,7 +177,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   isDark: { type: Boolean, default: false }
 })

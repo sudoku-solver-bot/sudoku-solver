@@ -22,7 +22,7 @@
   </transition>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useRegisterSW } from 'virtual:pwa-register/vue'
 

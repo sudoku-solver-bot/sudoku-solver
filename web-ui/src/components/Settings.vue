@@ -194,7 +194,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 
 import { ref } from 'vue'
 import { isSoundEnabled, setSoundEnabled, playSound } from '../sounds'

@@ -21,7 +21,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 const props = defineProps({
     counts: { type: Object, default: () => ({}) },
     isDark: { type: Boolean, default: false }
