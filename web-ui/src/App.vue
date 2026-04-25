@@ -46,6 +46,10 @@
                 <span class="menu-icon">⚙️</span>
                 <span class="menu-label">Settings</span>
               </button>
+              <button class="menu-item" @click="helpOpen = true; moreMenuOpen = false">
+                <span class="menu-icon">❓</span>
+                <span class="menu-label">Help</span>
+              </button>
               <button class="menu-item" @click="aboutOpen = true; moreMenuOpen = false">
                 <span class="menu-icon">ℹ️</span>
                 <span class="menu-label">About</span>
@@ -57,7 +61,7 @@
 
       <!-- Dashboard (home) -->
       <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !aboutOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen"
+        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !aboutOpen && !helpOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen"
         :completed-tutorials="completedTutorials"
         :total-tutorials="tutorialList.length || 15"
         :is-dark="isDark"
@@ -87,6 +91,13 @@
         v-if="aboutOpen && !tutorialMode && !dailyMode"
         :is-dark="isDark"
         @exit="aboutOpen = false"
+      />
+
+      <!-- Help Page -->
+      <HelpPage
+        v-if="helpOpen && !tutorialMode && !dailyMode"
+        :is-dark="isDark"
+        @exit="helpOpen = false"
       />
 
       <!-- Leaderboard -->
@@ -308,6 +319,14 @@
       <!-- PWA install prompt -->
       <InstallPrompt :is-dark="isDark" />
       <OfflineIndicator />
+
+      <!-- First-time onboarding -->
+      <OnboardingTour
+        :visible="onboardingOpen"
+        :is-dark="isDark"
+        @close="onboardingOpen = false"
+        @done="onboardingOpen = false; localStorage.setItem('sudoku-seen-onboarding', 'true')"
+      />
     </div>
   </div>
 </template>
@@ -345,6 +364,8 @@ import OfflineIndicator from './components/OfflineIndicator.vue'
 import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
 import AboutPage from './components/AboutPage.vue'
+import HelpPage from './components/HelpPage.vue'
+import OnboardingTour from './components/OnboardingTour.vue'
 import {
   solvePuzzle,
   generatePuzzle,
@@ -388,7 +409,9 @@ export default {
     OfflineIndicator,
     KeyboardHelp,
     Settings,
-    AboutPage
+    AboutPage,
+    HelpPage,
+    OnboardingTour
   },
   setup() {
     // Puzzle state
@@ -466,6 +489,9 @@ export default {
     const playMode = ref(false)
     const settingsOpen = ref(false)
     const aboutOpen = ref(false)
+    const helpOpen = ref(false)
+    const onboardingOpen = ref(false)
+    const hasSeenOnboarding = ref(localStorage.getItem('sudoku-seen-onboarding') === 'true')
     const moreMenuOpen = ref(false)
     const colorBlindMode = ref(false)
     const highContrastMode = ref(false)
@@ -577,6 +603,11 @@ export default {
       if (seenVersion !== '2.0') {
         whatsNewOpen.value = true
         localStorage.setItem('sudoku-version', '2.0')
+      }
+
+      // Show onboarding for brand new users
+      if (!hasSeenOnboarding.value && !seenVersion) {
+        onboardingOpen.value = true
       }
       window.addEventListener('resize', checkMobile)
 
@@ -1283,6 +1314,9 @@ export default {
       playMode,
       settingsOpen,
       aboutOpen,
+      helpOpen,
+      onboardingOpen,
+      hasSeenOnboarding,
       colorBlindMode,
       highContrastMode,
       boardTheme,
@@ -1375,8 +1409,8 @@ body {
 .container {
   background: white;
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  padding: 30px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+  padding: 20px;
   max-width: 500px;
   width: 100%;
   position: relative;
