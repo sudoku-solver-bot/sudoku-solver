@@ -1,9 +1,23 @@
 <template>
   <transition name="slide-up">
-    <div v-if="needRefresh" class="update-bar" :class="{ dark: isDark }">
+    <div
+      v-if="needRefresh"
+      class="update-bar"
+      :class="{ dark: isDark }"
+    >
       <span class="update-text">🔄 New version available</span>
-      <button class="update-btn" @click="updateServiceWorker">Reload</button>
-      <button class="dismiss-btn" @click="close">✕</button>
+      <button
+        class="update-btn"
+        @click="updateServiceWorker"
+      >
+        Reload
+      </button>
+      <button
+        class="dismiss-btn"
+        @click="close"
+      >
+        ✕
+      </button>
     </div>
   </transition>
 </template>
