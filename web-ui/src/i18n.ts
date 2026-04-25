@@ -1,9 +1,13 @@
 // Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
-const locale = ref(localStorage.getItem('sudoku-locale') || 'en')
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es'
 
-const translations = {
+const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
+
+// The translation strings are identical in structure — we just type the keys
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const translations: Record<string, Record<string, string>> = {
   en: {
     // Header
     appTitle: '🧩 Sudoku Solver',
@@ -814,11 +818,11 @@ const translations = {
 }
 
 export function useI18n() {
-  const t = (key) => {
+  const t = (key: string): string => {
     return translations[locale.value]?.[key] || translations.en[key] || key
   }
 
-  const setLocale = (l) => {
+  const setLocale = (l: Locale): void => {
     locale.value = l
     localStorage.setItem('sudoku-locale', l)
   }

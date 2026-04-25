@@ -24,6 +24,7 @@
     "eslint-plugin-vue": "^10.9.0",
     "happy-dom": "^20.9.0",
     "jsdom": "^29.0.2",
+    "typescript": "^6.0.3",
     "vite": "^5.0.0",
     "vite-plugin-pwa": "^1.2.0",
     "vitest": "^3.2.4"

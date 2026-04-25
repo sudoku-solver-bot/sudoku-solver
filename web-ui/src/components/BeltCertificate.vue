@@ -78,7 +78,7 @@
 <script setup>
 
 import { ref, computed } from 'vue'
-import { generateCertificateImage, downloadCertificateImage } from '../certificate-image.js'
+import { generateCertificateImage, downloadCertificateImage } from '../certificate-image'
 
 const props = defineProps({
     technique: { type: String, required: true },
