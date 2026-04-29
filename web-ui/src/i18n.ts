@@ -1,7 +1,7 @@
 // Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
-type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi'
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi' | 'ar'
 
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
@@ -1194,7 +1194,127 @@ const translations: Record<string, Record<string, string>> = {
     spanish: 'Español',
     german: 'Deutsch',
     portuguese: 'Português',
-    hindi: 'हिन्दी'
+    hindi: 'हिन्दी',
+    arabic: 'العربية'
+  },
+  ar: {
+    // Header
+    appTitle: '🧩 حلّال السودوكو',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'دوجو السودوكو',
+    dashboardSubtitle: 'تعلّم. تدرّب. أتقن.',
+    play: '▶ العب',
+    dailyChallenge: '📅 تحدّي يومي',
+    learnTechniques: '📚 تعلّم التقنيات',
+    quickSolve: '🧩 حل سريع',
+
+    // Game
+    progress: 'التقدم',
+    time: 'الوقت',
+    mistakes: 'الأخطاء',
+    hints: 'التلميحات',
+    filled: 'المملوء',
+    solve: '🧩 حلّ',
+    clear: '🗑️ مسح',
+    import: '📥 استيراد',
+    share: '🔗 مشاركة اللغز',
+    getHint: '💡 احصل على تلميح!',
+    pencilMarks: 'علامات القلم',
+    newPuzzle: 'لغز جديد:',
+    easy: 'سهل',
+    medium: 'متوسط',
+    hard: 'صعب',
+    undo: 'تراجع',
+    redo: 'إعادة',
+
+    // Settings
+    settingsTitle: '⚙️ الإعدادات',
+    accessibility: 'إمكانية الوصول',
+    colorBlind: 'وضع عمى الألوان',
+    colorBlindDesc: 'يستخدم أنماط وألوان مميزة للتمييز',
+    highContrast: 'تباين عالٍ',
+    highContrastDesc: 'حدود ونصوص أقوى لرؤية أفضل',
+    darkModeLabel: 'الوضع الداكن',
+    darkModeDesc: 'أكثر راحة للعينين في الليل',
+    soundEffects: 'المؤثرات الصوتية',
+    soundEffectsDesc: 'ردود صوتية للأفعال',
+    boardTheme: 'مظهر اللوحة',
+    data: 'البيانات',
+    resetProgress: 'إعادة تعيين التقدم',
+    resetProgressDesc: 'مسح جميع تقدم الدروس المحفوظة والسلاسل',
+    about: 'حول',
+    aboutText: 'دوجو السودوكو — تعلّم السودوكو خطوة بخطوة',
+    back: '→ رجوع',
+
+    // Import
+    importTitle: '📥 استيراد لغز',
+    importDesc: 'الصق لغز سودوكو أدناه. استخدم . أو 0 للخلايا الفارغة.',
+    singleLine: 'سطر واحد',
+    grid9x9: 'شبكة 9×9',
+    loadExample: 'تحميل مثال',
+    cancel: 'إلغاء',
+
+    // Achievements
+    achievementsTitle: '🏆 الإنجازات',
+    statsTitle: '📊 الإحصائيات',
+
+    // Belt levels
+    whiteBelt: 'الحزام الأبيض',
+    yellowBelt: 'الحزام الأصفر',
+    orangeBelt: 'الحزام البرتقالي',
+    greenBelt: 'الحزام الأخضر',
+    blueBelt: 'الحزام الأزرق',
+    purpleBelt: 'الحزام البنفسجي',
+    brownBelt: 'الحزام البني',
+    blackBelt: 'الحزام الأسود',
+
+    // Messages
+    puzzleImported: 'تم استيراد اللغز! اضغط حلّ أو حاول بنفسك.',
+    puzzleGenerated: 'تم إنشاء لغز {difficulty}!',
+    puzzleSolved: 'تم الحل في {time} مللي ثانية',
+    noSolution: 'لم يُعثر على حل',
+    linkCopied: 'تم نسخ الرابط!',
+    shareText: 'شارك هذا الرابط لتحدي شخص ما!',
+    sharedLoaded: 'تم تحميل اللغز المشترك! حاول حله بنفسك أو اضغط حلّ.',
+    puzzleComplete: 'اكتمل اللغز!',
+    perfect: '✨ مثالي!',
+    noHints: '🧠 بدون تلميحات',
+    continueBtn: 'متابعة',
+    resetAll: 'إعادة تعيين جميع الإحصائيات',
+    exportCSV: '📥 تصدير CSV',
+    savePuzzle: '💾 حفظ اللغز الحالي',
+    loadBtn: '▶ تحميل',
+    savedPuzzles: '💾 الألغاز المحفوظة',
+    noSavedPuzzles: 'لا توجد ألغاز محفوظة بعد!',
+    saveHint: 'اضغط "حفظ اللغز" أثناء اللعب لحفظ تقدمك.',
+
+    // Difficulty
+    EASY: 'سهل',
+    MEDIUM: 'متوسط',
+    HARD: 'صعب',
+    EXPERT: 'خبير',
+    MASTER: 'ماستر',
+
+    language: 'اللغة',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी',
+    arabic: 'العربية'
   }
 }
 
@@ -1203,14 +1323,22 @@ export function useI18n() {
     return translations[locale.value]?.[key] || translations.en[key] || key
   }
 
+  const isRTL = computed(() => locale.value === 'ar')
+
   const setLocale = (l: Locale): void => {
     locale.value = l
     localStorage.setItem('sudoku-locale', l)
+    document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr'
   }
 
   const currentLocale = computed(() => locale.value)
 
-  return { t, setLocale, currentLocale }
+  // Set initial direction
+  if (typeof document !== 'undefined') {
+    document.documentElement.dir = locale.value === 'ar' ? 'rtl' : 'ltr'
+  }
+
+  return { t, setLocale, currentLocale, isRTL }
 }
 
 export { locale }

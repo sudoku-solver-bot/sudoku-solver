@@ -165,6 +165,13 @@
           >
             🇮🇳 हिन्दी
           </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'ar' }"
+            @click="setLocale('ar')"
+          >
+            🇸🇦 العربية
+          </button>
         </div>
       </div>
 

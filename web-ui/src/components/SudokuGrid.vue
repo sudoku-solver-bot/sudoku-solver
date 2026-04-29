@@ -314,6 +314,7 @@ const onKeyDown = (event, index) => {
   display: grid;
   grid-template-columns: repeat(9, 1fr);
   gap: 1px;
+  direction: ltr;
   background: #333;
   padding: 2px;
   border-radius: 8px;
