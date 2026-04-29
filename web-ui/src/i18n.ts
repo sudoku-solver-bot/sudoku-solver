@@ -1,7 +1,7 @@
 // Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
-type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt'
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi'
 
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
@@ -122,7 +122,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   'zh-Hant': {
@@ -240,7 +241,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   'zh-Hans': {
@@ -358,7 +360,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   ja: {
@@ -476,7 +479,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   ko: {
@@ -594,7 +598,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   fr: {
@@ -712,7 +717,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   es: {
@@ -830,7 +836,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   de: {
@@ -948,7 +955,8 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   },
 
   pt: {
@@ -1066,7 +1074,127 @@ const translations: Record<string, Record<string, string>> = {
     french: 'Français',
     spanish: 'Español',
     german: 'Deutsch',
-    portuguese: 'Português'
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
+  },
+
+  hi: {
+    // Header
+    appTitle: '🧩 सुडोकू सॉल्वर',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'सुडोकू दोजो',
+    dashboardSubtitle: 'सीखें। अभ्यास करें। माहिर बनें।',
+    play: '▶ खेलें',
+    dailyChallenge: '📅 दैनिक चुनौती',
+    learnTechniques: '📚 तकनीकें सीखें',
+    quickSolve: '🧩 तेज़ हल',
+
+    // Game
+    progress: 'प्रगति',
+    time: 'समय',
+    mistakes: 'गलतियाँ',
+    hints: 'संकेत',
+    filled: 'भरा हुआ',
+    solve: '🧩 हल करें',
+    clear: '🗑️ मिटाएँ',
+    import: '📥 आयात',
+    share: '🔗 पज़ल साझा करें',
+    getHint: '💡 संकेत प्राप्त करें!',
+    pencilMarks: 'पेंसिल निशान',
+    newPuzzle: 'नई पज़ल:',
+    easy: 'आसान',
+    medium: 'मध्यम',
+    hard: 'कठिन',
+    undo: 'पूर्ववत',
+    redo: 'दोहराएँ',
+
+    // Settings
+    settingsTitle: '⚙️ सेटिंग्स',
+    accessibility: 'पहुँच',
+    colorBlind: 'वर्णांध मोड',
+    colorBlindDesc: 'पैटर्न और अलग रंगों का उपयोग करता है',
+    highContrast: 'उच्च कंट्रास्ट',
+    highContrastDesc: 'बेहतर दृश्यता के लिए मजबूत बॉर्डर और टेक्स्ट',
+    darkModeLabel: 'डार्क मोड',
+    darkModeDesc: 'रात में आँखों के लिए आरामदायक',
+    soundEffects: 'ध्वनि प्रभाव',
+    soundEffectsDesc: 'कार्यों के लिए ऑडियो फीडबैक',
+    boardTheme: 'बोर्ड थीम',
+    data: 'डेटा',
+    resetProgress: 'प्रगति रीसेट करें',
+    resetProgressDesc: 'सभी सहेजे गए पाठ प्रगति और स्ट्रीक्स मिटाएँ',
+    about: 'के बारे में',
+    aboutText: 'सुडोकू दोजो — सुडोकू चरण-दर-चरण सीखें',
+    back: '← वापस',
+
+    // Import
+    importTitle: '📥 पज़ल आयात करें',
+    importDesc: 'नीचे एक सुडोकू पज़ल चिपकाएँ। खाली कोशिकाओं के लिए . या 0 का उपयोग करें।',
+    singleLine: 'एक पंक्ति',
+    grid9x9: '9×9 ग्रिड',
+    loadExample: 'उदाहरण लोड करें',
+    cancel: 'रद्द करें',
+
+    // Achievements
+    achievementsTitle: '🏆 उपलब्धियाँ',
+    statsTitle: '📊 आँकड़े',
+
+    // Belt levels
+    whiteBelt: 'सफेद पट्टा',
+    yellowBelt: 'पीला पट्टा',
+    orangeBelt: 'नारंगी पट्टा',
+    greenBelt: 'हरा पट्टा',
+    blueBelt: 'नीला पट्टा',
+    purpleBelt: 'बैंगनी पट्टा',
+    brownBelt: 'भूरा पट्टा',
+    blackBelt: 'काला पट्टा',
+
+    // Messages
+    puzzleImported: 'पज़ल आयात हो गई! हल करें टैप करें या स्वयं हल करें।',
+    puzzleGenerated: '{difficulty} पज़ल बनाई गई!',
+    puzzleSolved: '{time}ms में हल किया',
+    noSolution: 'कोई समाधान नहीं मिला',
+    linkCopied: 'लिंक कॉपी हो गया!',
+    shareText: 'किसी को चुनौती देने के लिए यह लिंक साझा करें!',
+    sharedLoaded: 'साझा पज़ल लोड हो गई! स्वयं हल करें या हल करें टैप करें।',
+    puzzleComplete: 'पज़ल पूरी हुई!',
+    perfect: '✨ बिल्कुल सही!',
+    noHints: '🧠 बिना संकेत',
+    continueBtn: 'जारी रखें',
+    resetAll: 'सभी आँकड़े रीसेट करें',
+    exportCSV: '📥 CSV निर्यात',
+    savePuzzle: '💾 वर्तमान पज़ल सहेजें',
+    loadBtn: '▶ लोड करें',
+    savedPuzzles: '💾 सहेजी गई पज़लें',
+    noSavedPuzzles: 'अभी तक कोई सहेजी गई पज़ल नहीं!',
+    saveHint: 'खेलते समय "पज़ल सहेजें" क्लिक करें अपनी प्रगति सहेजने के लिए।',
+
+    // Difficulty
+    EASY: 'आसान',
+    MEDIUM: 'मध्यम',
+    HARD: 'कठिन',
+    EXPERT: 'विशेषज्ञ',
+    MASTER: 'माहिर',
+
+    language: 'भाषा',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी'
   }
 }
 
