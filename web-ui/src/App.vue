@@ -391,7 +391,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import SudokuGrid from './components/SudokuGrid.vue'
 import ControlPanel from './components/ControlPanel.vue'
