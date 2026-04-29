@@ -1,7 +1,7 @@
 // Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
-type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi' | 'ar' | 'it' | 'ru'
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi' | 'ar' | 'it' | 'ru' | 'tr' | 'nl'
 
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
@@ -131,7 +131,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
         arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   'zh-Hant': {
@@ -253,7 +255,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   'zh-Hans': {
@@ -375,7 +379,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   ja: {
@@ -497,7 +503,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   ko: {
@@ -619,7 +627,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   fr: {
@@ -741,7 +751,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   es: {
@@ -863,7 +875,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   de: {
@@ -985,7 +999,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   pt: {
@@ -1107,7 +1123,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   hi: {
@@ -1229,7 +1247,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   ar: {
@@ -1351,7 +1371,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   it: {
@@ -1473,7 +1495,9 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   },
 
   ru: {
@@ -1595,7 +1619,257 @@ const translations: Record<string, Record<string, string>> = {
     hindi: 'हिन्दी',
     arabic: 'العربية',
     italian: 'Italiano',
-    russian: 'Русский'
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
+  },
+
+  tr: {
+    // Header
+    appTitle: '🧩 Sudoku Çözücü',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Sudoku Dojo',
+    dashboardSubtitle: 'Öğren. Pratik Yap. Ustalaş.',
+    play: '▶ Oyna',
+    dailyChallenge: '📅 Günlük Meydan Okuma',
+    learnTechniques: '📚 Teknikleri Öğren',
+    quickSolve: '🧩 Hızlı Çöz',
+
+    // Game
+    progress: 'İlerleme',
+    time: 'Süre',
+    mistakes: 'Hatalar',
+    hints: 'İpuçları',
+    filled: 'Dolu',
+    solve: '🧩 Çöz',
+    clear: '🗑️ Temizle',
+    import: '📥 İçe Aktar',
+    share: '🔗 Bulmacayı Paylaş',
+    getHint: '💡 İpucu Al!',
+    pencilMarks: 'Kalem İşaretleri',
+    newPuzzle: 'Yeni Bulmaca:',
+    easy: 'Kolay',
+    medium: 'Orta',
+    hard: 'Zor',
+    undo: 'Geri Al',
+    redo: 'Yinele',
+
+    // Settings
+    settingsTitle: '⚙️ Ayarlar',
+    accessibility: 'Erişilebilirlik',
+    colorBlind: 'Renk körü modu',
+    colorBlindDesc: 'Desenler ve belirgin renkler kullanır',
+    highContrast: 'Yüksek kontrast',
+    highContrastDesc: 'Daha iyi görünürlük için güçlü kenarlıklar ve metin',
+    darkModeLabel: 'Karanlık mod',
+    darkModeDesc: 'Gece kullanımı için göz dostu',
+    soundEffects: 'Ses efektleri',
+    soundEffectsDesc: 'Eylemler için sesli geri bildirim',
+    boardTheme: 'Tahta Teması',
+    data: 'Veriler',
+    resetProgress: 'İlerlemeyi sıfırla',
+    resetProgressDesc: 'Tüm kaydedilmiş ders ilerlemesini ve serileri sil',
+    about: 'Hakkında',
+    aboutText: 'Sudoku Dojo — Adım adım Sudoku öğrenin',
+    back: '← Geri',
+
+    // Import
+    importTitle: '📥 Bulmaca İçe Aktar',
+    importDesc: 'Aşağıya bir Sudoku bulmacası yapıştırın. Boş hücreler için . veya 0 kullanın.',
+    singleLine: 'Tek Satır',
+    grid9x9: '9×9 Izgara',
+    loadExample: 'Örnek Yükle',
+    cancel: 'İptal',
+
+    // Achievements
+    achievementsTitle: '🏆 Başarılar',
+    statsTitle: '📊 İstatistikler',
+
+    // Belt levels
+    whiteBelt: 'Beyaz Kuşak',
+    yellowBelt: 'Sarı Kuşak',
+    orangeBelt: 'Turuncu Kuşak',
+    greenBelt: 'Yeşil Kuşak',
+    blueBelt: 'Mavi Kuşak',
+    purpleBelt: 'Mor Kuşak',
+    brownBelt: 'Kahverengi Kuşak',
+    blackBelt: 'Siyah Kuşak',
+
+    // Messages
+    puzzleImported: 'Bulmaca içe aktarıldı! Çöz\'e dokunun veya kendiniz çözün.',
+    puzzleGenerated: '{difficulty} bulmaca oluşturuldu!',
+    puzzleSolved: '{time}ms içinde çözüldü',
+    noSolution: 'Çözüm bulunamadı',
+    linkCopied: 'Bağlantı Kopyalandı!',
+    shareText: 'Birini meydan okumak için bu bağlantıyı paylaşın!',
+    sharedLoaded: 'Paylaşılan bulmaca yüklendi! Kendiniz çözün veya Çöz\'e dokunun.',
+    puzzleComplete: 'Bulmaca Tamamlandı!',
+    perfect: '✨ Mükemmel!',
+    noHints: '🧠 İpucusuz',
+    continueBtn: 'Devam',
+    resetAll: 'Tüm İstatistikleri Sıfırla',
+    exportCSV: '📥 CSV Olarak Dışa Aktar',
+    savePuzzle: '💾 Geçerli Bulmacayı Kaydet',
+    loadBtn: '▶ Yükle',
+    savedPuzzles: '💾 Kaydedilen Bulmacalar',
+    noSavedPuzzles: 'Henüz kaydedilen bulmaca yok!',
+    saveHint: 'İlerlemenizi kaydetmek için oyun sırasında "Bulmacayı Kaydet"e tıklayın.',
+
+    // Difficulty
+    EASY: 'Kolay',
+    MEDIUM: 'Orta',
+    HARD: 'Zor',
+    EXPERT: 'Uzman',
+    MASTER: 'Usta',
+
+    language: 'Dil',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी',
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
+  },
+
+  nl: {
+    // Header
+    appTitle: '🧩 Sudoku Oplosser',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Sudoku Dojo',
+    dashboardSubtitle: 'Leer. Oefen. Word een meester.',
+    play: '▶ Spelen',
+    dailyChallenge: '📅 Dagelijkse Uitdaging',
+    learnTechniques: '📚 Technieken Leren',
+    quickSolve: '🧩 Snel Oplossen',
+
+    // Game
+    progress: 'Voortgang',
+    time: 'Tijd',
+    mistakes: 'Fouten',
+    hints: 'Tips',
+    filled: 'Gevuld',
+    solve: '🧩 Oplossen',
+    clear: '🗑️ Wissen',
+    import: '📥 Importeren',
+    share: '🔗 Puzzel Delen',
+    getHint: '💡 Tip Krijgen!',
+    pencilMarks: 'Potloodmarkeringen',
+    newPuzzle: 'Nieuwe Puzzel:',
+    easy: 'Makkelijk',
+    medium: 'Gemiddeld',
+    hard: 'Moeilijk',
+    undo: 'Ongedaan Maken',
+    redo: 'Opnieuw',
+
+    // Settings
+    settingsTitle: '⚙️ Instellingen',
+    accessibility: 'Toegankelijkheid',
+    colorBlind: 'Kleurenblindmodus',
+    colorBlindDesc: 'Gebruikt patronen en duidelijke kleuren',
+    highContrast: 'Hoog contrast',
+    highContrastDesc: 'Sterkere randen en tekst voor zichtbaarheid',
+    darkModeLabel: 'Donkere modus',
+    darkModeDesc: 'Vriendelijker voor de ogen \'s nachts',
+    soundEffects: 'Geluidseffecten',
+    soundEffectsDesc: 'Audio-feedback bij acties',
+    boardTheme: 'Bordthema',
+    data: 'Gegevens',
+    resetProgress: 'Voortgang resetten',
+    resetProgressDesc: 'Alle opgeslagen lesvoortgang en series wissen',
+    about: 'Over',
+    aboutText: 'Sudoku Dojo — Leer Sudoku stap voor stap',
+    back: '← Terug',
+
+    // Import
+    importTitle: '📥 Puzzel Importeren',
+    importDesc: 'Plak hieronder een Sudoku-puzzel. Gebruik . of 0 voor lege cellen.',
+    singleLine: 'Enkele Regel',
+    grid9x9: '9×9 Raster',
+    loadExample: 'Voorbeeld Laden',
+    cancel: 'Annuleren',
+
+    // Achievements
+    achievementsTitle: '🏆 Prestaties',
+    statsTitle: '📊 Statistieken',
+
+    // Belt levels
+    whiteBelt: 'Witte Band',
+    yellowBelt: 'Gele Band',
+    orangeBelt: 'Oranje Band',
+    greenBelt: 'Groene Band',
+    blueBelt: 'Blauwe Band',
+    purpleBelt: 'Paarse Band',
+    brownBelt: 'Bruine Band',
+    blackBelt: 'Zwarte Band',
+
+    // Messages
+    puzzleImported: 'Puzzel geïmporteerd! Tik op Oplossen of los het zelf op.',
+    puzzleGenerated: '{difficulty} puzzel gegenereerd!',
+    puzzleSolved: 'Opgelost in {time}ms',
+    noSolution: 'Geen oplossing gevonden',
+    linkCopied: 'Link Gekopieerd!',
+    shareText: 'Deel deze link om iemand uit te dagen!',
+    sharedLoaded: 'Gedeelde puzzel geladen! Los het zelf op of tik op Oplossen.',
+    puzzleComplete: 'Puzzel Voltooid!',
+    perfect: '✨ Perfect!',
+    noHints: '🧠 Zonder tips',
+    continueBtn: 'Doorgaan',
+    resetAll: 'Alle Statistieken Resetten',
+    exportCSV: '📥 Exporteren als CSV',
+    savePuzzle: '💾 Huidige Puzzel Opslaan',
+    loadBtn: '▶ Laden',
+    savedPuzzles: '💾 Opgeslagen Puzzels',
+    noSavedPuzzles: 'Nog geen opgeslagen puzzels!',
+    saveHint: 'Klik tijdens het spelen op "Puzzel Opslaan" om je voortgang te bewaren.',
+
+    // Difficulty
+    EASY: 'Makkelijk',
+    MEDIUM: 'Gemiddeld',
+    HARD: 'Moeilijk',
+    EXPERT: 'Expert',
+    MASTER: 'Meester',
+
+    language: 'Taal',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी',
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands'
   }
 }
 
