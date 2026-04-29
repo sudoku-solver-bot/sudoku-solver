@@ -144,6 +144,27 @@
           >
             🇪🇸 Español
           </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'de' }"
+            @click="setLocale('de')"
+          >
+            🇩🇪 Deutsch
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'pt' }"
+            @click="setLocale('pt')"
+          >
+            🇧🇷 Português
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'hi' }"
+            @click="setLocale('hi')"
+          >
+            🇮🇳 हिन्दी
+          </button>
         </div>
       </div>
 
