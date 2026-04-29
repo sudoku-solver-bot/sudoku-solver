@@ -183,174 +183,138 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 
-export default defineComponent({
-  name: 'UserTestingParticipation',
-  data() {
-    return {
-      currentStep: 1,
-      childName: '',
-      age: '',
-      parentEmail: '',
-      errors: [],
-      isLoading: false,
-      assignmentInfo: null,
-      showSuccess: false,
-      ageOptions: Array.from({length: 7}, (_, i) => i + 8) // 8-14 years
-    }
-  },
-  computed: {
-    canCreateParticipant() {
-      return this.childName.trim() && 
-             this.age && 
-             this.parentEmail.trim() &&
-             this.validateEmail(this.parentEmail)
-    }
-  },
-  methods: {
-    validateEmail(email) {
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      return re.test(email)
-    },
-    
-    validateForm() {
-      this.errors = []
-      
-      if (!this.childName.trim()) {
-        this.errors.push('Please enter your name')
-      }
-      
-      if (!this.age) {
-        this.errors.push('Please select your age')
-      }
-      
-      if (!this.parentEmail.trim()) {
-        this.errors.push('Please enter your parent\'s email')
-      } else if (!this.validateEmail(this.parentEmail)) {
-        this.errors.push('Please enter a valid email address')
-      }
-      
-      return this.errors.length === 0
-    },
-    
-    async createParticipant() {
-      if (!this.validateForm()) return
-      
-      this.isLoading = true
-      this.errors = []
-      
-      try {
-        const participantData = {
-          participantId: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          age: parseInt(this.age),
-          parentEmail: this.parentEmail,
-          childName: this.childName,
-          assignedVariant: this.getRandomVariant()
-        }
-        
-        const response = await fetch('/api/v1/user-testing/participant', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(participantData)
-        })
-        
-        const result = await response.json()
-        
-        if (result.success) {
-          this.participantId = result.participantId
-          this.currentStep = 2
-          
-          // Get feature assignment
-          await this.getFeatureAssignment(result.assignedVariant)
-        } else {
-          this.errors.push(result.error || 'Failed to create participant')
-        }
-      } catch (error) {
-        this.errors.push('Network error. Please try again.')
-        console.error('Error creating participant:', error)
-      } finally {
-        this.isLoading = false
-      }
-    },
-    
-    getRandomVariant() {
-      const variants = ['CONTROL', 'VARIANT_A', 'VARIANT_B']
-      return variants[Math.floor(Math.random() * variants.length)]
-    },
-    
-    async getFeatureAssignment(variant) {
-      try {
-        const response = await fetch(`/api/v1/user-testing/features/${variant}`)
-        const result = await response.json()
-        
-        if (result.success) {
-          this.assignmentInfo = {
-            variant: variant,
-            features: Object.values(result.features)
-          }
-        }
-      } catch (error) {
-        console.error('Error getting feature assignment:', error)
-        // Fallback default features
-        this.assignmentInfo = {
-          variant: variant,
-          features: ['Visual Feedback', 'Progress Bar', 'Hints']
-        }
-      }
-    },
-    
-    async startFirstSession() {
-      this.isLoading = true
-      
-      try {
-        const sessionData = {
-          sessionId: `session_${Date.now()}`,
-          participantId: this.participantId,
-          phase: 'ONBOARDING'
-        }
-        
-        const response = await fetch('/api/v1/user-testing/session', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(sessionData)
-        })
-        
-        const result = await response.json()
-        
-        if (result.success) {
-          this.currentStep = 3
-          this.sessionId = result.sessionId
-        } else {
-          this.errors.push('Failed to start session')
-        }
-      } catch (error) {
-        this.errors.push('Network error. Please try again.')
-        console.error('Error starting session:', error)
-      } finally {
-        this.isLoading = false
-      }
-    },
-    
-    continueToPuzzle() {
-      // Emit event to parent to start the puzzle
-      this.$emit('start-puzzle', {
-        sessionId: this.sessionId,
-        participantId: this.participantId,
-        assignmentInfo: this.assignmentInfo
-      })
-    },
-    
-    closeSuccess() {
-      this.showSuccess = false
-    }
+interface AssignmentInfo {
+  variant: string
+  features: string[]
+}
+
+const emit = defineEmits<{ 'start-puzzle': [payload: { sessionId: string; participantId: string; assignmentInfo: AssignmentInfo | null }] }>()
+
+const currentStep = ref(1)
+const childName = ref('')
+const age = ref('')
+const parentEmail = ref('')
+const errors = ref<string[]>([])
+const isLoading = ref(false)
+const assignmentInfo = ref<AssignmentInfo | null>(null)
+const showSuccess = ref(false)
+const participantId = ref('')
+const sessionId = ref('')
+const ageOptions = Array.from({ length: 7 }, (_, i) => i + 8) // 8-14 years
+
+const canCreateParticipant = computed(() =>
+  childName.value.trim() &&
+  age.value &&
+  parentEmail.value.trim() &&
+  validateEmail(parentEmail.value)
+)
+
+function validateEmail(email: string): boolean {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return re.test(email)
+}
+
+function validateForm(): boolean {
+  errors.value = []
+  if (!childName.value.trim()) errors.value.push('Please enter your name')
+  if (!age.value) errors.value.push('Please select your age')
+  if (!parentEmail.value.trim()) {
+    errors.value.push("Please enter your parent's email")
+  } else if (!validateEmail(parentEmail.value)) {
+    errors.value.push('Please enter a valid email address')
   }
-})
+  return errors.value.length === 0
+}
+
+async function createParticipant(): Promise<void> {
+  if (!validateForm()) return
+  isLoading.value = true
+  errors.value = []
+  try {
+    const participantData = {
+      participantId: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      age: parseInt(age.value),
+      parentEmail: parentEmail.value,
+      childName: childName.value,
+      assignedVariant: getRandomVariant()
+    }
+    const response = await fetch('/api/v1/user-testing/participant', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(participantData)
+    })
+    const result = await response.json()
+    if (result.success) {
+      participantId.value = result.participantId
+      currentStep.value = 2
+      await getFeatureAssignment(result.assignedVariant)
+    } else {
+      errors.value.push(result.error || 'Failed to create participant')
+    }
+  } catch (error) {
+    errors.value.push('Network error. Please try again.')
+    console.error('Error creating participant:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function getRandomVariant(): string {
+  const variants = ['CONTROL', 'VARIANT_A', 'VARIANT_B']
+  return variants[Math.floor(Math.random() * variants.length)]
+}
+
+async function getFeatureAssignment(variant: string): Promise<void> {
+  try {
+    const response = await fetch(`/api/v1/user-testing/features/${variant}`)
+    const result = await response.json()
+    if (result.success) {
+      assignmentInfo.value = { variant, features: Object.values(result.features) as string[] }
+    }
+  } catch (error) {
+    console.error('Error getting feature assignment:', error)
+    assignmentInfo.value = { variant, features: ['Visual Feedback', 'Progress Bar', 'Hints'] }
+  }
+}
+
+async function startFirstSession(): Promise<void> {
+  isLoading.value = true
+  try {
+    const sessionData = { sessionId: `session_${Date.now()}`, participantId: participantId.value, phase: 'ONBOARDING' }
+    const response = await fetch('/api/v1/user-testing/session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(sessionData)
+    })
+    const result = await response.json()
+    if (result.success) {
+      currentStep.value = 3
+      sessionId.value = result.sessionId
+    } else {
+      errors.value.push('Failed to start session')
+    }
+  } catch (error) {
+    errors.value.push('Network error. Please try again.')
+    console.error('Error starting session:', error)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function continueToPuzzle(): void {
+  emit('start-puzzle', {
+    sessionId: sessionId.value,
+    participantId: participantId.value,
+    assignmentInfo: assignmentInfo.value
+  })
+}
+
+function closeSuccess(): void {
+  showSuccess.value = false
+}
 </script>
 
 <style scoped>

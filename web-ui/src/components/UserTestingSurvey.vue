@@ -198,261 +198,245 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+import { ref, computed, onMounted } from 'vue'
 
-export default defineComponent({
-  name: 'UserTestingSurvey',
-  props: {
-    survey: {
-      type: Object,
-      required: true
-    },
-    sessionId: {
-      type: String,
-      required: true
-    },
-    participantId: {
-      type: String,
-      required: true
-    }
-  },
-  data() {
-    return {
-      currentQuestionIndex: 0,
-      responses: {},
-      rating: 0,
-      selectedEmoji: null,
-      selectedBoolean: null,
-      selectedMultipleChoice: null,
-      textResponse: '',
-      rating10: null,
-      isSubmitting: false,
-      showSuccess: false,
-      emojiOptions: [
-        { value: 'very_fun', emoji: '😄', label: 'So Fun!' },
-        { value: 'fun', emoji: '🙂', label: 'Fun' },
-        { value: 'okay', emoji: '😐', label: 'Okay' },
-        { value: 'boring', emoji: '😕', label: 'Boring' },
-        { value: 'hard', emoji: '😩', label: 'Too Hard' }
-      ],
-      multipleChoiceOptions: [
-        'The first puzzle',
-        'The hint system',
-        'The celebration animations',
-        'The progress bar',
-        'The tutorial mode',
-        'The visual feedback'
-      ]
-    }
-  },
-  computed: {
-    currentQuestion() {
-      return this.survey.questions[this.currentQuestionIndex]
-    },
-    totalQuestions() {
-      return this.survey.questions.length
-    },
-    progressPercentage() {
-      return ((this.currentQuestionIndex + 1) / this.totalQuestions) * 100
-    },
-    canProceed() {
-      const question = this.currentQuestion
-      switch (question.responseType) {
-        case 'RATING_1_5':
-          return this.rating > 0
-        case 'EMOJI_RATING':
-          return this.selectedEmoji !== null
-        case 'YES_NO':
-          return this.selectedBoolean !== null
-        case 'MULTIPLE_CHOICE':
-          return this.selectedMultipleChoice !== null
-        case 'TEXT':
-          return true // Optional text response
-        case 'RATING_1_10':
-          return this.rating10 !== null
-        default:
-          return true
-      }
-    }
-  },
-  mounted() {
-    // Initialize with first question
-    this.clearSelection()
-  },
-  methods: {
-    selectRating(value) {
-      this.rating = value
-      this.saveCurrentAnswer()
-    },
-    
-    selectEmoji(value) {
-      this.selectedEmoji = value
-      this.saveCurrentAnswer()
-    },
-    
-    selectBoolean(value) {
-      this.selectedBoolean = value
-      this.saveCurrentAnswer()
-    },
-    
-    selectMultipleChoice(value) {
-      this.selectedMultipleChoice = value
-      this.saveCurrentAnswer()
-    },
-    
-    saveCurrentAnswer() {
-      if (this.currentQuestion) {
-        let response
-        switch (this.currentQuestion.responseType) {
-          case 'RATING_1_5':
-            response = { type: 'RatingResponse', value: this.rating }
-            break
-          case 'RATING_1_10':
-            response = { type: 'RatingResponse', value: this.rating10 }
-            break
-          case 'EMOJI_RATING':
-          case 'YES_NO':
-          case 'MULTIPLE_CHOICE':
-            response = { type: 'TextResponse', text: this.selectedEmoji || this.selectedBoolean || this.selectedMultipleChoice }
-            break
-          case 'TEXT':
-            response = { type: 'TextResponse', text: this.textResponse }
-            break
-          default:
-            response = { type: 'TextResponse', text: 'Answered' }
-        }
-        
-        this.responses[this.currentQuestion.questionId] = response
-      }
-    },
-    
-    getPlaceholderText() {
-      if (this.currentQuestion.category === 'ENGAGEMENT') {
-        return 'Tell us what you enjoyed most...'
-      } else if (this.currentQuestion.category === 'LEARNING_EFFECTIVENESS') {
-        return 'What did you learn today?'
-      } else if (this.currentQuestion.category === 'SATISFACTION') {
-        return 'Share your thoughts about the experience...'
-      } else {
-        return 'Type your answer here...'
-      }
-    },
-    
-    previousQuestion() {
-      if (this.currentQuestionIndex > 0) {
-        this.currentQuestionIndex--
-        // Load saved answer for previous question
-        this.loadCurrentAnswer()
-      }
-    },
-    
-    nextQuestion() {
-      if (this.canProceed && this.currentQuestionIndex < this.totalQuestions - 1) {
-        this.saveCurrentAnswer()
-        this.currentQuestionIndex++
-        this.clearSelection()
-      }
-    },
-    
-    loadCurrentAnswer() {
-      const question = this.currentQuestion
-      if (!question) return
-      
-      const savedResponse = this.responses[question.questionId]
-      if (!savedResponse) return
-      
-      switch (question.responseType) {
-        case 'RATING_1_5':
-          this.rating = savedResponse.value
-          break
-        case 'RATING_1_10':
-          this.rating10 = savedResponse.value
-          break
-        case 'EMOJI_RATING':
-        case 'YES_NO':
-        case 'MULTIPLE_CHOICE':
-          this.textResponse = savedResponse.text
-          // Convert back to appropriate type
-          if (question.responseType === 'YES_NO') {
-            this.selectedBoolean = savedResponse.text === 'true'
-          } else {
-            this.selectedEmoji = savedResponse.text
-            this.selectedMultipleChoice = savedResponse.text
-          }
-          break
-        case 'TEXT':
-          this.textResponse = savedResponse.text
-          break
-      }
-    },
-    
-    clearSelection() {
-      this.rating = 0
-      this.selectedEmoji = null
-      this.selectedBoolean = null
-      this.selectedMultipleChoice = null
-      this.textResponse = ''
-      this.rating10 = null
-    },
-    
-    async submitSurvey() {
-      this.saveCurrentAnswer()
-      this.isSubmitting = true
-      
-      try {
-        const surveyData = {
-          surveyId: this.survey.surveyId,
-          participantId: this.participantId,
-          sessionId: this.sessionId,
-          responses: this.responses,
-          overallRating: this.calculateOverallRating()
-        }
-        
-        const response = await fetch('/api/v1/user-testing/survey/submit', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(surveyData)
-        })
-        
-        const result = await response.json()
-        
-        if (result.success) {
-          this.showSuccess = true
-          // Emit event to parent
-          this.$emit('survey-submitted', {
-            submissionId: result.submissionId,
-            surveyId: this.survey.surveyId
-          })
-        } else {
-          alert('Error submitting survey. Please try again.')
-        }
-      } catch (error) {
-        console.error('Error submitting survey:', error)
-        alert('Network error. Please try again.')
-      } finally {
-        this.isSubmitting = false
-      }
-    },
-    
-    calculateOverallRating() {
-      // Calculate average from all rating responses
-      const ratingResponses = Object.values(this.responses).filter(
-        response => response.type === 'RatingResponse'
-      )
-      
-      if (ratingResponses.length === 0) return null
-      
-      const sum = ratingResponses.reduce((acc, response) => acc + response.value, 0)
-      return Math.round(sum / ratingResponses.length)
-    },
-    
-    closeSurvey() {
-      this.$emit('survey-completed')
-    }
+interface Question {
+  questionId: string
+  questionText: string
+  responseType: string
+  category: string
+}
+
+interface Survey {
+  surveyId: string
+  name: string
+  description: string
+  questions: Question[]
+}
+
+interface RatingResponse {
+  type: 'RatingResponse'
+  value: number
+}
+
+interface TextResponse {
+  type: 'TextResponse'
+  text: string | boolean | null
+}
+
+type SurveyResponse = RatingResponse | TextResponse
+
+const props = defineProps<{
+  survey: Survey
+  sessionId: string
+  participantId: string
+}>()
+
+const emit = defineEmits<{
+  'survey-submitted': [payload: { submissionId: string; surveyId: string }]
+  'survey-completed': []
+}>()
+
+const currentQuestionIndex = ref(0)
+const responses = ref<Record<string, SurveyResponse>>({})
+const rating = ref(0)
+const selectedEmoji = ref<string | null>(null)
+const selectedBoolean = ref<boolean | null>(null)
+const selectedMultipleChoice = ref<string | null>(null)
+const textResponse = ref('')
+const rating10 = ref<number | null>(null)
+const isSubmitting = ref(false)
+const showSuccess = ref(false)
+
+const emojiOptions = [
+  { value: 'very_fun', emoji: '😄', label: 'So Fun!' },
+  { value: 'fun', emoji: '🙂', label: 'Fun' },
+  { value: 'okay', emoji: '😐', label: 'Okay' },
+  { value: 'boring', emoji: '😕', label: 'Boring' },
+  { value: 'hard', emoji: '😩', label: 'Too Hard' }
+]
+
+const multipleChoiceOptions = [
+  'The first puzzle',
+  'The hint system',
+  'The celebration animations',
+  'The progress bar',
+  'The tutorial mode',
+  'The visual feedback'
+]
+
+const currentQuestion = computed(() => props.survey.questions[currentQuestionIndex.value])
+const totalQuestions = computed(() => props.survey.questions.length)
+const progressPercentage = computed(() => ((currentQuestionIndex.value + 1) / totalQuestions.value) * 100)
+
+const canProceed = computed(() => {
+  const question = currentQuestion.value
+  switch (question.responseType) {
+    case 'RATING_1_5': return rating.value > 0
+    case 'EMOJI_RATING': return selectedEmoji.value !== null
+    case 'YES_NO': return selectedBoolean.value !== null
+    case 'MULTIPLE_CHOICE': return selectedMultipleChoice.value !== null
+    case 'TEXT': return true
+    case 'RATING_1_10': return rating10.value !== null
+    default: return true
   }
+})
+
+function selectRating(value: number): void {
+  rating.value = value
+  saveCurrentAnswer()
+}
+
+function selectEmoji(value: string): void {
+  selectedEmoji.value = value
+  saveCurrentAnswer()
+}
+
+function selectBoolean(value: boolean): void {
+  selectedBoolean.value = value
+  saveCurrentAnswer()
+}
+
+function selectMultipleChoice(value: string): void {
+  selectedMultipleChoice.value = value
+  saveCurrentAnswer()
+}
+
+function saveCurrentAnswer(): void {
+  if (!currentQuestion.value) return
+  const q = currentQuestion.value
+  let response: SurveyResponse
+  switch (q.responseType) {
+    case 'RATING_1_5':
+      response = { type: 'RatingResponse', value: rating.value }
+      break
+    case 'RATING_1_10':
+      response = { type: 'RatingResponse', value: rating10.value! }
+      break
+    case 'EMOJI_RATING':
+      response = { type: 'TextResponse', text: selectedEmoji.value }
+      break
+    case 'YES_NO':
+      response = { type: 'TextResponse', text: selectedBoolean.value ? 'true' : 'false' }
+      break
+    case 'MULTIPLE_CHOICE':
+      response = { type: 'TextResponse', text: selectedMultipleChoice.value }
+      break
+    case 'TEXT':
+      response = { type: 'TextResponse', text: textResponse.value }
+      break
+    default:
+      response = { type: 'TextResponse', text: 'Answered' }
+  }
+  responses.value[q.questionId] = response
+}
+
+function getPlaceholderText(): string {
+  const cat = currentQuestion.value?.category
+  if (cat === 'ENGAGEMENT') return 'Tell us what you enjoyed most...'
+  if (cat === 'LEARNING_EFFECTIVENESS') return 'What did you learn today?'
+  if (cat === 'SATISFACTION') return 'Share your thoughts about the experience...'
+  return 'Type your answer here...'
+}
+
+function previousQuestion(): void {
+  if (currentQuestionIndex.value > 0) {
+    currentQuestionIndex.value--
+    loadCurrentAnswer()
+  }
+}
+
+function nextQuestion(): void {
+  if (canProceed.value && currentQuestionIndex.value < totalQuestions.value - 1) {
+    saveCurrentAnswer()
+    currentQuestionIndex.value++
+    clearSelection()
+  }
+}
+
+function loadCurrentAnswer(): void {
+  const q = currentQuestion.value
+  if (!q) return
+  const saved = responses.value[q.questionId]
+  if (!saved) return
+  switch (q.responseType) {
+    case 'RATING_1_5':
+      if (saved.type === 'RatingResponse') rating.value = saved.value
+      break
+    case 'RATING_1_10':
+      if (saved.type === 'RatingResponse') rating10.value = saved.value
+      break
+    case 'YES_NO':
+      if (saved.type === 'TextResponse') selectedBoolean.value = saved.text === 'true'
+      break
+    case 'EMOJI_RATING':
+      if (saved.type === 'TextResponse') selectedEmoji.value = saved.text as string
+      break
+    case 'MULTIPLE_CHOICE':
+      if (saved.type === 'TextResponse') selectedMultipleChoice.value = saved.text as string
+      break
+    case 'TEXT':
+      if (saved.type === 'TextResponse') textResponse.value = saved.text as string
+      break
+  }
+}
+
+function clearSelection(): void {
+  rating.value = 0
+  selectedEmoji.value = null
+  selectedBoolean.value = null
+  selectedMultipleChoice.value = null
+  textResponse.value = ''
+  rating10.value = null
+}
+
+function calculateOverallRating(): number | null {
+  const ratingResponses = Object.values(responses.value).filter(
+    (r): r is RatingResponse => r.type === 'RatingResponse'
+  )
+  if (ratingResponses.length === 0) return null
+  const sum = ratingResponses.reduce((acc, r) => acc + r.value, 0)
+  return Math.round(sum / ratingResponses.length)
+}
+
+async function submitSurvey(): Promise<void> {
+  saveCurrentAnswer()
+  isSubmitting.value = true
+  try {
+    const surveyData = {
+      surveyId: props.survey.surveyId,
+      participantId: props.participantId,
+      sessionId: props.sessionId,
+      responses: responses.value,
+      overallRating: calculateOverallRating()
+    }
+    const response = await fetch('/api/v1/user-testing/survey/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(surveyData)
+    })
+    const result = await response.json()
+    if (result.success) {
+      showSuccess.value = true
+      emit('survey-submitted', { submissionId: result.submissionId, surveyId: props.survey.surveyId })
+    } else {
+      alert('Error submitting survey. Please try again.')
+    }
+  } catch (error) {
+    console.error('Error submitting survey:', error)
+    alert('Network error. Please try again.')
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+function closeSurvey(): void {
+  emit('survey-completed')
+}
+
+onMounted(() => {
+  clearSelection()
 })
 </script>
 
