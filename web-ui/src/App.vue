@@ -391,7 +391,8 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+
 import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import SudokuGrid from './components/SudokuGrid.vue'
 import ControlPanel from './components/ControlPanel.vue'
@@ -442,1004 +443,868 @@ import {
   fetchAllPracticeSets
 } from './api'
 
-export default {
-  name: 'App',
-  components: {
-    SudokuGrid,
-    ControlPanel,
-    ResultDisplay,
-    ProgressIndicator,
-    ToastNotification,
-    MobileNumberPad,
-    HintModal,
-    TutorialMode,
-    TutorialSelector,
-    QuizMode,
-    PracticeMode,
-    DailyChallenge,
-    ImportPuzzle,
-    Leaderboard,
-    Dashboard,
-    Achievements,
-    StatsPage,
-    ConfettiCelebration,
-    SavedPuzzles,
-    InstallPrompt,
+// Puzzle state
+const puzzle = ref('.'.repeat(81))
+const givenCells = ref(new Set())
+const solvedCells = ref(new Set())
 
-    WhatsNew,
-    OfflineIndicator,
-    KeyboardHelp,
-    Settings,
-    AboutPage,
-    HelpPage,
-    OnboardingTour,
-    UpdatePrompt
-  },
-  setup() {
-    // Puzzle state
-    const puzzle = ref('.'.repeat(81))
-    const givenCells = ref(new Set())
-    const solvedCells = ref(new Set())
+// Digit counts for numpad
+const digitCounts = computed(() => {
+  const counts = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0}
+  for (const c of puzzle.value) {
+    if (c >= '1' && c <= '9') counts[c]++
+  }
+  return counts
+})
 
-    // Digit counts for numpad
-    const digitCounts = computed(() => {
-      const counts = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0}
-      for (const c of puzzle.value) {
-        if (c >= '1' && c <= '9') counts[c]++
-      }
-      return counts
-    })
+// UI state
+const loading = ref(false)
+const loadingMessage = ref('')
+const selectedCell = ref(-1)
+const isDark = ref(false)
+const boardTheme = ref(localStorage.getItem('sudoku-theme') || 'default')
+const showMobilePad = ref(false)
+const isMobile = ref(false)
 
-    // UI state
-    const loading = ref(false)
-    const loadingMessage = ref('')
-    const selectedCell = ref(-1)
-    const isDark = ref(false)
-    const boardTheme = ref(localStorage.getItem('sudoku-theme') || 'default')
-    const showMobilePad = ref(false)
-    const isMobile = ref(false)
+// Timer state
+const elapsedTime = ref(0)
+let timerInterval = null
 
-    // Timer state
-    const elapsedTime = ref(0)
-    let timerInterval = null
+// Progress tracking
+const mistakes = ref(0)
+const hintsUsed = ref(0)
+const puzzleDifficulty = ref('')
+const puzzleSolution = ref('')
 
-    // Progress tracking
-    const mistakes = ref(0)
-    const hintsUsed = ref(0)
-    const puzzleDifficulty = ref('')
-    const puzzleSolution = ref('')
+// Undo/Redo state
+const canUndo = ref(false)
+const canRedo = ref(false)
+const undoCount = ref(0)
+const redoCount = ref(0)
+let lastSavedState = ''
 
-    // Undo/Redo state
-    const canUndo = ref(false)
-    const canRedo = ref(false)
-    const undoCount = ref(0)
-    const redoCount = ref(0)
-    let lastSavedState = ''
+// Result display state
+const resultMessage = ref('')
+const resultType = ref('info')
+const resultVisible = ref(false)
+const resultDifficulty = ref('')
+const resultTechniques = ref([])
 
-    // Result display state
-    const resultMessage = ref('')
-    const resultType = ref('info')
-    const resultVisible = ref(false)
-    const resultDifficulty = ref('')
-    const resultTechniques = ref([])
+// Toast notification state
+const toast = reactive({
+  visible: false,
+  type: 'info',
+  title: '',
+  message: '',
+  showRetry: false,
+  onRetry: null
+})
 
-    // Toast notification state
-    const toast = reactive({
-      visible: false,
-      type: 'info',
-      title: '',
-      message: '',
-      showRetry: false,
-      onRetry: null
-    })
+// Hint modal state
+const hintModalVisible = ref(false)
+const currentHint = ref(null)
 
-    // Hint modal state
-    const hintModalVisible = ref(false)
-    const currentHint = ref(null)
+// Candidates (pencil marks) state
+const candidates = ref({})
+const showCandidates = ref(true)
+const pencilMode = ref(false)
 
-    // Candidates (pencil marks) state
-    const candidates = ref({})
-    const showCandidates = ref(true)
-    const pencilMode = ref(false)
+// Tutorial state
+const tutorialMode = ref(false)
+const tutorialList = ref([])
+const currentTutorialLesson = ref(null)
+const tutorialSelectorOpen = ref(false)
+const dailyMode = ref(false)
+const playMode = ref(false)
+const settingsOpen = ref(false)
+const aboutOpen = ref(false)
+const helpOpen = ref(false)
+const onboardingOpen = ref(false)
+const hasSeenOnboarding = ref(localStorage.getItem('sudoku-seen-onboarding') === 'true')
+const moreMenuOpen = ref(false)
+const colorBlindMode = ref(false)
+const highContrastMode = ref(false)
+const challengeMode = ref(localStorage.getItem('sudoku-challenge') === 'true')
+const completedTutorials = ref(new Set())
 
-    // Tutorial state
-    const tutorialMode = ref(false)
-    const tutorialList = ref([])
-    const currentTutorialLesson = ref(null)
-    const tutorialSelectorOpen = ref(false)
-    const dailyMode = ref(false)
-    const playMode = ref(false)
-    const settingsOpen = ref(false)
-    const aboutOpen = ref(false)
-    const helpOpen = ref(false)
-    const onboardingOpen = ref(false)
-    const hasSeenOnboarding = ref(localStorage.getItem('sudoku-seen-onboarding') === 'true')
-    const moreMenuOpen = ref(false)
-    const colorBlindMode = ref(false)
-    const highContrastMode = ref(false)
-    const challengeMode = ref(localStorage.getItem('sudoku-challenge') === 'true')
-    const completedTutorials = ref(new Set())
+// Quiz & Practice state
+const quizMode = ref(false)
+const currentQuiz = ref(null)
+const quizList = ref([])
+const practiceMode = ref(false)
+const currentPracticeSet = ref(null)
+const practiceList = ref([])
+const leaderboardOpen = ref(false)
+const whatsNewOpen = ref(false)
+const savesOpen = ref(false)
+const confettiVisible = ref(false)
+const importModalOpen = ref(false)
+const keyboardHelpOpen = ref(false)
+const achievementsOpen = ref(false)
+const statsOpen = ref(false)
+const achievementStats = ref({})
 
-    // Quiz & Practice state
-    const quizMode = ref(false)
-    const currentQuiz = ref(null)
-    const quizList = ref([])
-    const practiceMode = ref(false)
-    const currentPracticeSet = ref(null)
-    const practiceList = ref([])
-    const leaderboardOpen = ref(false)
-    const whatsNewOpen = ref(false)
-    const savesOpen = ref(false)
-    const confettiVisible = ref(false)
-    const importModalOpen = ref(false)
-    const keyboardHelpOpen = ref(false)
-    const achievementsOpen = ref(false)
-    const statsOpen = ref(false)
-    const achievementStats = ref({})
+// Load completed tutorials from localStorage
+try {
+  const saved = localStorage.getItem('sudokuCompletedTutorials')
+  if (saved) completedTutorials.value = new Set(JSON.parse(saved))
+} catch (e) {}
+try {
+  colorBlindMode.value = localStorage.getItem('sudokuColorBlind') === 'true'
+  highContrastMode.value = localStorage.getItem('sudokuHighContrast') === 'true'
+} catch (e) {}
 
-    // Load completed tutorials from localStorage
+// Initialize dark mode from localStorage or system preference
+const handleKeyDown = (e) => {
+  // Don't capture when typing in inputs
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+
+  const cell = selectedCell.value
+
+  // Arrow key navigation
+  if (e.key === 'ArrowUp' && cell >= 9) { e.preventDefault(); navigateToCell(cell - 9); return }
+  if (e.key === 'ArrowDown' && cell < 72) { e.preventDefault(); navigateToCell(cell + 9); return }
+  if (e.key === 'ArrowLeft' && cell % 9 > 0) { e.preventDefault(); navigateToCell(cell - 1); return }
+  if (e.key === 'ArrowRight' && cell % 9 < 8) { e.preventDefault(); navigateToCell(cell + 1); return }
+
+  // Number keys 1-9 to enter values
+  if (/^[1-9]$/.test(e.key) && cell >= 0 && !givenCells.value.has(cell)) {
+    e.preventDefault()
+    onCellUpdate(cell, e.key)
+    return
+  }
+
+  // Delete/Backspace to clear cell
+  if ((e.key === 'Delete' || e.key === 'Backspace') && cell >= 0 && !givenCells.value.has(cell)) {
+    e.preventDefault()
+    onCellUpdate(cell, '')
+    return
+  }
+
+  // Escape to deselect
+  if (e.key === 'Escape') {
+    selectedCell.value = -1
+    keyboardHelpOpen.value = false
+    return
+  }
+
+  // ? for keyboard help
+  if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
+    keyboardHelpOpen.value = !keyboardHelpOpen.value
+    return
+  }
+
+  // Ctrl+Z / Cmd+Z for undo
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+    e.preventDefault()
+    undo()
+    return
+  }
+
+  // Ctrl+Y / Cmd+Shift+Z for redo
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+    e.preventDefault()
+    redo()
+    return
+  }
+
+  // H for hint
+  if (e.key === 'h' || e.key === 'H') {
+    e.preventDefault()
+    getHint()
+    return
+  }
+}
+
+onMounted(() => {
+  const savedDarkMode = localStorage.getItem('sudokuDarkMode')
+  if (savedDarkMode !== null) {
+    isDark.value = savedDarkMode === 'true'
+  } else {
+    isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+  }
+
+  // Check if mobile device
+  checkMobile()
+
+  // Show What's New on version change (not for brand new users who get onboarding)
+  const seenVersion = localStorage.getItem('sudoku-version')
+  const isNewUser = !seenVersion && !localStorage.getItem('sudoku-seen-onboarding')
+  if (seenVersion && seenVersion !== '2.0') {
+    whatsNewOpen.value = true
+    localStorage.setItem('sudoku-version', '2.0')
+  } else if (!seenVersion) {
+    // First visit ever — set version and show onboarding
+    localStorage.setItem('sudoku-version', '2.0')
+    if (!hasSeenOnboarding.value && !navigator.webdriver) {
+      onboardingOpen.value = true
+    }
+  }
+  window.addEventListener('resize', checkMobile)
+
+  // Start timer on first puzzle load
+  startTimer()
+
+  // Load initial undo/redo state
+  loadHistoryState()
+
+  // Check for shared puzzle in URL (must be before savedGame check)
+  const params = new URLSearchParams(window.location.search)
+  const sharedPuzzle = params.get('p')
+
+  // Restore saved game state
+  const savedGame = localStorage.getItem('sudoku-current-game')
+  if (savedGame && !sharedPuzzle) {
     try {
-      const saved = localStorage.getItem('sudokuCompletedTutorials')
-      if (saved) completedTutorials.value = new Set(JSON.parse(saved))
+      const game = JSON.parse(savedGame)
+      if (game.puzzle && game.puzzle.length === 81 && game.puzzle !== '.'.repeat(81)) {
+        setPuzzle(game.puzzle, true)
+        if (game.playMode) playMode.value = true
+        if (game.difficulty) puzzleDifficulty.value = game.difficulty
+        showToast('Game Resumed', 'Picked up where you left off!', 'info')
+      }
     } catch (e) {}
+  }
+
+  // Handle shared puzzle
+  if (sharedPuzzle) {
     try {
-      colorBlindMode.value = localStorage.getItem('sudokuColorBlind') === 'true'
-      highContrastMode.value = localStorage.getItem('sudokuHighContrast') === 'true'
+      const decoded = atob(sharedPuzzle).replace(/0/g, '.')
+      if (decoded.length === 81) {
+        setPuzzle(decoded, true)
+        playMode.value = true
+        showResult('Shared puzzle loaded! Solve it yourself or tap Solve.', 'info')
+      }
     } catch (e) {}
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname)
+  }
 
-    // Initialize dark mode from localStorage or system preference
-    const handleKeyDown = (e) => {
-      // Don't capture when typing in inputs
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+  // Keyboard navigation
+  window.addEventListener('keydown', handleKeyDown)
 
-      const cell = selectedCell.value
-
-      // Arrow key navigation
-      if (e.key === 'ArrowUp' && cell >= 9) { e.preventDefault(); navigateToCell(cell - 9); return }
-      if (e.key === 'ArrowDown' && cell < 72) { e.preventDefault(); navigateToCell(cell + 9); return }
-      if (e.key === 'ArrowLeft' && cell % 9 > 0) { e.preventDefault(); navigateToCell(cell - 1); return }
-      if (e.key === 'ArrowRight' && cell % 9 < 8) { e.preventDefault(); navigateToCell(cell + 1); return }
-
-      // Number keys 1-9 to enter values
-      if (/^[1-9]$/.test(e.key) && cell >= 0 && !givenCells.value.has(cell)) {
-        e.preventDefault()
-        onCellUpdate(cell, e.key)
-        return
-      }
-
-      // Delete/Backspace to clear cell
-      if ((e.key === 'Delete' || e.key === 'Backspace') && cell >= 0 && !givenCells.value.has(cell)) {
-        e.preventDefault()
-        onCellUpdate(cell, '')
-        return
-      }
-
-      // Escape to deselect
-      if (e.key === 'Escape') {
-        selectedCell.value = -1
-        keyboardHelpOpen.value = false
-        return
-      }
-
-      // ? for keyboard help
-      if (e.key === '?' || (e.key === '/' && e.shiftKey)) {
-        keyboardHelpOpen.value = !keyboardHelpOpen.value
-        return
-      }
-
-      // Ctrl+Z / Cmd+Z for undo
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
-        e.preventDefault()
-        undo()
-        return
-      }
-
-      // Ctrl+Y / Cmd+Shift+Z for redo
-      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-        e.preventDefault()
-        redo()
-        return
-      }
-
-      // H for hint
-      if (e.key === 'h' || e.key === 'H') {
-        e.preventDefault()
-        getHint()
-        return
-      }
+  // Auto-save game state on puzzle changes
+  watch(puzzle, (val) => {
+    if (val && val !== '.'.repeat(81)) {
+      const filled = val.split('').filter(c => c !== '.').length
+      updateFavicon(puzzleDifficulty.value, filled)
+      localStorage.setItem('sudoku-current-game', JSON.stringify({
+        puzzle: val,
+        playMode: playMode.value,
+        difficulty: puzzleDifficulty.value,
+        ts: Date.now()
+      }))
     }
+  })
+})
 
-    onMounted(() => {
-      const savedDarkMode = localStorage.getItem('sudokuDarkMode')
-      if (savedDarkMode !== null) {
-        isDark.value = savedDarkMode === 'true'
-      } else {
-        isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
-      }
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
+  window.removeEventListener('keydown', handleKeyDown)
+  stopTimer()
+})
 
-      // Check if mobile device
-      checkMobile()
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768
+}
 
-      // Show What's New on version change (not for brand new users who get onboarding)
-      const seenVersion = localStorage.getItem('sudoku-version')
-      const isNewUser = !seenVersion && !localStorage.getItem('sudoku-seen-onboarding')
-      if (seenVersion && seenVersion !== '2.0') {
-        whatsNewOpen.value = true
-        localStorage.setItem('sudoku-version', '2.0')
-      } else if (!seenVersion) {
-        // First visit ever — set version and show onboarding
-        localStorage.setItem('sudoku-version', '2.0')
-        if (!hasSeenOnboarding.value && !navigator.webdriver) {
-          onboardingOpen.value = true
-        }
-      }
-      window.addEventListener('resize', checkMobile)
+const formatTime = (ms) => {
+  const seconds = Math.floor(ms / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  if (minutes > 0) return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  return `${seconds}s`
+}
 
-      // Start timer on first puzzle load
-      startTimer()
+const toggleDarkMode = () => {
+  isDark.value = !isDark.value
+  localStorage.setItem('sudokuDarkMode', isDark.value.toString())
+}
 
-      // Load initial undo/redo state
-      loadHistoryState()
+const closeMoreMenu = () => {
+  moreMenuOpen.value = false
+}
 
-      // Check for shared puzzle in URL (must be before savedGame check)
-      const params = new URLSearchParams(window.location.search)
-      const sharedPuzzle = params.get('p')
-
-      // Restore saved game state
-      const savedGame = localStorage.getItem('sudoku-current-game')
-      if (savedGame && !sharedPuzzle) {
-        try {
-          const game = JSON.parse(savedGame)
-          if (game.puzzle && game.puzzle.length === 81 && game.puzzle !== '.'.repeat(81)) {
-            setPuzzle(game.puzzle, true)
-            if (game.playMode) playMode.value = true
-            if (game.difficulty) puzzleDifficulty.value = game.difficulty
-            showToast('Game Resumed', 'Picked up where you left off!', 'info')
-          }
-        } catch (e) {}
-      }
-
-      // Handle shared puzzle
-      if (sharedPuzzle) {
-        try {
-          const decoded = atob(sharedPuzzle).replace(/0/g, '.')
-          if (decoded.length === 81) {
-            setPuzzle(decoded, true)
-            playMode.value = true
-            showResult('Shared puzzle loaded! Solve it yourself or tap Solve.', 'info')
-          }
-        } catch (e) {}
-        // Clean URL
-        window.history.replaceState({}, '', window.location.pathname)
-      }
-
-      // Keyboard navigation
-      window.addEventListener('keydown', handleKeyDown)
-
-      // Auto-save game state on puzzle changes
-      watch(puzzle, (val) => {
-        if (val && val !== '.'.repeat(81)) {
-          const filled = val.split('').filter(c => c !== '.').length
-          updateFavicon(puzzleDifficulty.value, filled)
-          localStorage.setItem('sudoku-current-game', JSON.stringify({
-            puzzle: val,
-            playMode: playMode.value,
-            difficulty: puzzleDifficulty.value,
-            ts: Date.now()
-          }))
-        }
-      })
-    })
-
-    onUnmounted(() => {
-      window.removeEventListener('resize', checkMobile)
-      window.removeEventListener('keydown', handleKeyDown)
-      stopTimer()
-    })
-
-    const checkMobile = () => {
-      isMobile.value = window.innerWidth < 768
-    }
-
-    const formatTime = (ms) => {
-      const seconds = Math.floor(ms / 1000)
-      const minutes = Math.floor(seconds / 60)
-      const remainingSeconds = seconds % 60
-      if (minutes > 0) return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
-      return `${seconds}s`
-    }
-
-    const toggleDarkMode = () => {
-      isDark.value = !isDark.value
-      localStorage.setItem('sudokuDarkMode', isDark.value.toString())
-    }
-
-    const closeMoreMenu = () => {
-      moreMenuOpen.value = false
-    }
-
-    const handleAppClick = (e) => {
-      moreMenuOpen.value = false
-      // Close mobile pad when clicking outside grid/pad area
-      if (showMobilePad.value) {
-        const grid = e.target.closest('.grid, .number-bar, .pad-btn, .bar-btn')
-        if (!grid) {
-          showMobilePad.value = false
-          selectedCell.value = -1
-        }
-      }
-    }
-
-    const startTimer = () => {
-      stopTimer()
-      elapsedTime.value = 0
-      timerInterval = setInterval(() => {
-        elapsedTime.value += 1000
-      }, 1000)
-    }
-
-    const stopTimer = () => {
-      if (timerInterval) {
-        clearInterval(timerInterval)
-        timerInterval = null
-      }
-    }
-
-    // Update a single cell
-    const onCellUpdate = async (index, value) => {
-      const chars = puzzle.value.split('')
-      const oldValue = chars[index]
-      chars[index] = value || '.'
-      puzzle.value = chars.join('')
-
-      // Sound feedback + auto-remove pencil marks
-      if (value && value !== '.') {
-        playSound('place')
-        autoRemovePencilMarks(index, value)
-        // Challenge mode: detect mistakes
-        if (challengeMode.value && puzzleSolution.value && puzzleSolution.value[index] !== value) {
-          mistakes.value++
-          if (mistakes.value >= 3) {
-            stopTimer()
-            showResult('💀 Game Over! 3 mistakes reached.', 'error')
-          }
-        }
-      }
-
-      // Show mobile pad on mobile if value was cleared
-      if (isMobile.value && value === '') {
-        showMobilePad.value = true
-      }
-
-      // Auto-save state for undo/redo
-      await autoSaveState()
-
-      // Refresh candidates after cell update
-      await refreshCandidates()
-
-      // Auto-remove pencil marks for this number in same row/col/box
-      if (value && value !== '.') {
-        const row = Math.floor(index / 9)
-        const col = index % 9
-        const region = Math.floor(row / 3) * 3 + Math.floor(col / 3)
-        const newCandidates = { ...candidates.value }
-        let changed = false
-        for (let i = 0; i < 81; i++) {
-          const iRow = Math.floor(i / 9)
-          const iCol = i % 9
-          const iRegion = Math.floor(iRow / 3) * 3 + Math.floor(iCol / 3)
-          if (iRow === row || iCol === col || iRegion === region) {
-            const key = String(i)
-            if (newCandidates[key]) {
-              const filtered = newCandidates[key].filter(n => n !== parseInt(value))
-              if (filtered.length !== newCandidates[key].length) {
-                newCandidates[key] = filtered
-                changed = true
-              }
-            }
-          }
-        }
-        if (changed) {
-          candidates.value = newCandidates
-        }
-      }
-
-      // Track mistakes if changing a solved cell to wrong value
-      if (solvedCells.value.has(index) && value !== '.' && value !== oldValue) {
-        // Could add validation here
-      }
-
-      // Check for puzzle completion in play mode
-      if (playMode.value && !puzzle.value.includes('.')) {
-        // All cells filled — check if correct
-        const solved = await solvePuzzle(puzzle.value, false).catch(() => null)
-        if (solved && solved.solved) {
-          stopTimer()
-          playSound('solved')
-          confettiVisible.value = true
-        }
-      }
-    }
-
-    // Number pad input
-    const onNumberPadInput = (num) => {
-      if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
-        onCellUpdate(selectedCell.value, num.toString())
-      }
-    }
-
-    const clearSelectedCell = () => {
-      if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
-        onCellUpdate(selectedCell.value, '')
-      }
-    }
-
-    // Cell selection
-    const selectCell = (index) => {
-      selectedCell.value = index
-      if (index < 0) {
-        showMobilePad.value = false
-      } else {
-        showMobilePad.value = true
-      }
-    }
-
-    const navigateToCell = (index) => {
-      selectedCell.value = index
-    }
-
-    // Set puzzle from string
-    const setPuzzle = (str, isGiven = true) => {
-      puzzle.value = str
-      givenCells.value = new Set()
-      solvedCells.value = new Set()
-
-      for (let i = 0; i < 81; i++) {
-        if (str[i] !== '.') {
-          if (isGiven) {
-            givenCells.value.add(i)
-          } else {
-            solvedCells.value.add(i)
-          }
-        }
-      }
-
-      // Reset progress tracking
-      mistakes.value = 0
-      hintsUsed.value = 0
-      startTimer()
-
-      // Fetch candidates for the new puzzle
-      refreshCandidates()
-    }
-
-    // Refresh candidates from the backend
-    const refreshCandidates = async () => {
-      try {
-        const data = await fetchCandidates(puzzle.value)
-        if (data.candidates) {
-          candidates.value = data.candidates
-        }
-      } catch (e) {
-        // Silently fail - candidates are optional
-        console.error('Failed to fetch candidates:', e)
-      }
-    }
-
-    // Auto-remove pencil marks when a number is placed
-    const autoRemovePencilMarks = (index, value) => {
-      if (value === '.' || !showCandidates.value) return
-      const row = Math.floor(index / 9)
-      const col = index % 9
-      const region = Math.floor(row / 3) * 3 + Math.floor(col / 3)
-      const num = parseInt(value)
-
-      const updated = { ...candidates.value }
-      for (let i = 0; i < 81; i++) {
-        const r = Math.floor(i / 9)
-        const c = i % 9
-        const reg = Math.floor(r / 3) * 3 + Math.floor(c / 3)
-        if (r === row || c === col || reg === region) {
-          if (updated[i]) {
-            const marks = updated[i].filter(n => n !== num)
-            if (marks.length > 0) updated[i] = marks
-            else delete updated[i]
-          }
-        }
-      }
-      candidates.value = updated
-    }
-
-    // Show toast notification
-    const showToast = (title, message, type = 'info', showRetry = false, onRetry = null) => {
-      toast.title = title
-      toast.message = message
-      toast.type = type
-      toast.showRetry = showRetry
-      toast.onRetry = onRetry
-      toast.visible = true
-    }
-
-    const hideToast = () => {
-      toast.visible = false
-    }
-
-    // Show result
-    const showResult = (message, type = 'info', difficulty = '', techniques = []) => {
-      resultMessage.value = message
-      resultType.value = type
-      resultDifficulty.value = difficulty
-      resultTechniques.value = techniques
-      resultVisible.value = true
-
-      setTimeout(() => {
-        resultVisible.value = false
-      }, type === 'success' ? 8000 : 5000)
-    }
-
-    // Undo/Redo functions
-    const autoSaveState = async () => {
-      const currentState = puzzle.value
-      if (currentState !== lastSavedState) {
-        try {
-          await saveState(currentState)
-          lastSavedState = currentState
-          await loadHistoryState()
-        } catch (e) {
-          console.error('Failed to save state:', e)
-        }
-      }
-    }
-
-    const loadHistoryState = async () => {
-      try {
-        const data = await getHistory()
-        canUndo.value = data.canUndo || false
-        canRedo.value = data.canRedo || false
-        undoCount.value = data.undoCount || 0
-        redoCount.value = data.redoCount || 0
-      } catch (e) {
-        console.error('Failed to load history state:', e)
-      }
-    }
-
-    const undoAction = async () => {
-      try {
-        const data = await undo()
-        if (data.puzzle) {
-          setPuzzle(data.puzzle, true)
-          await loadHistoryState()
-          showResult('Undone!', 'info')
-        } else {
-          showToast('Undo Failed', data.error || 'Nothing to undo', 'error')
-        }
-      } catch (e) {
-        showToast('Error', 'Failed to undo: ' + e.message, 'error', true, undoAction)
-      }
-    }
-
-    const redoAction = async () => {
-      try {
-        const data = await redo()
-        if (data.puzzle) {
-          setPuzzle(data.puzzle, true)
-          await loadHistoryState()
-          showResult('Redone!', 'info')
-        } else {
-          showToast('Redo Failed', data.error || 'Nothing to redo', 'error')
-        }
-      } catch (e) {
-        showToast('Error', 'Failed to redo: ' + e.message, 'error', true, redoAction)
-      }
-    }
-
-    const undo = () => {
-      undoAction()
-    }
-
-    const redo = () => {
-      redoAction()
-    }
-
-    // Solve the puzzle
-    const solve = async () => {
-      loading.value = true
-      loadingMessage.value = 'Solving puzzle...'
-      try {
-        const data = await solvePuzzle(puzzle.value, true)
-        if (data.solved) {
-          playSound('solved')
-          setPuzzle(data.solution, false)
-          showResult(
-            `Solved in ${data.metrics.solveTimeMs.toFixed(2)}ms`,
-            'success',
-            data.metrics.difficulty,
-            data.metrics.techniquesUsed
-          )
-          stopTimer()
-        } else {
-          showResult(data.error || 'No solution found', 'error')
-        }
-      } catch (e) {
-        showToast(
-          'Connection Error',
-          'Failed to connect to server. Please check your connection.',
-          'error',
-          true,
-          solve
-        )
-      } finally {
-        loading.value = false
-      }
-    }
-
-    // Generate a new puzzle
-    const generate = async (difficulty) => {
-      loading.value = true
-      loadingMessage.value = `Generating ${difficulty.toLowerCase()} puzzle...`
-      try {
-        const data = await generatePuzzle(difficulty)
-        if (data.puzzle) {
-          setPuzzle(data.puzzle, true)
-          showResult(`Generated ${data.difficulty} puzzle!`, 'success')
-          puzzleDifficulty.value = data.difficulty || difficulty
-          // Get solution for challenge mode
-          try {
-            const sol = await solvePuzzle(data.puzzle, false)
-            if (sol && sol.solved) puzzleSolution.value = sol.solution
-          } catch(e) {}
-          selectedCell.value = -1
-          showMobilePad.value = false
-          lastSavedState = data.puzzle
-          await saveState(data.puzzle)
-          await loadHistoryState()
-        } else {
-          showResult(data.error || 'Failed to generate puzzle', 'error')
-        }
-      } catch (e) {
-        const msg = e.message?.includes('fetch') || e.message?.includes('network') || e.message?.includes('Failed to fetch')
-          ? 'Server is sleeping. Trying again in 30s...'
-          : 'Failed to generate puzzle: ' + e.message
-        showToast(
-          'Oops!',
-          msg,
-          'error',
-          true,
-          () => generate(difficulty)
-        )
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const onImportPuzzle = (puzzleStr) => {
-      setPuzzle(puzzleStr, true)
-      selectedCell.value = -1
-      importModalOpen.value = false
-      playMode.value = true
-      showResult('Puzzle imported! Tap Solve or solve it yourself.', 'success')
-    }
-
-    const onLoadSave = (save) => {
-      setPuzzle(save.puzzle, true)
-      selectedCell.value = -1
-      savesOpen.value = false
-      playMode.value = true
-      if (save.difficulty) puzzleDifficulty.value = save.difficulty
-      showResult('Puzzle loaded! Continue where you left off.', 'info')
-    }
-
-    const sharePuzzle = async () => {
-      // Encode puzzle as base64 URL parameter
-      const puzzleData = puzzle.value.replace(/\./g, '0')
-      const encoded = btoa(puzzleData)
-      const url = `${window.location.origin}?p=${encoded}`
-
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: 'Sudoku Dojo Puzzle',
-            text: 'Can you solve this Sudoku puzzle?',
-            url
-          })
-        } catch (e) { /* cancelled */ }
-      } else {
-        await navigator.clipboard.writeText(url)
-        showToast('Link Copied!', 'Share this link to challenge someone!', 'success')
-      }
-      playSound('click')
-    }
-
-    const handlePrint = () => {
-      printPuzzle(puzzle.value, puzzleDifficulty.value)
-      playSound('click')
-    }
-
-    const handleShareImage = () => {
-      const img = generatePuzzleImage(puzzle.value, puzzleDifficulty.value)
-      downloadImage(img)
-      playSound('click')
-      showToast('Image Saved!', 'Share it with friends!', 'success')
-    }
-
-    // Get a hint
-    const getHint = async () => {
-      loading.value = true
-      loadingMessage.value = 'Finding hint...'
-      try {
-        const data = await getHintForPuzzle(puzzle.value)
-        if (data.hasHint) {
-          currentHint.value = data.hint
-          hintsUsed.value++
-          hintModalVisible.value = true
-          playSound('hint')
-          showMobilePad.value = false
-        } else {
-          showToast(
-            'No Hint Available',
-            data.error || 'Try solving some more cells first!',
-            'warning'
-          )
-        }
-      } catch (e) {
-        showToast(
-          'Error',
-          'Failed to get hint: ' + e.message,
-          'error',
-          true,
-          getHint
-        )
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const closeHintModal = () => {
-      hintModalVisible.value = false
-    }
-
-    // Clear the grid
-    const clearGrid = () => {
-      puzzle.value = '.'.repeat(81)
-      givenCells.value = new Set()
-      solvedCells.value = new Set()
-      resultVisible.value = false
-      selectedCell.value = -1
+const handleAppClick = (e) => {
+  moreMenuOpen.value = false
+  // Close mobile pad when clicking outside grid/pad area
+  if (showMobilePad.value) {
+    const grid = e.target.closest('.grid, .number-bar, .pad-btn, .bar-btn')
+    if (!grid) {
       showMobilePad.value = false
-      mistakes.value = 0
-      hintsUsed.value = 0
-      candidates.value = {}
-      startTimer()
-      lastSavedState = puzzle.value
-    }
-
-    // Tutorial methods
-    const toggleColorBlind = () => {
-      colorBlindMode.value = !colorBlindMode.value
-      localStorage.setItem('sudokuColorBlind', colorBlindMode.value.toString())
-    }
-
-    const toggleHighContrast = () => {
-      highContrastMode.value = !highContrastMode.value
-      localStorage.setItem('sudokuHighContrast', highContrastMode.value.toString())
-    }
-
-    const toggleChallenge = () => {
-      challengeMode.value = !challengeMode.value
-      localStorage.setItem('sudoku-challenge', challengeMode.value.toString())
-    }
-
-    const toggleTutorialMode = async () => {
-      if (tutorialMode.value || quizMode.value || practiceMode.value) {
-        tutorialMode.value = false
-        currentTutorialLesson.value = null
-        quizMode.value = false
-        currentQuiz.value = null
-        practiceMode.value = false
-        currentPracticeSet.value = null
-        return
-      }
-      try {
-        const tutorials = await fetchTutorials()
-        tutorialList.value = tutorials
-        // Load quiz and practice data in parallel
-        const [quizzes, practices] = await Promise.all([
-          fetchQuizzes().catch(() => []),
-          fetchAllPracticeSets().catch(() => [])
-        ])
-        quizList.value = quizzes
-        practiceList.value = practices
-        // Show the selector instead of auto-loading
-        tutorialSelectorOpen.value = true
-      } catch (e) {
-        console.error('Failed to load tutorials:', e)
-      }
-    }
-
-    const onTutorialSelected = async (lesson) => {
-      try {
-        const full = await fetchTutorial(lesson.id)
-        currentTutorialLesson.value = full
-        tutorialSelectorOpen.value = false
-        tutorialMode.value = true
-      } catch (e) {
-        console.error('Failed to load tutorial:', e)
-      }
-    }
-
-    const exitTutorialMode = () => {
-      tutorialMode.value = false
-      currentTutorialLesson.value = null
-      // Go back to selector
-      if (tutorialList.value.length > 0) {
-        tutorialSelectorOpen.value = true
-      }
-    }
-
-    const onTutorialCompleted = (lessonId) => {
-      completedTutorials.value.add(lessonId)
-      localStorage.setItem(
-        'sudokuCompletedTutorials',
-        JSON.stringify([...completedTutorials.value])
-      )
-    }
-
-    // Quiz methods
-    const onQuizSelected = (quiz) => {
-      currentQuiz.value = quiz
-      tutorialSelectorOpen.value = false
-      quizMode.value = true
-    }
-
-    const exitQuizMode = () => {
-      quizMode.value = false
-      currentQuiz.value = null
-      if (tutorialList.value.length > 0) {
-        tutorialSelectorOpen.value = true
-      }
-    }
-
-    const onQuizCompleted = (result) => {
-      // Score is saved in QuizMode via localStorage
-    }
-
-    // Practice methods
-    const onPracticeSelected = async (lesson) => {
-      const set = practiceList.value.find(p => p.tutorialId === lesson.id)
-      if (set) {
-        currentPracticeSet.value = set
-        tutorialSelectorOpen.value = false
-        practiceMode.value = true
-      }
-    }
-
-    const exitPracticeMode = () => {
-      practiceMode.value = false
-      currentPracticeSet.value = null
-      if (tutorialList.value.length > 0) {
-        tutorialSelectorOpen.value = true
-      }
-    }
-
-    const openAchievements = () => {
-      achievementStats.value = getStatsForAchievements()
-      leaderboardOpen.value = false
-      statsOpen.value = false
-      achievementsOpen.value = true
-    }
-
-    const openStats = () => {
-      achievementsOpen.value = false
-      leaderboardOpen.value = false
-      statsOpen.value = true
-    }
-
-    const onPracticeCompleted = (result) => {
-      // Progress is saved in PracticeMode via localStorage
-    }
-
-    return {
-      puzzle,
-      givenCells,
-      solvedCells,
-      digitCounts,
-      loading,
-      loadingMessage,
-      selectedCell,
-      isDark,
-      showMobilePad,
-      elapsedTime,
-      mistakes,
-      hintsUsed,
-      puzzleDifficulty,
-      canUndo,
-      canRedo,
-      undoCount,
-      redoCount,
-      resultMessage,
-      resultType,
-      resultVisible,
-      resultDifficulty,
-      resultTechniques,
-      toast,
-      hintModalVisible,
-      currentHint,
-      candidates,
-      showCandidates,
-      pencilMode,
-      moreMenuOpen,
-      closeMoreMenu,
-      handleAppClick,
-      tutorialMode,
-      tutorialList,
-      currentTutorialLesson,
-      tutorialSelectorOpen,
-      dailyMode,
-      playMode,
-      settingsOpen,
-      aboutOpen,
-      helpOpen,
-      onboardingOpen,
-      hasSeenOnboarding,
-      colorBlindMode,
-      highContrastMode,
-      boardTheme,
-      completedTutorials,
-      toggleDarkMode,
-      toggleColorBlind,
-      toggleHighContrast,
-      toggleChallenge,
-      challengeMode,
-      toggleTutorialMode,
-      onTutorialSelected,
-      exitTutorialMode,
-      onTutorialCompleted,
-      quizMode,
-      currentQuiz,
-      quizList,
-      practiceMode,
-      currentPracticeSet,
-      practiceList,
-      onQuizSelected,
-      exitQuizMode,
-      onQuizCompleted,
-      onPracticeSelected,
-      exitPracticeMode,
-      onPracticeCompleted,
-      leaderboardOpen,
-      whatsNewOpen,
-      savesOpen,
-      onLoadSave,
-      achievementsOpen,
-      statsOpen,
-      achievementStats,
-      openAchievements,
-      openStats,
-      onCellUpdate,
-      onNumberPadInput,
-      clearSelectedCell,
-      selectCell,
-      navigateToCell,
-      solve,
-      generate,
-      getHint,
-      undo,
-      redo,
-      clearGrid,
-      hideToast,
-      closeHintModal,
-      importModalOpen,
-      keyboardHelpOpen,
-      onImportPuzzle,
-      sharePuzzle,
-      handlePrint,
-      handleShareImage,
-      handleKeyDown,
-      confettiVisible,
-      formatTime
+      selectedCell.value = -1
     }
   }
 }
+
+const startTimer = () => {
+  stopTimer()
+  elapsedTime.value = 0
+  timerInterval = setInterval(() => {
+    elapsedTime.value += 1000
+  }, 1000)
+}
+
+const stopTimer = () => {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+
+// Update a single cell
+const onCellUpdate = async (index, value) => {
+  const chars = puzzle.value.split('')
+  const oldValue = chars[index]
+  chars[index] = value || '.'
+  puzzle.value = chars.join('')
+
+  // Sound feedback + auto-remove pencil marks
+  if (value && value !== '.') {
+    playSound('place')
+    autoRemovePencilMarks(index, value)
+    // Challenge mode: detect mistakes
+    if (challengeMode.value && puzzleSolution.value && puzzleSolution.value[index] !== value) {
+      mistakes.value++
+      if (mistakes.value >= 3) {
+        stopTimer()
+        showResult('💀 Game Over! 3 mistakes reached.', 'error')
+      }
+    }
+  }
+
+  // Show mobile pad on mobile if value was cleared
+  if (isMobile.value && value === '') {
+    showMobilePad.value = true
+  }
+
+  // Auto-save state for undo/redo
+  await autoSaveState()
+
+  // Refresh candidates after cell update
+  await refreshCandidates()
+
+  // Auto-remove pencil marks for this number in same row/col/box
+  if (value && value !== '.') {
+    const row = Math.floor(index / 9)
+    const col = index % 9
+    const region = Math.floor(row / 3) * 3 + Math.floor(col / 3)
+    const newCandidates = { ...candidates.value }
+    let changed = false
+    for (let i = 0; i < 81; i++) {
+      const iRow = Math.floor(i / 9)
+      const iCol = i % 9
+      const iRegion = Math.floor(iRow / 3) * 3 + Math.floor(iCol / 3)
+      if (iRow === row || iCol === col || iRegion === region) {
+        const key = String(i)
+        if (newCandidates[key]) {
+          const filtered = newCandidates[key].filter(n => n !== parseInt(value))
+          if (filtered.length !== newCandidates[key].length) {
+            newCandidates[key] = filtered
+            changed = true
+          }
+        }
+      }
+    }
+    if (changed) {
+      candidates.value = newCandidates
+    }
+  }
+
+  // Track mistakes if changing a solved cell to wrong value
+  if (solvedCells.value.has(index) && value !== '.' && value !== oldValue) {
+    // Could add validation here
+  }
+
+  // Check for puzzle completion in play mode
+  if (playMode.value && !puzzle.value.includes('.')) {
+    // All cells filled — check if correct
+    const solved = await solvePuzzle(puzzle.value, false).catch(() => null)
+    if (solved && solved.solved) {
+      stopTimer()
+      playSound('solved')
+      confettiVisible.value = true
+    }
+  }
+}
+
+// Number pad input
+const onNumberPadInput = (num) => {
+  if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
+    onCellUpdate(selectedCell.value, num.toString())
+  }
+}
+
+const clearSelectedCell = () => {
+  if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
+    onCellUpdate(selectedCell.value, '')
+  }
+}
+
+// Cell selection
+const selectCell = (index) => {
+  selectedCell.value = index
+  if (index < 0) {
+    showMobilePad.value = false
+  } else {
+    showMobilePad.value = true
+  }
+}
+
+const navigateToCell = (index) => {
+  selectedCell.value = index
+}
+
+// Set puzzle from string
+const setPuzzle = (str, isGiven = true) => {
+  puzzle.value = str
+  givenCells.value = new Set()
+  solvedCells.value = new Set()
+
+  for (let i = 0; i < 81; i++) {
+    if (str[i] !== '.') {
+      if (isGiven) {
+        givenCells.value.add(i)
+      } else {
+        solvedCells.value.add(i)
+      }
+    }
+  }
+
+  // Reset progress tracking
+  mistakes.value = 0
+  hintsUsed.value = 0
+  startTimer()
+
+  // Fetch candidates for the new puzzle
+  refreshCandidates()
+}
+
+// Refresh candidates from the backend
+const refreshCandidates = async () => {
+  try {
+    const data = await fetchCandidates(puzzle.value)
+    if (data.candidates) {
+      candidates.value = data.candidates
+    }
+  } catch (e) {
+    // Silently fail - candidates are optional
+    console.error('Failed to fetch candidates:', e)
+  }
+}
+
+// Auto-remove pencil marks when a number is placed
+const autoRemovePencilMarks = (index, value) => {
+  if (value === '.' || !showCandidates.value) return
+  const row = Math.floor(index / 9)
+  const col = index % 9
+  const region = Math.floor(row / 3) * 3 + Math.floor(col / 3)
+  const num = parseInt(value)
+
+  const updated = { ...candidates.value }
+  for (let i = 0; i < 81; i++) {
+    const r = Math.floor(i / 9)
+    const c = i % 9
+    const reg = Math.floor(r / 3) * 3 + Math.floor(c / 3)
+    if (r === row || c === col || reg === region) {
+      if (updated[i]) {
+        const marks = updated[i].filter(n => n !== num)
+        if (marks.length > 0) updated[i] = marks
+        else delete updated[i]
+      }
+    }
+  }
+  candidates.value = updated
+}
+
+// Show toast notification
+const showToast = (title, message, type = 'info', showRetry = false, onRetry = null) => {
+  toast.title = title
+  toast.message = message
+  toast.type = type
+  toast.showRetry = showRetry
+  toast.onRetry = onRetry
+  toast.visible = true
+}
+
+const hideToast = () => {
+  toast.visible = false
+}
+
+// Show result
+const showResult = (message, type = 'info', difficulty = '', techniques = []) => {
+  resultMessage.value = message
+  resultType.value = type
+  resultDifficulty.value = difficulty
+  resultTechniques.value = techniques
+  resultVisible.value = true
+
+  setTimeout(() => {
+    resultVisible.value = false
+  }, type === 'success' ? 8000 : 5000)
+}
+
+// Undo/Redo functions
+const autoSaveState = async () => {
+  const currentState = puzzle.value
+  if (currentState !== lastSavedState) {
+    try {
+      await saveState(currentState)
+      lastSavedState = currentState
+      await loadHistoryState()
+    } catch (e) {
+      console.error('Failed to save state:', e)
+    }
+  }
+}
+
+const loadHistoryState = async () => {
+  try {
+    const data = await getHistory()
+    canUndo.value = data.canUndo || false
+    canRedo.value = data.canRedo || false
+    undoCount.value = data.undoCount || 0
+    redoCount.value = data.redoCount || 0
+  } catch (e) {
+    console.error('Failed to load history state:', e)
+  }
+}
+
+const undoAction = async () => {
+  try {
+    const data = await undo()
+    if (data.puzzle) {
+      setPuzzle(data.puzzle, true)
+      await loadHistoryState()
+      showResult('Undone!', 'info')
+    } else {
+      showToast('Undo Failed', data.error || 'Nothing to undo', 'error')
+    }
+  } catch (e) {
+    showToast('Error', 'Failed to undo: ' + e.message, 'error', true, undoAction)
+  }
+}
+
+const redoAction = async () => {
+  try {
+    const data = await redo()
+    if (data.puzzle) {
+      setPuzzle(data.puzzle, true)
+      await loadHistoryState()
+      showResult('Redone!', 'info')
+    } else {
+      showToast('Redo Failed', data.error || 'Nothing to redo', 'error')
+    }
+  } catch (e) {
+    showToast('Error', 'Failed to redo: ' + e.message, 'error', true, redoAction)
+  }
+}
+
+const undo = () => {
+  undoAction()
+}
+
+const redo = () => {
+  redoAction()
+}
+
+// Solve the puzzle
+const solve = async () => {
+  loading.value = true
+  loadingMessage.value = 'Solving puzzle...'
+  try {
+    const data = await solvePuzzle(puzzle.value, true)
+    if (data.solved) {
+      playSound('solved')
+      setPuzzle(data.solution, false)
+      showResult(
+        `Solved in ${data.metrics.solveTimeMs.toFixed(2)}ms`,
+        'success',
+        data.metrics.difficulty,
+        data.metrics.techniquesUsed
+      )
+      stopTimer()
+    } else {
+      showResult(data.error || 'No solution found', 'error')
+    }
+  } catch (e) {
+    showToast(
+      'Connection Error',
+      'Failed to connect to server. Please check your connection.',
+      'error',
+      true,
+      solve
+    )
+  } finally {
+    loading.value = false
+  }
+}
+
+// Generate a new puzzle
+const generate = async (difficulty) => {
+  loading.value = true
+  loadingMessage.value = `Generating ${difficulty.toLowerCase()} puzzle...`
+  try {
+    const data = await generatePuzzle(difficulty)
+    if (data.puzzle) {
+      setPuzzle(data.puzzle, true)
+      showResult(`Generated ${data.difficulty} puzzle!`, 'success')
+      puzzleDifficulty.value = data.difficulty || difficulty
+      // Get solution for challenge mode
+      try {
+        const sol = await solvePuzzle(data.puzzle, false)
+        if (sol && sol.solved) puzzleSolution.value = sol.solution
+      } catch(e) {}
+      selectedCell.value = -1
+      showMobilePad.value = false
+      lastSavedState = data.puzzle
+      await saveState(data.puzzle)
+      await loadHistoryState()
+    } else {
+      showResult(data.error || 'Failed to generate puzzle', 'error')
+    }
+  } catch (e) {
+    const msg = e.message?.includes('fetch') || e.message?.includes('network') || e.message?.includes('Failed to fetch')
+      ? 'Server is sleeping. Trying again in 30s...'
+      : 'Failed to generate puzzle: ' + e.message
+    showToast(
+      'Oops!',
+      msg,
+      'error',
+      true,
+      () => generate(difficulty)
+    )
+  } finally {
+    loading.value = false
+  }
+}
+
+const onImportPuzzle = (puzzleStr) => {
+  setPuzzle(puzzleStr, true)
+  selectedCell.value = -1
+  importModalOpen.value = false
+  playMode.value = true
+  showResult('Puzzle imported! Tap Solve or solve it yourself.', 'success')
+}
+
+const onLoadSave = (save) => {
+  setPuzzle(save.puzzle, true)
+  selectedCell.value = -1
+  savesOpen.value = false
+  playMode.value = true
+  if (save.difficulty) puzzleDifficulty.value = save.difficulty
+  showResult('Puzzle loaded! Continue where you left off.', 'info')
+}
+
+const sharePuzzle = async () => {
+  // Encode puzzle as base64 URL parameter
+  const puzzleData = puzzle.value.replace(/\./g, '0')
+  const encoded = btoa(puzzleData)
+  const url = `${window.location.origin}?p=${encoded}`
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'Sudoku Dojo Puzzle',
+        text: 'Can you solve this Sudoku puzzle?',
+        url
+      })
+    } catch (e) { /* cancelled */ }
+  } else {
+    await navigator.clipboard.writeText(url)
+    showToast('Link Copied!', 'Share this link to challenge someone!', 'success')
+  }
+  playSound('click')
+}
+
+const handlePrint = () => {
+  printPuzzle(puzzle.value, puzzleDifficulty.value)
+  playSound('click')
+}
+
+const handleShareImage = () => {
+  const img = generatePuzzleImage(puzzle.value, puzzleDifficulty.value)
+  downloadImage(img)
+  playSound('click')
+  showToast('Image Saved!', 'Share it with friends!', 'success')
+}
+
+// Get a hint
+const getHint = async () => {
+  loading.value = true
+  loadingMessage.value = 'Finding hint...'
+  try {
+    const data = await getHintForPuzzle(puzzle.value)
+    if (data.hasHint) {
+      currentHint.value = data.hint
+      hintsUsed.value++
+      hintModalVisible.value = true
+      playSound('hint')
+      showMobilePad.value = false
+    } else {
+      showToast(
+        'No Hint Available',
+        data.error || 'Try solving some more cells first!',
+        'warning'
+      )
+    }
+  } catch (e) {
+    showToast(
+      'Error',
+      'Failed to get hint: ' + e.message,
+      'error',
+      true,
+      getHint
+    )
+  } finally {
+    loading.value = false
+  }
+}
+
+const closeHintModal = () => {
+  hintModalVisible.value = false
+}
+
+// Clear the grid
+const clearGrid = () => {
+  puzzle.value = '.'.repeat(81)
+  givenCells.value = new Set()
+  solvedCells.value = new Set()
+  resultVisible.value = false
+  selectedCell.value = -1
+  showMobilePad.value = false
+  mistakes.value = 0
+  hintsUsed.value = 0
+  candidates.value = {}
+  startTimer()
+  lastSavedState = puzzle.value
+}
+
+// Tutorial methods
+const toggleColorBlind = () => {
+  colorBlindMode.value = !colorBlindMode.value
+  localStorage.setItem('sudokuColorBlind', colorBlindMode.value.toString())
+}
+
+const toggleHighContrast = () => {
+  highContrastMode.value = !highContrastMode.value
+  localStorage.setItem('sudokuHighContrast', highContrastMode.value.toString())
+}
+
+const toggleChallenge = () => {
+  challengeMode.value = !challengeMode.value
+  localStorage.setItem('sudoku-challenge', challengeMode.value.toString())
+}
+
+const toggleTutorialMode = async () => {
+  if (tutorialMode.value || quizMode.value || practiceMode.value) {
+    tutorialMode.value = false
+    currentTutorialLesson.value = null
+    quizMode.value = false
+    currentQuiz.value = null
+    practiceMode.value = false
+    currentPracticeSet.value = null
+    return
+  }
+  try {
+    const tutorials = await fetchTutorials()
+    tutorialList.value = tutorials
+    // Load quiz and practice data in parallel
+    const [quizzes, practices] = await Promise.all([
+      fetchQuizzes().catch(() => []),
+      fetchAllPracticeSets().catch(() => [])
+    ])
+    quizList.value = quizzes
+    practiceList.value = practices
+    // Show the selector instead of auto-loading
+    tutorialSelectorOpen.value = true
+  } catch (e) {
+    console.error('Failed to load tutorials:', e)
+  }
+}
+
+const onTutorialSelected = async (lesson) => {
+  try {
+    const full = await fetchTutorial(lesson.id)
+    currentTutorialLesson.value = full
+    tutorialSelectorOpen.value = false
+    tutorialMode.value = true
+  } catch (e) {
+    console.error('Failed to load tutorial:', e)
+  }
+}
+
+const exitTutorialMode = () => {
+  tutorialMode.value = false
+  currentTutorialLesson.value = null
+  // Go back to selector
+  if (tutorialList.value.length > 0) {
+    tutorialSelectorOpen.value = true
+  }
+}
+
+const onTutorialCompleted = (lessonId) => {
+  completedTutorials.value.add(lessonId)
+  localStorage.setItem(
+    'sudokuCompletedTutorials',
+    JSON.stringify([...completedTutorials.value])
+  )
+}
+
+// Quiz methods
+const onQuizSelected = (quiz) => {
+  currentQuiz.value = quiz
+  tutorialSelectorOpen.value = false
+  quizMode.value = true
+}
+
+const exitQuizMode = () => {
+  quizMode.value = false
+  currentQuiz.value = null
+  if (tutorialList.value.length > 0) {
+    tutorialSelectorOpen.value = true
+  }
+}
+
+const onQuizCompleted = (result) => {
+  // Score is saved in QuizMode via localStorage
+}
+
+// Practice methods
+const onPracticeSelected = async (lesson) => {
+  const set = practiceList.value.find(p => p.tutorialId === lesson.id)
+  if (set) {
+    currentPracticeSet.value = set
+    tutorialSelectorOpen.value = false
+    practiceMode.value = true
+  }
+}
+
+const exitPracticeMode = () => {
+  practiceMode.value = false
+  currentPracticeSet.value = null
+  if (tutorialList.value.length > 0) {
+    tutorialSelectorOpen.value = true
+  }
+}
+
+const openAchievements = () => {
+  achievementStats.value = getStatsForAchievements()
+  leaderboardOpen.value = false
+  statsOpen.value = false
+  achievementsOpen.value = true
+}
+
+const openStats = () => {
+  achievementsOpen.value = false
+  leaderboardOpen.value = false
+  statsOpen.value = true
+}
+
+const onPracticeCompleted = (result) => {
+  // Progress is saved in PracticeMode via localStorage
+}
+
 </script>
 
 <style>
