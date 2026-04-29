@@ -1,7 +1,7 @@
 // Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
-type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de'
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt'
 
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
@@ -121,7 +121,8 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
   },
 
   'zh-Hant': {
@@ -238,7 +239,8 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
   },
 
   'zh-Hans': {
@@ -355,7 +357,8 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
   },
 
   ja: {
@@ -472,7 +475,8 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
   },
 
   ko: {
@@ -589,7 +593,8 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
   },
 
   fr: {
@@ -706,7 +711,8 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
   },
 
   es: {
@@ -823,7 +829,8 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
   },
 
   de: {
@@ -940,7 +947,126 @@ const translations: Record<string, Record<string, string>> = {
     korean: '한국어',
     french: 'Français',
     spanish: 'Español',
-    german: 'Deutsch'
+    german: 'Deutsch',
+    portuguese: 'Português'
+  },
+
+  pt: {
+    // Header
+    appTitle: '🧩 Resolvedor de Sudoku',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Dojô de Sudoku',
+    dashboardSubtitle: 'Aprender. Praticar. Dominar.',
+    play: '▶ Jogar',
+    dailyChallenge: '📅 Desafio Diário',
+    learnTechniques: '📚 Aprender Técnicas',
+    quickSolve: '🧩 Resolução Rápida',
+
+    // Game
+    progress: 'Progresso',
+    time: 'Tempo',
+    mistakes: 'Erros',
+    hints: 'Dicas',
+    filled: 'Preenchido',
+    solve: '🧩 Resolver',
+    clear: '🗑️ Limpar',
+    import: '📥 Importar',
+    share: '🔗 Partilhar Puzzle',
+    getHint: '💡 Obter Dica!',
+    pencilMarks: 'Marcas a Lápis',
+    newPuzzle: 'Novo Puzzle:',
+    easy: 'Fácil',
+    medium: 'Médio',
+    hard: 'Difícil',
+    undo: 'Desfazer',
+    redo: 'Refazer',
+
+    // Settings
+    settingsTitle: '⚙️ Configurações',
+    accessibility: 'Acessibilidade',
+    colorBlind: 'Modo daltónico',
+    colorBlindDesc: 'Usa padrões e cores distintas para destaques',
+    highContrast: 'Alto contraste',
+    highContrastDesc: 'Bordas e texto mais fortes para visibilidade',
+    darkModeLabel: 'Modo escuro',
+    darkModeDesc: 'Mais suave para os olhos à noite',
+    soundEffects: 'Efeitos sonoros',
+    soundEffectsDesc: 'Feedback de áudio para ações',
+    boardTheme: 'Tema do Tabuleiro',
+    data: 'Dados',
+    resetProgress: 'Repor progresso',
+    resetProgressDesc: 'Limpar todo o progresso das lições e séries guardadas',
+    about: 'Sobre',
+    aboutText: 'Dojô de Sudoku — Aprenda Sudoku passo a passo',
+    back: '← Voltar',
+
+    // Import
+    importTitle: '📥 Importar Puzzle',
+    importDesc: 'Cole um puzzle de Sudoku abaixo. Use . ou 0 para células vazias.',
+    singleLine: 'Linha Única',
+    grid9x9: 'Grelha 9×9',
+    loadExample: 'Carregar Exemplo',
+    cancel: 'Cancelar',
+
+    // Achievements
+    achievementsTitle: '🏆 Conquistas',
+    statsTitle: '📊 Estatísticas',
+
+    // Belt levels
+    whiteBelt: 'Faixa Branca',
+    yellowBelt: 'Faixa Amarela',
+    orangeBelt: 'Faixa Laranja',
+    greenBelt: 'Faixa Verde',
+    blueBelt: 'Faixa Azul',
+    purpleBelt: 'Faixa Roxa',
+    brownBelt: 'Faixa Castanha',
+    blackBelt: 'Faixa Preta',
+
+    // Messages
+    puzzleImported: 'Puzzle importado! Toque em Resolver ou resolva você mesmo.',
+    puzzleGenerated: 'Puzzle {difficulty} gerado!',
+    puzzleSolved: 'Resolvido em {time}ms',
+    noSolution: 'Nenhuma solução encontrada',
+    linkCopied: 'Link Copiado!',
+    shareText: 'Partilhe este link para desafiar alguém!',
+    sharedLoaded: 'Puzzle partilhado carregado! Resolva você mesmo ou toque em Resolver.',
+    puzzleComplete: 'Puzzle Completo!',
+    perfect: '✨ Perfeito!',
+    noHints: '🧠 Sem dicas',
+    continueBtn: 'Continuar',
+    resetAll: 'Repor Todas as Estatísticas',
+    exportCSV: '📥 Exportar como CSV',
+    savePuzzle: '💾 Guardar Puzzle Atual',
+    loadBtn: '▶ Carregar',
+    savedPuzzles: '💾 Puzzles Guardados',
+    noSavedPuzzles: 'Ainda não há puzzles guardados!',
+    saveHint: 'Clique em "Guardar Puzzle" durante o jogo para guardar o progresso.',
+
+    // Difficulty
+    EASY: 'Fácil',
+    MEDIUM: 'Médio',
+    HARD: 'Difícil',
+    EXPERT: 'Especialista',
+    MASTER: 'Mestre',
+
+    language: 'Idioma',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português'
   }
 }
 
