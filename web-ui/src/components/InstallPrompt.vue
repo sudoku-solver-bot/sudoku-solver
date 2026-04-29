@@ -32,7 +32,7 @@ import { ref, onMounted } from 'vue'
 const DISMISS_KEY = 'sudoku-install-dismissed'
 
 const visible = ref<boolean>(false)
-    let deferredPrompt: any = null
+    let deferredPrompt: { prompt: () => void; userChoice: Promise<{ outcome: string }> } | null = null
 
     onMounted(() => {
       if (localStorage.getItem(DISMISS_KEY)) return

@@ -58,30 +58,54 @@ import { computed, onMounted, ref } from 'vue'
 
 const ACH_KEY = 'sudoku-dojo-achievements'
 
-const BADGE_DEFINITIONS = [
-  { id: 'first-solve', name: 'First Steps', icon: '🌟', description: 'Solve your first puzzle', check: (s: any): boolean => s.totalSolved >= 1 },
-  { id: 'five-solves', name: 'Getting Started', icon: '📖', description: 'Solve 5 puzzles', check: (s: any): boolean => s.totalSolved >= 5 },
-  { id: 'ten-solves', name: 'Dedicated Solver', icon: '📝', description: 'Solve 10 puzzles', check: (s: any): boolean => s.totalSolved >= 10 },
-  { id: 'fifty-solves', name: 'Puzzle Master', icon: '🧩', description: 'Solve 50 puzzles', check: (s: any): boolean => s.totalSolved >= 50 },
-  { id: 'first-daily', name: 'Daily Devotee', icon: '📅', description: 'Complete your first daily challenge', check: (s: any): boolean => s.dailiesCompleted >= 1 },
-  { id: 'week-streak', name: 'On Fire', icon: '🔥', description: '7-day daily challenge streak', check: (s: any): boolean => s.currentStreak >= 7 },
-  { id: 'month-streak', name: 'Unstoppable', icon: '💪', description: '30-day daily challenge streak', check: (s: any): boolean => s.currentStreak >= 30 },
-  { id: 'speed-demon', name: 'Speed Demon', icon: '⚡', description: 'Solve a puzzle in under 2 minutes', check: (s: any): boolean => s.bestTime > 0 && s.bestTime < 120000 },
-  { id: 'speed-king', name: 'Lightning Fast', icon: '🏎️', description: 'Solve a puzzle in under 1 minute', check: (s: any): boolean => s.bestTime > 0 && s.bestTime < 60000 },
-  { id: 'no-hints', name: 'Pure Logic', icon: '🧠', description: 'Solve a puzzle without using hints', check: (s: any): boolean => s.perfectSolves >= 1 },
-  { id: 'five-perfect', name: 'Flawless Five', icon: '💎', description: 'Solve 5 puzzles without hints', check: (s: any): boolean => s.perfectSolves >= 5 },
-  { id: 'first-tutorial', name: 'Student', icon: '📚', description: 'Complete your first tutorial', check: (s: any): boolean => s.tutorialsCompleted >= 1 },
-  { id: 'half-tutorials', name: 'Scholar', icon: '🎓', description: 'Complete 10 tutorials', check: (s: any): boolean => s.tutorialsCompleted >= 10 },
-  { id: 'all-tutorials', name: 'Grand Master', icon: '🏆', description: 'Complete all tutorials', check: (s: any): boolean => s.tutorialsCompleted >= 20 },
-  { id: 'white-belt', name: 'White Belt', icon: '⬜', description: 'Earn your White Belt', check: (s: any): boolean => s.tutorialsCompleted >= 1 },
-  { id: 'black-belt', name: 'Black Belt', icon: '⬛', description: 'Earn your Black Belt', check: (s: any): boolean => s.tutorialsCompleted >= 15 },
-  { id: 'night-owl', name: 'Night Owl', icon: '🦉', description: 'Solve a puzzle after midnight', check: (s: any): boolean => s.nightSolve },
-  { id: 'early-bird', name: 'Early Bird', icon: '🐦', description: 'Solve a puzzle before 7am', check: (s: any): boolean => s.earlySolve },
+interface AchievementStats {
+  totalSolved: number
+  dailiesCompleted: number
+  currentStreak: number
+  bestTime: number
+  perfectSolves: number
+  tutorialsCompleted: number
+  nightSolve: boolean
+  earlySolve: boolean
+}
+
+interface BadgeDefinition {
+  id: string
+  name: string
+  icon: string
+  description: string
+  check: (s: AchievementStats) => boolean
+}
+
+interface Badge extends BadgeDefinition {
+  earned: boolean
+  earnedDate: string
+}
+
+const BADGE_DEFINITIONS: BadgeDefinition[] = [
+  { id: 'first-solve', name: 'First Steps', icon: '🌟', description: 'Solve your first puzzle', check: (s): boolean => s.totalSolved >= 1 },
+  { id: 'five-solves', name: 'Getting Started', icon: '📖', description: 'Solve 5 puzzles', check: (s): boolean => s.totalSolved >= 5 },
+  { id: 'ten-solves', name: 'Dedicated Solver', icon: '📝', description: 'Solve 10 puzzles', check: (s): boolean => s.totalSolved >= 10 },
+  { id: 'fifty-solves', name: 'Puzzle Master', icon: '🧩', description: 'Solve 50 puzzles', check: (s): boolean => s.totalSolved >= 50 },
+  { id: 'first-daily', name: 'Daily Devotee', icon: '📅', description: 'Complete your first daily challenge', check: (s): boolean => s.dailiesCompleted >= 1 },
+  { id: 'week-streak', name: 'On Fire', icon: '🔥', description: '7-day daily challenge streak', check: (s): boolean => s.currentStreak >= 7 },
+  { id: 'month-streak', name: 'Unstoppable', icon: '💪', description: '30-day daily challenge streak', check: (s): boolean => s.currentStreak >= 30 },
+  { id: 'speed-demon', name: 'Speed Demon', icon: '⚡', description: 'Solve a puzzle in under 2 minutes', check: (s): boolean => s.bestTime > 0 && s.bestTime < 120000 },
+  { id: 'speed-king', name: 'Lightning Fast', icon: '🏎️', description: 'Solve a puzzle in under 1 minute', check: (s): boolean => s.bestTime > 0 && s.bestTime < 60000 },
+  { id: 'no-hints', name: 'Pure Logic', icon: '🧠', description: 'Solve a puzzle without using hints', check: (s): boolean => s.perfectSolves >= 1 },
+  { id: 'five-perfect', name: 'Flawless Five', icon: '💎', description: 'Solve 5 puzzles without hints', check: (s): boolean => s.perfectSolves >= 5 },
+  { id: 'first-tutorial', name: 'Student', icon: '📚', description: 'Complete your first tutorial', check: (s): boolean => s.tutorialsCompleted >= 1 },
+  { id: 'half-tutorials', name: 'Scholar', icon: '🎓', description: 'Complete 10 tutorials', check: (s): boolean => s.tutorialsCompleted >= 10 },
+  { id: 'all-tutorials', name: 'Grand Master', icon: '🏆', description: 'Complete all tutorials', check: (s): boolean => s.tutorialsCompleted >= 20 },
+  { id: 'white-belt', name: 'White Belt', icon: '⬜', description: 'Earn your White Belt', check: (s): boolean => s.tutorialsCompleted >= 1 },
+  { id: 'black-belt', name: 'Black Belt', icon: '⬛', description: 'Earn your Black Belt', check: (s): boolean => s.tutorialsCompleted >= 15 },
+  { id: 'night-owl', name: 'Night Owl', icon: '🦉', description: 'Solve a puzzle after midnight', check: (s): boolean => s.nightSolve },
+  { id: 'early-bird', name: 'Early Bird', icon: '🐦', description: 'Solve a puzzle before 7am', check: (s): boolean => s.earlySolve },
 ]
 
 interface Props {
   isDark?: boolean
-  stats?: Record<string, any>
+  stats?: Record<string, number | boolean | string>
 }
 const props = withDefaults(defineProps<Props>(), {
   isDark: false,
@@ -89,7 +113,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits<{ back: [] }>()
 
-const earnedDates = ref({})
+const earnedDates = ref<Record<string, string>>({})
 
 const stats = computed(() => ({
   totalSolved: props.stats.totalSolved || 0,
@@ -102,9 +126,14 @@ const stats = computed(() => ({
   earlySolve: props.stats.earlySolve || false,
 }))
 
-const badges = computed(() => {
+const badges = computed<Badge[]>(() => {
   return BADGE_DEFINITIONS.map(def => {
     const earned = def.check(stats.value)
+    return {
+      ...def,
+      earned,
+      earnedDate: earnedDates.value[def.id] || '',
+    }
   })
 })
 

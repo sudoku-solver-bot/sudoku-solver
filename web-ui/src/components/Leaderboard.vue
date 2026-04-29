@@ -181,13 +181,21 @@ const yourStreak = computed(() => {
   return 0
 })
 
-const getLeaderboardData = (): any[] => {
+interface LeaderboardEntry {
+  name: string
+  score: number
+  date: string
+  difficulty: string
+  time: number
+}
+
+const getLeaderboardData = (): LeaderboardEntry[] => {
   try {
     return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
   } catch (e) { return [] }
 }
 
-const saveLeaderboardData = (data: any[]): void => {
+const saveLeaderboardData = (data: LeaderboardEntry[]): void => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
 }
 
