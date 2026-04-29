@@ -1,7 +1,7 @@
 // Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
-type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi' | 'ar'
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi' | 'ar' | 'it' | 'ru'
 
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
@@ -129,7 +129,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+        arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   'zh-Hant': {
@@ -249,7 +251,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   'zh-Hans': {
@@ -369,7 +373,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   ja: {
@@ -489,7 +495,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   ko: {
@@ -609,7 +617,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   fr: {
@@ -729,7 +739,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   es: {
@@ -849,7 +861,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   de: {
@@ -969,7 +983,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   pt: {
@@ -1089,7 +1105,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   hi: {
@@ -1209,7 +1227,9 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   },
 
   ar: {
@@ -1329,7 +1349,253 @@ const translations: Record<string, Record<string, string>> = {
     german: 'Deutsch',
     portuguese: 'Português',
     hindi: 'हिन्दी',
-    arabic: 'العربية'
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
+  },
+
+  it: {
+    // Header
+    appTitle: '🧩 Risolutore Sudoku',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Dojo Sudoku',
+    dashboardSubtitle: 'Impara. Allenati. Padroneggia.',
+    play: '▶ Gioca',
+    dailyChallenge: '📅 Sfida Giornaliera',
+    learnTechniques: '📚 Impara le Tecniche',
+    quickSolve: '🧩 Risoluzione Rapida',
+
+    // Game
+    progress: 'Progresso',
+    time: 'Tempo',
+    mistakes: 'Errori',
+    hints: 'Suggerimenti',
+    filled: 'Compilati',
+    solve: '🧩 Risolvi',
+    clear: '🗑️ Cancella',
+    import: '📥 Importa',
+    share: '🔗 Condividi Puzzle',
+    getHint: '💡 Ottieni un Suggerimento!',
+    pencilMarks: 'Segni a Matita',
+    newPuzzle: 'Nuovo Puzzle:',
+    easy: 'Facile',
+    medium: 'Medio',
+    hard: 'Difficile',
+    undo: 'Annulla',
+    redo: 'Ripristina',
+
+    // Settings
+    settingsTitle: '⚙️ Impostazioni',
+    accessibility: 'Accessibilità',
+    colorBlind: 'Modalità daltonici',
+    colorBlindDesc: 'Usa pattern e colori distinti per le evidenziazioni',
+    highContrast: 'Alto contrasto',
+    highContrastDesc: 'Bordi e testo più marcati per la visibilità',
+    darkModeLabel: 'Modalità scura',
+    darkModeDesc: 'Più riposante per gli occhi di notte',
+    soundEffects: 'Effetti sonori',
+    soundEffectsDesc: 'Feedback audio per le azioni',
+    boardTheme: 'Tema della Scacchiera',
+    data: 'Dati',
+    resetProgress: 'Reimposta progresso',
+    resetProgressDesc: 'Cancella tutto il progresso delle lezioni e le serie',
+    about: 'Informazioni',
+    aboutText: 'Dojo Sudoku — Impara Sudoku passo dopo passo',
+    back: '← Indietro',
+
+    // Import
+    importTitle: '📥 Importa Puzzle',
+    importDesc: 'Incolla un puzzle Sudoku qui sotto. Usa . o 0 per le celle vuote.',
+    singleLine: 'Riga Singola',
+    grid9x9: 'Griglia 9×9',
+    loadExample: 'Carica Esempio',
+    cancel: 'Annulla',
+
+    // Achievements
+    achievementsTitle: '🏆 Obiettivi',
+    statsTitle: '📊 Statistiche',
+
+    // Belt levels
+    whiteBelt: 'Cintura Bianca',
+    yellowBelt: 'Cintura Gialla',
+    orangeBelt: 'Cintura Arancione',
+    greenBelt: 'Cintura Verde',
+    blueBelt: 'Cintura Blu',
+    purpleBelt: 'Cintura Viola',
+    brownBelt: 'Cintura Marrone',
+    blackBelt: 'Cintura Nera',
+
+    // Messages
+    puzzleImported: 'Puzzle importato! Tocca Risolvi o risolvilo da solo.',
+    puzzleGenerated: 'Puzzle {difficulty} generato!',
+    puzzleSolved: 'Risolto in {time}ms',
+    noSolution: 'Nessuna soluzione trovata',
+    linkCopied: 'Link Copiato!',
+    shareText: 'Condividi questo link per sfidare qualcuno!',
+    sharedLoaded: 'Puzzle condiviso caricato! Risolvilo da solo o tocca Risolvi.',
+    puzzleComplete: 'Puzzle Completato!',
+    perfect: '✨ Perfetto!',
+    noHints: '🧠 Nessun suggerimento',
+    continueBtn: 'Continua',
+    resetAll: 'Reimposta Tutte le Statistiche',
+    exportCSV: '📥 Esporta come CSV',
+    savePuzzle: '💾 Salva Puzzle Corrente',
+    loadBtn: '▶ Carica',
+    savedPuzzles: '💾 Puzzle Salvati',
+    noSavedPuzzles: 'Nessun puzzle salvato!',
+    saveHint: 'Clicca "Salva Puzzle" durante il gioco per salvare i progressi.',
+
+    // Difficulty
+    EASY: 'Facile',
+    MEDIUM: 'Medio',
+    HARD: 'Difficile',
+    EXPERT: 'Esperto',
+    MASTER: 'Maestro',
+
+    language: 'Lingua',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी',
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
+  },
+
+  ru: {
+    // Header
+    appTitle: '🧩 Решатель Судоку',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Додзё Судоку',
+    dashboardSubtitle: 'Учитесь. Тренируйтесь. Мастерите.',
+    play: '▶ Играть',
+    dailyChallenge: '📅 Ежедневный вызов',
+    learnTechniques: '📚 Изучить техники',
+    quickSolve: '🧩 Быстрое решение',
+
+    // Game
+    progress: 'Прогресс',
+    time: 'Время',
+    mistakes: 'Ошибки',
+    hints: 'Подсказки',
+    filled: 'Заполнено',
+    solve: '🧩 Решить',
+    clear: '🗑️ Очистить',
+    import: '📥 Импорт',
+    share: '🔗 Поделиться',
+    getHint: '💡 Получить подсказку!',
+    pencilMarks: 'Заметки карандашом',
+    newPuzzle: 'Новая головоломка:',
+    easy: 'Легко',
+    medium: 'Средне',
+    hard: 'Сложно',
+    undo: 'Отменить',
+    redo: 'Вернуть',
+
+    // Settings
+    settingsTitle: '⚙️ Настройки',
+    accessibility: 'Доступность',
+    colorBlind: 'Режим для дальтоников',
+    colorBlindDesc: 'Использует узоры и различные цвета для подсветки',
+    highContrast: 'Высокий контраст',
+    highContrastDesc: 'Более яркие рамки и текст для лучшей видимости',
+    darkModeLabel: 'Тёмный режим',
+    darkModeDesc: 'Мягче для глаз ночью',
+    soundEffects: 'Звуковые эффекты',
+    soundEffectsDesc: 'Звуковая обратная связь при действиях',
+    boardTheme: 'Тема доски',
+    data: 'Данные',
+    resetProgress: 'Сбросить прогресс',
+    resetProgressDesc: 'Очистить весь сохранённый прогресс уроков и серии',
+    about: 'О приложении',
+    aboutText: 'Додзё Судоку — Изучайте Судоку шаг за шагом',
+    back: '← Назад',
+
+    // Import
+    importTitle: '📥 Импорт головоломки',
+    importDesc: 'Вставьте головоломку Судоку ниже. Используйте . или 0 для пустых ячеек.',
+    singleLine: 'Одна строка',
+    grid9x9: 'Сетка 9×9',
+    loadExample: 'Загрузить пример',
+    cancel: 'Отмена',
+
+    // Achievements
+    achievementsTitle: '🏆 Достижения',
+    statsTitle: '📊 Статистика',
+
+    // Belt levels
+    whiteBelt: 'Белый пояс',
+    yellowBelt: 'Жёлтый пояс',
+    orangeBelt: 'Оранжевый пояс',
+    greenBelt: 'Зелёный пояс',
+    blueBelt: 'Синий пояс',
+    purpleBelt: 'Фиолетовый пояс',
+    brownBelt: 'Коричневый пояс',
+    blackBelt: 'Чёрный пояс',
+
+    // Messages
+    puzzleImported: 'Головоломка импортирована! Нажмите «Решить» или решите сами.',
+    puzzleGenerated: 'Сгенерирована головоломка: {difficulty}!',
+    puzzleSolved: 'Решено за {time}мс',
+    noSolution: 'Решение не найдено',
+    linkCopied: 'Ссылка скопирована!',
+    shareText: 'Поделитесь этой ссылкой, чтобы бросить вызов!',
+    sharedLoaded: 'Общая головоломка загружена! Решите сами или нажмите «Решить».',
+    puzzleComplete: 'Головоломка решена!',
+    perfect: '✨ Идеально!',
+    noHints: '🧠 Без подсказок',
+    continueBtn: 'Продолжить',
+    resetAll: 'Сбросить всю статистику',
+    exportCSV: '📥 Экспорт в CSV',
+    savePuzzle: '💾 Сохранить текущую головоломку',
+    loadBtn: '▶ Загрузить',
+    savedPuzzles: '💾 Сохранённые головоломки',
+    noSavedPuzzles: 'Нет сохранённых головоломок!',
+    saveHint: 'Нажмите «Сохранить головоломку» во время игры, чтобы сохранить прогресс.',
+
+    // Difficulty
+    EASY: 'Легко',
+    MEDIUM: 'Средне',
+    HARD: 'Сложно',
+    EXPERT: 'Эксперт',
+    MASTER: 'Мастер',
+
+    language: 'Язык',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी',
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский'
   }
 }
 
