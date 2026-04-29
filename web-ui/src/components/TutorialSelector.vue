@@ -178,12 +178,34 @@
 
 import { computed, ref } from 'vue'
 
+interface Lesson {
+  id: string
+  title: string
+  belt: string
+  beltColor: string
+  beltEmoji: string
+  steps?: unknown[]
+  completed?: boolean
+  locked?: boolean
+}
+
+interface QuizQuestion {
+  question: string
+  options: string[]
+  answer: number
+}
+
+interface PracticeSet {
+  id: string
+  puzzles: string[]
+}
+
 interface Props {
-  tutorials: any[]
+  tutorials: Lesson[]
   completedIds?: Set<string>
   isDark?: boolean
-  quizData?: any[]
-  practiceData?: any[]
+  quizData?: QuizQuestion[]
+  practiceData?: PracticeSet[]
 }
 const props = withDefaults(defineProps<Props>(), {
   completedIds: () => new Set(),
@@ -191,7 +213,7 @@ const props = withDefaults(defineProps<Props>(), {
   quizData: () => [],
   practiceData: () => []
 })
-const emit = defineEmits<{ exit: []; select: [lesson: any]; quiz: [quizData: any]; practice: [lesson: any] }>()
+const emit = defineEmits<{ exit: []; select: [lesson: Lesson]; quiz: [quizData: QuizQuestion[]]; practice: [lesson: Lesson] }>()
 
 const searchQuery = ref('')
 const completedCount = computed(() => props.completedIds.size)
