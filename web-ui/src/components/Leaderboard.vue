@@ -220,7 +220,7 @@ const getMedal = (i: number): string => {
   return `#${i + 1}`
 }
 
-const formatTime = (ms) => {
+const formatTime = (ms: number): string => {
   const s = Math.floor(ms / 1000)
   const m = Math.floor(s / 60)
   const sec = s % 60
@@ -242,7 +242,7 @@ const shareScore = async () => {
 }
 
 // Submit a daily challenge score (called externally)
-const submitScore = (timeMs, hints) => {
+const submitScore = (timeMs: number, hints: number): void => {
   if (!optedIn.value) return
   const data = getLeaderboardData()
   data.push({
