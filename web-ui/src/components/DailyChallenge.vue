@@ -116,187 +116,206 @@ import SudokuGrid from './SudokuGrid.vue'
 import MobileNumberPad from './MobileNumberPad.vue'
 import { fetchDailyChallenge, solvePuzzle, getHintForPuzzle } from '../api'
 
+interface ChallengeData {
+  beltEmoji: string
+  beltName: string
+  difficulty: string
+  beltColor: string
+  puzzle?: string
+  candidates?: Record<string, string[]>
+}
+
+interface StreakData {
+  lastDate: string
+  count: number
+}
+
 const emit = defineEmits<{ exit: [] }>()
 
-const challenge = ref({ beltEmoji: '⬜', beltName: 'Loading...', difficulty: 'easy', beltColor: '#e0e0e0' })
-    const puzzle = ref('.'.repeat(81))
-    const givenCells = ref(new Set())
-    const solvedCells = ref(new Set())
-    const candidates = ref({})
-    const selectedCell = ref(-1)
-    const elapsedTime = ref(0)
-    const hintsUsed = ref(0)
-    const completed = ref(false)
-    const streak = ref(0)
-    const pencilMode = ref(false)
-    let timerInterval = null
+const challenge = ref<ChallengeData>({
+  beltEmoji: '⬜',
+  beltName: 'Loading...',
+  difficulty: 'easy',
+  beltColor: '#e0e0e0'
+})
+const puzzle = ref<string>('.'.repeat(81))
+const givenCells = ref<Set<number>>(new Set())
+const solvedCells = ref<Set<number>>(new Set())
+const candidates = ref<Record<string, string[]>>({})
+const selectedCell = ref<number>(-1)
+const elapsedTime = ref<number>(0)
+const hintsUsed = ref<number>(0)
+const completed = ref<boolean>(false)
+const streak = ref<number>(0)
+const pencilMode = ref<boolean>(false)
+let timerInterval: ReturnType<typeof setInterval> | null = null
 
-    const formattedDate = ref('')
+const formattedDate = ref<string>('')
 
-    const formatTime = (ms) => {
-      const s = Math.floor(ms / 1000)
-      const m = Math.floor(s / 60)
-      return `${m}:${String(s % 60).padStart(2, '0')}`
+const formatTime = (ms: number): string => {
+  const s = Math.floor(ms / 1000)
+  const m = Math.floor(s / 60)
+  return `${m}:${String(s % 60).padStart(2, '0')}`
+}
+
+const loadChallenge = async (): Promise<void> => {
+  try {
+    const data = await fetchDailyChallenge() as ChallengeData & { puzzle: string }
+    challenge.value = data
+    puzzle.value = data.puzzle
+    candidates.value = data.candidates || {}
+
+    givenCells.value = new Set()
+    for (let i = 0; i < 81; i++) {
+      if (data.puzzle[i] !== '.') givenCells.value.add(i)
     }
 
-    const loadChallenge = async () => {
-      try {
-        const data = await fetchDailyChallenge()
-        challenge.value = data
-        puzzle.value = data.puzzle
-        candidates.value = data.candidates || {}
-
-        givenCells.value = new Set()
-        for (let i = 0; i < 81; i++) {
-          if (data.puzzle[i] !== '.') givenCells.value.add(i)
-        }
-
-        formattedDate.value = new Date().toLocaleDateString('en-US', {
-          weekday: 'long', month: 'short', day: 'numeric'
-        })
-
-        // Load streak from localStorage
-        const saved = localStorage.getItem('sudokuDailyStreak')
-        if (saved) {
-          const streakData = JSON.parse(saved)
-          const lastDate = streakData.lastDate
-          const today = new Date().toISOString().split('T')[0]
-          if (lastDate === today) {
-            streak.value = streakData.count
-          } else {
-            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
-            streak.value = lastDate === yesterday ? streakData.count : 0
-          }
-        }
-      } catch (e) {
-        console.error('Failed to load daily challenge:', e)
-      }
-    }
-
-    const startTimer = () => {
-      stopTimer()
-      timerInterval = setInterval(() => {
-        if (!completed.value) elapsedTime.value += 1000
-      }, 1000)
-    }
-
-    const stopTimer = () => {
-      if (timerInterval) {
-        clearInterval(timerInterval)
-        timerInterval = null
-      }
-    }
-
-    const onCellUpdate = (index, value) => {
-      const chars = puzzle.value.split('')
-      chars[index] = value || '.'
-      puzzle.value = chars.join('')
-
-      // Check completion
-      if (!puzzle.value.includes('.')) {
-        checkCompletion()
-      }
-    }
-
-    const onCellSelect = (index) => {
-      selectedCell.value = index
-    }
-
-    const handleClick = (e) => {
-      // Deselect and close pad when tapping outside grid/pad
-      const target = e.target.closest('.grid, .number-bar, .bar-btn, .pad-btn')
-      if (!target) {
-        selectedCell.value = -1
-      }
-    }
-
-    const inputNumber = (n) => {
-      if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
-        onCellUpdate(selectedCell.value, n.toString())
-      }
-    }
-
-    const eraseCell = () => {
-      if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
-        onCellUpdate(selectedCell.value, '')
-      }
-    }
-
-    // Digit counts for MobileNumberPad (remaining count per digit)
-    const digitCounts = computed(() => {
-      const counts = {}
-      for (let n = 1; n <= 9; n++) counts[n] = 0
-      for (let i = 0; i < 81; i++) {
-        const ch = puzzle.value[i]
-        if (ch !== '.' && ch >= '1' && ch <= '9') {
-          counts[parseInt(ch)]++
-        }
-      }
-      return counts
+    formattedDate.value = new Date().toLocaleDateString('en-US', {
+      weekday: 'long', month: 'short', day: 'numeric'
     })
 
-    const getHint = async () => {
-      if (selectedCell.value < 0 || givenCells.value.has(selectedCell.value)) return
-      try {
-        const data = await getHintForPuzzle(puzzle.value)
-        if (data.hasHint && data.hint) {
-          const { row, col, value } = data.hint
-          // Fill in the hinted cell
-          const idx = row * 9 + col
-          if (idx >= 0 && idx < 81) {
-            onCellUpdate(idx, value.toString())
-            hintsUsed.value++
-          }
-        }
-      } catch (e) {
-        console.error('Hint failed:', e)
-      }
-    }
-
-    const checkCompletion = async () => {
-      try {
-        const data = await solvePuzzle(puzzle.value, false)
-        if (data.solved) {
-          completed.value = true
-          stopTimer()
-
-          // Update streak
-          const today = new Date().toISOString().split('T')[0]
-          streak.value++
-          localStorage.setItem('sudokuDailyStreak', JSON.stringify({
-            lastDate: today,
-            count: streak.value
-          }))
-          localStorage.setItem('sudokuDailyCompleted', today)
-        }
-      } catch (e) {
-        console.error('Validation failed:', e)
-      }
-    }
-
-    onMounted(() => {
-      loadChallenge()
-      startTimer()
-    })
-
-    onUnmounted(() => {
-      stopTimer()
-    })
-
-    const shareResult = () => {
-      const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-      const timeStr = formatTime(elapsedTime.value)
-      const belt = challenge.value.beltEmoji
-      const text = `🧩 Sudoku Dojo ${date}\n${belt} ${challenge.value.difficulty}\n⏱️ ${timeStr}\n💡 ${hintsUsed.value} hints\n🔥 ${streak.value} day streak\n\nPlay at sudoku-solver-r5y8.onrender.com`
-      
-      if (navigator.share) {
-        navigator.share({ title: 'Sudoku Dojo', text })
+    // Load streak from localStorage
+    const saved = localStorage.getItem('sudokuDailyStreak')
+    if (saved) {
+      const streakData: StreakData = JSON.parse(saved)
+      const lastDate = streakData.lastDate
+      const today = new Date().toISOString().split('T')[0]
+      if (lastDate === today) {
+        streak.value = streakData.count
       } else {
-        navigator.clipboard.writeText(text).then(() => {
-          alert('Copied to clipboard!')
-        })
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
+        streak.value = lastDate === yesterday ? streakData.count : 0
       }
     }
+  } catch (e) {
+    console.error('Failed to load daily challenge:', e)
+  }
+}
+
+const startTimer = (): void => {
+  stopTimer()
+  timerInterval = setInterval(() => {
+    if (!completed.value) elapsedTime.value += 1000
+  }, 1000)
+}
+
+const stopTimer = (): void => {
+  if (timerInterval) {
+    clearInterval(timerInterval)
+    timerInterval = null
+  }
+}
+
+const onCellUpdate = (index: number, value: string): void => {
+  const chars = puzzle.value.split('')
+  chars[index] = value || '.'
+  puzzle.value = chars.join('')
+
+  // Check completion
+  if (!puzzle.value.includes('.')) {
+    checkCompletion()
+  }
+}
+
+const onCellSelect = (index: number): void => {
+  selectedCell.value = index
+}
+
+const handleClick = (e: MouseEvent): void => {
+  // Deselect and close pad when tapping outside grid/pad
+  const target = (e.target as HTMLElement).closest('.grid, .number-bar, .bar-btn, .pad-btn')
+  if (!target) {
+    selectedCell.value = -1
+  }
+}
+
+const inputNumber = (n: number): void => {
+  if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
+    onCellUpdate(selectedCell.value, n.toString())
+  }
+}
+
+const eraseCell = (): void => {
+  if (selectedCell.value >= 0 && !givenCells.value.has(selectedCell.value)) {
+    onCellUpdate(selectedCell.value, '')
+  }
+}
+
+// Digit counts for MobileNumberPad (remaining count per digit)
+const digitCounts = computed<Record<number, number>>(() => {
+  const counts: Record<number, number> = {}
+  for (let n = 1; n <= 9; n++) counts[n] = 0
+  for (let i = 0; i < 81; i++) {
+    const ch = puzzle.value[i]
+    if (ch !== '.' && ch >= '1' && ch <= '9') {
+      counts[parseInt(ch)]++
+    }
+  }
+  return counts
+})
+
+const getHint = async (): Promise<void> => {
+  if (selectedCell.value < 0 || givenCells.value.has(selectedCell.value)) return
+  try {
+    const data = await getHintForPuzzle(puzzle.value) as any
+    if (data.hasHint && data.hint) {
+      const { row, col, value } = data.hint
+      // Fill in the hinted cell
+      const idx = row * 9 + col
+      if (idx >= 0 && idx < 81) {
+        onCellUpdate(idx, value.toString())
+        hintsUsed.value++
+      }
+    }
+  } catch (e) {
+    console.error('Hint failed:', e)
+  }
+}
+
+const checkCompletion = async (): Promise<void> => {
+  try {
+    const data = await solvePuzzle(puzzle.value, false) as any
+    if (data.solved) {
+      completed.value = true
+      stopTimer()
+
+      // Update streak
+      const today = new Date().toISOString().split('T')[0]
+      streak.value++
+      localStorage.setItem('sudokuDailyStreak', JSON.stringify({
+        lastDate: today,
+        count: streak.value
+      }))
+      localStorage.setItem('sudokuDailyCompleted', today)
+    }
+  } catch (e) {
+    console.error('Validation failed:', e)
+  }
+}
+
+onMounted(() => {
+  loadChallenge()
+  startTimer()
+})
+
+onUnmounted(() => {
+  stopTimer()
+})
+
+const shareResult = (): void => {
+  const date = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const timeStr = formatTime(elapsedTime.value)
+  const belt = challenge.value.beltEmoji
+  const text = `🧩 Sudoku Dojo ${date}\n${belt} ${challenge.value.difficulty}\n⏱️ ${timeStr}\n💡 ${hintsUsed.value} hints\n🔥 ${streak.value} day streak\n\nPlay at sudoku-solver-r5y8.onrender.com`
+
+  if (navigator.share) {
+    navigator.share({ title: 'Sudoku Dojo', text })
+  } else {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard!')
+    })
+  }
+}
 </script>
 
 <style scoped>

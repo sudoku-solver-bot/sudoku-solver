@@ -32,17 +32,22 @@
 
 <script setup lang="ts">
 
+interface Shortcut {
+  key: string
+  desc: string
+}
+
 const emit = defineEmits<{ close: [] }>()
 
-const shortcuts = [
-      { key: '↑ ↓ ← →', desc: 'Navigate cells' },
-      { key: '1-9', desc: 'Enter number' },
-      { key: 'Delete / ⌫', desc: 'Clear cell' },
-      { key: 'Ctrl+Z', desc: 'Undo' },
-      { key: 'Ctrl+Y', desc: 'Redo' },
-      { key: '?', desc: 'Show this help' },
-      { key: 'Esc', desc: 'Deselect cell' },
-    ]
+const shortcuts: Shortcut[] = [
+  { key: '↑ ↓ ← →', desc: 'Navigate cells' },
+  { key: '1-9', desc: 'Enter number' },
+  { key: 'Delete / ⌫', desc: 'Clear cell' },
+  { key: 'Ctrl+Z', desc: 'Undo' },
+  { key: 'Ctrl+Y', desc: 'Redo' },
+  { key: '?', desc: 'Show this help' },
+  { key: 'Esc', desc: 'Deselect cell' },
+]
 </script>
 
 <style scoped>

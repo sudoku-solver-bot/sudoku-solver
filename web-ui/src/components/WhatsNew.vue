@@ -53,11 +53,17 @@
 
 <script setup lang="ts">
 
+interface Feature {
+  icon: string
+  title: string
+  desc: string
+}
+
 const emit = defineEmits<{ close: [] }>()
 
-const totalPRs = 136
-    const features = [
-      { icon: '🎨', title: 'Board Themes', desc: 'Default, Wood, Neon, Minimal — switch in Settings' },
+const totalPRs: number = 191
+const features: Feature[] = [
+  { icon: '🎨', title: 'Board Themes', desc: 'Default, Wood, Neon, Minimal — switch in Settings' },
       { icon: '🎉', title: 'Confetti Celebration', desc: 'Puzzle completion triggers a particle show!' },
       { icon: '🔊', title: 'Sound Effects', desc: 'Audio feedback for every action (toggle in Settings)' },
       { icon: '⚠️', title: 'Conflict Highlighting', desc: 'Duplicate values in red with shake animation' },
