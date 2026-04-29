@@ -1,7 +1,7 @@
 // Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
 import { ref, computed } from 'vue'
 
-type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es'
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de'
 
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
@@ -120,7 +120,8 @@ const translations: Record<string, Record<string, string>> = {
     japanese: '日本語',
     korean: '한국어',
     french: 'Français',
-    spanish: 'Español'
+    spanish: 'Español',
+    german: 'Deutsch'
   },
 
   'zh-Hant': {
@@ -236,7 +237,8 @@ const translations: Record<string, Record<string, string>> = {
     japanese: '日本語',
     korean: '한국어',
     french: 'Français',
-    spanish: 'Español'
+    spanish: 'Español',
+    german: 'Deutsch'
   },
 
   'zh-Hans': {
@@ -352,7 +354,8 @@ const translations: Record<string, Record<string, string>> = {
     japanese: '日本語',
     korean: '한국어',
     french: 'Français',
-    spanish: 'Español'
+    spanish: 'Español',
+    german: 'Deutsch'
   },
 
   ja: {
@@ -466,7 +469,10 @@ const translations: Record<string, Record<string, string>> = {
     chinese: '繁體中文',
     simplifiedChinese: '简体中文',
     japanese: '日本語',
-    korean: '한국어'
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch'
   },
 
   ko: {
@@ -580,7 +586,10 @@ const translations: Record<string, Record<string, string>> = {
     chinese: '繁體中文',
     simplifiedChinese: '简体中文',
     japanese: '日本語',
-    korean: '한국어'
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch'
   },
 
   fr: {
@@ -696,7 +705,8 @@ const translations: Record<string, Record<string, string>> = {
     japanese: '日本語',
     korean: '한국어',
     french: 'Français',
-    spanish: 'Español'
+    spanish: 'Español',
+    german: 'Deutsch'
   },
 
   es: {
@@ -812,7 +822,125 @@ const translations: Record<string, Record<string, string>> = {
     japanese: '日本語',
     korean: '한국어',
     french: 'Français',
-    spanish: 'Español'
+    spanish: 'Español',
+    german: 'Deutsch'
+  },
+
+  de: {
+    // Header
+    appTitle: '🧩 Sudoku-Löser',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+
+    // Dashboard
+    dashboardTitle: 'Sudoku-Dojo',
+    dashboardSubtitle: 'Lernen. Üben. Meistern.',
+    play: '▶ Spielen',
+    dailyChallenge: '📅 Tägliche Herausforderung',
+    learnTechniques: '📚 Techniken lernen',
+    quickSolve: '🧩 Schnell lösen',
+
+    // Game
+    progress: 'Fortschritt',
+    time: 'Zeit',
+    mistakes: 'Fehler',
+    hints: 'Hinweise',
+    filled: 'Ausgefüllt',
+    solve: '🧩 Lösen',
+    clear: '🗑️ Löschen',
+    import: '📥 Importieren',
+    share: '🔗 Puzzle teilen',
+    getHint: '💡 Hinweis erhalten!',
+    pencilMarks: 'Bleistiftmarkierungen',
+    newPuzzle: 'Neues Puzzle:',
+    easy: 'Leicht',
+    medium: 'Mittel',
+    hard: 'Schwer',
+    undo: 'Rückgängig',
+    redo: 'Wiederholen',
+
+    // Settings
+    settingsTitle: '⚙️ Einstellungen',
+    accessibility: 'Barrierefreiheit',
+    colorBlind: 'Farbenblind-Modus',
+    colorBlindDesc: 'Verwendet Muster und unterscheidbare Farben',
+    highContrast: 'Hoher Kontrast',
+    highContrastDesc: 'Stärkere Rahmen und Text für bessere Sichtbarkeit',
+    darkModeLabel: 'Dunkelmodus',
+    darkModeDesc: 'Schonender für die Augen nachts',
+    soundEffects: 'Soundeffekte',
+    soundEffectsDesc: 'Audio-Feedback bei Aktionen',
+    boardTheme: 'Brettthema',
+    data: 'Daten',
+    resetProgress: 'Fortschritt zurücksetzen',
+    resetProgressDesc: 'Alle gespeicherten Lektionsfortschritte und Serien löschen',
+    about: 'Über',
+    aboutText: 'Sudoku-Dojo — Sudoku Schritt für Schritt lernen',
+    back: '← Zurück',
+
+    // Import
+    importTitle: '📥 Puzzle importieren',
+    importDesc: 'Fügen Sie unten ein Sudoku-Puzzle ein. Verwenden Sie . oder 0 für leere Zellen.',
+    singleLine: 'Einzelne Zeile',
+    grid9x9: '9×9 Raster',
+    loadExample: 'Beispiel laden',
+    cancel: 'Abbrechen',
+
+    // Achievements
+    achievementsTitle: '🏆 Erfolge',
+    statsTitle: '📊 Statistiken',
+
+    // Belt levels
+    whiteBelt: 'Weißer Gürtel',
+    yellowBelt: 'Gelber Gürtel',
+    orangeBelt: 'Oranger Gürtel',
+    greenBelt: 'Grüner Gürtel',
+    blueBelt: 'Blauer Gürtel',
+    purpleBelt: 'Lilaner Gürtel',
+    brownBelt: 'Brauner Gürtel',
+    blackBelt: 'Schwarzer Gürtel',
+
+    // Messages
+    puzzleImported: 'Puzzle importiert! Tippen Sie auf Lösen oder lösen Sie es selbst.',
+    puzzleGenerated: '{difficulty} Puzzle generiert!',
+    puzzleSolved: 'Gelöst in {time}ms',
+    noSolution: 'Keine Lösung gefunden',
+    linkCopied: 'Link kopiert!',
+    shareText: 'Teilen Sie diesen Link, um jemanden herauszufordern!',
+    sharedLoaded: 'Geteiltes Puzzle geladen! Lösen Sie es selbst oder tippen Sie auf Lösen.',
+    puzzleComplete: 'Puzzle vollständig!',
+    perfect: '✨ Perfekt!',
+    noHints: '🧠 Keine Hinweise',
+    continueBtn: 'Weiter',
+    resetAll: 'Alle Statistiken zurücksetzen',
+    exportCSV: '📥 Als CSV exportieren',
+    savePuzzle: '💾 Aktuelles Puzzle speichern',
+    loadBtn: '▶ Laden',
+    savedPuzzles: '💾 Gespeicherte Puzzles',
+    noSavedPuzzles: 'Noch keine gespeicherten Puzzles!',
+    saveHint: 'Klicken Sie während des Spiels auf „Puzzle speichern“, um den Fortschritt zu sichern.',
+
+    // Difficulty
+    EASY: 'Leicht',
+    MEDIUM: 'Mittel',
+    HARD: 'Schwer',
+    EXPERT: 'Experte',
+    MASTER: 'Meister',
+
+    language: 'Sprache',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch'
   }
 }
 
