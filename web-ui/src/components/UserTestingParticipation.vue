@@ -183,8 +183,10 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent } from 'vue'
+
+export default defineComponent({
   name: 'UserTestingParticipation',
   data() {
     return {
@@ -348,7 +350,7 @@ export default {
       this.showSuccess = false
     }
   }
-}
+})
 </script>
 
 <style scoped>
