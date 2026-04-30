@@ -23,11 +23,57 @@ Implementation agent for sudoku-solver. Follows plans and standard git flow.
 3. Read today's `memory/YYYY-MM-DD.md` if exists
 4. Read the specific plan file if one is referenced
 
+## Finding Work (GitHub Issues)
+
+The coder picks up work from **open GitHub issues**, not from the roadmap.
+
+### Step 1: Find the next task
+
+```bash
+cd /home/claw1/repos/sudoku-solver
+
+# Priority order:
+# 1. Plan issues (labeled 'plan') — these have implementation details
+# 2. Bug issues (labeled 'bug') — fix directly if plan exists, or skip
+# 3. Issues with priority:high first, then priority:medium, then priority:low
+
+# Check for plan issues first (best candidates)
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --label plan
+
+# Check high priority bugs
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --label "priority:high"
+
+# Check all open issues
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open
+
+# Read the issue details
+gh issue view <NUMBER> --repo sudoku-solver-bot/sudoku-solver
+```
+
+**How to pick:**
+1. Look for `plan:` issues first — these have files to change, steps, and testing instructions
+2. If no plans, look for `bug:` issues with `priority:high`
+3. If no high-priority bugs, report "No tasks to implement" and stop
+4. **Only implement bugs** — no new features or i18n (BUG SQUASH PHASE)
+
+### Step 2: Read the plan/bug carefully
+
+```bash
+# View full issue
+gh issue view <NUMBER> --repo sudoku-solver-bot/sudoku-solver
+
+# If it's a plan issue, it will have:
+# - Files to Change
+# - Implementation Steps
+# - Testing instructions
+# Follow those steps exactly.
+```
+
 ## Git Flow (STRICT)
 
 Every task follows this flow. No exceptions.
 
-### Step 1: Sync Master
+### Step 3: Sync Master
 
 ```bash
 cd /home/claw1/repos/sudoku-solver
@@ -35,24 +81,7 @@ git checkout master
 git pull --ff-only origin master
 ```
 
-### Step 2: Create GitHub Issue (if not exists)
-
-```bash
-gh issue create \
-  --title "feat: Short description" \
-  --body "## What
-Description of what to implement.
-
-## Why
-Why this matters.
-
-## Acceptance Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
-"
-```
-
-### Step 3: Create Feature Branch
+### Step 4: Create Feature Branch
 
 Branch naming:
 - `feat/<description>` — New features
@@ -65,14 +94,14 @@ Branch naming:
 git checkout -b feat/my-feature
 ```
 
-### Step 4: Implement
+### Step 5: Implement
 
 - Read relevant code first
 - Make focused, minimal changes
 - Follow existing patterns in the codebase
 - Add/update tests for any changed logic
 
-### Step 5: Verify Locally
+### Step 6: Verify Locally
 
 ```bash
 # Run all tests
@@ -88,35 +117,31 @@ cd web-ui && npm run build && cd ..
 curl -sf http://localhost:25321/api/health | python3 -m json.tool
 ```
 
-### Step 6: Commit
+### Step 7: Commit
 
-Conventional commits:
+Conventional commits (reference the issue number):
 ```
-feat: add XYZ-wing tutorial content
-fix: correct cell selection offset on mobile
-test: add E2E tests for daily challenge flow
-refactor: extract shared number pad component
-docs: update API documentation for hint endpoint
+fix: resolve logback crash from LayoutEncoder (#221)
+bug: correct tutorial naked-single puzzle description (#225)
 ```
 
 ```bash
 git add -A
-git commit -m "feat: short description"
+git commit -m "fix: short description (Closes #<ISSUE_NUMBER>)"
 ```
 
-### Step 7: Push and Create PR
+### Step 8: Push and Create PR
 
 ```bash
 # Push to fork (safer than origin)
-git push -u fork feat/my-feature
+git push -u fork fix/<description>
 
-# Create PR against origin/master
-gh pr create \
-  --repo sudoku-solver-bot/sudoku-solver \
-  --head novaclawhk:feat/my-feature \
+# Create PR referencing the issue
+gh pr create --repo sudoku-solver-bot/sudoku-solver \
+  --head novaclawhk:fix/<description> \
   --base master \
-  --title "feat: short description" \
-  --body "Closes #XX
+  --title "fix: short description" \
+  --body "Closes #<ISSUE_NUMBER>
 
 ## Changes
 - Change 1
@@ -129,7 +154,7 @@ gh pr create \
 "
 ```
 
-### Step 8: Verify CI
+### Step 9: Verify CI
 
 ```bash
 gh pr checks <PR_NUMBER>
