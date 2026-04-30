@@ -41,6 +41,31 @@ for pr in $(gh pr list --repo sudoku-solver-bot/sudoku-solver --state open --aut
 done
 ```
 
+### If a PR has reviewer comments (not yet approved):
+1. Checkout the branch: `gh pr checkout <NUMBER>`
+2. Read the review comments:
+   ```bash
+   gh api repos/sudoku-solver-bot/sudoku-solver/pulls/<NUMBER>/reviews
+   gh api repos/sudoku-solver-bot/sudoku-solver/pulls/<NUMBER>/comments
+   gh pr view <NUMBER> --repo sudoku-solver-bot/sudoku-solver --comments
+   ```
+3. Address each comment:
+   - ❌ Blocking issues → fix them
+   - ⚠️ Suggestions → implement if reasonable
+   - 💡 Nits → fix if quick, skip if not
+4. Commit fixes: `git commit -m "fix: address review feedback for #<NUMBER>"`
+5. Push: `git push`
+6. Reply to the review comment explaining what was changed:
+   ```bash
+   gh pr comment <NUMBER> --repo sudoku-solver-bot/sudoku-solver --body "Addressed review feedback:
+   - Fixed ❌ [issue] by [what you did]
+   - Applied ⚠️ [suggestion] by [what you did]
+   "
+   ```
+7. Verify CI passes
+
+**Priority: Address reviewer comments BEFORE fixing merge conflicts or CI failures.**
+
 ### If a PR has merge conflicts:
 1. Checkout the PR branch: `gh pr checkout <NUMBER>`
 2. Rebase on master: `git rebase origin/master`
