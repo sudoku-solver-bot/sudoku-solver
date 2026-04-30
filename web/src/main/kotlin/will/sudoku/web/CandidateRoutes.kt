@@ -44,18 +44,20 @@ fun Route.candidateRoutes() {
             return@post
         }
 
+        // Record which cells were originally empty (before elimination)
+        val originallyEmpty = Coord.all.filter { !board.isConfirmed(it) }.toSet()
+
         // Run constraint propagation to populate candidates
         val eliminator = SimpleCandidateEliminator()
         eliminator.eliminate(board)
 
-        // Collect candidates for all unconfirmed cells
+        // Collect candidates for all originally empty cells
+        // Include cells solved by elimination (1 candidate) so users can see all pencil marks
         val candidates = mutableMapOf<String, List<Int>>()
-        for (coord in Coord.all) {
-            if (!board.isConfirmed(coord)) {
-                val values = board.candidateValues(coord).toList()
-                if (values.isNotEmpty()) {
-                    candidates[coord.index.toString()] = values
-                }
+        for (coord in originallyEmpty) {
+            val values = board.candidateValues(coord).toList()
+            if (values.isNotEmpty()) {
+                candidates[coord.index.toString()] = values
             }
         }
 
