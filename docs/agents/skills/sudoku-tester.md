@@ -243,12 +243,78 @@ Severity levels:
 - 🟡 **Minor**: UX issue, inconsistency, or edge case
 - 🔵 **Cosmetic**: Typos, formatting, display issues
 
+## Creating GitHub Issues for Bugs
+
+**⚠️ IMPORTANT: Check for duplicates BEFORE creating any issue.**
+
+### Step 1: Search for existing issues
+
+```bash
+cd /home/claw1/repos/sudoku-solver
+
+# Search open issues for similar bugs
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --search "<keywords from bug>"
+
+# Also check recently closed issues (may have been fixed already)
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state closed --search "<keywords from bug>" --limit 5
+
+# View any matching issue to confirm it's the same bug
+gh issue view <NUMBER> --repo sudoku-solver-bot/sudoku-solver
+```
+
+### Step 2: Only create if no duplicate exists
+
+If a similar open issue exists:
+- **Skip it** — don't create a duplicate
+- Add a comment with your new test findings if they add value:
+  ```bash
+  gh issue comment <NUMBER> --repo sudoku-solver-bot/sudoku-solver --body "Still reproducing as of $(date +%Y-%m-%d). Additional findings: ..."
+  ```
+
+If a similar closed issue exists:
+- Check if the fix actually resolved it — re-test
+- If still broken, reopen with a comment:
+  ```bash
+  gh issue reopen <NUMBER> --repo sudoku-solver-bot/sudoku-solver --comment "Still reproducing as of $(date +%Y-%m-%d). Details: ..."
+  ```
+
+If no match found:
+
+```bash
+gh issue create --repo sudoku-solver-bot/sudoku-solver \
+  --title "bug: [Short description]" \
+  --body "## Severity: [🔴 Critical / 🟠 Major / 🟡 Minor]
+
+**Endpoint:** \`POST /api/v1/hint\`
+**Input:** \`{\"puzzle\":\"007239061...\"}\`
+**Expected:** [what should happen]
+**Actual:** [what actually happens]
+
+## Steps to Reproduce
+1. ...
+2. ...
+
+## Impact
+[Why this matters]
+"
+```
+
+**Rules for issues:**
+- Title prefix: `bug:` (not `feat:` or `docs:`)
+- Include severity emoji in the body
+- Always include reproducible steps
+- One issue per bug
+- Don't create issues for 🟢 cosmetic/🔵 minor typos unless they're misleading
+- **Never create duplicates** — always search first
+- After creating issues, list them in the test results summary
+
 ## Rules
 
-1. **Read-only** — only probe, never modify
-2. Test ALL 20 tutorials every run
-3. Test ALL difficulty levels for generate
-4. Always validate solve results (correct sudoku solution)
-5. Report concrete reproducible bugs, not vague concerns
-6. Compare local vs remote at least once per run
-7. Report findings to the planner by updating the roadmap or creating a findings file
+1. **Read-only** — only probe, never modify code
+2. **Create GitHub issues** for every 🔴🟠🟡 bug found
+3. Test ALL 20 tutorials every run
+4. Test ALL difficulty levels for generate
+5. Always validate solve results (correct sudoku solution)
+6. Report concrete reproducible bugs, not vague concerns
+7. Compare local vs remote at least once per run
+8. Write findings to `memory/sudoku-test-results-YYYY-MM-DD.md`
