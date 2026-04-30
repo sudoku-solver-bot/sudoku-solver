@@ -24,6 +24,7 @@ import will.sudoku.web.stepByStepRoutes
 import will.sudoku.web.candidateRoutes
 import will.sudoku.web.tutorialRoutes
 import will.sudoku.web.dailyChallengeRoutes
+import will.sudoku.web.openapiRoutes
 
 fun main() {
     val port = System.getenv("PORT")?.toInt() ?: 8080
@@ -114,6 +115,7 @@ fun Application.module() {
             candidateRoutes()
             tutorialRoutes()
             dailyChallengeRoutes()
+            openapiRoutes()
         }
         
         // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
