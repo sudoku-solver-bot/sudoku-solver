@@ -62,7 +62,16 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         
         listener.onPropagationPassStarted()
         
-        val result = solveInternal(board, 0, listener)
+        // Try with configured eliminators first
+        var result = solveInternal(board, 0, listener, config.eliminators)
+        
+        // If configured eliminators failed and we're not already using basic config,
+        // fall back to basic eliminators which use only safe techniques (no advanced patterns).
+        // This prevents bugs in individual advanced eliminators from making solvable puzzles
+        // unsolvable.
+        if (result == null && config.eliminators != SolverConfig.basic().eliminators) {
+            result = solveInternal(board, 0, NoOpListener, SolverConfig.basic().eliminators)
+        }
         
         // Notify completion
         val timeNanos = System.nanoTime() - startTime
@@ -88,11 +97,11 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
      * @return The solved board, or null if no solution exists
      */
     fun solve(board: Board, depth: Int): Board? {
-        return solveInternal(board, depth, NoOpListener)
+        return solveInternal(board, depth, NoOpListener, config.eliminators)
     }
 
     /**
-     * Internal recursive solving with listener support.
+     * Internal recursive solving with listener support (uses configured eliminators).
      *
      * @param board The puzzle board to solve
      * @param depth Current recursion depth
@@ -100,6 +109,19 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
      * @return The solved board, or null if no solution exists
      */
     private fun solveInternal(board: Board, depth: Int, listener: SolvingListener): Board? {
+        return solveInternal(board, depth, listener, config.eliminators)
+    }
+
+    /**
+     * Internal recursive solving with configurable eliminators and listener support.
+     *
+     * @param board The puzzle board to solve
+     * @param depth Current recursion depth
+     * @param listener Listener to receive callbacks
+     * @param eliminators Candidate eliminators to apply during solving
+     * @return The solved board, or null if no solution exists
+     */
+    private fun solveInternal(board: Board, depth: Int, listener: SolvingListener, eliminators: List<CandidateEliminator>): Board? {
         if (!board.isValid()) return null
         if (board.isSolved()) return board
 
@@ -124,11 +146,11 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
             listener.onCellFilled(unresolvedCoord, candidateValue, explanation)
 
             // Apply constraint propagation
-            for (eliminator in config.eliminators) {
+            for (eliminator in eliminators) {
                 eliminator.eliminate(newBoard)
             }
 
-            val result = solveInternal(newBoard, depth + 1, listener)
+            val result = solveInternal(newBoard, depth + 1, listener, eliminators)
             if (result != null) {
                 return result
             }
