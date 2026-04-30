@@ -1,7 +1,7 @@
-// Lightweight i18n — English + Traditional Chinese + Simplified Chinese + Japanese + Korean + French + Spanish
+// Lightweight i18n — 20 languages: EN, zh-Hant, zh-Hans, JA, KO, FR, ES, DE, PT, HI, AR, IT, RU, TR, NL, SV, PL, TH, VI, EL, RO
 import { ref, computed } from 'vue'
 
-type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi' | 'ar' | 'it' | 'ru' | 'tr' | 'nl' | 'sv' | 'pl' | 'th' | 'vi'
+type Locale = 'en' | 'zh-Hant' | 'zh-Hans' | 'ja' | 'ko' | 'fr' | 'es' | 'de' | 'pt' | 'hi' | 'ar' | 'it' | 'ru' | 'tr' | 'nl' | 'sv' | 'pl' | 'th' | 'vi' | 'el' | 'ro'
 
 const locale = ref<Locale>((localStorage.getItem('sudoku-locale') as Locale) || 'en')
 
@@ -137,7 +137,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   'zh-Hant': {
@@ -265,7 +267,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   'zh-Hans': {
@@ -393,7 +397,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   ja: {
@@ -521,7 +527,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   ko: {
@@ -649,7 +657,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   fr: {
@@ -777,7 +787,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   es: {
@@ -905,7 +917,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   de: {
@@ -1033,7 +1047,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   pt: {
@@ -1161,7 +1177,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   hi: {
@@ -1289,7 +1307,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   ar: {
@@ -1417,7 +1437,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   it: {
@@ -1545,7 +1567,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   ru: {
@@ -1673,7 +1697,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   tr: {
@@ -1801,7 +1827,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   nl: {
@@ -1929,7 +1957,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   sv: {
@@ -2039,7 +2069,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   pl: {
@@ -2149,7 +2181,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   th: {
@@ -2259,7 +2293,9 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   },
 
   vi: {
@@ -2369,7 +2405,233 @@ const translations: Record<string, Record<string, string>> = {
     swedish: 'Svenska',
     polish: 'Polski',
     thai: 'ไทย',
-    vietnamese: 'Tiếng Việt'
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
+  },
+
+  el: {
+    appTitle: '🧩 Λύτης Sudoku',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+    dashboardTitle: 'Dojo Sudoku',
+    dashboardSubtitle: 'Μάθε. Εξασκήσου. Κατέξει.',
+    play: '▶ Παίξε',
+    dailyChallenge: '📅 Καθημερινή Πρόκληση',
+    learnTechniques: '📚 Μάθε Τεχνικές',
+    quickSolve: '🧩 Γρήγορη Λύση',
+    progress: 'Πρόοδος',
+    time: 'Χρόνος',
+    mistakes: 'Λάθη',
+    hints: 'Υποδείξεις',
+    filled: 'Συμπληρωμένα',
+    solve: '🧩 Λύσε',
+    clear: '🗑️ Καθαρισμός',
+    import: '📥 Εισαγωγή',
+    share: '🔗 Κοινή χρήση παζλ',
+    getHint: '💡 Λάβε υπόδειξη!',
+    pencilMarks: 'Σημειώσεις μολυβιού',
+    newPuzzle: 'Νέο παζλ:',
+    easy: 'Εύκολο',
+    medium: 'Μεσαίο',
+    hard: 'Δύσκολο',
+    undo: 'Αναίρεση',
+    redo: 'Επανάληψη',
+    settingsTitle: '⚙️ Ρυθμίσεις',
+    accessibility: 'Προσβασιμότητα',
+    colorBlind: 'Λειτουργία αχρωματοψίας',
+    colorBlindDesc: 'Χρησιμοποιεί μοτίβα και ξεχωριστά χρώματα',
+    highContrast: 'Υψηλή αντίθεση',
+    highContrastDesc: 'Ισχυρότερα περιγράμματα και κείμενο',
+    darkModeLabel: 'Σκοτεινή λειτουργία',
+    darkModeDesc: 'Ηπιότερο για τα μάτια το βράδυ',
+    soundEffects: 'Ηχητικά εφέ',
+    soundEffectsDesc: 'Ηχητική ανατροφοδότηση ενεργειών',
+    boardTheme: 'Θέμα ταμπλό',
+    data: 'Δεδομένα',
+    resetProgress: 'Επαναφορά προόδου',
+    resetProgressDesc: 'Διαγραφή όλης της αποθηκευμένης προόδου μαθημάτων και σειρών',
+    about: 'Σχετικά',
+    aboutText: 'Dojo Sudoku — Μάθε Sudoku βήμα-βήμα',
+    back: '← Πίσω',
+    importTitle: '📥 Εισαγωγή παζλ',
+    importDesc: 'Επικόλληση ενός παζλ Sudoku παρακάτω. Χρησιμοποιήστε . ή 0 για κενά κελιά.',
+    singleLine: 'Μονή γραμμή',
+    grid9x9: 'Πλέγμα 9×9',
+    loadExample: 'Φόρτωση παραδείγματος',
+    cancel: 'Ακύρωση',
+    achievementsTitle: '🏆 Επιτεύγματα',
+    statsTitle: '📊 Στατιστικά',
+    whiteBelt: 'Λευκή ζώνη',
+    yellowBelt: 'Κίτρινη ζώνη',
+    orangeBelt: 'Πορτοκαλί ζώνη',
+    greenBelt: 'Πράσινη ζώνη',
+    blueBelt: 'Μπλε ζώνη',
+    purpleBelt: 'Μοβ ζώνη',
+    brownBelt: 'Καφέ ζώνη',
+    blackBelt: 'Μαύρη ζώνη',
+    puzzleImported: 'Το παζλ εισήχθη! Πατήστε Λύσε ή λύστε το μόνοι σας.',
+    puzzleGenerated: 'Δημιουργήθηκε παζλ {difficulty}!',
+    puzzleSolved: 'Λύθηκε σε {time}ms',
+    noSolution: 'Δεν βρέθηκε λύση',
+    linkCopied: 'Ο σύνδεσμος αντιγράφηκε!',
+    shareText: 'Μοιραστείτε αυτόν τον σύνδεσμο για να προκαλέσετε κάποιον!',
+    sharedLoaded: 'Το κοινόχρηστο παζλ φορτώθηκε! Λύστε το μόνοι σας ή πατήστε Λύσε.',
+    puzzleComplete: 'Το παζλ ολοκληρώθηκε!',
+    perfect: '✨ Τέλεια!',
+    noHints: '🧠 Χωρίς υποδείξεις',
+    continueBtn: 'Συνέχεια',
+    resetAll: 'Επαναφορά όλων των στατιστικών',
+    exportCSV: '📥 Εξαγωγή CSV',
+    savePuzzle: '💾 Αποθήκευση τρέχοντος παζλ',
+    loadBtn: '▶ Φόρτωση',
+    savedPuzzles: '💾 Αποθηκευμένα παζλ',
+    noSavedPuzzles: 'Δεν υπάρχουν αποθηκευμένα παζλ!',
+    saveHint: 'Κάντε κλικ στο «Αποθήκευση παζλ» κατά τη διάρκεια του παιχνιδιού.',
+    EASY: 'Εύκολο',
+    MEDIUM: 'Μεσαίο',
+    HARD: 'Δύσκολο',
+    EXPERT: 'Ειδικός',
+    MASTER: 'Δάσκαλος',
+    language: 'Γλώσσα',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी',
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands',
+    swedish: 'Svenska',
+    polish: 'Polski',
+    thai: 'ไทย',
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
+  },
+
+  ro: {
+    appTitle: '🧩 Rezolvator Sudoku',
+    home: '🏠',
+    daily: '📅',
+    learn: '📚',
+    settings: '⚙️',
+    leaderboard: '🏆',
+    saves: '💾',
+    darkMode: '🌙',
+    dashboardTitle: 'Dojo Sudoku',
+    dashboardSubtitle: 'Învață. Exersează. Stăpânește.',
+    play: '▶ Joacă',
+    dailyChallenge: '📅 Provocarea Zilnică',
+    learnTechniques: '📚 Învață Tehnici',
+    quickSolve: '🧩 Rezolvare Rapidă',
+    progress: 'Progres',
+    time: 'Timp',
+    mistakes: 'Greșeli',
+    hints: 'Indicii',
+    filled: 'Completat',
+    solve: '🧩 Rezolvă',
+    clear: '🗑️ Șterge',
+    import: '📥 Importă',
+    share: '🔗 Partajează puzzle',
+    getHint: '💡 Obține un indiciu!',
+    pencilMarks: 'Semne cu creionul',
+    newPuzzle: 'Puzzle nou:',
+    easy: 'Ușor',
+    medium: 'Mediu',
+    hard: 'Greu',
+    undo: 'Anulează',
+    redo: 'Refă',
+    settingsTitle: '⚙️ Setări',
+    accessibility: 'Accesibilitate',
+    colorBlind: 'Mod daltonist',
+    colorBlindDesc: 'Folosește modele și culori distincte',
+    highContrast: 'Contrast ridicat',
+    highContrastDesc: 'Chenare și text mai puternice pentru vizibilitate',
+    darkModeLabel: 'Mod întunecat',
+    darkModeDesc: 'Mai blând pentru ochi noaptea',
+    soundEffects: 'Efecte sonore',
+    soundEffectsDesc: 'Feedback audio pentru acțiuni',
+    boardTheme: 'Temă tablă',
+    data: 'Date',
+    resetProgress: 'Resetează progresul',
+    resetProgressDesc: 'Șterge tot progresul lecțiilor și seriile salvate',
+    about: 'Despre',
+    aboutText: 'Dojo Sudoku — Învață Sudoku pas cu pas',
+    back: '← Înapoi',
+    importTitle: '📥 Importă puzzle',
+    importDesc: 'Lipește un puzzle Sudoku mai jos. Folosește . sau 0 pentru celule goale.',
+    singleLine: 'O singură linie',
+    grid9x9: 'Grilă 9×9',
+    loadExample: 'Încarcă exemplu',
+    cancel: 'Anulează',
+    achievementsTitle: '🏆 Realizări',
+    statsTitle: '📊 Statistici',
+    whiteBelt: 'Centură albă',
+    yellowBelt: 'Centură galbenă',
+    orangeBelt: 'Centură portocalie',
+    greenBelt: 'Centură verde',
+    blueBelt: 'Centură albastră',
+    purpleBelt: 'Centură mov',
+    brownBelt: 'Centură maro',
+    blackBelt: 'Centură neagră',
+    puzzleImported: 'Puzzle importat! Apasă Rezolvă sau rezolvă-l singur.',
+    puzzleGenerated: 'Puzzle {difficulty} generat!',
+    puzzleSolved: 'Rezolvat în {time}ms',
+    noSolution: 'Nicio soluție găsită',
+    linkCopied: 'Link copiat!',
+    shareText: 'Partajează acest link pentru a provoca pe cineva!',
+    sharedLoaded: 'Puzzle partajat încărcat! Rezolvă-l singur sau apasă Rezolvă.',
+    puzzleComplete: 'Puzzle completat!',
+    perfect: '✨ Perfect!',
+    noHints: '🧠 Fără indicii',
+    continueBtn: 'Continuă',
+    resetAll: 'Resetează toate statisticile',
+    exportCSV: '📥 Exportă ca CSV',
+    savePuzzle: '💾 Salvează puzzle curent',
+    loadBtn: '▶ Încarcă',
+    savedPuzzles: '💾 Puzzle salvate',
+    noSavedPuzzles: 'Nu există puzzle salvate!',
+    saveHint: 'Apasă „Salvează puzzle" în timpul jocului pentru a salva progresul.',
+    EASY: 'Ușor',
+    MEDIUM: 'Mediu',
+    HARD: 'Greu',
+    EXPERT: 'Expert',
+    MASTER: 'Maestru',
+    language: 'Limba',
+    english: 'English',
+    chinese: '繁體中文',
+    simplifiedChinese: '简体中文',
+    japanese: '日本語',
+    korean: '한국어',
+    french: 'Français',
+    spanish: 'Español',
+    german: 'Deutsch',
+    portuguese: 'Português',
+    hindi: 'हिन्दी',
+    arabic: 'العربية',
+    italian: 'Italiano',
+    russian: 'Русский',
+    turkish: 'Türkçe',
+    dutch: 'Nederlands',
+    swedish: 'Svenska',
+    polish: 'Polski',
+    thai: 'ไทย',
+    vietnamese: 'Tiếng Việt',
+    greek: 'Ελληνικά',
+    romanian: 'Română'
   }
 }
 
