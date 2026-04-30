@@ -28,15 +28,25 @@ git fetch origin
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse origin/master)
 
-if [ "$LOCAL" = "$REMOTE" ]; then
-  echo "Already up to date: $LOCAL"
+# Always deploy from origin/master, even if local is ahead
+# (local may have unreleased commits on other branches)
+
+echo "Local: $LOCAL"
+echo "Remote (master): $REMOTE"
+
+# Get the currently deployed commit
+DEPLOYED_COMMIT=$(cat /tmp/sudoku-debug/.deploy-commit 2>/dev/null || echo "unknown")
+echo "Currently deployed: $DEPLOYED_COMMIT"
+
+if [ "$DEPLOYED_COMMIT" = "$REMOTE" ]; then
+  echo "Already deployed at latest master: $REMOTE"
   exit 0
 fi
 
-echo "Updating: $LOCAL -> $REMOTE"
-git log --oneline $LOCAL..$REMOTE
+echo "Updating: $DEPLOYED_COMMIT -> $REMOTE"
+git log --oneline $DEPLOYED_COMMIT..$REMOTE 2>/dev/null || git log --oneline -5 $REMOTE
 
-# Pull latest
+# Ensure we're on master at the remote commit
 git checkout master
 git pull --ff-only origin master
 
@@ -50,6 +60,9 @@ cd web-ui && npm install && npm run build && cd ..
 rm -rf /tmp/sudoku-debug
 mkdir -p /tmp/sudoku-debug
 cp -r web/build /tmp/sudoku-debug/web
+
+# Record the deployed commit
+echo "$REMOTE" > /tmp/sudoku-debug/.deploy-commit
 
 # Restart service
 sudo systemctl restart sudoku-solver
@@ -82,14 +95,18 @@ sudo journalctl -u sudoku-solver -p err --no-pager -n 30
 
 ## Rules
 
-1. Never push to master — this agent only pulls and deploys
-2. Always `--ff-only` to avoid merge commits
-3. Verify health after restart — if health check fails, roll back:
+1. **Always deploy from `origin/master`** — never from local branches or ahead-of-master commits
+2. If local HEAD is ahead of origin/master (e.g., working on a feature branch), still deploy origin/master
+3. Track deployed commit in `/tmp/sudoku-debug/.deploy-commit`
+4. Always `--ff-only` to avoid merge commits
+5. Verify health after restart — if health check fails, roll back:
    ```bash
-   # Rollback: checkout previous commit and rebuild
-   git checkout $LOCAL
+   # Rollback: checkout previous deployed commit and rebuild
+   PREVIOUS=$(cat /tmp/sudoku-debug/.deploy-commit 2>/dev/null || echo "unknown")
+   git checkout $PREVIOUS
    ./gradlew :web:installDist --no-daemon
    rm -rf /tmp/sudoku-debug && mkdir -p /tmp/sudoku-debug && cp -r web/build /tmp/sudoku-debug/web
+   echo "$PREVIOUS" > /tmp/sudoku-debug/.deploy-commit
    sudo systemctl restart sudoku-solver
    ```
-4. Report deployment result (commit hash, status, health)
+6. Report deployment result (master commit hash, status, health)
