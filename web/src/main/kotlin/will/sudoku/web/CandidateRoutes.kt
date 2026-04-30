@@ -9,7 +9,7 @@ import kotlinx.serialization.Serializable
 import will.sudoku.solver.Board
 import will.sudoku.solver.BoardReader
 import will.sudoku.solver.Coord
-import will.sudoku.solver.SimpleCandidateEliminator
+import will.sudoku.solver.CoordGroup
 
 @Serializable
 data class CandidatesRequest(
@@ -44,17 +44,24 @@ fun Route.candidateRoutes() {
             return@post
         }
 
-        // Run constraint propagation to populate candidates
-        val eliminator = SimpleCandidateEliminator()
-        eliminator.eliminate(board)
-
-        // Collect candidates for all unconfirmed cells
+        // Compute candidates directly: for each empty cell, collect values that
+        // do not appear among confirmed (given) cells in its row, column, or box.
+        // This avoids cascading constraint propagation which can solve easy puzzles
+        // and leave no unconfirmed cells to return.
         val candidates = mutableMapOf<String, List<Int>>()
         for (coord in Coord.all) {
             if (!board.isConfirmed(coord)) {
-                val values = board.candidateValues(coord).toList()
-                if (values.isNotEmpty()) {
-                    candidates[coord.index.toString()] = values
+                val usedValues = mutableSetOf<Int>()
+                for (group in CoordGroup.of(coord)) {
+                    for (peer in group.coords) {
+                        if (peer != coord && board.isConfirmed(peer)) {
+                            usedValues.add(board.value(peer))
+                        }
+                    }
+                }
+                val availableValues = (1..9).filter { it !in usedValues }
+                if (availableValues.isNotEmpty()) {
+                    candidates[coord.index.toString()] = availableValues
                 }
             }
         }
