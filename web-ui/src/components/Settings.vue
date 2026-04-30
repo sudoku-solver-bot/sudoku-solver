@@ -165,6 +165,69 @@
           >
             🇮🇳 हिन्दी
           </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'ar' }"
+            @click="setLocale('ar')"
+          >
+            🇸🇦 العربية
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'it' }"
+            @click="setLocale('it')"
+          >
+            🇮🇹 Italiano
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'ru' }"
+            @click="setLocale('ru')"
+          >
+            🇷🇺 Русский
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'tr' }"
+            @click="setLocale('tr')"
+          >
+            🇹🇷 Türkçe
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'nl' }"
+            @click="setLocale('nl')"
+          >
+            🇳🇱 Nederlands
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'sv' }"
+            @click="setLocale('sv')"
+          >
+            🇸🇪 Svenska
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'pl' }"
+            @click="setLocale('pl')"
+          >
+            🇵🇱 Polski
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'th' }"
+            @click="setLocale('th')"
+          >
+            🇹🇭 ไทย
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ active: currentLocale === 'vi' }"
+            @click="setLocale('vi')"
+          >
+            🇻🇳 Tiếng Việt
+          </button>
         </div>
       </div>
 
