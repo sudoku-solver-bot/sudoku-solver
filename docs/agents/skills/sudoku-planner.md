@@ -136,10 +136,55 @@ gh pr list --state open
 gh run list --limit 5
 ```
 
+## Creating Plans on GitHub
+
+Plans should be visible to everyone. Create them as GitHub issues with the `plan` label:
+
+```bash
+cd /home/claw1/repos/sudoku-solver
+
+# Create a plan issue
+gh issue create --repo sudoku-solver-bot/sudoku-solver \
+  --title "plan: [Feature/Fix name]" \
+  --body "## Objective
+[What this achieves in 1-2 sentences]
+
+## Scope
+- [ ] Backend / Frontend / Both
+
+## Files to Change
+- \`path/to/file.ext\` — [what to change]
+
+## Implementation Steps
+1. [Step 1]
+2. [Step 2]
+3. ...
+
+## Testing
+- [How to verify]
+
+## Estimated Effort
+[X] hours
+
+## Context
+[Why this matters, linked bugs, etc.]
+"
+gh issue edit <NUMBER> --repo sudoku-solver-bot/sudoku-solver --add-label plan
+```
+
+**Rules for plan issues:**
+- Title prefix: `plan:`
+- Add the `plan` label
+- Reference any related bug issues (e.g., "Related: #123")
+- Keep plans concrete and actionable — the coder agent reads these
+- Close the issue when the plan is implemented
+
 ## Rules
 
 1. **Read-only** — analyze and plan, never modify code
-2. Plans should be concrete enough for the coder agent to follow step-by-step
-3. Always verify current state before planning (read code, check logs)
-4. Reference specific files and line numbers in plans
-5. Keep plans small — one feature/fix per plan
+2. **Create plans as GitHub issues** with `plan` label for visibility
+3. Plans must be concrete enough for the coder agent to follow step-by-step
+4. Always verify current state before planning (read code, check logs)
+5. Reference specific files and line numbers in plans
+6. Keep plans small — one feature/fix per plan
+7. Close plan issues once the coder implements them

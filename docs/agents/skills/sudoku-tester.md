@@ -243,12 +243,45 @@ Severity levels:
 - 🟡 **Minor**: UX issue, inconsistency, or edge case
 - 🔵 **Cosmetic**: Typos, formatting, display issues
 
+## Creating GitHub Issues for Bugs
+
+For every bug found (severity 🔴🟠🟡), create a GitHub issue:
+
+```bash
+cd /home/claw1/repos/sudoku-solver
+gh issue create --repo sudoku-solver-bot/sudoku-solver \
+  --title "bug: [Short description]" \
+  --body "## Severity: [🔴 Critical / 🟠 Major / 🟡 Minor]
+
+**Endpoint:** \`POST /api/v1/hint\`
+**Input:** \`{\"puzzle\":\"007239061...\"}\`
+**Expected:** [what should happen]
+**Actual:** [what actually happens]
+
+## Steps to Reproduce
+1. ...
+2. ...
+
+## Impact
+[Why this matters]
+"
+```
+
+**Rules for issues:**
+- Title prefix: `bug:` (not `feat:` or `docs:`)
+- Include severity emoji in the body
+- Always include reproducible steps
+- One issue per bug
+- Don't create issues for 🟢 cosmetic/🔵 minor typos unless they're misleading
+- After creating issues, list them in the test results summary
+
 ## Rules
 
-1. **Read-only** — only probe, never modify
-2. Test ALL 20 tutorials every run
-3. Test ALL difficulty levels for generate
-4. Always validate solve results (correct sudoku solution)
-5. Report concrete reproducible bugs, not vague concerns
-6. Compare local vs remote at least once per run
-7. Report findings to the planner by updating the roadmap or creating a findings file
+1. **Read-only** — only probe, never modify code
+2. **Create GitHub issues** for every 🔴🟠🟡 bug found
+3. Test ALL 20 tutorials every run
+4. Test ALL difficulty levels for generate
+5. Always validate solve results (correct sudoku solution)
+6. Report concrete reproducible bugs, not vague concerns
+7. Compare local vs remote at least once per run
+8. Write findings to `memory/sudoku-test-results-YYYY-MM-DD.md`
