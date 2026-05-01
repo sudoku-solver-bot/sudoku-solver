@@ -97,6 +97,14 @@ data class SolverConfig(
     }
 
     /**
+     * Returns true if any configured eliminator assumes the puzzle has a unique solution.
+     * These techniques can eliminate valid candidates from puzzles with multiple solutions.
+     */
+    fun usesUniquenessTechniques(): Boolean {
+        return eliminators.any { it is UniqueRectanglesCandidateEliminator }
+    }
+
+    /**
      * Difficulty levels for solver configuration.
      */
     enum class DifficultyLevel {

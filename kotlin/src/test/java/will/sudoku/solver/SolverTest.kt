@@ -1,6 +1,7 @@
 package will.sudoku.solver
 
 import org.assertj.core.api.Assertions
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -21,6 +22,31 @@ class SolverTest {
     fun test(boardName: String, board: Board, expected: Board) {
         val solved = Solver().solve(board)
         Assertions.assertThat(solved).isEqualTo(expected)
+    }
+
+    /**
+     * Regression test for #256: Solver should find a solution for puzzles
+     * with multiple solutions, not return null. The fallback to basic
+     * eliminators (without uniqueness-assuming techniques) handles this.
+     */
+    @Test
+    fun `should solve puzzle with multiple solutions`() {
+        // Puzzle from #256 — known to have 3 valid solutions
+        val puzzle = "438.....9..16....3...73.........9.6.8..1..3...76.2....1...4279692...6.3.....17..."
+        val board = BoardReader.readBoard(puzzle)
+        val solved = Solver().solve(board)
+
+        Assertions.assertThat(solved)
+            .`as`("Solver should find a solution for a multi-solution puzzle (fallback)")
+            .isNotNull
+
+        Assertions.assertThat(solved!!.isSolved())
+            .`as`("Result should be a fully solved board")
+            .isTrue
+
+        Assertions.assertThat(solved.isValid())
+            .`as`("Result should be a valid board")
+            .isTrue
     }
 
     @ExperimentalPathApi
