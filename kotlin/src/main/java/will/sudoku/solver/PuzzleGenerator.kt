@@ -91,10 +91,14 @@ object PuzzleGenerator {
 
     /**
      * Remove cells from a solved board to create a puzzle.
+     * Verifies uniqueness after each removal — if removing a cell
+     * creates multiple solutions, the cell is restored and another
+     * cell is tried instead.
      */
     private fun removeCells(board: Board, count: Int, random: Random): Board {
         val puzzle = board.copy()
         val positions = (0..80).shuffled(random)
+        val wildcardPattern = (1 shl 9) - 1
 
         var removed = 0
         for (pos in positions) {
@@ -104,16 +108,22 @@ object PuzzleGenerator {
             val col = pos % 9
             val coord = Coord(row, col)
 
-            // Temporarily remove the value
+            // Skip already-empty cells
             val originalValue = puzzle.value(coord)
             if (originalValue == 0) continue
 
-            // Clear the cell (set to all candidates)
-            puzzle.candidatePatterns[pos] = (1..9).fold(0) { acc, v -> acc or Board.masks[v - 1] }
+            // Save original pattern for restoration
+            val originalPattern = puzzle.candidatePatterns[pos]
 
-            // Check if puzzle still has unique solution
-            // For performance, we skip this check for most puzzles
-            // In a production system, you would verify uniqueness here
+            // Clear the cell (set to all candidates)
+            puzzle.candidatePatterns[pos] = wildcardPattern
+
+            // Verify puzzle still has exactly one solution
+            if (!PuzzleValidator.hasUniqueSolution(puzzle)) {
+                // Removing this cell broke uniqueness — restore it
+                puzzle.candidatePatterns[pos] = originalPattern
+                continue
+            }
 
             removed++
         }
