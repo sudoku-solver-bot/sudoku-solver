@@ -36,6 +36,7 @@ fun Route.difficultyRoutes() {
             DifficultyLevel.MEDIUM -> DifficultyRater.Level.MEDIUM
             DifficultyLevel.HARD -> DifficultyRater.Level.HARD
             DifficultyLevel.EXPERT -> DifficultyRater.Level.EXPERT
+            DifficultyLevel.MASTER -> DifficultyRater.Level.MASTER
         }
         
         val board = PuzzleGenerator.generate(raterLevel)
@@ -78,6 +79,7 @@ fun Route.difficultyRoutes() {
             DifficultyLevel.MEDIUM -> DifficultyRater.Level.MEDIUM
             DifficultyLevel.HARD -> DifficultyRater.Level.HARD
             DifficultyLevel.EXPERT -> DifficultyRater.Level.EXPERT
+            DifficultyLevel.MASTER -> DifficultyRater.Level.MASTER
         }
         
         val board = PuzzleGenerator.generate(raterLevel)
