@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import will.sudoku.solver.Board
 import will.sudoku.solver.BoardReader
+import will.sudoku.solver.HintType
 import will.sudoku.solver.SimpleCandidateEliminator
 import will.sudoku.solver.TeachingHintProvider
 
@@ -44,16 +45,36 @@ fun Route.hintRoutes() {
         val request = call.receive<HintRequest>()
 
         // Parse board using BoardReader for consistent format handling (accepts 0 and .)
-        val board: Board = try {
-            BoardReader.readBoard(request.puzzle).withConstraintPropagation()
+        val rawBoard: Board = try {
+            BoardReader.readBoard(request.puzzle)
         } catch (e: Exception) {
             return@post call.respond(
                 HttpStatusCode.BadRequest,
                 mapOf("error" to "Invalid puzzle: ${e.message}")
             )
         }
+
+        // Check if puzzle was already solved BEFORE constraint propagation
+        // Easy puzzles can be fully solved by constraint propagation alone,
+        // so checking after would incorrectly report them as "Puzzle Complete"
+        if (rawBoard.isSolved()) {
+            return@post call.respond(
+                HintResponse(
+                    type = HintType.COMPLETE.name,
+                    cell = null,
+                    technique = "Puzzle Complete",
+                    explanation = "This puzzle is already solved! All cells are filled correctly. Great job!",
+                    teachingPoints = listOf(
+                        "You've completed this puzzle — no moves needed",
+                        "Challenge yourself with a new puzzle to keep improving"
+                    )
+                )
+            )
+        }
+
+        val board = rawBoard.withConstraintPropagation()
         val hint = hintProvider.getHint(board)
-        
+
         call.respond(
             HintResponse(
                 type = hint.type.name,

@@ -45,20 +45,6 @@ enum class HintType {
 class TeachingHintProvider {
 
     fun getHint(board: Board): TeachingHint {
-        // Check if puzzle is already solved
-        if (board.isSolved()) {
-            return TeachingHint(
-                type = HintType.COMPLETE,
-                cell = null,
-                technique = "Puzzle Complete",
-                explanation = "This puzzle is already solved! All cells are filled correctly. Great job!",
-                teachingPoints = listOf(
-                    "You've completed this puzzle — no moves needed",
-                    "Challenge yourself with a new puzzle to keep improving"
-                )
-            )
-        }
-        
         // Try Naked Single (easiest)
         findNakedSingle(board)?.let { return it }
 
@@ -150,6 +136,11 @@ class TeachingHintProvider {
                 "That candidate must go in that row/column in that box",
                 "Eliminate the candidate from that row/column in other boxes"
             )
+            HintGenerator.Technique.BOX_LINE_REDUCTION -> listOf(
+                "Look for a candidate in a row/column that is confined to a single box",
+                "That candidate must go in that box within the row/column",
+                "Eliminate the candidate from other cells in that box"
+            )
             HintGenerator.Technique.NAKED_PAIR -> listOf(
                 "Find two cells in the same row, column, or box with identical candidates",
                 "These two cells 'claim' those two numbers",
@@ -190,10 +181,45 @@ class TeachingHintProvider {
                 "Wings share subsets of the pivot's candidates",
                 "Eliminate the common Z candidate from cells seeing all three"
             )
-            else -> listOf(
-                "This is an advanced technique",
-                "Look for patterns in candidate arrangements",
-                "Practice easier techniques first to build familiarity"
+            HintGenerator.Technique.W_WING -> listOf(
+                "Find two cells with the same two candidates that are linked by a strong link",
+                "A strong link means a candidate appears in exactly two cells in a row, column, or box",
+                "If either cell takes the shared value, the other must take the other value — eliminate accordingly"
+            )
+            HintGenerator.Technique.SIMPLE_COLORING -> listOf(
+                "Find a candidate that appears in exactly two cells in multiple groups (a chain)",
+                "Color cells alternately (e.g. red/blue) following the chain",
+                "If a cell would have the same color twice, eliminate that candidate from those cells"
+            )
+            HintGenerator.Technique.UNIQUE_RECTANGLE -> listOf(
+                "Sudoku puzzles have exactly one solution — use this to avoid 'deadly patterns'",
+                "Look for four cells forming a rectangle where two candidates appear in all four",
+                "If three cells are bi-value with the same pair, eliminate one candidate from the fourth"
+            )
+            HintGenerator.Technique.ALS_XZ -> listOf(
+                "An Almost Locked Set (ALS) is a group of N cells with N+1 candidates",
+                "Find two ALS that share exactly one candidate (X) and each has a restricted candidate (Z)",
+                "Eliminate Z from cells outside both ALS that see all Z candidates in both sets"
+            )
+            HintGenerator.Technique.FRANKEN_FISH -> listOf(
+                "A Franken Fish extends basic fish patterns by mixing rows/columns with boxes",
+                "Look for N base sets (rows or columns) and N-1 cover sets plus one box",
+                "Eliminate the candidate from cover set cells not in the base sets"
+            )
+            HintGenerator.Technique.MUTANT_FISH -> listOf(
+                "A Mutant Fish uses any combination of rows, columns, and boxes as base/cover sets",
+                "Both base and cover sets can mix different unit types",
+                "Eliminate the candidate from cover set cells not in the base sets"
+            )
+            HintGenerator.Technique.DEATH_BLOSSOM -> listOf(
+                "Find a 'stem' cell with exactly 2 candidates (a bi-value cell)",
+                "Each candidate leads to an Almost Locked Set (ALS) when forced",
+                "If the two ALS share a candidate, that candidate can be eliminated from cells seeing both"
+            )
+            HintGenerator.Technique.FORCING_CHAINS -> listOf(
+                "Pick a cell with 2 candidates and try assuming each value",
+                "Follow the consequences of each assumption through the puzzle",
+                "If both paths eliminate the same candidate from another cell, that elimination is certain"
             )
         }
     }
