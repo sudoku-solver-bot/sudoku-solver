@@ -1,5 +1,5 @@
 # Build stage
-FROM docker.io/gradle:8.11-jdk21 AS build
+FROM docker.io/gradle:jdk25 AS build
 WORKDIR /app
 
 # Copy everything
@@ -9,7 +9,7 @@ COPY . .
 RUN gradle :web:installDist --no-daemon
 
 # Runtime stage  
-FROM docker.io/eclipse-temurin:21-jre-alpine
+FROM docker.io/eclipse-temurin:25-jre-alpine
 WORKDIR /app
 
 # Copy the built application
