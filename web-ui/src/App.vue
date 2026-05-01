@@ -303,8 +303,8 @@
           @update="onCellUpdate"
           @select="selectCell"
           @navigate="navigateToCell"
-          @undo="undoAction"
-          @redo="redoAction"
+          @undo="handleUndo"
+          @redo="handleRedo"
         />
 
         <!-- Mobile number pad (right below grid) -->
@@ -335,8 +335,8 @@
           @print="handlePrint"
           @share-image="handleShareImage"
           @hint="getHint"
-          @undo="undoAction"
-          @redo="redoAction"
+          @undo="handleUndo"
+          @redo="handleRedo"
           @toggle-candidates="showCandidates = !showCandidates"
         />
 
@@ -998,6 +998,14 @@ const redoAction = async () => {
   } catch (e) {
     showToast('Error', 'Failed to redo: ' + e.message, 'error', true, redoAction)
   }
+}
+
+const handleUndo = () => {
+  undoAction()
+}
+
+const handleRedo = () => {
+  redoAction()
 }
 
 // Solve the puzzle
