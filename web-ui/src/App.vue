@@ -597,14 +597,14 @@ const handleKeyDown = (e) => {
   // Ctrl+Z / Cmd+Z for undo
   if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
     e.preventDefault()
-    undo()
+    undoAction()
     return
   }
 
   // Ctrl+Y / Cmd+Shift+Z for redo
   if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
     e.preventDefault()
-    redo()
+    redoAction()
     return
   }
 
