@@ -1,6 +1,6 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
-    kotlin("plugin.serialization") version "2.1.0"
+    kotlin("jvm") version "2.3.20"
+    kotlin("plugin.serialization") version "2.3.20"
     application
 }
 
@@ -36,6 +36,7 @@ dependencies {
     // Testing
     testImplementation("io.ktor:ktor-server-tests:2.3.7")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.22")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.test {
@@ -43,5 +44,5 @@ tasks.test {
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(25)
 }

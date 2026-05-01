@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "2.1.0" apply false
+    kotlin("jvm") version "2.3.20" apply false
     id("org.sonarqube") version "4.4.1.3373"
 }
 
@@ -18,7 +18,7 @@ subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     
     tasks.withType<KotlinCompile> {
-        compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
+        compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25)
     }
     
     tasks.withType<Test> {

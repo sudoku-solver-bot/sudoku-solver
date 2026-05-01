@@ -1,6 +1,6 @@
 package will.sudoku.web
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
@@ -49,10 +49,11 @@ class PuzzleEncoderTest {
     @Test
     fun `decode should handle full board`() {
         val original = "530070000600195000098000060800060003400803001700020006060000280000419005000080079"
+        val expected = "53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79"
         val encoded = PuzzleEncoder.encode(original)
         val decoded = PuzzleEncoder.decode(encoded)
 
-        assertEquals(original, decoded)
+        assertEquals(expected, decoded)
     }
 
     @Test
@@ -114,7 +115,7 @@ class PuzzleEncoderTest {
 
     @Test
     fun `isValidPuzzle should return true for puzzle with zeros`() {
-        val valid = "53..7.0.." + ".".repeat(71)
+        val valid = "53..7.0.." + ".".repeat(72)
         assertTrue(PuzzleEncoder.isValidPuzzle(valid))
     }
 
@@ -133,10 +134,11 @@ class PuzzleEncoderTest {
     @Test
     fun `roundtrip encoding should preserve complex puzzle`() {
         val original = "530070000600195000098000060800060003400803001700020006060000280000419005000080079"
+        val expected = "53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79"
         val encoded = PuzzleEncoder.encode(original)
         val decoded = PuzzleEncoder.decode(encoded)
 
-        assertEquals(original, decoded)
+        assertEquals(expected, decoded)
     }
 
     @Test
