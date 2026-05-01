@@ -303,8 +303,8 @@
           @update="onCellUpdate"
           @select="selectCell"
           @navigate="navigateToCell"
-          @undo="undo"
-          @redo="redo"
+          @undo="handleUndo"
+          @redo="handleRedo"
         />
 
         <!-- Mobile number pad (right below grid) -->
@@ -335,8 +335,8 @@
           @print="handlePrint"
           @share-image="handleShareImage"
           @hint="getHint"
-          @undo="undo"
-          @redo="redo"
+          @undo="handleUndo"
+          @redo="handleRedo"
           @toggle-candidates="showCandidates = !showCandidates"
         />
 
@@ -1000,11 +1000,11 @@ const redoAction = async () => {
   }
 }
 
-const undo = () => {
+const handleUndo = () => {
   undoAction()
 }
 
-const redo = () => {
+const handleRedo = () => {
   redoAction()
 }
 
