@@ -35,7 +35,8 @@ enum class HintType {
     MUTANT_FISH,
     DEATH_BLOSSOM,
     FORCING_CHAINS,
-    ADVANCED
+    ADVANCED,
+    COMPLETE
 }
 
 /**
@@ -44,6 +45,20 @@ enum class HintType {
 class TeachingHintProvider {
 
     fun getHint(board: Board): TeachingHint {
+        // Check if puzzle is already solved
+        if (board.isSolved()) {
+            return TeachingHint(
+                type = HintType.COMPLETE,
+                cell = null,
+                technique = "Puzzle Complete",
+                explanation = "This puzzle is already solved! All cells are filled correctly. Great job!",
+                teachingPoints = listOf(
+                    "You've completed this puzzle — no moves needed",
+                    "Challenge yourself with a new puzzle to keep improving"
+                )
+            )
+        }
+        
         // Try Naked Single (easiest)
         findNakedSingle(board)?.let { return it }
 
