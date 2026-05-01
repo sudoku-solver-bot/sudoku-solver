@@ -37,7 +37,16 @@ gh pr checkout <NUMBER> --repo sudoku-solver-bot/sudoku-solver
 
 ### Step 3: Review Checklist
 
-Go through each item:
+**⚠️ CRITICAL: Only approve if the PR does what it claims.**
+If you spot ANY issues, add a comment — do NOT approve.
+
+First, read the PR description and linked issue to understand what the PR claims to do.
+
+**Does it do what it claims?**
+- [ ] PR description matches the actual changes
+- [ ] Linked issue is actually addressed
+- [ ] All claimed features/fixes are present in the diff
+- [ ] No unrelated changes snuck in
 
 **Code Quality:**
 - [ ] Code follows existing patterns and style
@@ -64,6 +73,38 @@ Go through each item:
 **Performance:**
 - [ ] No N+1 queries or unnecessary loops
 - [ ] No blocking calls in async context
+
+### Step 3b: If Issues Found
+
+**Add a comment to the PR with specific, actionable feedback:**
+
+```bash
+# Comment with inline issues
+gh pr comment <NUMBER> --repo sudoku-solver-bot/sudoku-solver --body "## Review Findings
+
+### ❌ Issue 1: [description]
+File: \`path/to/file.ext:123\`
+Problem: [what's wrong]
+Suggestion: [how to fix]
+
+### ⚠️ Issue 2: [description]
+..."
+```
+
+**Or request changes formally:**
+
+```bash
+gh pr review <NUMBER> --repo sudoku-solver-bot/sudoku-solver --request-changes --body "Please fix:
+1. [Issue 1]
+2. [Issue 2]
+"
+```
+
+**Guidelines:**
+- Be specific: reference file names and line numbers
+- Be constructive: explain the problem AND suggest a fix
+- Categorize: ❌ blocking (must fix), ⚠️ suggestion (should fix), 💡 nit (optional)
+- If the PR doesn't actually fix the linked issue → ❌ blocking, explain what's missing
 
 ### Step 4: Run CI Checks
 
@@ -169,9 +210,12 @@ After merge, confirm deployment:
 
 ## Rules
 
-1. **Never merge without CI green**
-2. **Never merge your own PR** unless explicitly told to
-3. **Always resolve conflicts on the PR branch**, not on master
-4. **Run tests locally** after conflict resolution before pushing
-5. **Be constructive** in reviews — explain why, not just what
-6. **Use squash merge** by default for cleaner history
+1. **Only approve if the PR does what it claims** — verify against PR description and linked issue
+2. **Add comments for ANY issues found** — don't silently approve and hope for the best
+3. **Never merge without CI green**
+4. **Never merge your own PR** unless explicitly told to
+5. **Always resolve conflicts on the PR branch**, not on master
+6. **Run tests locally** after conflict resolution before pushing
+7. **Be constructive** in reviews — explain why, not just what
+8. **Use squash merge** by default for cleaner history
+9. **If the PR doesn't fix the linked issue, request changes** with a clear explanation
