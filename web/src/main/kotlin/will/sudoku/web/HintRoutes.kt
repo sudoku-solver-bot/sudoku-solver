@@ -8,6 +8,12 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import will.sudoku.solver.*
 
+fun Board.withConstraintPropagation(): Board {
+    val eliminator = SimpleCandidateEliminator()
+    eliminator.eliminate(this)
+    return this
+}
+
 @Serializable
 data class HintRequest(
     val puzzle: String
@@ -42,9 +48,9 @@ fun Route.hintRoutes() {
             )
         }
         
-        // Create board from puzzle string
+        // Create board from puzzle string and propagate constraints
         val values = IntArray(81) { puzzle[it].digitToInt() }
-        val board = Board(values)
+        val board = Board(values).withConstraintPropagation()
         val hint = hintProvider.getHint(board)
         
         call.respond(
