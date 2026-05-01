@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.Serializable
 import will.sudoku.solver.Board
 import will.sudoku.solver.BoardReader
@@ -37,6 +38,8 @@ data class SolverMetricsResponse(
     val difficulty: String? = null,
     val techniquesUsed: List<String> = emptyList()
 )
+
+private const val SOLVE_TIMEOUT_MS = 10_000L
 
 fun Route.solveRoutes() {
     post("/solve") {
@@ -75,67 +78,80 @@ fun Route.solveRoutes() {
             return@post
         }
 
-        // Solve with or without metrics
-        if (request.includeMetrics) {
-            val solver = SolverWithMetrics()
-            val result = solver.solveWithMetrics(board)
-            val solvedBoard = result.solvedBoard
-            
-            // Rate difficulty
-            val rating = DifficultyRater.rate(result.metrics)
+        // Solve with timeout to prevent server hang on degenerate puzzles
+        try {
+            withTimeout(SOLVE_TIMEOUT_MS) {
+                // Solve with or without metrics
+                if (request.includeMetrics) {
+                    val solver = SolverWithMetrics()
+                    val result = solver.solveWithMetrics(board)
+                    val solvedBoard = result.solvedBoard
+                    
+                    // Rate difficulty
+                    val rating = DifficultyRater.rate(result.metrics)
 
-            if (solvedBoard != null) {
-                call.respond(
-                    SolveResponse(
-                        solved = true,
-                        solution = boardToString(solvedBoard),
-                        metrics = SolverMetricsResponse(
-                            solveTimeMs = result.metrics.totalSolveTimeNanos / 1_000_000.0,
-                            backtrackingCount = result.metrics.backtrackingCount,
-                            maxRecursionDepth = result.metrics.maxRecursionDepth,
-                            propagationPasses = result.metrics.propagationPasses,
-                            cellsProcessed = result.metrics.cellsProcessed,
-                            difficulty = rating.level.displayName,
-                            techniquesUsed = rating.techniquesUsed
+                    if (solvedBoard != null) {
+                        call.respond(
+                            SolveResponse(
+                                solved = true,
+                                solution = boardToString(solvedBoard),
+                                metrics = SolverMetricsResponse(
+                                    solveTimeMs = result.metrics.totalSolveTimeNanos / 1_000_000.0,
+                                    backtrackingCount = result.metrics.backtrackingCount,
+                                    maxRecursionDepth = result.metrics.maxRecursionDepth,
+                                    propagationPasses = result.metrics.propagationPasses,
+                                    cellsProcessed = result.metrics.cellsProcessed,
+                                    difficulty = rating.level.displayName,
+                                    techniquesUsed = rating.techniquesUsed
+                                )
+                            )
                         )
-                    )
-                )
-            } else {
-                call.respond(
-                    SolveResponse(
-                        solved = false,
-                        error = "No solution found",
-                        metrics = SolverMetricsResponse(
-                            solveTimeMs = result.metrics.totalSolveTimeNanos / 1_000_000.0,
-                            backtrackingCount = result.metrics.backtrackingCount,
-                            maxRecursionDepth = result.metrics.maxRecursionDepth,
-                            propagationPasses = result.metrics.propagationPasses,
-                            cellsProcessed = result.metrics.cellsProcessed,
-                            difficulty = rating.level.displayName,
-                            techniquesUsed = rating.techniquesUsed
+                    } else {
+                        call.respond(
+                            SolveResponse(
+                                solved = false,
+                                error = "No solution found",
+                                metrics = SolverMetricsResponse(
+                                    solveTimeMs = result.metrics.totalSolveTimeNanos / 1_000_000.0,
+                                    backtrackingCount = result.metrics.backtrackingCount,
+                                    maxRecursionDepth = result.metrics.maxRecursionDepth,
+                                    propagationPasses = result.metrics.propagationPasses,
+                                    cellsProcessed = result.metrics.cellsProcessed,
+                                    difficulty = rating.level.displayName,
+                                    techniquesUsed = rating.techniquesUsed
+                                )
+                            )
                         )
-                    )
-                )
-            }
-        } else {
-            val solver = Solver()
-            val solvedBoard = solver.solve(board)
+                    }
+                } else {
+                    val solver = Solver()
+                    val solvedBoard = solver.solve(board)
 
-            if (solvedBoard != null) {
-                call.respond(
-                    SolveResponse(
-                        solved = true,
-                        solution = boardToString(solvedBoard)
-                    )
-                )
-            } else {
-                call.respond(
-                    SolveResponse(
-                        solved = false,
-                        error = "No solution found"
-                    )
-                )
+                    if (solvedBoard != null) {
+                        call.respond(
+                            SolveResponse(
+                                solved = true,
+                                solution = boardToString(solvedBoard)
+                            )
+                        )
+                    } else {
+                        call.respond(
+                            SolveResponse(
+                                solved = false,
+                                error = "No solution found"
+                            )
+                        )
+                    }
+                }
             }
+        } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
+            call.respond(
+                HttpStatusCode.RequestTimeout,
+                SolveResponse(
+                    solved = false,
+                    error = "Solving timed out after ${SOLVE_TIMEOUT_MS / 1000}s. The puzzle may have multiple solutions or is too complex."
+                )
+            )
         }
     }
 }

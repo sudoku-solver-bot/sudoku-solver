@@ -114,6 +114,8 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
      * @return The solved board, or null if no solution exists
      */
     private fun solveInternal(board: Board, depth: Int, listener: SolvingListener): Board? {
+        // Safety: prevent infinite recursion on multi-solution or degenerate puzzles
+        if (depth > config.maxRecursionDepth) return null
         if (!board.isValid()) return null
         if (board.isSolved()) return board
 
