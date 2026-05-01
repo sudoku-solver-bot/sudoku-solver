@@ -303,8 +303,8 @@
           @update="onCellUpdate"
           @select="selectCell"
           @navigate="navigateToCell"
-          @undo="undo"
-          @redo="redo"
+          @undo="undoAction"
+          @redo="redoAction"
         />
 
         <!-- Mobile number pad (right below grid) -->
@@ -335,8 +335,8 @@
           @print="handlePrint"
           @share-image="handleShareImage"
           @hint="getHint"
-          @undo="undo"
-          @redo="redo"
+          @undo="undoAction"
+          @redo="redoAction"
           @toggle-candidates="showCandidates = !showCandidates"
         />
 
@@ -597,14 +597,14 @@ const handleKeyDown = (e) => {
   // Ctrl+Z / Cmd+Z for undo
   if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
     e.preventDefault()
-    undo()
+    undoAction()
     return
   }
 
   // Ctrl+Y / Cmd+Shift+Z for redo
   if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
     e.preventDefault()
-    redo()
+    redoAction()
     return
   }
 
@@ -998,14 +998,6 @@ const redoAction = async () => {
   } catch (e) {
     showToast('Error', 'Failed to redo: ' + e.message, 'error', true, redoAction)
   }
-}
-
-const undo = () => {
-  undoAction()
-}
-
-const redo = () => {
-  redoAction()
 }
 
 // Solve the puzzle

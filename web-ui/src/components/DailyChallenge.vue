@@ -221,7 +221,7 @@ const onCellSelect = (index: number): void => {
   selectedCell.value = index
 }
 
-const handleClick = (e: MouseEvent): void => {
+const handleClick = (e: Event): void => {
   // Deselect and close pad when tapping outside grid/pad
   const target = (e.target as HTMLElement).closest('.grid, .number-bar, .bar-btn, .pad-btn')
   if (!target) {
