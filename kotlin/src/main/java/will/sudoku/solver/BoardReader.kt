@@ -45,9 +45,12 @@ class BoardReader {
          * @throws ValidationException if format is invalid
          */
         private fun validateAndParseBoard(string: String): IntArray {
+            // Normalize input: treat '0' as empty cell (same as '.')
+            val normalized = string.replace('0', '.')
+
             // Remove separators and count valid cells
             val validValues = sequence {
-                string.forEach { c ->
+                normalized.forEach { c ->
                     // Check if character is valid (symbol or separator)
                     if (c in symbols || c == '!' || c == '-' || c.isWhitespace()) {
                         if (c in symbols) {
@@ -58,7 +61,7 @@ class BoardReader {
                     } else {
                         // Unknown character found
                         throw ValidationException(
-                            "Invalid character '$c' found. Allowed characters: 1-9, '.', '!', '-'",
+                            "Invalid character '$c' found. Allowed characters: 0-9, '.', '!', '-'",
                             input = string
                         )
                     }

@@ -5,7 +5,7 @@
     "title": "Naked Single",
     "belt": "white",
     "beltColor": "#E0E0E0",
-    "beltEmoji": "\u2b1c",
+    "beltEmoji": "⬜",
     "beltName": "White Belt",
     "description": "When a cell has only ONE candidate left, that must be the answer!",
     "concept": "After eliminating all numbers that appear in the same row, column, and 3x3 box, if a cell has only ONE candidate remaining, that is the only possibility.",
@@ -15,13 +15,13 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Welcome to your first Sudoku lesson! \ud83c\udf89 Look at the empty cells \u2014 each one shows tiny 'pencil marks' (candidates). These are all the numbers that COULD go in that cell."
+        "text": "Welcome to your first Sudoku lesson! 🎉 Look at the empty cells — each one shows tiny 'pencil marks' (candidates). These are all the numbers that COULD go in that cell."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "A 'Naked Single' happens when all numbers except ONE have been eliminated from a cell. You can see it in the pencil marks \u2014 the cell has only one tiny number left!"
+        "text": "A 'Naked Single' happens when all numbers except ONE have been eliminated from a cell. You can see it in the pencil marks — the cell has only one tiny number left!"
       },
       {
         "order": 3,
@@ -56,7 +56,7 @@
           20
         ],
         "highlightColor": "red",
-        "text": "After checking row + column + box, every number except 8 has been eliminated. Only ONE candidate remains — that's a Naked Single! \ud83c\udfaf"
+        "text": "After checking row + column + box, every number except 8 has been eliminated. Only ONE candidate remains — that's a Naked Single! 🎯"
       },
       {
         "order": 6,
@@ -65,7 +65,7 @@
           20
         ],
         "highlightColor": "green",
-        "text": "A Naked Single is the simplest technique \u2014 when only one number can possibly fit. As you solve more cells, more naked singles appear! \u2705",
+        "text": "A Naked Single is the simplest technique — when only one number can possibly fit. As you solve more cells, more naked singles appear! ✅",
         "eliminatedValue": 8
       }
     ]
@@ -76,17 +76,17 @@
     "title": "Hidden Single",
     "belt": "yellow",
     "beltColor": "#FFD700",
-    "beltEmoji": "\ud83d\udfe1",
+    "beltEmoji": "🟡",
     "beltName": "Yellow Belt",
     "description": "When a number can only go in ONE place within a row, column, or box.",
-    "concept": "Even if a cell has multiple candidates, a specific number might be 'hidden' \u2014 it can only go in ONE cell within a row, column, or box.",
+    "concept": "Even if a cell has multiple candidates, a specific number might be 'hidden' — it can only go in ONE cell within a row, column, or box.",
     "examplePuzzle": ".........9.46.7....768.41..3.97.1.8...8...3...5.3.87.2..75.261....4.32.8.........",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Great job on your White Belt! \ud83c\udf1f A 'Hidden Single' is when a number can only go in ONE cell in a row/column/box, even though that cell has other candidates."
+        "text": "Great job on your White Belt! 🌟 A 'Hidden Single' is when a number can only go in ONE cell in a row/column/box, even though that cell has other candidates."
       },
       {
         "order": 2,
@@ -128,7 +128,7 @@
           7
         ],
         "highlightColor": "green",
-        "text": "After checking rows, columns, AND boxes \u2014 6 can only go in ONE cell! Even though this cell has other candidates, 6 is 'hidden' here. \ud83c\udfaf"
+        "text": "After checking rows, columns, AND boxes — 6 can only go in ONE cell! Even though this cell has other candidates, 6 is 'hidden' here. 🎯"
       },
       {
         "order": 6,
@@ -137,7 +137,7 @@
           7
         ],
         "highlightColor": "green",
-        "text": "Scan each row, column, and box asking: 'Where can number X go?' If only ONE place \u2014 that's a Hidden Single! \u2705",
+        "text": "Scan each row, column, and box asking: 'Where can number X go?' If only ONE place — that's a Hidden Single! ✅",
         "eliminatedValue": 6
       }
     ]
@@ -148,7 +148,7 @@
     "title": "Naked Pair",
     "belt": "orange",
     "beltColor": "#FF8C00",
-    "beltEmoji": "\ud83d\udfe0",
+    "beltEmoji": "🟠",
     "beltName": "Orange Belt",
     "description": "When two cells in the same group have the same two candidates, eliminate those numbers from other cells.",
     "concept": "If two cells in a row, column, or box have exactly the same two candidates, those two numbers MUST occupy those two cells. Remove them from all other cells in the group!",
@@ -158,7 +158,7 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Orange Belt time! \ud83e\udde1 Naked Pairs let you eliminate candidates even when you can't place a number yet."
+        "text": "Orange Belt time! 🧡 Naked Pairs let you eliminate candidates even when you can't place a number yet."
       },
       {
         "order": 2,
@@ -168,7 +168,7 @@
           2
         ],
         "highlightColor": "yellow",
-        "text": "Look at row 1 \u2014 these two highlighted cells. They both have the same two candidates!"
+        "text": "Look at row 1 — these two highlighted cells. They both have the same two candidates!"
       },
       {
         "order": 3,
@@ -198,7 +198,7 @@
           2
         ],
         "highlightColor": "green",
-        "text": "These cells are ALSO in the same 3x3 box! Eliminate from the box too. \ud83c\udfaf"
+        "text": "These cells are ALSO in the same 3x3 box! Eliminate from the box too. 🎯"
       },
       {
         "order": 6,
@@ -208,7 +208,7 @@
           2
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Find two cells with the same 2 candidates, eliminate those numbers from peers. Often creates new singles nearby!",
+        "text": "🎉 Find two cells with the same 2 candidates, eliminate those numbers from peers. Often creates new singles nearby!",
         "eliminatedValue": 1
       }
     ]
@@ -219,23 +219,23 @@
     "title": "Hidden Pair",
     "belt": "orange",
     "beltColor": "#FF8C00",
-    "beltEmoji": "\ud83d\udfe0",
+    "beltEmoji": "🟠",
     "beltName": "Orange Belt",
     "description": "When two numbers can only go in the same two cells, remove other candidates from those cells.",
     "concept": "If two numbers can only appear in the same two cells within a group, those cells can only contain those two numbers. Remove all OTHER candidates!",
-    "examplePuzzle": ".........9.46.7....768.41..3.97.1.8...8...3...5.3.87.2..75.261....4.32.8.........",
+    "examplePuzzle": ".28.6.5973.5..8.627.642518.87123..452..614..96...872....78...16.8....35..6.351..8",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Staying Orange! \ud83e\udde1 Hidden Pairs are the opposite of Naked Pairs. We find two numbers that share the same two cells."
+        "text": "Staying Orange! 🧡 Hidden Pairs are the opposite of Naked Pairs. We find two numbers that share the same two cells."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "Check: 'Where can 6 go in this row?' And 'Where can 7 go?' If BOTH numbers can ONLY go in the same two cells \u2014 Hidden Pair!"
+        "text": "Check: 'Where can 6 go in this row?' And 'Where can 7 go?' If BOTH numbers can ONLY go in the same two cells — Hidden Pair!"
       },
       {
         "order": 3,
@@ -278,7 +278,7 @@
           32
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Hidden Pairs clear extra candidates, often revealing singles! Scan for two numbers sharing only two cells.",
+        "text": "🎉 Hidden Pairs clear extra candidates, often revealing singles! Scan for two numbers sharing only two cells.",
         "eliminatedValue": 6
       }
     ]
@@ -289,17 +289,17 @@
     "title": "Pointing Pair / Triple",
     "belt": "green",
     "beltColor": "#34A853",
-    "beltEmoji": "\ud83d\udfe2",
+    "beltEmoji": "🟢",
     "beltName": "Green Belt",
     "description": "When candidates in a box are aligned on one row or column, eliminate them from the rest of that line.",
     "concept": "If all instances of a number within a box fall on the same row or column, that number can't appear anywhere else on that row/column outside the box.",
-    "examplePuzzle": ".1.9.36......8....9.....5.7..2.1.43....4.2....64.7.2..7.1.....5....3......56.1.2.",
+    "examplePuzzle": "..41.....6...4..3...17.6..4....7...8.....2.......1.96.1.2...3.6476.....9..58.....",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Green Belt! \ud83d\udfe2 Pointing Pairs connect boxes to rows/columns. When all candidates of a number in a box line up on one row, they 'point' at eliminations outside."
+        "text": "Green Belt! 🟢 Pointing Pairs connect boxes to rows/columns. When all candidates of a number in a box line up on one row, they 'point' at eliminations outside."
       },
       {
         "order": 2,
@@ -309,7 +309,7 @@
           26
         ],
         "highlightColor": "yellow",
-        "text": "In box 3 (top-right), the number 3 only appears in these two cells \u2014 both on the same row! The pair 'points' along the row."
+        "text": "In box 3 (top-right), the number 3 only appears in these two cells — both on the same row! The pair 'points' along the row."
       },
       {
         "order": 3,
@@ -333,7 +333,7 @@
         "order": 5,
         "type": "explain",
         "cells": [],
-        "text": "Pointing Triples work the same way \u2014 just three cells instead of two, all in the same box and aligned on one row or column."
+        "text": "Pointing Triples work the same way — just three cells instead of two, all in the same box and aligned on one row or column."
       },
       {
         "order": 6,
@@ -343,7 +343,7 @@
           26
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Pointing Pairs bridge boxes and rows! Find a number constrained to one line in a box, then eliminate from the rest of that line.",
+        "text": "🎉 Pointing Pairs bridge boxes and rows! Find a number constrained to one line in a box, then eliminate from the rest of that line.",
         "eliminatedValue": 3
       }
     ]
@@ -354,7 +354,7 @@
     "title": "Box/Line Reduction",
     "belt": "green",
     "beltColor": "#34A853",
-    "beltEmoji": "\ud83d\udfe2",
+    "beltEmoji": "🟢",
     "beltName": "Green Belt",
     "description": "When all candidates in a row/column fall in the same box, eliminate from the rest of the box.",
     "concept": "The reverse of Pointing Pairs! If all candidates of a number in a row or column fall within one box, eliminate that number from the rest of the box.",
@@ -364,7 +364,7 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Still Green! \ud83d\udfe2 Box/Line Reduction is the flip side of Pointing Pairs. The row points at the box this time."
+        "text": "Still Green! 🟢 Box/Line Reduction is the flip side of Pointing Pairs. The row points at the box this time."
       },
       {
         "order": 2,
@@ -391,7 +391,7 @@
           4
         ],
         "highlightColor": "yellow",
-        "text": "All candidates for 2 in row 1 are in these two cells \u2014 both in box 2 (top-center)!"
+        "text": "All candidates for 2 in row 1 are in these two cells — both in box 2 (top-center)!"
       },
       {
         "order": 4,
@@ -418,7 +418,7 @@
           4
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Box/Line Reduction clears candidates from a box when a row or column constrains them. Combined with Pointing Pairs, these are your intersection tools!",
+        "text": "🎉 Box/Line Reduction clears candidates from a box when a row or column constrains them. Combined with Pointing Pairs, these are your intersection tools!",
         "eliminatedValue": 2
       }
     ]
@@ -429,7 +429,7 @@
     "title": "Naked Triple",
     "belt": "blue",
     "beltColor": "#4285F4",
-    "beltEmoji": "\ud83d\udd35",
+    "beltEmoji": "🔵",
     "beltName": "Blue Belt",
     "description": "When three cells in a group share exactly three candidates total, eliminate those numbers from other cells.",
     "concept": "Like Naked Pairs but with three cells and three candidates. Each cell can have 2-3 of the numbers, but together they only use three numbers total.",
@@ -439,7 +439,7 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Blue Belt! \ud83d\udd35 Naked Triples extend the Pair concept to three cells sharing three candidate numbers total."
+        "text": "Blue Belt! 🔵 Naked Triples extend the Pair concept to three cells sharing three candidate numbers total."
       },
       {
         "order": 2,
@@ -456,7 +456,7 @@
         "order": 3,
         "type": "explain",
         "cells": [],
-        "text": "A Naked Triple can be {5,8,9} {5,8} {5,9} \u2014 different subsets in each cell, but only three unique numbers total."
+        "text": "A Naked Triple can be {5,8,9} {5,8} {5,9} — different subsets in each cell, but only three unique numbers total."
       },
       {
         "order": 4,
@@ -478,7 +478,7 @@
           41
         ],
         "highlightColor": "green",
-        "text": "This often triggers a chain reaction \u2014 removing candidates here may create naked singles or pairs elsewhere!"
+        "text": "This often triggers a chain reaction — removing candidates here may create naked singles or pairs elsewhere!"
       },
       {
         "order": 6,
@@ -489,7 +489,7 @@
           38
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Same logic as Pairs \u2014 three numbers locked in three cells. The key: only three unique candidates across all three cells total.",
+        "text": "🎉 Same logic as Pairs — three numbers locked in three cells. The key: only three unique candidates across all three cells total.",
         "eliminatedValue": 5
       }
     ]
@@ -500,7 +500,7 @@
     "title": "Hidden Triple",
     "belt": "blue",
     "beltColor": "#4285F4",
-    "beltEmoji": "\ud83d\udd35",
+    "beltEmoji": "🔵",
     "beltName": "Blue Belt",
     "description": "When three numbers can only go in three cells, remove other candidates from those cells.",
     "concept": "If three specific numbers can only appear in three cells within a group, remove all OTHER candidates from those cells. The triple was hidden by extra candidates.",
@@ -510,7 +510,7 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Still Blue! \ud83d\udd35 Hidden Triples are trickier. We find three numbers that can only go in three cells, then strip away the disguise."
+        "text": "Still Blue! 🔵 Hidden Triples are trickier. We find three numbers that can only go in three cells, then strip away the disguise."
       },
       {
         "order": 2,
@@ -527,7 +527,7 @@
           8
         ],
         "highlightColor": "blue",
-        "text": "Look at row 1 \u2014 many candidates. Find three numbers that share exactly three cells."
+        "text": "Look at row 1 — many candidates. Find three numbers that share exactly three cells."
       },
       {
         "order": 3,
@@ -555,7 +555,7 @@
         "order": 5,
         "type": "explain",
         "cells": [],
-        "text": "After stripping away the extra candidates, the triple becomes a naked triple \u2014 and may lead to further eliminations."
+        "text": "After stripping away the extra candidates, the triple becomes a naked triple — and may lead to further eliminations."
       },
       {
         "order": 6,
@@ -566,7 +566,7 @@
           8
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Hidden Triples clear away disguise candidates, often leaving naked pairs or singles! Hard to spot but very rewarding.",
+        "text": "🎉 Hidden Triples clear away disguise candidates, often leaving naked pairs or singles! Hard to spot but very rewarding.",
         "eliminatedValue": 2
       }
     ]
@@ -577,7 +577,7 @@
     "title": "X-Wing",
     "belt": "purple",
     "beltColor": "#9C27B0",
-    "beltEmoji": "\ud83d\udfe3",
+    "beltEmoji": "🟣",
     "beltName": "Purple Belt",
     "description": "When a number appears in exactly two cells in two rows, and those cells share the same two columns.",
     "concept": "An X-Wing forms a rectangle: a number appears in exactly 2 cells in each of 2 rows, and those cells are in the same 2 columns. Eliminate that number from the rest of those columns!",
@@ -587,13 +587,13 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Purple Belt! \ud83d\udfe3 X-Wing is your first 'fish' pattern \u2014 looking at a single number across the ENTIRE board."
+        "text": "Purple Belt! 🟣 X-Wing is your first 'fish' pattern — looking at a single number across the ENTIRE board."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "An X-Wing forms when a candidate appears in exactly 2 cells in each of 2 rows, and those cells share the same 2 columns \u2014 forming a rectangle."
+        "text": "An X-Wing forms when a candidate appears in exactly 2 cells in each of 2 rows, and those cells share the same 2 columns — forming a rectangle."
       },
       {
         "order": 3,
@@ -613,7 +613,7 @@
           52
         ],
         "highlightColor": "yellow",
-        "text": "In another row, 7 also appears in exactly two cells \u2014 in the SAME columns 2 and 8! We have a rectangle of 7s."
+        "text": "In another row, 7 also appears in exactly two cells — in the SAME columns 2 and 8! We have a rectangle of 7s."
       },
       {
         "order": 5,
@@ -637,7 +637,7 @@
           52
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 X-Wing is the gateway to fish patterns! The same logic works with columns \u2192 rows. Look for rectangles of a single candidate.",
+        "text": "🎉 X-Wing is the gateway to fish patterns! The same logic works with columns → rows. Look for rectangles of a single candidate.",
         "eliminatedValue": 7
       }
     ]
@@ -648,23 +648,23 @@
     "title": "Swordfish",
     "belt": "purple",
     "beltColor": "#9C27B0",
-    "beltEmoji": "\ud83d\udfe3",
+    "beltEmoji": "🟣",
     "beltName": "Purple Belt",
-    "description": "Like X-Wing but with three rows and three columns \u2014 the bigger fish!",
+    "description": "Like X-Wing but with three rows and three columns — the bigger fish!",
     "concept": "Swordfish extends X-Wing to 3 rows/columns. If a candidate appears in exactly 2-3 cells in each of 3 rows, and all candidates lie in just 3 columns, eliminate from the rest of those columns.",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "examplePuzzle": ".5916......7....9...6....7..647..9.....8..71.......834.25...1....8.7......36.....",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Still Purple! \ud83d\udfe3 Swordfish is X-Wing's bigger sibling. Instead of 2 rows \u00d7 2 columns, it uses 3 rows \u00d7 3 columns."
+        "text": "Still Purple! 🟣 Swordfish is X-Wing's bigger sibling. Instead of 2 rows × 2 columns, it uses 3 rows × 3 columns."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "If a candidate appears in 2-3 cells in each of 3 rows, and ALL those candidates fall within just 3 columns \u2014 that's a Swordfish!"
+        "text": "If a candidate appears in 2-3 cells in each of 3 rows, and ALL those candidates fall within just 3 columns — that's a Swordfish!"
       },
       {
         "order": 3,
@@ -704,7 +704,7 @@
           12
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Swordfish, X-Wing, and Jellyfish (4\u00d74) are all fish patterns. The bigger the fish, the harder to spot \u2014 but the elimination power is the same!",
+        "text": "🎉 Swordfish, X-Wing, and Jellyfish (4×4) are all fish patterns. The bigger the fish, the harder to spot — but the elimination power is the same!",
         "eliminatedValue": 1
       }
     ]
@@ -715,23 +715,23 @@
     "title": "XY-Wing (Y-Wing)",
     "belt": "brown",
     "beltColor": "#795548",
-    "beltEmoji": "\ud83d\udfe4",
+    "beltEmoji": "🟤",
     "beltName": "Brown Belt",
-    "description": "Three cells with candidates {AB}, {AC}, {BC} \u2014 eliminate C from cells that see both pincers.",
+    "description": "Three cells with candidates {AB}, {AC}, {BC} — eliminate C from cells that see both pincers.",
     "concept": "An XY-Wing uses three cells: a 'pivot' with {A,B}, and two 'pincers' with {A,C} and {B,C}. Whatever A or B the pivot is, C must appear in one of the pincers. Eliminate C from any cell that sees BOTH pincers.",
-    "examplePuzzle": ".345.....8.2.6.4..6....8.....39....4.5.....9.9....58.....3....8..1.4.6.5.....712.",
+    "examplePuzzle": "...31.........713....5..4.........48765...91.......563...67...4...25........4..71",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Brown Belt! \ud83d\udfe4 XY-Wing (also called Y-Wing) uses three cells with overlapping candidates to eliminate a number."
+        "text": "Brown Belt! 🟤 XY-Wing (also called Y-Wing) uses three cells with overlapping candidates to eliminate a number."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "Find a 'pivot' cell with exactly 2 candidates {A,B}. Then find two 'pincer' cells \u2014 one with {A,C} and one with {B,C}. The pincers must see the pivot."
+        "text": "Find a 'pivot' cell with exactly 2 candidates {A,B}. Then find two 'pincer' cells — one with {A,C} and one with {B,C}. The pincers must see the pivot."
       },
       {
         "order": 3,
@@ -740,7 +740,7 @@
           40
         ],
         "highlightColor": "blue",
-        "text": "This highlighted cell is our pivot. It has exactly two candidates \u2014 say {A, B}."
+        "text": "This highlighted cell is our pivot. It has exactly two candidates — say {A, B}."
       },
       {
         "order": 4,
@@ -750,7 +750,7 @@
           58
         ],
         "highlightColor": "yellow",
-        "text": "These two cells are our pincers \u2014 one shares candidate A with the pivot, the other shares B. Both also contain a common candidate C."
+        "text": "These two cells are our pincers — one shares candidate A with the pivot, the other shares B. Both also contain a common candidate C."
       },
       {
         "order": 5,
@@ -766,7 +766,7 @@
           58
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 XY-Wing is powerful! Find the pivot with 2 candidates, locate the pincers, then eliminate from cells seeing both pincers.",
+        "text": "🎉 XY-Wing is powerful! Find the pivot with 2 candidates, locate the pincers, then eliminate from cells seeing both pincers.",
         "eliminatedValue": 1
       }
     ]
@@ -777,17 +777,17 @@
     "title": "XYZ-Wing",
     "belt": "brown",
     "beltColor": "#795548",
-    "beltEmoji": "\ud83d\udfe4",
+    "beltEmoji": "🟤",
     "beltName": "Brown Belt",
-    "description": "Like XY-Wing but the pivot has three candidates \u2014 even more powerful!",
+    "description": "Like XY-Wing but the pivot has three candidates — even more powerful!",
     "concept": "An XYZ-Wing has a pivot with {A,B,C} and two pincers: one with {A,C} and one with {B,C}. The shared candidate C can be eliminated from any cell that sees all three cells.",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "examplePuzzle": ".2...59.661829........7..1.........13.......8..9....2....5.....8.6....349..8..25.",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Still Brown! \ud83d\udfe4 XYZ-Wing is XY-Wing's bigger cousin. The pivot now has THREE candidates instead of two."
+        "text": "Still Brown! 🟤 XYZ-Wing is XY-Wing's bigger cousin. The pivot now has THREE candidates instead of two."
       },
       {
         "order": 2,
@@ -822,7 +822,7 @@
           12
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 XYZ-Wing extends XY-Wing logic. Master both and you have a powerful toolkit for eliminating candidates in tough puzzles!",
+        "text": "🎉 XYZ-Wing extends XY-Wing logic. Master both and you have a powerful toolkit for eliminating candidates in tough puzzles!",
         "eliminatedValue": 1
       }
     ]
@@ -833,23 +833,23 @@
     "title": "Unique Rectangle",
     "belt": "black",
     "beltColor": "#333333",
-    "beltEmoji": "\u2b1b",
+    "beltEmoji": "⬛",
     "beltName": "Black Belt",
-    "description": "Avoid deadly patterns \u2014 if four cells form a rectangle with the same pair, one must be different.",
-    "concept": "Valid Sudoku puzzles have exactly one solution. If four cells form a rectangle (2 rows \u00d7 2 cols, same 2 boxes) and all contain the same two candidates, that creates multiple solutions. One cell must have an extra candidate!",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "description": "Avoid deadly patterns — if four cells form a rectangle with the same pair, one must be different.",
+    "concept": "Valid Sudoku puzzles have exactly one solution. If four cells form a rectangle (2 rows × 2 cols, same 2 boxes) and all contain the same two candidates, that creates multiple solutions. One cell must have an extra candidate!",
+    "examplePuzzle": "......7.2...4..3...39.....8...95...682....9...65..82........6.95...67..3....9..8.",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Black Belt! \u2b1b Unique Rectangles use a powerful meta-rule: every valid Sudoku has exactly ONE solution."
+        "text": "Black Belt! ⬛ Unique Rectangles use a powerful meta-rule: every valid Sudoku has exactly ONE solution."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "If four cells form a rectangle (2 rows, 2 columns, 2 boxes) and all contain the same pair {X,Y}, then X and Y could swap \u2014 TWO solutions! This is forbidden."
+        "text": "If four cells form a rectangle (2 rows, 2 columns, 2 boxes) and all contain the same pair {X,Y}, then X and Y could swap — TWO solutions! This is forbidden."
       },
       {
         "order": 3,
@@ -867,7 +867,7 @@
         "order": 4,
         "type": "explain",
         "cells": [],
-        "text": "The extra candidates in the fourth cell break the deadly pattern! So that cell CANNOT be just {X,Y} \u2014 one of the extra candidates must be the answer."
+        "text": "The extra candidates in the fourth cell break the deadly pattern! So that cell CANNOT be just {X,Y} — one of the extra candidates must be the answer."
       },
       {
         "order": 5,
@@ -891,7 +891,7 @@
           13
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Unique Rectangles use Sudoku's one-solution rule to eliminate candidates. Look for rectangular patterns with matching pairs!",
+        "text": "🎉 Unique Rectangles use Sudoku's one-solution rule to eliminate candidates. Look for rectangular patterns with matching pairs!",
         "eliminatedValue": 1
       }
     ]
@@ -902,23 +902,23 @@
     "title": "Simple Coloring",
     "belt": "black",
     "beltColor": "#333333",
-    "beltEmoji": "\u2b1b",
+    "beltEmoji": "⬛",
     "beltName": "Black Belt",
     "description": "Color conjugate pairs to find contradictions and eliminate candidates.",
     "concept": "When a candidate appears in exactly two cells in a group (a conjugate pair), we can 'color' them alternately. If a color creates a contradiction (same color appears twice in a group), eliminate all cells of that color.",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "examplePuzzle": ".....5..........5.145.67.....8....47..1....6...9...81..56284...2.4.3....8.3......",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Black Belt coloring! \u2b1b When a number appears in only 2 cells in a group, those cells form a 'conjugate pair' \u2014 one is the answer, the other isn't."
+        "text": "Black Belt coloring! ⬛ When a number appears in only 2 cells in a group, those cells form a 'conjugate pair' — one is the answer, the other isn't."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "Color one cell blue (ON) and the other red (OFF). Follow the chain \u2014 each conjugate cell gets the opposite color."
+        "text": "Color one cell blue (ON) and the other red (OFF). Follow the chain — each conjugate cell gets the opposite color."
       },
       {
         "order": 3,
@@ -936,7 +936,7 @@
           6
         ],
         "highlightColor": "yellow",
-        "text": "Follow the chain \u2014 this cell gets the opposite color (red/OFF). Keep following through more conjugate pairs."
+        "text": "Follow the chain — this cell gets the opposite color (red/OFF). Keep following through more conjugate pairs."
       },
       {
         "order": 5,
@@ -952,7 +952,7 @@
           6
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Coloring chains are powerful for hard puzzles. Color conjugate pairs alternately, find contradictions, and eliminate the impossible color!",
+        "text": "🎉 Coloring chains are powerful for hard puzzles. Color conjugate pairs alternately, find contradictions, and eliminate the impossible color!",
         "eliminatedValue": 1
       }
     ]
@@ -963,17 +963,17 @@
     "title": "W-Wing",
     "belt": "black",
     "beltColor": "#333333",
-    "beltEmoji": "\u2b1b",
+    "beltEmoji": "⬛",
     "beltName": "Black Belt",
     "description": "Two cells with the same pair linked by a conjugate pair in a third group.",
     "concept": "A W-Wing finds two cells with the same two candidates {X,Y}. If they're connected by a conjugate pair of X (or Y) in a shared row/column/box, then Y (or X) can be eliminated from cells that see both endpoints.",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "examplePuzzle": ".98....7.3.........67..8.95.713.......394.7.....18.........9......5.341..3.6.....",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Last Black Belt technique! \u2b1b W-Wing is a chain pattern that connects two cells through a third group."
+        "text": "Last Black Belt technique! ⬛ W-Wing is a chain pattern that connects two cells through a third group."
       },
       {
         "order": 2,
@@ -997,7 +997,7 @@
         "order": 5,
         "type": "explain",
         "cells": [],
-        "text": "W-Wings are like a simplified forcing chain \u2014 they prove a number must be in one of two places without following a long chain."
+        "text": "W-Wings are like a simplified forcing chain — they prove a number must be in one of two places without following a long chain."
       },
       {
         "order": 6,
@@ -1007,7 +1007,7 @@
           8
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 W-Wing completes your Black Belt toolkit! Combined with Coloring and Unique Rectangles, you can tackle the hardest puzzles ever created!",
+        "text": "🎉 W-Wing completes your Black Belt toolkit! Combined with Coloring and Unique Rectangles, you can tackle the hardest puzzles ever created!",
         "eliminatedValue": 1
       }
     ]
@@ -1018,23 +1018,23 @@
     "title": "ALS-XZ",
     "belt": "master",
     "beltColor": "#FF6F00",
-    "beltEmoji": "\ud83c\udf93",
+    "beltEmoji": "🎓",
     "beltName": "Master Belt",
-    "description": "Two Almost Locked Sets sharing a restricted common \u2014 eliminate the other common.",
+    "description": "Two Almost Locked Sets sharing a restricted common — eliminate the other common.",
     "concept": "An Almost Locked Set (ALS) is N cells with N+1 candidates. When two ALS share a 'restricted common' candidate X (every cell with X in one ALS sees every cell with X in the other), and they also share another candidate Z, then Z can be eliminated from any cell that sees ALL cells with Z in both ALS.",
-    "examplePuzzle": "91......3..2..37.9.....4.86..93......2..5..7......89..27.4.....5.12..6..3......27",
+    "examplePuzzle": "654..2...........11.........1.......4..7.....7.38.1.24.9..2..4..4.59....8.6..4.9.",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "\ud83c\udf93 Master Belt! ALS-XZ is your first 'Almost Locked Set' technique. An ALS is a group of N cells that together have exactly N+1 candidates \u2014 almost locked, but one too many."
+        "text": "🎓 Master Belt! ALS-XZ is your first 'Almost Locked Set' technique. An ALS is a group of N cells that together have exactly N+1 candidates — almost locked, but one too many."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "Think of it like a Naked Pair {1,6} on 2 cells (that's locked \u2014 2 cells, 2 candidates). An ALS would be 2 cells with 3 candidates, like {1,6} and {1,6,8}. It's 'almost' a naked pair."
+        "text": "Think of it like a Naked Pair {1,6} on 2 cells (that's locked — 2 cells, 2 candidates). An ALS would be 2 cells with 3 candidates, like {1,6} and {1,6,8}. It's 'almost' a naked pair."
       },
       {
         "order": 3,
@@ -1044,7 +1044,7 @@
           36
         ],
         "highlightColor": "yellow",
-        "text": "These two highlighted cells form one ALS. Check their pencil marks \u2014 together they have N+1 candidates."
+        "text": "These two highlighted cells form one ALS. Check their pencil marks — together they have N+1 candidates."
       },
       {
         "order": 4,
@@ -1070,7 +1070,7 @@
           22
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 ALS-XZ extends XYZ-Wing logic to larger sets. Find two ALS that share a restricted common, then eliminate the other shared candidate. Very powerful for extreme puzzles!",
+        "text": "🎉 ALS-XZ extends XYZ-Wing logic to larger sets. Find two ALS that share a restricted common, then eliminate the other shared candidate. Very powerful for extreme puzzles!",
         "eliminatedValue": 4
       }
     ]
@@ -1081,17 +1081,17 @@
     "title": "Franken Fish",
     "belt": "master",
     "beltColor": "#FF6F00",
-    "beltEmoji": "\ud83c\udf93",
+    "beltEmoji": "🎓",
     "beltName": "Master Belt",
     "description": "Fish patterns that use boxes as part of the base or cover sets.",
     "concept": "Normal fish (X-Wing, Swordfish) use rows and columns. Franken Fish include 3x3 boxes as base or cover sets! If a candidate appears in a pattern using rows + boxes (or columns + boxes), you can eliminate from the cover set. It's like a fish that 'swims through boxes'.",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "examplePuzzle": "92...1.8.16....4.95...9......2...894.59..4....1.....7.........34....9.2....3...4.",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "\ud83c\udf93 Franken Fish! Remember X-Wing (2 rows, 2 columns)? And Swordfish (3 rows, 3 columns)? Franken Fish extends this by including 3x3 BOXES as part of the pattern."
+        "text": "🎓 Franken Fish! Remember X-Wing (2 rows, 2 columns)? And Swordfish (3 rows, 3 columns)? Franken Fish extends this by including 3x3 BOXES as part of the pattern."
       },
       {
         "order": 2,
@@ -1114,19 +1114,19 @@
           8
         ],
         "highlightColor": "blue",
-        "text": "This puzzle \u2014 the World's Hardest by Arto Inkala \u2014 requires advanced techniques like Franken Fish. The candidate distribution creates box-based fish patterns."
+        "text": "This puzzle — the World's Hardest by Arto Inkala — requires advanced techniques like Franken Fish. The candidate distribution creates box-based fish patterns."
       },
       {
         "order": 4,
         "type": "explain",
         "cells": [],
-        "text": "The key insight: treat a box like a 'virtual row'. If candidate X appears in rows 1, 4, and box 6, and all occurrences fall in columns 2, 5, 8 \u2014 that's a Franken Swordfish! Eliminate X from columns 2, 5, 8 outside the fish."
+        "text": "The key insight: treat a box like a 'virtual row'. If candidate X appears in rows 1, 4, and box 6, and all occurrences fall in columns 2, 5, 8 — that's a Franken Swordfish! Eliminate X from columns 2, 5, 8 outside the fish."
       },
       {
         "order": 5,
         "type": "explain",
         "cells": [],
-        "text": "Franken Fish are hard to spot because you have to think in rows/columns AND boxes simultaneously. But they follow the exact same elimination logic as regular fish \u2014 just with mixed house types."
+        "text": "Franken Fish are hard to spot because you have to think in rows/columns AND boxes simultaneously. But they follow the exact same elimination logic as regular fish — just with mixed house types."
       },
       {
         "order": 6,
@@ -1137,7 +1137,7 @@
           12
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Franken Fish are fish patterns that cross house types (rows + boxes or columns + boxes). Spot the candidate pattern, apply fish logic. Master-level pattern recognition!",
+        "text": "🎉 Franken Fish are fish patterns that cross house types (rows + boxes or columns + boxes). Spot the candidate pattern, apply fish logic. Master-level pattern recognition!",
         "eliminatedValue": 1
       }
     ]
@@ -1148,17 +1148,17 @@
     "title": "Mutant Fish",
     "belt": "master",
     "beltColor": "#FF6F00",
-    "beltEmoji": "\ud83c\udf93",
+    "beltEmoji": "🎓",
     "beltName": "Master Belt",
-    "description": "Fish patterns with mixed base and cover house types \u2014 the ultimate fish.",
+    "description": "Fish patterns with mixed base and cover house types — the ultimate fish.",
     "concept": "Mutant Fish generalize Franken Fish: the base set can mix rows, columns, AND boxes, and the cover set can too! Any valid one-to-one mapping between base houses and cover houses creates a fish. If candidate X in the base houses maps to specific cover houses, eliminate X from cover houses outside the fish.",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "examplePuzzle": "........9..97...6...8.5...3.5.......8.....7..3.7.12.8.9.15....7..3..1..6.6..9...4",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "\ud83c\udf93 Mutant Fish \u2014 the ultimate fish pattern! Franken Fish mix boxes into rows/columns. Mutant Fish go further: BOTH base and cover sets can be ANY mix of rows, columns, and boxes."
+        "text": "🎓 Mutant Fish — the ultimate fish pattern! Franken Fish mix boxes into rows/columns. Mutant Fish go further: BOTH base and cover sets can be ANY mix of rows, columns, and boxes."
       },
       {
         "order": 2,
@@ -1194,7 +1194,7 @@
           80
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Mutant Fish: any mix of rows, columns, and boxes in base + cover. The most general fish pattern. If you master this, you can solve literally any valid Sudoku!",
+        "text": "🎉 Mutant Fish: any mix of rows, columns, and boxes in base + cover. The most general fish pattern. If you master this, you can solve literally any valid Sudoku!",
         "eliminatedValue": 1
       }
     ]
@@ -1205,9 +1205,9 @@
     "title": "Death Blossom",
     "belt": "master",
     "beltColor": "#FF6F00",
-    "beltEmoji": "\ud83c\udf93",
+    "beltEmoji": "🎓",
     "beltName": "Master Belt",
-    "description": "A stem cell connects multiple petal ALS \u2014 eliminate shared candidates.",
+    "description": "A stem cell connects multiple petal ALS — eliminate shared candidates.",
     "concept": "Death Blossom uses a 'stem' cell (with N candidates) and N 'petal' ALS (one per stem candidate). Each petal must contain the stem's candidate and all share a common number Z. No matter which candidate the stem is, Z must appear in at least one petal. So eliminate Z from cells seeing ALL petals!",
     "examplePuzzle": "8..4.9...2...7.....5.2..3...428.1.3..3.....9..8.9.321...6..7.4.....2...1...6.4..3",
     "steps": [
@@ -1215,13 +1215,13 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "\ud83c\udf93 Death Blossom \u2014 one of the most beautiful techniques in Sudoku! It's like a flower: a 'stem' cell connects to multiple 'petal' ALS (Almost Locked Sets)."
+        "text": "🎓 Death Blossom — one of the most beautiful techniques in Sudoku! It's like a flower: a 'stem' cell connects to multiple 'petal' ALS (Almost Locked Sets)."
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "The stem cell has N candidates (say {2, 5, 7}). For each candidate, we find a petal ALS that must contain that number. Each petal is N cells with N+1 candidates \u2014 almost locked."
+        "text": "The stem cell has N candidates (say {2, 5, 7}). For each candidate, we find a petal ALS that must contain that number. Each petal is N cells with N+1 candidates — almost locked."
       },
       {
         "order": 3,
@@ -1244,7 +1244,7 @@
           47
         ],
         "highlightColor": "yellow",
-        "text": "These are the 'petals' \u2014 ALS groups that connect to the stem. Each petal contains one of the stem's candidates plus other values."
+        "text": "These are the 'petals' — ALS groups that connect to the stem. Each petal contains one of the stem's candidates plus other values."
       },
       {
         "order": 5,
@@ -1264,7 +1264,7 @@
           47
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Death Blossom: stem \u2192 petals \u2192 shared Z \u2192 elimination! It's ALS-XZ taken to the next level with multiple ALS. One of the most powerful techniques in existence!",
+        "text": "🎉 Death Blossom: stem → petals → shared Z → elimination! It's ALS-XZ taken to the next level with multiple ALS. One of the most powerful techniques in existence!",
         "eliminatedValue": 7
       }
     ]
@@ -1275,23 +1275,23 @@
     "title": "Forcing Chains",
     "belt": "master",
     "beltColor": "#FF6F00",
-    "beltEmoji": "\ud83c\udf93",
+    "beltEmoji": "🎓",
     "beltName": "Master Belt",
     "description": "Follow 'what if' chains to find contradictions and eliminate candidates.",
     "concept": "Forcing Chains test a hypothesis: 'If this cell is X, what happens?' Follow the cascade of deductions. If X leads to a contradiction (like a cell with no candidates), then X is impossible. If both values of a cell lead to the same result elsewhere, that result must be true!",
-    "examplePuzzle": "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4..",
+    "examplePuzzle": "3.1..6...7.......4..9.5.2.79...3..4.......9......49..1..4.1.392..3....8.....93...",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "\ud83c\udf93 Forcing Chains \u2014 the 'what if' technique! Sometimes logic alone can't crack a puzzle. You need to explore: 'What if this cell is 5? What if it's 7?'"
+        "text": "🎓 Forcing Chains — the 'what if' technique! Sometimes logic alone can't crack a puzzle. You need to explore: 'What if this cell is 5? What if it's 7?'"
       },
       {
         "order": 2,
         "type": "explain",
         "cells": [],
-        "text": "A Forcing Chain starts with a hypothesis. Pick a cell with 2 candidates, say {5,7}. Assume it's 5 \u2192 follow the cascade \u2192 see what happens. Then assume it's 7 \u2192 follow the cascade."
+        "text": "A Forcing Chain starts with a hypothesis. Pick a cell with 2 candidates, say {5,7}. Assume it's 5 → follow the cascade → see what happens. Then assume it's 7 → follow the cascade."
       },
       {
         "order": 3,
@@ -1306,7 +1306,7 @@
         "order": 4,
         "type": "explain",
         "cells": [],
-        "text": "There are two outcomes:\n1. Contradiction: If one assumption leads to an impossible board (empty candidate set), that assumption is WRONG \u2014 eliminate that candidate!\n2. Convergence: If BOTH assumptions lead to the same cell getting the same value, that value MUST be correct."
+        "text": "There are two outcomes:\n1. Contradiction: If one assumption leads to an impossible board (empty candidate set), that assumption is WRONG — eliminate that candidate!\n2. Convergence: If BOTH assumptions lead to the same cell getting the same value, that value MUST be correct."
       },
       {
         "order": 5,
@@ -1317,7 +1317,7 @@
           80
         ],
         "highlightColor": "blue",
-        "text": "Chains can be long \u2014 5, 10, even 20 steps! The chain follows bivalue cells (only 2 candidates), where choosing one forces the other cells one by one."
+        "text": "Chains can be long — 5, 10, even 20 steps! The chain follows bivalue cells (only 2 candidates), where choosing one forces the other cells one by one."
       },
       {
         "order": 6,
@@ -1328,7 +1328,7 @@
           80
         ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Forcing Chains are the ultimate fallback \u2014 when no pattern technique works, try 'what if'. If a chain leads to contradiction, eliminate! If both chains agree, trust the result!",
+        "text": "🎉 Forcing Chains are the ultimate fallback — when no pattern technique works, try 'what if'. If a chain leads to contradiction, eliminate! If both chains agree, trust the result!",
         "eliminatedValue": 1
       }
     ]
