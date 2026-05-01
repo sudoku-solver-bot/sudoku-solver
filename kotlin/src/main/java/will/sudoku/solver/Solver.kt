@@ -50,6 +50,10 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
     /**
      * Solves the given Sudoku puzzle with a listener for observing the process.
      *
+     * If the initial solve fails and uniqueness-assuming eliminators are in use,
+     * automatically falls back to basic eliminators to handle puzzles with
+     * multiple solutions (see #256).
+     *
      * @param board The puzzle board to solve
      * @param listener Listener to receive callbacks during solving
      * @return The solved board, or null if no solution exists
@@ -62,7 +66,17 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         
         listener.onPropagationPassStarted()
         
-        val result = solveInternal(board, 0, listener)
+        var result = solveInternal(board, 0, listener)
+        
+        // Fallback: if the main solver fails and we're using uniqueness-assuming
+        // eliminators (like UniqueRectangles), retry with basic eliminators.
+        // Uniqueness techniques can eliminate valid candidates from puzzles
+        // that have multiple solutions, causing false negatives.
+        if (result == null && config.usesUniquenessTechniques()) {
+            val fallbackConfig = SolverConfig.basic()
+            val fallbackSolver = Solver(fallbackConfig)
+            result = fallbackSolver.solve(board.copy(), NoOpListener)
+        }
         
         // Notify completion
         val timeNanos = System.nanoTime() - startTime
