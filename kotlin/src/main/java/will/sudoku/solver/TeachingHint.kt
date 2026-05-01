@@ -20,8 +20,21 @@ enum class HintType {
     POINTING_PAIR,
     BOX_LINE_REDUCTION,
     NAKED_PAIR,
+    NAKED_TRIPLE,
     HIDDEN_PAIR,
+    HIDDEN_TRIPLE,
     X_WING,
+    SWORDFISH,
+    XY_WING,
+    XYZ_WING,
+    W_WING,
+    SIMPLE_COLORING,
+    UNIQUE_RECTANGLE,
+    ALS_XZ,
+    FRANKEN_FISH,
+    MUTANT_FISH,
+    DEATH_BLOSSOM,
+    FORCING_CHAINS,
     ADVANCED
 }
 
@@ -29,32 +42,23 @@ enum class HintType {
  * Teaching hint provider.
  */
 class TeachingHintProvider {
-    
+
     fun getHint(board: Board): TeachingHint {
         // Try Naked Single (easiest)
         findNakedSingle(board)?.let { return it }
-        
-        // Try more advanced techniques via HintGenerator
+
+        // Try all techniques via HintGenerator
         val hintGenHint = HintGenerator.generate(board)
         if (hintGenHint != null) {
             return TeachingHint(
-                type = when (hintGenHint.technique) {
-                    HintGenerator.Technique.HIDDEN_SINGLE -> HintType.HIDDEN_SINGLE
-                    HintGenerator.Technique.NAKED_PAIR -> HintType.NAKED_PAIR
-                    HintGenerator.Technique.HIDDEN_PAIR -> HintType.HIDDEN_PAIR
-                    HintGenerator.Technique.NAKED_TRIPLE -> HintType.ADVANCED
-                    HintGenerator.Technique.HIDDEN_TRIPLE -> HintType.ADVANCED
-                    HintGenerator.Technique.X_WING -> HintType.X_WING
-                    HintGenerator.Technique.SWORDFISH -> HintType.ADVANCED
-                    HintGenerator.Technique.XY_WING -> HintType.ADVANCED
-                },
+                type = mapTechniqueToHintType(hintGenHint.technique),
                 cell = hintGenHint.coord,
                 technique = hintGenHint.technique.displayName,
                 explanation = hintGenHint.explanation,
                 teachingPoints = techniqueTeachingPoints(hintGenHint.technique)
             )
         }
-        
+
         // Default fallback hint
         return TeachingHint(
             type = HintType.ADVANCED,
@@ -68,7 +72,31 @@ class TeachingHintProvider {
             )
         )
     }
-    
+
+    private fun mapTechniqueToHintType(technique: HintGenerator.Technique): HintType {
+        return when (technique) {
+            HintGenerator.Technique.HIDDEN_SINGLE -> HintType.HIDDEN_SINGLE
+            HintGenerator.Technique.POINTING_PAIR -> HintType.POINTING_PAIR
+            HintGenerator.Technique.BOX_LINE_REDUCTION -> HintType.BOX_LINE_REDUCTION
+            HintGenerator.Technique.NAKED_PAIR -> HintType.NAKED_PAIR
+            HintGenerator.Technique.NAKED_TRIPLE -> HintType.NAKED_TRIPLE
+            HintGenerator.Technique.HIDDEN_PAIR -> HintType.HIDDEN_PAIR
+            HintGenerator.Technique.HIDDEN_TRIPLE -> HintType.HIDDEN_TRIPLE
+            HintGenerator.Technique.X_WING -> HintType.X_WING
+            HintGenerator.Technique.SWORDFISH -> HintType.SWORDFISH
+            HintGenerator.Technique.XY_WING -> HintType.XY_WING
+            HintGenerator.Technique.XYZ_WING -> HintType.XYZ_WING
+            HintGenerator.Technique.W_WING -> HintType.W_WING
+            HintGenerator.Technique.SIMPLE_COLORING -> HintType.SIMPLE_COLORING
+            HintGenerator.Technique.UNIQUE_RECTANGLE -> HintType.UNIQUE_RECTANGLE
+            HintGenerator.Technique.ALS_XZ -> HintType.ALS_XZ
+            HintGenerator.Technique.FRANKEN_FISH -> HintType.FRANKEN_FISH
+            HintGenerator.Technique.MUTANT_FISH -> HintType.MUTANT_FISH
+            HintGenerator.Technique.DEATH_BLOSSOM -> HintType.DEATH_BLOSSOM
+            HintGenerator.Technique.FORCING_CHAINS -> HintType.FORCING_CHAINS
+        }
+    }
+
     private fun findNakedSingle(board: Board): TeachingHint? {
         for (row in 0..8) {
             for (col in 0..8) {
@@ -94,7 +122,7 @@ class TeachingHintProvider {
         }
         return null
     }
-    
+
     private fun techniqueTeachingPoints(technique: HintGenerator.Technique): List<String> {
         return when (technique) {
             HintGenerator.Technique.HIDDEN_SINGLE -> listOf(
@@ -102,20 +130,50 @@ class TeachingHintProvider {
                 "Check each row, column, and box systematically",
                 "This is called a 'Hidden Single' — the number is hidden among other candidates"
             )
+            HintGenerator.Technique.POINTING_PAIR -> listOf(
+                "Look for a candidate that appears in only one row or column within a box",
+                "That candidate must go in that row/column in that box",
+                "Eliminate the candidate from that row/column in other boxes"
+            )
             HintGenerator.Technique.NAKED_PAIR -> listOf(
                 "Find two cells in the same row, column, or box with identical candidates",
                 "These two cells 'claim' those two numbers",
                 "Eliminate those numbers from other cells in the same group"
+            )
+            HintGenerator.Technique.NAKED_TRIPLE -> listOf(
+                "Find three cells in the same group whose candidates are a subset of three numbers",
+                "Those three cells claim those three numbers",
+                "Eliminate those three numbers from other cells in the group"
             )
             HintGenerator.Technique.HIDDEN_PAIR -> listOf(
                 "Find two numbers that appear only in the same two cells within a group",
                 "Those cells must contain those two numbers",
                 "Eliminate other candidates from those two cells"
             )
+            HintGenerator.Technique.HIDDEN_TRIPLE -> listOf(
+                "Find three numbers that appear only in the same three cells within a group",
+                "Those cells must contain those three numbers",
+                "Eliminate other candidates from those three cells"
+            )
             HintGenerator.Technique.X_WING -> listOf(
                 "Look for a number that appears in exactly 2 cells in each of 2 rows",
                 "These occurrences must align in the same 2 columns",
                 "Eliminate that number from other cells in those columns"
+            )
+            HintGenerator.Technique.SWORDFISH -> listOf(
+                "Extension of X-Wing to 3 rows/columns",
+                "Look for a number appearing in exactly 2-3 cells in 3 rows",
+                "If they align in the same 3 columns, eliminate from those columns in other rows"
+            )
+            HintGenerator.Technique.XY_WING -> listOf(
+                "Find a pivot cell with 2 candidates and two wing cells that see the pivot",
+                "Wings share one candidate with the pivot and have a common third candidate",
+                "Eliminate the common candidate from cells seeing both wings"
+            )
+            HintGenerator.Technique.XYZ_WING -> listOf(
+                "Find a pivot with 3 candidates and two bi-value wings that see the pivot",
+                "Wings share subsets of the pivot's candidates",
+                "Eliminate the common Z candidate from cells seeing all three"
             )
             else -> listOf(
                 "This is an advanced technique",
