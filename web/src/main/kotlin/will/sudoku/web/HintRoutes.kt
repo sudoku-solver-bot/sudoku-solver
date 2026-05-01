@@ -6,7 +6,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import will.sudoku.solver.*
+import will.sudoku.solver.Board
+import will.sudoku.solver.BoardReader
+import will.sudoku.solver.TeachingHintProvider
 
 @Serializable
 data class HintRequest(
@@ -33,18 +35,26 @@ fun Route.hintRoutes() {
 
     post("/hint") {
         val request = call.receive<HintRequest>()
-        
-        val puzzle = request.puzzle.filter { it.isDigit() }
-        if (puzzle.length != 81) {
+
+        // Validate puzzle string
+        val validation = PuzzleValidator.validate(request.puzzle)
+        if (!validation.valid) {
             return@post call.respond(
-                HttpStatusCode.BadRequest,
-                mapOf("error" to "Puzzle must be 81 characters")
+                PuzzleValidator.getHttpStatusCode(validation.errorCode!!),
+                mapOf("error" to validation.errorMessage)
             )
         }
-        
-        // Create board from puzzle string
-        val values = IntArray(81) { puzzle[it].digitToInt() }
-        val board = Board(values)
+
+        // Parse board using BoardReader for consistent format handling (accepts 0 and .)
+        val board: Board = try {
+            BoardReader.readBoard(request.puzzle)
+        } catch (e: Exception) {
+            return@post call.respond(
+                HttpStatusCode.BadRequest,
+                mapOf("error" to "Invalid puzzle: ${e.message}")
+            )
+        }
+
         val hint = hintProvider.getHint(board)
         
         call.respond(
