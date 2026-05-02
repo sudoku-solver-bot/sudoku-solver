@@ -42,34 +42,12 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
-    # Gets the download URL associated with the $DETEKT_RELEASE_TAG
-    - name: Get Detekt download URL
-      id: detekt_info
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        DETEKT_DOWNLOAD_URL=$( gh api graphql --field tagName=$DETEKT_RELEASE_TAG --raw-field query='
-          query getReleaseAssetDownloadUrl($tagName: String!) {
-            repository(name: "detekt", owner: "detekt") {
-              release(tagName: $tagName) {
-                releaseAssets(name: "detekt", first: 1) {
-                  nodes {
-                    downloadUrl
-                  }
-                }
-              }
-            }
-          }
-        ' | \
-        jq --raw-output '.data.repository.release.releaseAssets.nodes[0].downloadUrl' )
-        echo "download_url=$DETEKT_DOWNLOAD_URL" >> "$GITHUB_OUTPUT"
-
-    # Sets up the detekt cli
+    # Sets up the detekt cli using direct download URL
     - name: Setup Detekt
       run: |
         dest=$( mktemp -d )
         curl --request GET \
-          --url ${{ steps.detekt_info.outputs.download_url }} \
+          --url https://github.com/detekt/detekt/releases/download/${{ env.DETEKT_RELEASE_TAG }}/detekt \
           --silent \
           --location \
           --output $dest/detekt
