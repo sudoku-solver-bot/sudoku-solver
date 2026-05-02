@@ -42,17 +42,20 @@ jobs:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
 
-    # Sets up the detekt cli using direct download URL
+    # Sets up the detekt cli by downloading the all-in-one JAR and creating a wrapper script
     - name: Setup Detekt
       run: |
         dest=$( mktemp -d )
+        DETEKT_VERSION="${DETEKT_RELEASE_TAG#v}"
         curl --request GET \
-          --url https://github.com/detekt/detekt/releases/download/${{ env.DETEKT_RELEASE_TAG }}/detekt \
+          --url "https://github.com/detekt/detekt/releases/download/${DETEKT_RELEASE_TAG}/detekt-cli-${DETEKT_VERSION}-all.jar" \
           --silent \
           --location \
-          --output $dest/detekt
-        chmod a+x $dest/detekt
-        echo $dest >> $GITHUB_PATH
+          --output "$dest/detekt-cli-all.jar"
+        echo '#!/bin/bash' > "$dest/detekt"
+        echo "java -jar \"$dest/detekt-cli-all.jar\" \"\$@\"" >> "$dest/detekt"
+        chmod a+x "$dest/detekt"
+        echo "$dest" >> "$GITHUB_PATH"
 
     # Performs static analysis using Detekt
     - name: Run Detekt
