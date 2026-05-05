@@ -71,8 +71,8 @@ object HintGenerator {
      *
      * Strategy:
      * 1. Apply basic elimination (SimpleCandidateEliminator) iteratively to stabilise the board
-     * 2. Try techniques from most advanced to most basic
-     * 3. Return the most advanced applicable technique
+     * 2. Try techniques from easiest to hardest
+     * 3. Return the simplest applicable technique (best for learning)
      *
      * @param board The current board state
      * @return A hint if one is found, null otherwise
@@ -82,9 +82,9 @@ object HintGenerator {
         val workingBoard = board.copy()
         applyBasicElimination(workingBoard)
 
-        // Step 2: Try techniques from most advanced to most basic
-        // (Technique enum is ordered easiest→hardest, so iterate reversed)
-        for (technique in Technique.entries.reversed()) {
+        // Step 2: Try techniques from easiest to hardest
+        // (Technique enum is ordered easiest→hardest)
+        for (technique in Technique.entries) {
             val hint = detectTechnique(workingBoard, technique)
             if (hint != null) return hint
         }
@@ -152,12 +152,13 @@ object HintGenerator {
             val afterCandidates = testBoard.candidateValues(coord).toSet()
             val eliminated = beforeCandidates - afterCandidates
             if (eliminated.isNotEmpty()) {
+                val eliminatedStr = eliminated.joinToString(", ")
                 return Hint(
                     coord = coord,
                     value = eliminated.first(),
                     technique = technique,
-                    explanation = "${technique.displayName} pattern detected. " +
-                            "Look for the pattern and eliminate candidates accordingly."
+                    explanation = "${technique.description} " +
+                            "Candidate $eliminatedStr can be eliminated from cell (${coord.row + 1}, ${coord.col + 1})."
                 )
             }
         }
@@ -171,8 +172,8 @@ object HintGenerator {
                         coord = coord,
                         value = candidates.first(),
                         technique = technique,
-                        explanation = "${technique.displayName} pattern detected. " +
-                                "Look for the pattern and eliminate candidates accordingly."
+                        explanation = "${technique.description} " +
+                                "Look for the ${technique.displayName} pattern to eliminate candidates."
                     )
                 }
             }

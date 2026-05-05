@@ -33,6 +33,7 @@ data class TutorialLesson(
     val beltColor: String,
     val beltEmoji: String,
     val beltName: String,
+    val technique: String,
     val description: String,
     val concept: String,
     val examplePuzzle: String,
