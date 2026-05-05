@@ -1,11 +1,7 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.contrib.json.classic.JsonEncoder">
-            <jsonFormatter class="ch.qos.logback.contrib.jackson.JacksonJsonFormatter">
-                <prettyPrint>false</prettyPrint>
-            </jsonFormatter>
-            <timestampFormat>yyyy-MM-dd'T'HH:mm:ss.SSSX</timestampFormat>
-            <appendLineSeparator>true</appendLineSeparator>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSX} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -15,7 +11,7 @@
 
     <!-- Set Ktor logging to INFO -->
     <logger name="io.ktor" level="INFO"/>
-    
+
     <!-- Set application logging to DEBUG for development -->
     <logger name="will.sudoku" level="DEBUG"/>
 </configuration>

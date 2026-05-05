@@ -26,9 +26,6 @@ dependencies {
     
     // Logging
     implementation("ch.qos.logback:logback-classic:1.4.14")
-    implementation("ch.qos.logback.contrib:logback-json-classic:0.1.5")
-    implementation("ch.qos.logback.contrib:logback-jackson:0.1.5")
-    implementation("net.logstash.logback:logstash-logback-encoder:7.4")
     
     // Core solver module
     implementation(project(":kotlin"))
