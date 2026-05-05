@@ -24,6 +24,7 @@ package will.sudoku.solver
  * - Hidden quads (4 candidates in 4 cells)
  */
 class HiddenSubsetCandidateEliminator : CandidateEliminator {
+    override val displayName = "Hidden Subset"
 
     override fun eliminate(board: Board): Boolean {
         var anyUpdate = false

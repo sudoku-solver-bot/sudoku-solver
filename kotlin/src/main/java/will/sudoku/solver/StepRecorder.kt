@@ -79,9 +79,14 @@ class StepRecorder : SolvingListener {
     }
     
     override fun onEliminatorApplied(name: String, eliminations: Int) {
-        // Optionally record eliminator applications as steps
-        // For now, we'll skip this to keep step count manageable
-        // Could be enabled via configuration flag
+        stepNumber++
+        val stepType = StepType.fromTechniqueName(name)
+        _steps.add(SolvingStep.techniqueApplied(
+            stepNumber = stepNumber,
+            techniqueName = name,
+            eliminations = eliminations,
+            explanation = "$name: $eliminations candidate(s) eliminated"
+        ))
     }
     
     override fun onSolveComplete(solved: Boolean, timeNanos: Long, backtracks: Int) {

@@ -212,5 +212,12 @@ class Board private constructor(val candidatePatterns: IntArray) {
             .minByOrNull { candidatePattern(it).countOneBits() }
     }
 
+    /**
+     * Count total candidates across all cells. Used for before/after comparison
+     * when tracking eliminator effects.
+     */
+    fun countTotalCandidates(): Int {
+        return Coord.all.sumOf { candidatePattern(it).countOneBits() }
+    }
 
 }

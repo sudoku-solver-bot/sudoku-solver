@@ -66,6 +66,8 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         
         listener.onPropagationPassStarted()
         
+        // Save original board for fallback (solveInternal may mutate its input)
+        val originalBoard = board.copy()
         var result = solveInternal(board, 0, listener)
         
         // Fallback: if the main solver fails and we're using uniqueness-assuming
@@ -75,7 +77,7 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         if (result == null && config.usesUniquenessTechniques()) {
             val fallbackConfig = SolverConfig.basic()
             val fallbackSolver = Solver(fallbackConfig)
-            result = fallbackSolver.solve(board.copy(), NoOpListener)
+            result = fallbackSolver.solve(originalBoard, NoOpListener)
         }
         
         // Notify completion
@@ -119,10 +121,33 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         if (!board.isValid()) return null
         if (board.isSolved()) return board
 
+        // Phase 1: Constraint propagation — apply all eliminators iteratively until stable
+        // This discovers technique-based deductions (Naked Singles, Hidden Singles, etc.)
+        // before falling back to backtracking. Each technique application is recorded.
+        var anyProgress = true
+        while (anyProgress) {
+            anyProgress = false
+            for (eliminator in config.eliminators) {
+                val candidatesBefore = board.countTotalCandidates()
+                val changed = eliminator.eliminate(board)
+                if (changed) {
+                    val eliminated = candidatesBefore - board.countTotalCandidates()
+                    if (eliminated > 0) {
+                        listener.onEliminatorApplied(eliminator.displayName, eliminated)
+                    }
+                    anyProgress = true
+                }
+            }
+        }
+
+        if (!board.isValid()) return null
+        if (board.isSolved()) return board
+
+        // Phase 2: Pick unresolved cell with fewest candidates (MRV heuristic)
         val unresolvedCoord = board.unresolvedCoord() ?: return null
         val candidates = board.candidateValues(unresolvedCoord).toList()
-        
-        // If this is a guess point (more than one candidate), notify listener
+
+        // If more than one candidate, this is a guess point — notify listener
         if (candidates.size > 1) {
             listener.onGuessMade(unresolvedCoord, candidates.first(), candidates.size)
         }
@@ -130,25 +155,20 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         for (candidateValue in candidates) {
             val newBoard = board.copy()
             newBoard.markValue(unresolvedCoord, candidateValue)
-            
-            // Notify listener about cell fill
+
+            // Record cell fill with technique-aware explanation
             val explanation = if (candidates.size == 1) {
-                "Only candidate"
+                "Naked Single at (${unresolvedCoord.row + 1}, ${unresolvedCoord.col + 1}) — only candidate is $candidateValue"
             } else {
-                "Guess (try $candidateValue among ${candidates.size} candidates)"
+                "Guess (try $candidateValue among ${candidates.size} candidates) at (${unresolvedCoord.row + 1}, ${unresolvedCoord.col + 1})"
             }
             listener.onCellFilled(unresolvedCoord, candidateValue, explanation)
-
-            // Apply constraint propagation
-            for (eliminator in config.eliminators) {
-                eliminator.eliminate(newBoard)
-            }
 
             val result = solveInternal(newBoard, depth + 1, listener)
             if (result != null) {
                 return result
             }
-            
+
             // Backtrack
             listener.onBacktracking()
         }

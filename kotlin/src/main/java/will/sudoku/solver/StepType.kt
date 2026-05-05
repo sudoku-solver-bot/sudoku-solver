@@ -21,8 +21,24 @@ enum class StepType(val displayName: String, val description: String) {
     GUESS_MADE("Guess Made", "Made a guess (backtracking required)"),
     BACKTRACK("Backtrack", "Previous guess was wrong, trying another option"),
 
+    // Generic technique application (when specific technique type is unknown)
+    TECHNIQUE_APPLIED("Technique Applied", "A solving technique was applied"),
+
     // Status
     PUZZLE_SOLVED("Puzzle Solved", "The puzzle has been completely solved"),
     NO_SOLUTION("No Solution", "The puzzle has no valid solution"),
     AMBIGUOUS("Ambiguous", "Puzzle has multiple solutions (not unique)");
+
+    companion object {
+        /**
+         * Try to find a matching StepType for an eliminator display name.
+         * Falls back to TECHNIQUE_APPLIED if no match.
+         */
+        fun fromTechniqueName(name: String): StepType {
+            return entries.firstOrNull {
+                it.displayName.equals(name, ignoreCase = true) ||
+                it.name.replace("_", " ").equals(name, ignoreCase = true)
+            } ?: TECHNIQUE_APPLIED
+        }
+    }
 }
