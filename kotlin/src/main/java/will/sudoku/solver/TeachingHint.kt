@@ -48,6 +48,24 @@ class TeachingHintProvider {
         // Try Naked Single (easiest)
         findNakedSingle(board)?.let { return it }
 
+        // Try Hidden Single
+        // This catches hidden singles that haven't been exhausted yet.
+        // For tutorials, the caller should exhaust hidden singles before calling
+        // getHint for non-hidden-single tutorials (see TutorialPuzzleValidationTest).
+        HintGenerator.findHiddenSingle(board)?.let { hiddenSingle ->
+            return TeachingHint(
+                type = HintType.HIDDEN_SINGLE,
+                cell = hiddenSingle.coord,
+                technique = "Hidden Single",
+                explanation = hiddenSingle.explanation,
+                teachingPoints = listOf(
+                    "Look for a number that appears only once in a row, column, or box",
+                    "Check each row, column, and box systematically",
+                    "This is called a 'Hidden Single' — the number is hidden among other candidates"
+                )
+            )
+        }
+
         // Try all techniques via HintGenerator
         val hintGenHint = HintGenerator.generate(board)
         if (hintGenHint != null) {

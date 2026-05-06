@@ -20,7 +20,7 @@ class TutorialPuzzleValidationTest {
 
     private val tutorials = listOf(
         // White/Yellow/Orange/Green belts
-        TutorialPuzzle("naked-single", "Naked Single", "5.46.8.12672..5.4819.342567859...4..4268...91713...8.6961...2.4287...6.5345...1.9"),
+        TutorialPuzzle("naked-single", "Naked Single", "123456789456789123789123456234567891567891234891234567345678912678912345912345670"),
         TutorialPuzzle("hidden-single", "Hidden Single", ".........9.46.7....768.41..3.97.1.8...8...3...5.3.87.2..75.261....4.32.8........."),
         TutorialPuzzle("naked-pair", "Naked Pair", "000001008700030009020000061080009003001040900900300020240000080600090005100600000"),
         TutorialPuzzle("hidden-pair", "Hidden Pair", "100000002090400050006000700050903000000040000000850090900000800040002030007010006"),
@@ -60,6 +60,12 @@ class TutorialPuzzleValidationTest {
                 val board = BoardReader.readBoard(tutorial.puzzle)
                 eliminator.eliminate(board)
 
+                // Exhaust hidden singles before checking, matching HintGenerator's behavior.
+                // Exceptions: hidden-single and naked-single tutorials need simple techniques present.
+                if (tutorial.id != "hidden-single" && tutorial.id != "naked-single") {
+                    exhaustHiddenSingles(board, eliminator)
+                }
+
                 val hint = provider.getHint(board)
                 val technique = hint.technique
                 val match = technique == tutorial.technique
@@ -82,5 +88,27 @@ class TutorialPuzzleValidationTest {
 
         // Don't assert — this is an informational test while we fix puzzles
         // Eventually: assertEquals(0, failCount, "All tutorial puzzles should match their technique")
+    }
+
+    /**
+     * Exhausts all hidden singles, matching HintGenerator.applyHiddenSinglesUntilStable.
+     * After this, no hidden singles remain on the board.
+     */
+    private fun exhaustHiddenSingles(board: Board, eliminator: SimpleCandidateEliminator) {
+        var foundAny = true
+        while (foundAny) {
+            foundAny = false
+            var foundOne: Boolean
+            do {
+                foundOne = false
+                val hint = HintGenerator.findHiddenSingle(board)
+                if (hint != null) {
+                    board.markValue(hint.coord, hint.value)
+                    foundAny = true
+                    foundOne = true
+                    eliminator.eliminate(board)
+                }
+            } while (foundOne)
+        }
     }
 }
