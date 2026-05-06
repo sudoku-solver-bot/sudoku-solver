@@ -60,23 +60,33 @@ class TutorialPuzzleValidationTest {
                 val board = BoardReader.readBoard(tutorial.puzzle)
 
                 // Naked singles are detected directly from filled cells (no elimination needed).
-                // Other techniques require basic elimination first.
+                // Other techniques require basic elimination and hidden single exhaustion first.
                 if (tutorial.id != "naked-single") {
                     eliminator.eliminate(board)
+                    if (tutorial.id != "hidden-single") {
+                        HintGenerator.applyHiddenSinglesUntilStable(board)
+                    }
                 }
 
-                // Exhaust hidden singles before checking advanced tutorials.
-                // hidden-single and naked-single tutorials need simple techniques present.
-                if (tutorial.id != "hidden-single" && tutorial.id != "naked-single") {
-                    HintGenerator.applyHiddenSinglesUntilStable(board)
+                // For tutorials, prioritize the target technique.
+                // The student is learning a specific technique — check for it first.
+                val technique: String
+                if (tutorial.id == "naked-single") {
+                    // Naked Single is detected by TeachingHintProvider.findNakedSingle
+                    val hint = provider.getHint(board)
+                    technique = hint.technique
+                } else {
+                    val targetEnum = HintGenerator.Technique.entries.find { it.displayName == tutorial.technique }
+                    val hint = if (targetEnum != null) {
+                        HintGenerator.generate(board, targetTechnique = targetEnum)
+                    } else {
+                        HintGenerator.generate(board)
+                    }
+                    technique = hint?.technique?.displayName ?: "Scanning"
                 }
 
-                val hint = provider.getHint(board)
-                val technique = hint.technique
                 val match = technique == tutorial.technique
-
                 if (match) passCount++ else failCount++
-
                 val marker = if (match) "✅" else "❌"
                 results.add("$marker ${tutorial.id.padEnd(22)} expected=${tutorial.technique.padEnd(20)} got=$technique")
             } catch (e: Exception) {

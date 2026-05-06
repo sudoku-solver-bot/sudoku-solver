@@ -78,9 +78,13 @@ object HintGenerator {
      * @param exhaustHiddenSingles If true, apply all hidden singles before checking techniques.
      *   Useful for tutorials where the goal is to demonstrate a specific advanced technique
      *   rather than always returning Hidden Single (the easiest technique).
+     * @param targetTechnique If set, this technique is checked first before iterating
+     *   from easiest to hardest. Useful for tutorials where the student is learning
+     *   a specific technique and should be shown it even if a simpler technique is also
+     *   available elsewhere on the board.
      * @return A hint if one is found, null otherwise
      */
-    fun generate(board: Board, exhaustHiddenSingles: Boolean = false): Hint? {
+    fun generate(board: Board, exhaustHiddenSingles: Boolean = false, targetTechnique: Technique? = null): Hint? {
         // Step 1: Apply basic elimination to reach a stable state
         val workingBoard = board.copy()
         applyBasicElimination(workingBoard)
@@ -91,7 +95,14 @@ object HintGenerator {
             applyHiddenSinglesUntilStable(workingBoard)
         }
 
-        // Step 3: Try techniques from easiest to hardest
+        // Step 3: If a target technique is specified, check it first.
+        // This allows tutorials to prioritize their taught technique.
+        if (targetTechnique != null) {
+            val targetHint = detectTechnique(workingBoard, targetTechnique)
+            if (targetHint != null) return targetHint
+        }
+
+        // Step 4: Try techniques from easiest to hardest
         // (Technique enum is ordered easiest→hardest)
         for (technique in Technique.entries) {
             val hint = detectTechnique(workingBoard, technique)
@@ -169,7 +180,7 @@ object HintGenerator {
             Technique.MUTANT_FISH -> findTechniqueViaEliminator(board, Technique.MUTANT_FISH, MutantFishCandidateEliminator())
             Technique.DEATH_BLOSSOM -> findTechniqueViaEliminator(board, Technique.DEATH_BLOSSOM, DeathBlossomCandidateEliminator())
             Technique.FORCING_CHAINS -> findTechniqueViaEliminator(board, Technique.FORCING_CHAINS, ForcingChainsCandidateEliminator())
-            Technique.BOX_LINE_REDUCTION -> null // box/line reduction is handled by SimpleCandidateEliminator
+            Technique.BOX_LINE_REDUCTION -> findBoxLineReduction(board)
         }
     }
 
@@ -271,6 +282,50 @@ object HintGenerator {
     }
 
     /**
+     * Exhaust all solver techniques on the board without backtracking.
+     *
+     * Runs the full eliminator chain (constraint propagation) iteratively,
+     * filling naked singles as they appear, until no more progress is made.
+     * This exhausts all techniques including Pointing Pair, Naked Pair,
+     * Hidden Pair, X-Wing, etc. — everything the solver can do without
+     * backtracking.
+     *
+     * After this, any remaining technique check will find only techniques
+     * that are genuinely needed (not simpler alternatives).
+     */
+    fun exhaustAllTechniques(board: Board) {
+        val config = SolverConfig()
+        var anyProgress = true
+
+        while (anyProgress) {
+            anyProgress = false
+
+            // Phase 1: Apply all eliminators iteratively until stable
+            var eliminatorProgress = true
+            while (eliminatorProgress) {
+                eliminatorProgress = false
+                for (eliminator in config.eliminators) {
+                    val before = board.countTotalCandidates()
+                    val changed = eliminator.eliminate(board)
+                    if (changed && board.countTotalCandidates() < before) {
+                        eliminatorProgress = true
+                        anyProgress = true
+                    }
+                }
+            }
+
+            // Phase 2: Fill any naked singles (cells with only one candidate)
+            for (coord in Coord.all) {
+                if (!board.isConfirmed(coord) && board.candidatePattern(coord).countOneBits() == 1) {
+                    val value = board.candidateValues(coord).first()
+                    board.markValue(coord, value)
+                    anyProgress = true
+                }
+            }
+        }
+    }
+
+    /**
      * Find a pointing pair (locked candidates).
      * A candidate appears in a box only within one row or one column,
      * so it can be eliminated from that row/col in other boxes.
@@ -338,6 +393,97 @@ object HintGenerator {
                 }
             }
         }
+        return null
+    }
+
+    /**
+     * Find a box/line reduction (locked candidates type 2).
+     * A candidate in a row or column is restricted to one box,
+     * so it can be eliminated from other rows/columns in that box.
+     */
+    private fun findBoxLineReduction(board: Board): Hint? {
+        // Check rows for box/line reduction
+        for (row in 0..8) {
+            for (value in 1..9) {
+                val cells = mutableListOf<Coord>()
+                for (col in 0..8) {
+                    val coord = Coord(row, col)
+                    if (!board.isConfirmed(coord) &&
+                        value in board.candidateValues(coord)
+                    ) {
+                        cells.add(coord)
+                    }
+                }
+                if (cells.size in 2..3) {
+                    // Check if all cells are in the same box
+                    val boxes = cells.map { Pair(it.row / 3, it.col / 3) }.toSet()
+                    if (boxes.size == 1) {
+                        val (boxRow, boxCol) = boxes.first()
+                        // Check if candidate can be eliminated from that box in other rows
+                        for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                            if (r == row) continue // skip same row
+                            for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                                val coord = Coord(r, c)
+                                if (!board.isConfirmed(coord) &&
+                                    value in board.candidateValues(coord)
+                                ) {
+                                    return Hint(
+                                        coord = coord,
+                                        value = value,
+                                        technique = Technique.BOX_LINE_REDUCTION,
+                                        explanation = "Value $value in row ${row + 1} " +
+                                                "is restricted to box (${boxRow + 1},${boxCol + 1}). " +
+                                                "Eliminate $value from other rows in this box."
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check columns for box/line reduction
+        for (col in 0..8) {
+            for (value in 1..9) {
+                val cells = mutableListOf<Coord>()
+                for (row in 0..8) {
+                    val coord = Coord(row, col)
+                    if (!board.isConfirmed(coord) &&
+                        value in board.candidateValues(coord)
+                    ) {
+                        cells.add(coord)
+                    }
+                }
+                if (cells.size in 2..3) {
+                    // Check if all cells are in the same box
+                    val boxes = cells.map { Pair(it.row / 3, it.col / 3) }.toSet()
+                    if (boxes.size == 1) {
+                        val (boxRow, boxCol) = boxes.first()
+                        // Check if candidate can be eliminated from that box in other columns
+                        for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                            if (c == col) continue // skip same column
+                            for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                                val coord = Coord(r, c)
+                                if (!board.isConfirmed(coord) &&
+                                    value in board.candidateValues(coord)
+                                ) {
+                                    return Hint(
+                                        coord = coord,
+                                        value = value,
+                                        technique = Technique.BOX_LINE_REDUCTION,
+                                        explanation = "Value $value in column ${col + 1} " +
+                                                "is restricted to box (${boxRow + 1},${boxCol + 1}). " +
+                                                "Eliminate $value from other columns in this box."
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return null
     }
 
