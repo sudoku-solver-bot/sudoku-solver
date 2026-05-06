@@ -60,10 +60,10 @@ class TutorialPuzzleValidationTest {
                 val board = BoardReader.readBoard(tutorial.puzzle)
                 eliminator.eliminate(board)
 
-                // Exhaust hidden singles before checking, matching HintGenerator's behavior.
-                // Exceptions: hidden-single and naked-single tutorials need simple techniques present.
+                // Exhaust hidden singles before checking advanced tutorials.
+                // hidden-single and naked-single tutorials need simple techniques present.
                 if (tutorial.id != "hidden-single" && tutorial.id != "naked-single") {
-                    exhaustHiddenSingles(board, eliminator)
+                    HintGenerator.applyHiddenSinglesUntilStable(board)
                 }
 
                 val hint = provider.getHint(board)
@@ -88,27 +88,5 @@ class TutorialPuzzleValidationTest {
 
         // Don't assert — this is an informational test while we fix puzzles
         // Eventually: assertEquals(0, failCount, "All tutorial puzzles should match their technique")
-    }
-
-    /**
-     * Exhausts all hidden singles, matching HintGenerator.applyHiddenSinglesUntilStable.
-     * After this, no hidden singles remain on the board.
-     */
-    private fun exhaustHiddenSingles(board: Board, eliminator: SimpleCandidateEliminator) {
-        var foundAny = true
-        while (foundAny) {
-            foundAny = false
-            var foundOne: Boolean
-            do {
-                foundOne = false
-                val hint = HintGenerator.findHiddenSingle(board)
-                if (hint != null) {
-                    board.markValue(hint.coord, hint.value)
-                    foundAny = true
-                    foundOne = true
-                    eliminator.eliminate(board)
-                }
-            } while (foundOne)
-        }
     }
 }

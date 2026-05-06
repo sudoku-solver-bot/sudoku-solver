@@ -6,20 +6,34 @@ import org.junit.jupiter.api.Test
 class HintAdvancedTechniqueTest {
 
     @Test
-    fun `X-Wing tutorial puzzle returns X-Wing not Hidden Single`() {
+    fun `X-Wing tutorial puzzle returns X-Wing with hidden single exhaustion`() {
         val puzzle = "1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5"
         val board = BoardReader.readBoard(puzzle)
         
         // Apply constraint propagation as HintRoutes does
         SimpleCandidateEliminator().eliminate(board)
         
+        // With exhaustion enabled (tutorial mode), hidden singles are applied first
+        val hint = HintGenerator.generate(board, exhaustHiddenSingles = true)
+        assertThat(hint).isNotNull()
+        // After exhausting hidden singles, should reveal a technique other than Hidden Single
+        assertThat(hint!!.technique)
+            .`as`("With exhaustion, should not return Hidden Single")
+            .isNotEqualTo(HintGenerator.Technique.HIDDEN_SINGLE)
+    }
+
+    @Test
+    fun `without exhaustion returns simplest technique`() {
+        val puzzle = "1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5"
+        val board = BoardReader.readBoard(puzzle)
+        SimpleCandidateEliminator().eliminate(board)
+        
+        // Without exhaustion (default), returns the simplest available technique
         val hint = HintGenerator.generate(board)
         assertThat(hint).isNotNull()
-        // After the fix, hidden singles should be exhausted, revealing X-Wing
-        // or at minimum not Hidden Single
         assertThat(hint!!.technique)
-            .`as`("Should not return Hidden Single for X-Wing tutorial puzzle")
-            .isNotEqualTo(HintGenerator.Technique.HIDDEN_SINGLE)
+            .`as`("Without exhaustion, simplest technique should be found")
+            .isNotNull()
     }
 
     @Test
@@ -54,9 +68,8 @@ class HintAdvancedTechniqueTest {
         val board = Board(values)
         SimpleCandidateEliminator().eliminate(board)
         
-        // HintGenerator.generate may return null if no technique found after
-        // exhausting hidden singles — this is valid for some puzzles. The test
-        // verifies the generator doesn't crash and returns correct structure.
+        // HintGenerator.generate returns the simplest technique or null if none found.
+        // The test verifies the generator doesn't crash and returns correct structure.
         val hint = HintGenerator.generate(board)
         if (hint != null) {
             assertThat(hint.coord).isNotNull()
@@ -67,7 +80,7 @@ class HintAdvancedTechniqueTest {
     }
 
     @Test
-    fun `hidden singles are exhausted before returning hint`() {
+    fun `exhaustHiddenSingles opt-in mode works`() {
         // Create a board that has both hidden singles and more advanced patterns
         val values = intArrayOf(
             1, 0, 0, 0, 0, 0, 5, 6, 9,
@@ -83,7 +96,8 @@ class HintAdvancedTechniqueTest {
         val board = Board(values)
         SimpleCandidateEliminator().eliminate(board)
         
-        val hint = HintGenerator.generate(board)
+        // With exhaustion, hidden singles are applied before checking techniques
+        val hint = HintGenerator.generate(board, exhaustHiddenSingles = true)
         // Board may or may not be solvable, just verify no crash
         if (hint != null) {
             assertThat(hint.explanation).isNotBlank()

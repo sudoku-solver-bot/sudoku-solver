@@ -71,22 +71,25 @@ object HintGenerator {
      *
      * Strategy:
      * 1. Apply basic elimination (SimpleCandidateEliminator) iteratively to stabilise the board
-     * 2. Apply hidden singles + constraint propagation to advance the board state
-     * 3. Try techniques from easiest to hardest
-     * 4. Return the first applicable technique (the "next technique needed")
+     * 2. Try techniques from easiest to hardest
+     * 3. Return the simplest applicable technique (best for learning)
      *
      * @param board The current board state
+     * @param exhaustHiddenSingles If true, apply all hidden singles before checking techniques.
+     *   Useful for tutorials where the goal is to demonstrate a specific advanced technique
+     *   rather than always returning Hidden Single (the easiest technique).
      * @return A hint if one is found, null otherwise
      */
-    fun generate(board: Board): Hint? {
+    fun generate(board: Board, exhaustHiddenSingles: Boolean = false): Hint? {
         // Step 1: Apply basic elimination to reach a stable state
         val workingBoard = board.copy()
         applyBasicElimination(workingBoard)
 
-        // Step 2: Apply hidden singles to advance the board before checking techniques.
-        // This ensures we return the "next technique needed" rather than always
-        // returning Hidden Single (the easiest technique present on any unsolved board).
-        applyHiddenSinglesUntilStable(workingBoard)
+        // Step 2 (optional): Apply hidden singles to advance the board before checking techniques.
+        // This is useful for tutorials where we want to demonstrate a specific advanced technique.
+        if (exhaustHiddenSingles) {
+            applyHiddenSinglesUntilStable(workingBoard)
+        }
 
         // Step 3: Try techniques from easiest to hardest
         // (Technique enum is ordered easiest→hardest)
@@ -120,7 +123,7 @@ object HintGenerator {
      * after all hidden singles have been exhausted — i.e., the hint returns the "next
      * technique actually needed" rather than the "easiest technique present."
      */
-    private fun applyHiddenSinglesUntilStable(board: Board) {
+    internal fun applyHiddenSinglesUntilStable(board: Board) {
         var foundAny = true
         while (foundAny) {
             foundAny = false
