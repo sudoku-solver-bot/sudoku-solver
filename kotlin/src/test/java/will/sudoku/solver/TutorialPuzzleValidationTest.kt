@@ -106,4 +106,87 @@ class TutorialPuzzleValidationTest {
         // Don't assert — this is an informational test while we fix puzzles
         // Eventually: assertEquals(0, failCount, "All tutorial puzzles should match their technique")
     }
+
+    /**
+     * Diagnostic test: check if exhausting pointing pairs reveals the target technique
+     * for the 9 currently-failing tutorials.
+     */
+    @Test
+    fun `diagnostic - exhaust pointing pairs for failing tutorials`() {
+        val eliminator = SimpleCandidateEliminator()
+        val failingIds = setOf(
+            "swordfish", "xy-wing", "xyz-wing", "unique-rectangle",
+            "simple-coloring", "franken-fish", "mutant-fish",
+            "death-blossom", "forcing-chains"
+        )
+
+        val lines = mutableListOf("=== Diagnostic: Exhaust Pointing Pairs Before Target Technique ===")
+        for (tutorial in tutorials.filter { it.id in failingIds }) {
+            try {
+                val targetEnum = HintGenerator.Technique.entries.find { it.displayName == tutorial.technique } ?: continue
+                val board = BoardReader.readBoard(tutorial.puzzle)
+                eliminator.eliminate(board)
+                HintGenerator.applyHiddenSinglesUntilStable(board)
+
+                // Check target technique WITHOUT exhausting pointing pairs
+                val beforeHint = HintGenerator.generate(board.copy(), exhaustHiddenSingles = false, targetTechnique = targetEnum)
+                val beforeTechnique = beforeHint?.technique?.displayName ?: "null"
+
+                // Check target technique AFTER exhausting pointing pairs
+                HintGenerator.applyPointingPairsUntilStable(board)
+                val afterHint = HintGenerator.generate(board, exhaustHiddenSingles = false, targetTechnique = targetEnum)
+                val afterTechnique = afterHint?.technique?.displayName ?: "null"
+
+                val improved = afterTechnique == tutorial.technique && beforeTechnique != tutorial.technique
+                val marker = if (afterTechnique == tutorial.technique) "✅" else "❌"
+                val note = if (improved) "(PP exhaustion helped!)" else if (afterTechnique == beforeTechnique) "(no change)" else "(different result)"
+                lines.add("$marker ${tutorial.id.padEnd(22)} before=$beforeTechnique → after=$afterTechnique (expected=${tutorial.technique}) $note")
+            } catch (e: Exception) {
+                lines.add("❌ ${tutorial.id.padEnd(22)} ERROR: ${e.message?.take(80)}")
+            }
+        }
+        File("/tmp/tutorial-pp-diagnostic.txt").writeText(lines.joinToString("\n"))
+    }
+
+    /**
+     * Use the solver to find a board state where a specific technique is applicable.
+     * This helps find replacement puzzles for tutorials.
+     */
+    @Test
+    fun `solver - find technique states in hard puzzles`() {
+        // Hard puzzles from known collections
+        val hardPuzzles = listOf(
+            "100000002090400050006000700050903000000040000000850090900000800040002030007010006" to "Easter Monster",
+            "000000000000003085001020000000507000004000100090000000500000073002010000000000000" to "Golden Nugget",
+            "800000000003600000070090200050007000000045700000100030001000068008500010090000400" to "AI Escargot",
+            "005300000800000020070010500400005300010070006003200080060500009004000030000009700" to "Standard Hard",
+            "000000010400000000020000000000050407008000300001090000300400200050100000000806000" to "Platinum Blonde",
+        )
+
+        val targetTechniques = listOf(
+            "Swordfish" to HintGenerator.Technique.SWORDFISH,
+            "XY-Wing" to HintGenerator.Technique.XY_WING,
+            "XYZ-Wing" to HintGenerator.Technique.XYZ_WING,
+        )
+
+        val lines = mutableListOf("=== Solver Technique State Finder ===")
+        val eliminator = SimpleCandidateEliminator()
+
+        for ((puzzleStr, name) in hardPuzzles) {
+            if (!puzzleStr.matches(Regex("[0-9.]+")) || puzzleStr.length != 81) continue
+            val board = BoardReader.readBoard(puzzleStr)
+            eliminator.eliminate(board)
+            HintGenerator.applyHiddenSinglesUntilStable(board)
+
+            lines.add("--- $name ---")
+            for ((label, technique) in targetTechniques) {
+                val hint = HintGenerator.generate(board.copy(), exhaustHiddenSingles = false, targetTechnique = technique)
+                val found = if (hint != null) hint.technique.displayName else "null"
+                val marker = if (found == label) "✅" else "  "
+                lines.add("  $marker $label: $found")
+            }
+        }
+
+        File("/tmp/solver-technique-states.txt").writeText(lines.joinToString("\n"))
+    }
 }
