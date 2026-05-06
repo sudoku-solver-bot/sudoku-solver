@@ -124,6 +124,8 @@ class TeachingHintProvider {
         return null
     }
 
+
+
     private fun techniqueTeachingPoints(technique: HintGenerator.Technique): List<String> {
         return when (technique) {
             HintGenerator.Technique.HIDDEN_SINGLE -> listOf(

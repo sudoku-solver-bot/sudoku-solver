@@ -223,7 +223,7 @@ object HintGenerator {
     /**
      * Find a hidden single (easiest technique).
      */
-    private fun findHiddenSingle(board: Board): Hint? {
+    internal fun findHiddenSingle(board: Board): Hint? {
         for (coordGroup in CoordGroup.all) {
             val knownValues = coordGroup.coords.map { board.value(it) }.toSet()
 
