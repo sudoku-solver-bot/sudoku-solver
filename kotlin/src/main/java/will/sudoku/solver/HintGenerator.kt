@@ -71,8 +71,9 @@ object HintGenerator {
      *
      * Strategy:
      * 1. Apply basic elimination (SimpleCandidateEliminator) iteratively to stabilise the board
-     * 2. Try techniques from easiest to hardest
-     * 3. Return the simplest applicable technique (best for learning)
+     * 2. Apply hidden singles + constraint propagation to advance the board state
+     * 3. Try techniques from easiest to hardest
+     * 4. Return the first applicable technique (the "next technique needed")
      *
      * @param board The current board state
      * @return A hint if one is found, null otherwise
@@ -82,7 +83,12 @@ object HintGenerator {
         val workingBoard = board.copy()
         applyBasicElimination(workingBoard)
 
-        // Step 2: Try techniques from easiest to hardest
+        // Step 2: Apply hidden singles to advance the board before checking techniques.
+        // This ensures we return the "next technique needed" rather than always
+        // returning Hidden Single (the easiest technique present on any unsolved board).
+        applyHiddenSinglesUntilStable(workingBoard)
+
+        // Step 3: Try techniques from easiest to hardest
         // (Technique enum is ordered easiest→hardest)
         for (technique in Technique.entries) {
             val hint = detectTechnique(workingBoard, technique)
@@ -100,6 +106,39 @@ object HintGenerator {
         var changed = true
         while (changed) {
             changed = eliminator.eliminate(board)
+        }
+    }
+
+    /**
+     * Apply hidden singles to advance the board before checking for advanced techniques.
+     *
+     * Iteratively finds hidden singles (values that can only go in one cell within a group),
+     * marks them as confirmed, and re-runs constraint propagation. Continues until no more
+     * hidden singles are found anywhere on the board.
+     *
+     * This ensures that advanced techniques (X-Wing, Swordfish, etc.) are only suggested
+     * after all hidden singles have been exhausted — i.e., the hint returns the "next
+     * technique actually needed" rather than the "easiest technique present."
+     */
+    private fun applyHiddenSinglesUntilStable(board: Board) {
+        var foundAny = true
+        while (foundAny) {
+            foundAny = false
+            // Find and apply hidden singles one at a time
+            var foundOne: Boolean
+            do {
+                foundOne = false
+                val hint = findHiddenSingle(board)
+                if (hint != null) {
+                    board.markValue(hint.coord, hint.value)
+                    foundAny = true
+                    foundOne = true
+                    // Re-run constraint propagation after each hidden single
+                    // to propagate its effects and potentially reveal new
+                    // naked singles or hidden singles
+                    applyBasicElimination(board)
+                }
+            } while (foundOne)
         }
     }
 
