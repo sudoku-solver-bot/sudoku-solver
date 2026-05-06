@@ -158,6 +158,86 @@ object HintGenerator {
     }
 
     /**
+     * Apply pointing pairs to advance the board before checking for advanced techniques.
+     *
+     * Iteratively finds pointing pairs, eliminates the locked candidates, and re-runs
+     * constraint propagation. Continues until no more pointing pairs are found.
+     *
+     * Useful for tutorials where pointing pairs mask more advanced techniques like
+     * Swordfish, XY-Wing, etc.
+     */
+    internal fun applyPointingPairsUntilStable(board: Board) {
+        var foundAny = true
+        while (foundAny) {
+            foundAny = false
+            // Find all pointing pair eliminations and apply them at once
+            val eliminations = findPointingPairEliminations(board)
+            if (eliminations.isNotEmpty()) {
+                foundAny = true
+                for ((coord, value) in eliminations) {
+                    board.eraseCandidatePattern(coord, Board.masks[value - 1])
+                }
+                // Re-run constraint propagation to reveal new eliminations
+                applyBasicElimination(board)
+            }
+        }
+    }
+
+    /**
+     * Find all pointing pair eliminations on the board.
+     * Returns a list of (coord, value) pairs to eliminate.
+     */
+    private fun findPointingPairEliminations(board: Board): List<Pair<Coord, Int>> {
+        val eliminations = mutableListOf<Pair<Coord, Int>>()
+        for (boxRow in 0..2) {
+            for (boxCol in 0..2) {
+                for (value in 1..9) {
+                    val cells = mutableListOf<Coord>()
+                    for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                        for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                            val coord = Coord(r, c)
+                            if (!board.isConfirmed(coord) &&
+                                board.candidateValues(coord).contains(value)
+                            ) {
+                                cells.add(coord)
+                            }
+                        }
+                    }
+                    if (cells.size in 2..3) {
+                        val rows = cells.map { it.row }.toSet()
+                        if (rows.size == 1) {
+                            val row = rows.first()
+                            for (col in 0..8) {
+                                if (col / 3 == boxCol) continue
+                                val coord = Coord(row, col)
+                                if (!board.isConfirmed(coord) &&
+                                    board.candidateValues(coord).contains(value)
+                                ) {
+                                    eliminations.add(Pair(coord, value))
+                                }
+                            }
+                        }
+                        val cols = cells.map { it.col }.toSet()
+                        if (cols.size == 1) {
+                            val col = cols.first()
+                            for (row in 0..8) {
+                                if (row / 3 == boxRow) continue
+                                val coord = Coord(row, col)
+                                if (!board.isConfirmed(coord) &&
+                                    board.candidateValues(coord).contains(value)
+                                ) {
+                                    eliminations.add(Pair(coord, value))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return eliminations
+    }
+
+    /**
      * Detect a specific technique on the board.
      * Runs the corresponding detection method and returns a hint if found.
      */
