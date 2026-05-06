@@ -77,10 +77,12 @@ class TutorialPuzzleValidationTest {
                     technique = hint.technique
                 } else {
                     val targetEnum = HintGenerator.Technique.entries.find { it.displayName == tutorial.technique }
+                    // Keep hidden singles for the hidden-single tutorial (shouldn't exhaust them)
+                    val exhaust = tutorial.id != "hidden-single"
                     val hint = if (targetEnum != null) {
-                        HintGenerator.generate(board, targetTechnique = targetEnum)
+                        HintGenerator.generate(board, exhaustHiddenSingles = exhaust, targetTechnique = targetEnum)
                     } else {
-                        HintGenerator.generate(board)
+                        HintGenerator.generate(board, exhaustHiddenSingles = exhaust)
                     }
                     technique = hint?.technique?.displayName ?: "Scanning"
                 }

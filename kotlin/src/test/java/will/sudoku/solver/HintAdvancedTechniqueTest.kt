@@ -23,16 +23,17 @@ class HintAdvancedTechniqueTest {
     }
 
     @Test
-    fun `without exhaustion returns simplest technique`() {
+    fun `default mode returns technique after hidden single exhaustion`() {
         val puzzle = "1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5"
         val board = BoardReader.readBoard(puzzle)
         SimpleCandidateEliminator().eliminate(board)
         
-        // Without exhaustion (default), returns the simplest available technique
+        // Default behavior (exhaustHiddenSingles = true): applies hidden singles
+        // first, then returns the next needed technique
         val hint = HintGenerator.generate(board)
         assertThat(hint).isNotNull()
         assertThat(hint!!.technique)
-            .`as`("Without exhaustion, simplest technique should be found")
+            .`as`("Default mode should find a technique after exhausting hidden singles")
             .isNotNull()
     }
 

@@ -76,15 +76,16 @@ object HintGenerator {
      *
      * @param board The current board state
      * @param exhaustHiddenSingles If true, apply all hidden singles before checking techniques.
-     *   Useful for tutorials where the goal is to demonstrate a specific advanced technique
+     *   Default is true so the hint API returns the "next technique actually needed"
      *   rather than always returning Hidden Single (the easiest technique).
+     *   Set to false when you specifically want to find Hidden Singles.
      * @param targetTechnique If set, this technique is checked first before iterating
      *   from easiest to hardest. Useful for tutorials where the student is learning
      *   a specific technique and should be shown it even if a simpler technique is also
      *   available elsewhere on the board.
      * @return A hint if one is found, null otherwise
      */
-    fun generate(board: Board, exhaustHiddenSingles: Boolean = false, targetTechnique: Technique? = null): Hint? {
+    fun generate(board: Board, exhaustHiddenSingles: Boolean = true, targetTechnique: Technique? = null): Hint? {
         // Step 1: Apply basic elimination to reach a stable state
         val workingBoard = board.copy()
         applyBasicElimination(workingBoard)
