@@ -81,6 +81,24 @@ data class SolvingStep(
                 explanation = explanation
             )
         }
+
+        /**
+         * Create a step for a technique application (eliminator ran and eliminated candidates).
+         */
+        fun techniqueApplied(
+            stepNumber: Int,
+            techniqueName: String,
+            eliminations: Int,
+            explanation: String
+        ): SolvingStep {
+            return SolvingStep(
+                stepNumber = stepNumber,
+                stepType = StepType.fromTechniqueName(techniqueName),
+                affectedCells = emptyList(),
+                values = emptySet(),
+                explanation = explanation
+            )
+        }
     }
 
     /**

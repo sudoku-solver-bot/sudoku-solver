@@ -1,6 +1,7 @@
 package will.sudoku.solver
 
 class GroupCandidateEliminator : CandidateEliminator {
+    override val displayName = "Naked Subset"
     override fun eliminate(board: Board): Boolean {
         var anyUpdate = false
         var stable: Boolean

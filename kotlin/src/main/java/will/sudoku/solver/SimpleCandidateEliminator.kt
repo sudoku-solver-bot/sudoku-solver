@@ -1,6 +1,7 @@
 package will.sudoku.solver
 
 class SimpleCandidateEliminator : CandidateEliminator {
+    override val displayName = "Simple Elimination"
     override fun eliminate(board: Board): Boolean {
         var anyUpdate = false
         var stable: Boolean
