@@ -58,7 +58,12 @@ class TutorialPuzzleValidationTest {
         for (tutorial in tutorials) {
             try {
                 val board = BoardReader.readBoard(tutorial.puzzle)
-                eliminator.eliminate(board)
+
+                // Naked singles are detected directly from filled cells (no elimination needed).
+                // Other techniques require basic elimination first.
+                if (tutorial.id != "naked-single") {
+                    eliminator.eliminate(board)
+                }
 
                 // Exhaust hidden singles before checking advanced tutorials.
                 // hidden-single and naked-single tutorials need simple techniques present.

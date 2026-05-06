@@ -105,9 +105,24 @@ class TeachingHintProvider {
             for (col in 0..8) {
                 val coord = Coord(row, col)
                 if (board.value(coord) == 0) {
-                    val candidates = board.candidateValues(coord).toMutableSet()
-                    if (candidates.size == 1) {
-                        val value = candidates.first()
+                    // Compute possible candidates by checking filled cells in row, column, and box.
+                    // This works without requiring SimpleCandidateEliminator to run first.
+                    val seen = mutableSetOf<Int>()
+                    for (i in 0..8) {
+                        seen.add(board.value(Coord(row, i)))
+                        seen.add(board.value(Coord(i, col)))
+                    }
+                    val boxRow = row / 3 * 3
+                    val boxCol = col / 3 * 3
+                    for (r in boxRow until boxRow + 3) {
+                        for (c in boxCol until boxCol + 3) {
+                            seen.add(board.value(Coord(r, c)))
+                        }
+                    }
+                    seen.remove(0)
+                    val possible = (1..9) - seen
+                    if (possible.size == 1) {
+                        val value = possible.first()
                         return TeachingHint(
                             type = HintType.NAKED_SINGLE,
                             cell = coord,
