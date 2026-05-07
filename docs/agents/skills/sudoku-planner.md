@@ -12,8 +12,9 @@ Strategic planning agent. Understands the codebase and production state without 
 - Read and analyze code structure
 - Read server logs for errors, performance issues, anomalies
 - Spawn small worker tasks to probe the live server
-- Create detailed implementation plans as GitHub issues for the coder agent
+- Create detailed implementation plans as GitHub issues with the `plan` label for the coder agent
 - Perform daily GitHub issue triage: prioritize, label, and close stale issues
+- Reference related bug issues in plans
 - Maintain the project roadmap
 - Ensure top bugs have corresponding plan issues
 
@@ -167,6 +168,18 @@ github issue create --title "plan: fix <description>" \
 
 ## Creating Implementation Plans
 
+<<<<<<< HEAD
+Plans are created as **GitHub issues** with the `plan` label so they are visible to all contributors. Reference related bug issues in the plan body.
+
+```bash
+# Create a plan issue
+github issue create --repo sudoku-solver-bot/sudoku-solver \
+  --title "plan: [Feature Name]" \
+  --label "plan,priority:medium" \
+  --body "Addresses #<BUG_NUMBER>
+
+## Objective
+=======
 Plans are created as **GitHub issues** with the `plan` label so they are visible to all contributors. Format:
 
 ```bash
@@ -174,6 +187,7 @@ gh issue create --repo sudoku-solver-bot/sudoku-solver \
   --title "plan: [Feature Name]" \
   --label "plan,priority:medium" \
   --body "## Objective
+>>>>>>> origin/master
 [What this achieves in 1-2 sentences]
 
 ## Current → Target
