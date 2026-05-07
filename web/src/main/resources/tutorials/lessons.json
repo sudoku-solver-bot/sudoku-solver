@@ -593,34 +593,40 @@
     "examplePuzzle": "100000569402000008050009040000640801000010000208035000040500010900000402621000005",
     "steps": [
       {
-        "text": "Purple Belt! \ud83d\udfe3 X-Wing is your first 'fish' pattern \u2014 looking at a single number across the ENTIRE board to find a rectangle of possibilities.",
+        "order": 1,
+        "type": "explain",
         "cells": [],
-        "highlight": []
+        "text": "Purple Belt! \ud83d\udfe3 X-Wing is your first 'fish' pattern \u2014 looking at a single number across the ENTIRE board to find a rectangle of possibilities."
       },
       {
-        "text": "An X-Wing forms when a candidate appears in exactly 2 cells in each of 2 rows, and those cells share the same 2 columns (forming a rectangle).",
+        "order": 2,
+        "type": "explain",
         "cells": [],
-        "highlight": []
+        "text": "An X-Wing forms when a candidate appears in exactly 2 cells in each of 2 rows, and those cells share the same 2 columns (forming a rectangle)."
       },
       {
-        "text": "To find an X-Wing: pick a candidate number (try 3 or 7 first). Look for two rows where that number can only go in the same two columns.",
+        "order": 3,
+        "type": "explain",
         "cells": [],
-        "highlight": []
+        "text": "To find an X-Wing: pick a candidate number (try 3 or 7 first). Look for two rows where that number can only go in the same two columns."
       },
       {
-        "text": "Once you spot the 4-corner rectangle pattern, you can eliminate that candidate from all other cells in those two columns!",
+        "order": 4,
+        "type": "explain",
         "cells": [],
-        "highlight": []
+        "text": "Once you spot the 4-corner rectangle pattern, you can eliminate that candidate from all other cells in those two columns!"
       },
       {
-        "text": "The same logic works with columns \u2192 rows. If the candidate appears twice in two columns sharing the same two rows, eliminate from those rows.",
+        "order": 5,
+        "type": "explain",
         "cells": [],
-        "highlight": []
+        "text": "The same logic works with columns \u2192 rows. If the candidate appears twice in two columns sharing the same two rows, eliminate from those rows."
       },
       {
-        "text": "\ud83c\udf89 X-Wing is the gateway to fish patterns! The same logic extends to Swordfish (3 rows/cols), Jellyfish (4), and beyond. Master this and you're ready for advanced Sudoku!",
+        "order": 6,
+        "type": "summary",
         "cells": [],
-        "highlight": []
+        "text": "\ud83c\udf89 X-Wing is the gateway to fish patterns! The same logic extends to Swordfish (3 rows/cols), Jellyfish (4), and beyond. Master this and you're ready for advanced Sudoku!"
       }
     ]
   },
