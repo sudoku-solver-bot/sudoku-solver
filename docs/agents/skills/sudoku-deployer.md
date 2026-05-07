@@ -16,7 +16,31 @@ Deploys the sudoku-solver project to the local machine.
 - **Service binary:** `/tmp/sudoku-debug/web/build/install/web/bin/web`
 - **Local URL:** `http://localhost:25321`
 
+## Golden Rule: Always Deploy Master
+
+- **Always deploy from `origin/master`** — never from local branches, feature branches, or commits ahead of master
+- Before any deploy operation, ensure the local repo is on the `master` branch and in sync with `origin/master`
+- If working on a feature branch, stash or discard changes and switch to `master` first
+- The deployer's only job is to keep the local service in sync with `origin/master`
+
 ## Deploy Procedure
+
+### Commit Tracking
+
+The deployer tracks the last deployed commit in a `.deploy-commit` file at the repo root:
+
+```bash
+DEPLOY_FILE="/home/claw1/repos/sudoku-solver/.deploy-commit"
+
+# Read last deployed commit
+if [ -f "$DEPLOY_FILE" ]; then
+  DEPLOYED=$(cat "$DEPLOY_FILE")
+else
+  DEPLOYED=""
+fi
+```
+
+**Do not rebuild if the deployed commit already matches `origin/master`.** Only rebuild when master has new commits.
 
 ### Full Deploy (pull + build + restart)
 
@@ -24,21 +48,30 @@ Deploys the sudoku-solver project to the local machine.
 set -e
 
 cd /home/claw1/repos/sudoku-solver
+
+# ALWAYS switch to master first
+git checkout master
 git fetch origin
+
 LOCAL=$(git rev-parse HEAD)
 REMOTE=$(git rev-parse origin/master)
 
-if [ "$LOCAL" = "$REMOTE" ]; then
-  echo "Already up to date: $LOCAL"
-  exit 0
+# Check .deploy-commit for last deployed commit
+DEPLOY_FILE=".deploy-commit"
+if [ -f "$DEPLOY_FILE" ]; then
+  DEPLOYED=$(cat "$DEPLOY_FILE")
+  if [ "$DEPLOYED" = "$REMOTE" ]; then
+    echo "Already deployed at $DEPLOYED — nothing to do"
+    exit 0
+  fi
 fi
 
-echo "Updating: $LOCAL -> $REMOTE"
-git log --oneline $LOCAL..$REMOTE
-
-# Pull latest
-git checkout master
-git pull --ff-only origin master
+# Only deploy if remote master is ahead of what's currently served
+if [ "$LOCAL" != "$REMOTE" ]; then
+  echo "Updating local: $LOCAL -> $REMOTE"
+  git log --oneline $LOCAL..$REMOTE
+  git pull --ff-only origin master
+fi
 
 # Build frontend
 cd web-ui && npm install && npm run build && cd ..
@@ -55,6 +88,10 @@ cp -r web/build /tmp/sudoku-debug/web
 sudo systemctl restart sudoku-solver
 sleep 3
 sudo systemctl status sudoku-solver --no-pager
+
+# Record deployed commit
+echo "$REMOTE" > "$DEPLOY_FILE"
+echo "Deployed: $REMOTE"
 ```
 
 ### Quick Status Check
@@ -82,9 +119,12 @@ sudo journalctl -u sudoku-solver -p err --no-pager -n 30
 
 ## Rules
 
-1. Never push to master — this agent only pulls and deploys
-2. Always `--ff-only` to avoid merge commits
-3. Verify health after restart — if health check fails, roll back:
+1. **Always deploy from `origin/master`** — never from local branches or ahead-of-master commits
+2. **Check `.deploy-commit` first** — skip rebuild if the deployed commit already matches `origin/master`
+3. **Always switch to master** before any deploy operation
+4. Never push to master — this agent only pulls and deploys
+5. Always `--ff-only` to avoid merge commits
+6. Verify health after restart — if health check fails, roll back:
    ```bash
    # Rollback: checkout previous commit and rebuild
    git checkout $LOCAL
