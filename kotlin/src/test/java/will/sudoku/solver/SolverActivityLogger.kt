@@ -3,7 +3,7 @@ package will.sudoku.solver
 import org.junit.jupiter.api.Test
 import java.io.File
 
-class SolverLogger {
+class SolverActivityLogger {
     @Test
     fun `log all eliminator activity on Easter Monster`() {
         val puzzle = "100000002090400050006000700050903000000040000000850090900000800040002030007010006"
