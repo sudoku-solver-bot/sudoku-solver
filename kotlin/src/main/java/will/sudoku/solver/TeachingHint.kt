@@ -44,14 +44,14 @@ enum class HintType {
  */
 class TeachingHintProvider {
 
-    fun getHint(board: Board): TeachingHint {
+    fun getHint(board: Board, targetTechnique: HintGenerator.Technique? = null): TeachingHint {
         // Try Naked Single (easiest) — local check for richer teaching points
         findNakedSingle(board)?.let { return it }
 
         // Delegate to HintGenerator for all other techniques.
-        // For tutorials that need a specific advanced technique, the caller should
-        // exhaust hidden singles on the board first via HintGenerator.applyHiddenSinglesUntilStable().
-        val hintGenHint = HintGenerator.generate(board)
+        // For tutorials that need a specific advanced technique, pass targetTechnique
+        // so the hint system prioritizes the technique being taught.
+        val hintGenHint = HintGenerator.generate(board, targetTechnique = targetTechnique)
         if (hintGenHint != null) {
             return TeachingHint(
                 type = mapTechniqueToHintType(hintGenHint.technique),

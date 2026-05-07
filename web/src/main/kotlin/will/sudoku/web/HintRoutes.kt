@@ -8,6 +8,7 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
 import will.sudoku.solver.Board
 import will.sudoku.solver.BoardReader
+import will.sudoku.solver.HintGenerator
 import will.sudoku.solver.HintType
 import will.sudoku.solver.SimpleCandidateEliminator
 import will.sudoku.solver.TeachingHintProvider
@@ -20,7 +21,8 @@ fun Board.withConstraintPropagation(): Board {
 
 @Serializable
 data class HintRequest(
-    val puzzle: String
+    val puzzle: String,
+    val technique: String? = null  // Optional: target technique for tutorial mode
 )
 
 @Serializable
@@ -73,7 +75,16 @@ fun Route.hintRoutes() {
         }
 
         val board = rawBoard.withConstraintPropagation()
-        val hint = hintProvider.getHint(board)
+        
+        // Map requested technique string to HintGenerator.Technique enum
+        val targetTechnique = request.technique?.let { techName ->
+            HintGenerator.Technique.entries.find {
+                it.displayName.equals(techName, ignoreCase = true) ||
+                it.name.equals(techName, ignoreCase = true)
+            }
+        }
+        
+        val hint = hintProvider.getHint(board, targetTechnique)
 
         call.respond(
             HintResponse(
