@@ -19,9 +19,9 @@ Implementation agent for sudoku-solver. Follows plans and standard git flow.
 ## Context Loading (Before Every Task)
 
 1. Read `CLAUDE.md` in repo root for architecture
-2. Read `memory/sudoku-solver-roadmap.md` for current status
-3. Read today's `memory/YYYY-MM-DD.md` if exists
-4. Read the specific plan file if one is referenced
+2. Check for open GitHub issues: `gh issue list --repo sudoku-solver-bot/sudoku-solver --state open`
+3. Read the specific plan issue if one is selected
+4. **Check for in-progress work** — read `memory/coder-progress.md` if it exists (see Progress Tracking below)
 
 ## Priority: Fix Existing PRs First
 
@@ -120,8 +120,9 @@ gh issue view <NUMBER> --repo sudoku-solver-bot/sudoku-solver
 **How to pick:**
 1. Look for `plan:` issues first — these have files to change, steps, and testing instructions
 2. If no plans, look for `bug:` issues with `priority:high`
-3. If no high-priority bugs, report "No tasks to implement" and stop
-4. **Only implement bugs** — no new features or i18n (BUG SQUASH PHASE)
+3. If no high-priority bugs, look for `bug:` issues with `priority:medium`
+4. If no bugs at all, pick up the next available issue (features, docs, i18n, etc.) by priority
+5. **Bug fixes take priority**, but when there are no bugs to fix, work on other open issues normally
 
 ### Step 2: Read the plan/bug carefully
 
@@ -150,12 +151,14 @@ git pull --ff-only origin master
 
 ### Step 4: Create Feature Branch
 
-Branch naming:
+Branch naming (default to `fix/` for bug-focused work):
+- `fix/<description>` — Bug fixes (default)
 - `feat/<description>` — New features
-- `fix/<description>` — Bug fixes
 - `refactor/<description>` — Refactoring
 - `test/<description>` — Test additions
 - `docs/<description>` — Documentation
+
+**Note:** Most work comes from GitHub issues. Use `fix/<description>` for any issue-driven work to keep things consistent.
 
 ```bash
 git checkout -b feat/my-feature
