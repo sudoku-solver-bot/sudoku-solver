@@ -25,9 +25,11 @@ export async function generatePuzzle(difficulty = 'MEDIUM'): Promise<unknown> {
 }
 
 // Hint
-export async function getHintForPuzzle(puzzle: string): Promise<unknown> {
+export async function getHintForPuzzle(puzzle: string, technique?: string): Promise<unknown> {
   const normalized = puzzle.replace(/\./g, '0')
-  return apiPost(`${API_BASE}/hint`, { puzzle: normalized })
+  const body: Record<string, string> = { puzzle: normalized }
+  if (technique) body.technique = technique
+  return apiPost(`${API_BASE}/hint`, body)
 }
 
 // Validate

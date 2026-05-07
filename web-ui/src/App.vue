@@ -1134,7 +1134,9 @@ const getHint = async () => {
   loading.value = true
   loadingMessage.value = 'Finding hint...'
   try {
-    const data = await getHintForPuzzle(puzzle.value)
+    // Pass target technique in tutorial mode so hint system prioritizes the taught technique
+    const targetTechnique = tutorialMode.value ? currentTutorialLesson.value?.technique : undefined
+    const data = await getHintForPuzzle(puzzle.value, targetTechnique)
     if (data.hasHint) {
       currentHint.value = data.hint
       hintsUsed.value++
