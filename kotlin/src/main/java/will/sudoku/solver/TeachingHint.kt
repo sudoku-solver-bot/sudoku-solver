@@ -78,6 +78,7 @@ class TeachingHintProvider {
 
     private fun mapTechniqueToHintType(technique: HintGenerator.Technique): HintType {
         return when (technique) {
+            HintGenerator.Technique.NAKED_SINGLE -> HintType.NAKED_SINGLE
             HintGenerator.Technique.HIDDEN_SINGLE -> HintType.HIDDEN_SINGLE
             HintGenerator.Technique.POINTING_PAIR -> HintType.POINTING_PAIR
             HintGenerator.Technique.BOX_LINE_REDUCTION -> HintType.BOX_LINE_REDUCTION
@@ -145,6 +146,11 @@ class TeachingHintProvider {
 
     private fun techniqueTeachingPoints(technique: HintGenerator.Technique): List<String> {
         return when (technique) {
+            HintGenerator.Technique.NAKED_SINGLE -> listOf(
+                "Look at the row, column, and box containing this cell",
+                "Only one number is possible — all others are already used",
+                "This is called a 'Naked Single' because the answer is obvious once you check the peers"
+            )
             HintGenerator.Technique.HIDDEN_SINGLE -> listOf(
                 "Look for a number that appears only once in a row, column, or box",
                 "Check each row, column, and box systematically",

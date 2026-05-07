@@ -45,6 +45,7 @@ object HintGenerator {
      * Ordered from easiest to hardest.
      */
     enum class Technique(val displayName: String, val description: String) {
+        NAKED_SINGLE("Naked Single", "Only one candidate fits in this cell"),
         HIDDEN_SINGLE("Hidden Single", "This value appears only once in a row, column, or region"),
         POINTING_PAIR("Pointing Pair", "A candidate restricted to one row/col in a box"),
         BOX_LINE_REDUCTION("Box/Line Reduction", "Candidates restricted to one box in a row/col"),
@@ -243,6 +244,7 @@ object HintGenerator {
      */
     private fun detectTechnique(board: Board, technique: Technique): Hint? {
         return when (technique) {
+            Technique.NAKED_SINGLE -> findNakedSingle(board)
             Technique.HIDDEN_SINGLE -> findHiddenSingle(board)
             Technique.POINTING_PAIR -> findPointingPair(board)
             Technique.NAKED_PAIR -> findNakedPair(board)
@@ -316,7 +318,43 @@ object HintGenerator {
     }
 
     /**
-     * Find a hidden single (easiest technique).
+     * Find a naked single (easiest technique).
+     * A cell with only one remaining candidate.
+     */
+    private fun findNakedSingle(board: Board): Hint? {
+        for (coord in Coord.all) {
+            if (board.isConfirmed(coord)) continue
+            val candidates = board.candidateValues(coord)
+            if (candidates.size == 1) {
+                val value = candidates.first()
+                val seen = mutableSetOf<Int>()
+                for (i in 0..8) {
+                    seen.add(board.value(Coord(coord.row, i)))
+                    seen.add(board.value(Coord(i, coord.col)))
+                }
+                val boxRow = coord.row / 3 * 3
+                val boxCol = coord.col / 3 * 3
+                for (r in boxRow until boxRow + 3) {
+                    for (c in boxCol until boxCol + 3) {
+                        seen.add(board.value(Coord(r, c)))
+                    }
+                }
+                seen.remove(0)
+                return Hint(
+                    coord = coord,
+                    value = value,
+                    technique = Technique.NAKED_SINGLE,
+                    explanation = "Cell (${coord.row + 1}, ${coord.col + 1}) can only be $value! " +
+                            "All other numbers ${(1..9).filter { it != value && it !in seen }.joinToString(", ")} " +
+                            "are already present in the row, column, or box."
+                )
+            }
+        }
+        return null
+    }
+
+    /**
+     * Find a hidden single.
      */
     internal fun findHiddenSingle(board: Board): Hint? {
         for (coordGroup in CoordGroup.all) {
