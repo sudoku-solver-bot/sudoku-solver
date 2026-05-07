@@ -71,24 +71,39 @@ object HintGenerator {
      *
      * Strategy:
      * 1. Apply basic elimination (SimpleCandidateEliminator) iteratively to stabilise the board
-     * 2. Apply hidden singles + constraint propagation to advance the board state
-     * 3. Try techniques from easiest to hardest
-     * 4. Return the first applicable technique (the "next technique needed")
+     * 2. Try techniques from easiest to hardest
+     * 3. Return the simplest applicable technique (best for learning)
      *
      * @param board The current board state
+     * @param exhaustHiddenSingles If true, apply all hidden singles before checking techniques.
+     *   Default is true so the hint API returns the "next technique actually needed"
+     *   rather than always returning Hidden Single (the easiest technique).
+     *   Set to false when you specifically want to find Hidden Singles.
+     * @param targetTechnique If set, this technique is checked first before iterating
+     *   from easiest to hardest. Useful for tutorials where the student is learning
+     *   a specific technique and should be shown it even if a simpler technique is also
+     *   available elsewhere on the board.
      * @return A hint if one is found, null otherwise
      */
-    fun generate(board: Board): Hint? {
+    fun generate(board: Board, exhaustHiddenSingles: Boolean = true, targetTechnique: Technique? = null): Hint? {
         // Step 1: Apply basic elimination to reach a stable state
         val workingBoard = board.copy()
         applyBasicElimination(workingBoard)
 
-        // Step 2: Apply hidden singles to advance the board before checking techniques.
-        // This ensures we return the "next technique needed" rather than always
-        // returning Hidden Single (the easiest technique present on any unsolved board).
-        applyHiddenSinglesUntilStable(workingBoard)
+        // Step 2 (optional): Apply hidden singles to advance the board before checking techniques.
+        // This is useful for tutorials where we want to demonstrate a specific advanced technique.
+        if (exhaustHiddenSingles) {
+            applyHiddenSinglesUntilStable(workingBoard)
+        }
 
-        // Step 3: Try techniques from easiest to hardest
+        // Step 3: If a target technique is specified, check it first.
+        // This allows tutorials to prioritize their taught technique.
+        if (targetTechnique != null) {
+            val targetHint = detectTechnique(workingBoard, targetTechnique)
+            if (targetHint != null) return targetHint
+        }
+
+        // Step 4: Try techniques from easiest to hardest
         // (Technique enum is ordered easiest→hardest)
         for (technique in Technique.entries) {
             val hint = detectTechnique(workingBoard, technique)
@@ -120,7 +135,7 @@ object HintGenerator {
      * after all hidden singles have been exhausted — i.e., the hint returns the "next
      * technique actually needed" rather than the "easiest technique present."
      */
-    private fun applyHiddenSinglesUntilStable(board: Board) {
+    internal fun applyHiddenSinglesUntilStable(board: Board) {
         var foundAny = true
         while (foundAny) {
             foundAny = false
@@ -140,6 +155,86 @@ object HintGenerator {
                 }
             } while (foundOne)
         }
+    }
+
+    /**
+     * Apply pointing pairs to advance the board before checking for advanced techniques.
+     *
+     * Iteratively finds pointing pairs, eliminates the locked candidates, and re-runs
+     * constraint propagation. Continues until no more pointing pairs are found.
+     *
+     * Useful for tutorials where pointing pairs mask more advanced techniques like
+     * Swordfish, XY-Wing, etc.
+     */
+    internal fun applyPointingPairsUntilStable(board: Board) {
+        var foundAny = true
+        while (foundAny) {
+            foundAny = false
+            // Find all pointing pair eliminations and apply them at once
+            val eliminations = findPointingPairEliminations(board)
+            if (eliminations.isNotEmpty()) {
+                foundAny = true
+                for ((coord, value) in eliminations) {
+                    board.eraseCandidatePattern(coord, Board.masks[value - 1])
+                }
+                // Re-run constraint propagation to reveal new eliminations
+                applyBasicElimination(board)
+            }
+        }
+    }
+
+    /**
+     * Find all pointing pair eliminations on the board.
+     * Returns a list of (coord, value) pairs to eliminate.
+     */
+    private fun findPointingPairEliminations(board: Board): List<Pair<Coord, Int>> {
+        val eliminations = mutableListOf<Pair<Coord, Int>>()
+        for (boxRow in 0..2) {
+            for (boxCol in 0..2) {
+                for (value in 1..9) {
+                    val cells = mutableListOf<Coord>()
+                    for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                        for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                            val coord = Coord(r, c)
+                            if (!board.isConfirmed(coord) &&
+                                board.candidateValues(coord).contains(value)
+                            ) {
+                                cells.add(coord)
+                            }
+                        }
+                    }
+                    if (cells.size in 2..3) {
+                        val rows = cells.map { it.row }.toSet()
+                        if (rows.size == 1) {
+                            val row = rows.first()
+                            for (col in 0..8) {
+                                if (col / 3 == boxCol) continue
+                                val coord = Coord(row, col)
+                                if (!board.isConfirmed(coord) &&
+                                    board.candidateValues(coord).contains(value)
+                                ) {
+                                    eliminations.add(Pair(coord, value))
+                                }
+                            }
+                        }
+                        val cols = cells.map { it.col }.toSet()
+                        if (cols.size == 1) {
+                            val col = cols.first()
+                            for (row in 0..8) {
+                                if (row / 3 == boxRow) continue
+                                val coord = Coord(row, col)
+                                if (!board.isConfirmed(coord) &&
+                                    board.candidateValues(coord).contains(value)
+                                ) {
+                                    eliminations.add(Pair(coord, value))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return eliminations
     }
 
     /**
@@ -166,7 +261,7 @@ object HintGenerator {
             Technique.MUTANT_FISH -> findTechniqueViaEliminator(board, Technique.MUTANT_FISH, MutantFishCandidateEliminator())
             Technique.DEATH_BLOSSOM -> findTechniqueViaEliminator(board, Technique.DEATH_BLOSSOM, DeathBlossomCandidateEliminator())
             Technique.FORCING_CHAINS -> findTechniqueViaEliminator(board, Technique.FORCING_CHAINS, ForcingChainsCandidateEliminator())
-            Technique.BOX_LINE_REDUCTION -> null // box/line reduction is handled by SimpleCandidateEliminator
+            Technique.BOX_LINE_REDUCTION -> findBoxLineReduction(board)
         }
     }
 
@@ -223,7 +318,7 @@ object HintGenerator {
     /**
      * Find a hidden single (easiest technique).
      */
-    private fun findHiddenSingle(board: Board): Hint? {
+    internal fun findHiddenSingle(board: Board): Hint? {
         for (coordGroup in CoordGroup.all) {
             val knownValues = coordGroup.coords.map { board.value(it) }.toSet()
 
@@ -265,6 +360,50 @@ object HintGenerator {
         }
 
         return null
+    }
+
+    /**
+     * Exhaust all solver techniques on the board without backtracking.
+     *
+     * Runs the full eliminator chain (constraint propagation) iteratively,
+     * filling naked singles as they appear, until no more progress is made.
+     * This exhausts all techniques including Pointing Pair, Naked Pair,
+     * Hidden Pair, X-Wing, etc. — everything the solver can do without
+     * backtracking.
+     *
+     * After this, any remaining technique check will find only techniques
+     * that are genuinely needed (not simpler alternatives).
+     */
+    fun exhaustAllTechniques(board: Board) {
+        val config = SolverConfig()
+        var anyProgress = true
+
+        while (anyProgress) {
+            anyProgress = false
+
+            // Phase 1: Apply all eliminators iteratively until stable
+            var eliminatorProgress = true
+            while (eliminatorProgress) {
+                eliminatorProgress = false
+                for (eliminator in config.eliminators) {
+                    val before = board.countTotalCandidates()
+                    val changed = eliminator.eliminate(board)
+                    if (changed && board.countTotalCandidates() < before) {
+                        eliminatorProgress = true
+                        anyProgress = true
+                    }
+                }
+            }
+
+            // Phase 2: Fill any naked singles (cells with only one candidate)
+            for (coord in Coord.all) {
+                if (!board.isConfirmed(coord) && board.candidatePattern(coord).countOneBits() == 1) {
+                    val value = board.candidateValues(coord).first()
+                    board.markValue(coord, value)
+                    anyProgress = true
+                }
+            }
+        }
     }
 
     /**
@@ -335,6 +474,97 @@ object HintGenerator {
                 }
             }
         }
+        return null
+    }
+
+    /**
+     * Find a box/line reduction (locked candidates type 2).
+     * A candidate in a row or column is restricted to one box,
+     * so it can be eliminated from other rows/columns in that box.
+     */
+    private fun findBoxLineReduction(board: Board): Hint? {
+        // Check rows for box/line reduction
+        for (row in 0..8) {
+            for (value in 1..9) {
+                val cells = mutableListOf<Coord>()
+                for (col in 0..8) {
+                    val coord = Coord(row, col)
+                    if (!board.isConfirmed(coord) &&
+                        value in board.candidateValues(coord)
+                    ) {
+                        cells.add(coord)
+                    }
+                }
+                if (cells.size in 2..3) {
+                    // Check if all cells are in the same box
+                    val boxes = cells.map { Pair(it.row / 3, it.col / 3) }.toSet()
+                    if (boxes.size == 1) {
+                        val (boxRow, boxCol) = boxes.first()
+                        // Check if candidate can be eliminated from that box in other rows
+                        for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                            if (r == row) continue // skip same row
+                            for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                                val coord = Coord(r, c)
+                                if (!board.isConfirmed(coord) &&
+                                    value in board.candidateValues(coord)
+                                ) {
+                                    return Hint(
+                                        coord = coord,
+                                        value = value,
+                                        technique = Technique.BOX_LINE_REDUCTION,
+                                        explanation = "Value $value in row ${row + 1} " +
+                                                "is restricted to box (${boxRow + 1},${boxCol + 1}). " +
+                                                "Eliminate $value from other rows in this box."
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check columns for box/line reduction
+        for (col in 0..8) {
+            for (value in 1..9) {
+                val cells = mutableListOf<Coord>()
+                for (row in 0..8) {
+                    val coord = Coord(row, col)
+                    if (!board.isConfirmed(coord) &&
+                        value in board.candidateValues(coord)
+                    ) {
+                        cells.add(coord)
+                    }
+                }
+                if (cells.size in 2..3) {
+                    // Check if all cells are in the same box
+                    val boxes = cells.map { Pair(it.row / 3, it.col / 3) }.toSet()
+                    if (boxes.size == 1) {
+                        val (boxRow, boxCol) = boxes.first()
+                        // Check if candidate can be eliminated from that box in other columns
+                        for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                            if (c == col) continue // skip same column
+                            for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                                val coord = Coord(r, c)
+                                if (!board.isConfirmed(coord) &&
+                                    value in board.candidateValues(coord)
+                                ) {
+                                    return Hint(
+                                        coord = coord,
+                                        value = value,
+                                        technique = Technique.BOX_LINE_REDUCTION,
+                                        explanation = "Value $value in column ${col + 1} " +
+                                                "is restricted to box (${boxRow + 1},${boxCol + 1}). " +
+                                                "Eliminate $value from other columns in this box."
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return null
     }
 

@@ -155,7 +155,7 @@
     "technique": "Naked Pair",
     "description": "When two cells in the same group have the same two candidates, eliminate those numbers from other cells.",
     "concept": "If two cells in a row, column, or box have exactly the same two candidates, those two numbers MUST occupy those two cells. Remove them from all other cells in the group!",
-    "examplePuzzle": "4.....938.32.941...953..24..7.6.9..4.2.....7.6..7.3.9..57..83....39..4..24......9",
+    "examplePuzzle": "000001008700030009020000061080009003001040900900300020240000080600090005100600000",
     "steps": [
       {
         "order": 1,
@@ -227,7 +227,7 @@
     "technique": "Hidden Pair",
     "description": "When two numbers can only go in the same two cells, remove other candidates from those cells.",
     "concept": "If two numbers can only appear in the same two cells within a group, those cells can only contain those two numbers. Remove all OTHER candidates!",
-    "examplePuzzle": ".28.6.5973.5..8.627.642518.87123..452..614..96...872....78...16.8....35..6.351..8",
+    "examplePuzzle": "100000002090400050006000700050903000000040000000850090900000800040002030007010006",
     "steps": [
       {
         "order": 1,
@@ -590,7 +590,7 @@
     "technique": "X-Wing",
     "description": "When a number appears in exactly two cells in two rows, and those cells share the same two columns.",
     "concept": "An X-Wing forms a rectangle: a number appears in exactly 2 cells in each of 2 rows, and those cells are in the same 2 columns. Eliminate that number from the rest of those columns!",
-    "examplePuzzle": "1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5",
+    "examplePuzzle": "000000000000003085001020000000507000004000100090000000500000073002010000000000000",
     "steps": [
       {
         "order": 1,
