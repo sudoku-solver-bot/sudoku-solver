@@ -93,8 +93,16 @@ object HintGenerator {
 
         // Step 2 (optional): Apply hidden singles to advance the board before checking techniques.
         // This is useful for tutorials where we want to demonstrate a specific advanced technique.
+        var lastHiddenSingle: Hint? = null
         if (exhaustHiddenSingles) {
-            applyHiddenSinglesUntilStable(workingBoard)
+            lastHiddenSingle = applyHiddenSinglesUntilStable(workingBoard)
+        }
+
+        // Step 2.5: If the board is now solved, return the last hidden single found.
+        // Without this, puzzles solvable entirely by hidden singles would fall through
+        // to the generic "Scanning" fallback (bug #224).
+        if (workingBoard.isSolved() && lastHiddenSingle != null) {
+            return lastHiddenSingle
         }
 
         // Step 3: If a target technique is specified, check it first.
@@ -136,7 +144,8 @@ object HintGenerator {
      * after all hidden singles have been exhausted — i.e., the hint returns the "next
      * technique actually needed" rather than the "easiest technique present."
      */
-    internal fun applyHiddenSinglesUntilStable(board: Board) {
+    internal fun applyHiddenSinglesUntilStable(board: Board): Hint? {
+        var lastHint: Hint? = null
         var foundAny = true
         while (foundAny) {
             foundAny = false
@@ -147,6 +156,7 @@ object HintGenerator {
                 val hint = findHiddenSingle(board)
                 if (hint != null) {
                     board.markValue(hint.coord, hint.value)
+                    lastHint = hint
                     foundAny = true
                     foundOne = true
                     // Re-run constraint propagation after each hidden single
@@ -156,6 +166,7 @@ object HintGenerator {
                 }
             } while (foundOne)
         }
+        return lastHint
     }
 
     /**
