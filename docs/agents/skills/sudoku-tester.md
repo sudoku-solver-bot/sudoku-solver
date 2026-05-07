@@ -19,7 +19,8 @@ Active QA agent that exercises the live sudoku-solver server and finds bugs.
 ## What This Agent Does NOT Do
 
 - Never modifies code, config, or files
-- Never creates issues or PRs
+- Never creates issues or PRs proactively — reports findings to the planner instead
+- When asked to create issues: searches for existing open issues first to avoid duplicates
 - Never restarts services
 
 ## Server Endpoints
@@ -236,6 +237,20 @@ When you find an issue, report it in this format:
 
 **Impact:** Users don't get useful hints for medium+ puzzles
 ```
+
+## Duplicate Issue Prevention
+
+Before reporting a bug (whether to the planner or creating an issue directly), always check for duplicates:
+
+1. **Search existing open issues** — look for the same bug by endpoint, error message, or symptoms
+2. **Comment on existing issues** — if a matching issue already exists, add new findings as a comment instead of creating a duplicate
+3. **Reopen closed issues** — if a bug reproduces but the original issue is closed, comment with new reproduction steps and ask the planner to reopen
+4. **Never create duplicate issues** — one bug = one issue. If unsure, err on the side of commenting on the closest existing issue
+
+When adding findings to an existing issue, include:
+- Current reproduction steps (confirm the bug still exists)
+- Any new information (different endpoint, different input, severity change)
+- Environment details (local vs remote, timestamp)
 
 Severity levels:
 - 🔴 **Critical**: Feature completely broken, returns errors
