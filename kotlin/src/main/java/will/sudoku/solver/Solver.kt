@@ -128,12 +128,36 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
         while (anyProgress) {
             anyProgress = false
             for (eliminator in config.eliminators) {
-                val candidatesBefore = board.countTotalCandidates()
+                // Snapshot candidate values for all unresolved cells before running eliminator
+                val beforeState: Map<Coord, Set<Int>> = Coord.all
+                    .filter { !board.isConfirmed(it) }
+                    .associateWith { board.candidateValues(it).toSet() }
+
                 val changed = eliminator.eliminate(board)
                 if (changed) {
-                    val eliminated = candidatesBefore - board.countTotalCandidates()
-                    if (eliminated > 0) {
-                        listener.onEliminatorApplied(eliminator.displayName, eliminated)
+                    // Compute per-cell diffs: which cells lost which candidates
+                    val eliminations = mutableListOf<Elimination>()
+                    beforeState.forEach { (coord, beforeValues) ->
+                        if (!board.isConfirmed(coord)) {
+                            val afterValues = board.candidateValues(coord).toSet()
+                            val removed = beforeValues - afterValues
+                            if (removed.isNotEmpty()) {
+                                eliminations.add(Elimination(coord, removed))
+                            }
+                        } else {
+                            // Cell became confirmed — all values except the confirmed one were eliminated
+                            val confirmedValue = board.value(coord)
+                            val removed = beforeValues - setOf(confirmedValue)
+                            if (removed.isNotEmpty()) {
+                                eliminations.add(Elimination(coord, removed))
+                            }
+                        }
+                    }
+
+                    val totalEliminated = eliminations.sumOf { it.eliminatedValues.size }
+                    if (totalEliminated > 0) {
+                        listener.onEliminatorApplied(eliminator.displayName, totalEliminated)
+                        listener.onCandidatesEliminated(eliminator.displayName, eliminations)
                     }
                     anyProgress = true
                 }
