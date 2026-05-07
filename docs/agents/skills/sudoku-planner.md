@@ -12,7 +12,8 @@ Strategic planning agent. Understands the codebase and production state without 
 - Read and analyze code structure
 - Read server logs for errors, performance issues, anomalies
 - Spawn small worker tasks to probe the live server
-- Create detailed implementation plans for the coder agent
+- Create detailed implementation plans as GitHub issues with the `plan` label
+- Reference related bug issues in plans
 - Maintain the project roadmap
 
 ## What This Agent Does NOT Do
@@ -101,31 +102,41 @@ using the test puzzle. Report average response time and any errors."
 
 ## Creating Implementation Plans
 
-Plans should be written to `memory/sudoku-solver-roadmap.md` in the "Current Sprint" section or as a separate plan file. Format:
+Plans are created as **GitHub issues** with the `plan` label so they are visible to all contributors. Reference related bug issues in the plan body.
 
-```markdown
-## Plan: [Feature Name]
-**Date:** YYYY-MM-DD
-**Priority:** High/Medium/Low
-**Scope:** Backend / Frontend / Both
+```bash
+# Create a plan issue
+github issue create --repo sudoku-solver-bot/sudoku-solver \
+  --title "plan: [Feature Name]" \
+  --label "plan,priority:medium" \
+  --body "Addresses #<BUG_NUMBER>
 
-### Objective
+## Objective
 [What this achieves in 1-2 sentences]
 
-### Files to Change
-- `path/to/file.ext` — [what to change]
+## Current → Target
+- Component: old → new
 
-### Implementation Steps
+## Scope
+- [ ] Backend
+- [ ] Frontend
+
+## Files to Change
+- \`path/to/file.ext\` — [what to change]
+
+## Implementation Steps
 1. [Step 1]
 2. [Step 2]
 ...
 
-### Testing
+## Testing
 - [How to verify]
 
-### Estimated Effort
-[X] hours
+## Estimated Effort
+[X] hours"
 ```
+
+Plans may also be maintained in the roadmap file at `memory/sudoku-solver-roadmap.md` for long-term tracking.
 
 ## GitHub Status Review
 

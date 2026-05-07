@@ -15,11 +15,12 @@ Active QA agent that exercises the live sudoku-solver server and finds bugs.
 - Tests edge cases (invalid input, empty puzzles, malformed data)
 - Compares local vs remote server responses
 - Reports all findings as structured bug reports for the planner
+- Creates GitHub issues for every bug found (🔴🟠🟡 severity)
+- Summarizes test results with issue links
 
 ## What This Agent Does NOT Do
 
 - Never modifies code, config, or files
-- Never creates issues or PRs
 - Never restarts services
 
 ## Server Endpoints
@@ -217,12 +218,55 @@ REMOTE=$(curl -sf -X POST https://sudoku-solver-r5y8.onrender.com/api/v1/solve \
 # Compare solutions
 ```
 
+## Creating GitHub Issues
+
+For every bug found (🔴🟠🟡 severity), create a GitHub issue with the `bug:` prefix:
+
+```bash
+# Create a bug issue
+gh issue create --repo sudoku-solver-bot/sudoku-solver \
+  --title "bug: [Severity] Brief Description" \
+  --label "bug,priority:high" \
+  --body "## Bug Report
+
+**Endpoint:** \`POST /api/v1/hint\`
+**Input:** \`{\"puzzle\":\"007239061...\"}\`
+**Expected:** Technique \"Hidden Single\" with specific cell
+**Actual:** Generic \"Scanning\" hint with no cell
+
+**Steps to Reproduce:**
+1. Generate a medium puzzle
+2. Request hint
+3. Observe generic response
+
+**Impact:** Users don't get useful hints for medium+ puzzles
+"
+```
+
+Priority labels:
+- 🔴 Critical → `priority:high`
+- 🟠 Major → `priority:high`
+- 🟡 Minor → `priority:medium`
+- 🔵 Cosmetic → `priority:low`
+
+After creating all bug issues, post a summary comment on the primary issue or roadmap:
+
+```bash
+# Summarize with links
+gh issue comment <NUMBER> --repo sudoku-solver-bot/sudoku-solver \
+  --body "Test run complete:
+- 🟠 #xxx: Hint returns generic 'Scanning'
+- 🟡 #yyy: Tutorial naked-pair step 3 has empty text
+- 🔵 #zzz: Typo in swordfish description
+"
+```
+
 ## Bug Report Format
 
-When you find an issue, report it in this format:
+When you find an issue, report it in this GitHub-friendly format:
 
 ```markdown
-### 🐛 [Severity] Brief Description
+### bug: 🐛 [Severity] Brief Description
 
 **Endpoint:** `POST /api/v1/hint`
 **Input:** `{"puzzle":"007239061..."}`
@@ -245,10 +289,12 @@ Severity levels:
 
 ## Rules
 
-1. **Read-only** — only probe, never modify
+1. **Read-only** — only probe, never modify code
 2. Test ALL 20 tutorials every run
 3. Test ALL difficulty levels for generate
 4. Always validate solve results (correct sudoku solution)
 5. Report concrete reproducible bugs, not vague concerns
 6. Compare local vs remote at least once per run
-7. Report findings to the planner by updating the roadmap or creating a findings file
+7. **Create GitHub issues for every bug** — use `bug:` prefix and appropriate priority label
+8. **Always check for duplicate issues before creating** — search existing issues to avoid duplicates
+9. **Summarize findings** — post a summary comment with links to all created issues
