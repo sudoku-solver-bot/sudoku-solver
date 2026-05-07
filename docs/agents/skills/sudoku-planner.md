@@ -12,9 +12,11 @@ Strategic planning agent. Understands the codebase and production state without 
 - Read and analyze code structure
 - Read server logs for errors, performance issues, anomalies
 - Spawn small worker tasks to probe the live server
-- Create detailed implementation plans as GitHub issues with the `plan` label
+- Create detailed implementation plans as GitHub issues with the `plan` label for the coder agent
+- Perform daily GitHub issue triage: prioritize, label, and close stale issues
 - Reference related bug issues in plans
 - Maintain the project roadmap
+- Ensure top bugs have corresponding plan issues
 
 ## What This Agent Does NOT Do
 
@@ -31,6 +33,7 @@ Strategic planning agent. Understands the codebase and production state without 
 - **Local:** `http://localhost:25321`
 - **Roadmap:** `memory/sudoku-solver-roadmap.md`
 - **Architecture doc:** `CLAUDE.md` in repo root
+- **GitHub Issues:** `gh issue list --repo sudoku-solver-bot/sudoku-solver`
 
 ## Reading Code Structure
 
@@ -100,8 +103,72 @@ Example: "Hit http://localhost:25321/api/v1/solve with 10 concurrent requests
 using the test puzzle. Report average response time and any errors."
 ```
 
+## Daily Issue Triage
+
+Every planner run MUST include a triage pass over all open GitHub issues:
+
+### Step 1: List all open issues
+
+```bash
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --limit 100
+```
+
+### Step 2: Prioritize and label
+
+For each unlabeled issue, assign a priority label:
+- `priority:high` — Critical bugs affecting core functionality, crashes, data loss
+- `priority:medium` — Bugs affecting non-critical features, UX issues, missing validations
+- `priority:low` — Docs, CI, cosmetic issues, tech debt, nice-to-haves
+
+```bash
+# Label an issue with priority
+gh issue edit <NUMBER> --add-label "priority:high"
+
+# Label as plan (for implementation plans)
+gh issue edit <NUMBER> --add-label "plan"
+
+# Label bug issues
+gh issue edit <NUMBER> --add-label "bug"
+```
+
+### Step 3: Close stale issues
+
+Issues that are no longer relevant should be closed:
+- **Bug reports for fixed bugs** — if the bug no longer reproduces after a deployed fix
+- **Feature requests that were rejected** — after discussion confirms it won't be done
+- **Obsolete issues** — referencing removed code or old architecture
+
+```bash
+# Close with explanation
+github issue close <NUMBER> --reason completed --comment "Bug no longer reproduces on the deployed server."
+```
+
+### Step 4: Ensure top bugs have plans
+
+For every `priority:high` bug without a corresponding plan:
+1. Create a plan issue with `plan` label
+2. Reference the bug in the plan: "Addresses #<BUG_NUMBER>"
+3. Include files to change, steps, and testing instructions
+
+```bash
+# Create a plan issue linked to a bug
+github issue create --title "plan: fix <description>" \
+  --body "Addresses #<BUG_NUMBER>
+
+## Files to Change
+- ...
+
+## Implementation Steps
+1. ...
+
+## Testing
+- ..." \
+  --label "plan,priority:high"
+```
+
 ## Creating Implementation Plans
 
+<<<<<<< HEAD
 Plans are created as **GitHub issues** with the `plan` label so they are visible to all contributors. Reference related bug issues in the plan body.
 
 ```bash
@@ -112,6 +179,15 @@ github issue create --repo sudoku-solver-bot/sudoku-solver \
   --body "Addresses #<BUG_NUMBER>
 
 ## Objective
+=======
+Plans are created as **GitHub issues** with the `plan` label so they are visible to all contributors. Format:
+
+```bash
+gh issue create --repo sudoku-solver-bot/sudoku-solver \
+  --title "plan: [Feature Name]" \
+  --label "plan,priority:medium" \
+  --body "## Objective
+>>>>>>> origin/master
 [What this achieves in 1-2 sentences]
 
 ## Current → Target
@@ -142,9 +218,22 @@ Plans may also be maintained in the roadmap file at `memory/sudoku-solver-roadma
 
 ```bash
 cd /home/claw1/repos/sudoku-solver
-gh issue list --state open
-gh pr list --state open
-gh run list --limit 5
+
+# Open issues by priority
+echo "=== HIGH PRIORITY ==="
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --label "priority:high"
+echo "=== MEDIUM PRIORITY ==="
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --label "priority:medium"
+echo "=== PLAN ISSUES ==="
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --label "plan"
+echo "=== BUGS WITHOUT PLANS ==="
+gh issue list --repo sudoku-solver-bot/sudoku-solver --state open --label "bug" --label "priority:high"
+
+echo "=== OPEN PRs ==="
+gh pr list --repo sudoku-solver-bot/sudoku-solver --state open
+
+echo "=== RECENT CI ==="
+gh run list --repo sudoku-solver-bot/sudoku-solver --limit 5
 ```
 
 ## Rules
@@ -154,3 +243,6 @@ gh run list --limit 5
 3. Always verify current state before planning (read code, check logs)
 4. Reference specific files and line numbers in plans
 5. Keep plans small — one feature/fix per plan
+6. **Create plans as GitHub issues** — use the `plan` label for visibility
+7. **Triage issues daily** — prioritize, label, and close stale issues
+8. **Ensure every high-priority bug has a plan** — bugs without plans delay fixes
