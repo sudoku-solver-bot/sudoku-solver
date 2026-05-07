@@ -4,6 +4,17 @@ import will.sudoku.solver.Board
 import will.sudoku.solver.Coord
 
 /**
+ * Records a candidate elimination at a specific cell.
+ *
+ * @param cell The coordinate where candidates were eliminated
+ * @param eliminatedValues The values that were removed from this cell
+ */
+data class Elimination(
+    val cell: Coord,
+    val eliminatedValues: Set<Int>
+)
+
+/**
  * Listener interface for observing and recording the solving process.
  *
  * Implement this interface to receive callbacks at key points during solving.
@@ -75,6 +86,18 @@ interface SolvingListener {
      * @param eliminations Number of candidates eliminated by this technique
      */
     fun onEliminatorApplied(name: String, eliminations: Int) {}
+
+    /**
+     * Called when candidates are eliminated at specific cells by a technique.
+     *
+     * This provides cell-level detail (which cells, which values) for step-by-step
+     * solving features. Unlike [onEliminatorApplied] which only reports aggregate counts,
+     * this callback includes the full list of per-cell eliminations.
+     *
+     * @param name Name of the elimination technique (e.g., "Naked Pair")
+     * @param eliminations List of per-cell eliminations with affected coordinates and removed values
+     */
+    fun onCandidatesEliminated(name: String, eliminations: List<Elimination>) {}
     
     /**
      * Called when solving is complete.
@@ -131,6 +154,10 @@ class CompositeListener(vararg listeners: SolvingListener) : SolvingListener {
     
     override fun onEliminatorApplied(name: String, eliminations: Int) {
         listeners.forEach { it.onEliminatorApplied(name, eliminations) }
+    }
+
+    override fun onCandidatesEliminated(name: String, eliminations: List<Elimination>) {
+        listeners.forEach { it.onCandidatesEliminated(name, eliminations) }
     }
     
     override fun onSolveComplete(solved: Boolean, timeNanos: Long, backtracks: Int) {

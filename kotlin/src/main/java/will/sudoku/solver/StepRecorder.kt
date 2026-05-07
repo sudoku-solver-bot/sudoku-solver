@@ -79,13 +79,35 @@ class StepRecorder : SolvingListener {
     }
     
     override fun onEliminatorApplied(name: String, eliminations: Int) {
+        // Per-cell detail is handled by onCandidatesEliminated.
+        // This aggregate callback is kept for backward compatibility with other listeners.
+    }
+
+    override fun onCandidatesEliminated(name: String, eliminations: List<Elimination>) {
+        if (eliminations.isEmpty()) return
+
         stepNumber++
+        val affectedCells = eliminations.map { it.cell }
+        val allValues = eliminations.flatMap { it.eliminatedValues }.toSet()
+        val totalEliminated = eliminations.sumOf { it.eliminatedValues.size }
+
+        // Build human-readable per-cell explanation
+        val cellDescs = eliminations.sortedBy { "${it.cell.row},${it.cell.col}" }
+            .joinToString("; ") { e ->
+                val cellLabel = "(${e.cell.row + 1}, ${e.cell.col + 1})"
+                val vals = e.eliminatedValues.sorted().joinToString(",")
+                "$cellLabel: [$vals]"
+            }
+
         val stepType = StepType.fromTechniqueName(name)
-        _steps.add(SolvingStep.techniqueApplied(
+        val explanation = "$name: $totalEliminated candidate(s) eliminated — $cellDescs"
+
+        _steps.add(SolvingStep(
             stepNumber = stepNumber,
-            techniqueName = name,
-            eliminations = eliminations,
-            explanation = "$name: $eliminations candidate(s) eliminated"
+            stepType = stepType,
+            affectedCells = affectedCells,
+            values = allValues,
+            explanation = explanation
         ))
     }
     
