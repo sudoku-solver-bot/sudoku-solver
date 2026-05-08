@@ -62,6 +62,24 @@ class TeachingHintProvider {
             )
         }
 
+        // If HintGenerator returned null but the board is solved, return a COMPLETE hint.
+        // This fixes bug #224 where constraint propagation fully solves the puzzle
+        // (via cascading naked singles) and the hint falls through to the generic
+        // "Scanning" fallback.
+        if (board.isSolved()) {
+            return TeachingHint(
+                type = HintType.COMPLETE,
+                cell = null,
+                technique = "Puzzle Complete",
+                explanation = "This puzzle can be solved with basic techniques! All remaining cells can be filled by checking what numbers are missing in each row, column, and box.",
+                teachingPoints = listOf(
+                    "Keep going — check each empty cell's row, column, and box",
+                    "If only one number is possible, that's your answer",
+                    "You're using the 'Naked Single' technique without even knowing it!"
+                )
+            )
+        }
+
         // Default fallback hint
         return TeachingHint(
             type = HintType.ADVANCED,
