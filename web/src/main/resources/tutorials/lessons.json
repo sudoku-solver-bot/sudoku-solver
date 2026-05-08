@@ -309,52 +309,45 @@
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Green Belt! 🟢 Pointing Pairs connect boxes to rows/columns. When all candidates of a number in a box line up on one row, they 'point' at eliminations outside."
+        "text": "Green Belt! 🟢 Pointing Pairs connect boxes to rows/columns. When all candidates of a number in a box line up on one row or column, that number MUST go in those cells — so you can eliminate it from the rest of that row/column outside the box."
       },
       {
         "order": 2,
         "type": "highlight",
         "cells": [
-          25,
-          26
+          72,
+          73
         ],
         "highlightColor": "yellow",
-        "text": "In box 3 (top-right), the number 3 only appears in these two cells — both on the same row! The pair 'points' along the row."
+        "text": "In box 7 (bottom-left), the number 3 only appears in these two cells — both on row 9. This is a pointing pair!"
       },
       {
         "order": 3,
         "type": "highlight",
         "cells": [
-          18,
-          19,
-          20,
-          21
+          76,
+          77
         ],
-        "highlightColor": "red",
-        "text": "Since 3 MUST be in one of the yellow cells, eliminate 3 from these other cells in the same row!"
+        "highlightColor": "orange",
+        "text": "Since 3 MUST be in R9C1 or R9C2 (the yellow cells), you can eliminate 3 from these other cells in row 9 outside of box 7."
       },
       {
         "order": 4,
         "type": "explain",
         "cells": [],
-        "text": "Same logic works for columns: if all candidates in a box line up on one column, eliminate from the rest of the column."
+        "text": "Same logic works for columns: if all candidates in a box line up in one column, eliminate that number from the rest of that column."
       },
       {
         "order": 5,
         "type": "explain",
         "cells": [],
-        "text": "Pointing Triples work the same way — just three cells instead of two, all in the same box and aligned on one row or column."
+        "text": "Pointing Triples work the same way — just with three cells instead of two. Scan each box and check if any number's candidates align in a straight line!"
       },
       {
         "order": 6,
-        "type": "reveal",
-        "cells": [
-          25,
-          26
-        ],
-        "highlightColor": "green",
-        "text": "🎉 Pointing Pairs bridge boxes and rows! Find a number constrained to one line in a box, then eliminate from the rest of that line.",
-        "eliminatedValue": 3
+        "type": "explain",
+        "cells": [],
+        "text": "Pointing Pairs are powerful because they reduce pencil marks in an entire row or column at once. Spot them early to simplify the puzzle fast! ⚡"
       }
     ]
   },
