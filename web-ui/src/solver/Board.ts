@@ -1,16 +1,6 @@
 import { Coord } from './Coord'
 import { CoordGroup } from './CoordGroup'
-import { SIZE, SYMBOLS, WILDCARD_PATTERN } from './BoardSettings'
-
-/**
- * Bit masks for individual values 1-9.
- *
- * masks[0] = 0b000000001 (value 1)
- * masks[1] = 0b000000010 (value 2)
- * ...
- * masks[8] = 0b100000000 (value 9)
- */
-const MASKS: readonly number[] = Object.freeze(Array.from({ length: SIZE }, (_, i) => 1 << i))
+import { SIZE, SYMBOLS, WILDCARD_PATTERN, MASKS, bitCount } from './Bitmask'
 
 /**
  * Represents a Sudoku puzzle board with 81 cells arranged in a 9×9 grid.
@@ -227,16 +217,4 @@ export class Board {
         }
         return lines.join('\n')
     }
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Count set bits (popcount) in a 32-bit integer. */
-function bitCount(n: number): number {
-    n = n - ((n >>> 1) & 0x55555555)
-    n = (n & 0x33333333) + ((n >>> 2) & 0x33333333)
-    n = (n + (n >>> 4)) & 0x0f0f0f0f
-    return (n * 0x01010101) >>> 24
 }
