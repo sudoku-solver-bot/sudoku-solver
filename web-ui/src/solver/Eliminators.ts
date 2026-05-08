@@ -305,3 +305,146 @@ function combinations<T>(arr: T[], size: number): T[][] {
     }
     return result
 }
+
+// ---------------------------------------------------------------------------
+// PointingCandidateEliminator (Intersection: Region → Row/Col)
+// ---------------------------------------------------------------------------
+
+/**
+ * Pointing: If in a region all candidates of a value are confined to one
+ * row or column, remove that candidate from the rest of that row/column
+ * outside the region.
+ *
+ * Example: In region 0, all '3' candidates are in row 0. This means cells
+ * in row 0 that are NOT in region 0 cannot be '3' — remove '3' from them.
+ */
+export class PointingCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Pointing'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            for (const region of CoordGroup.region) {
+                if (this._eliminateFromRegion(board, region)) {
+                    anyUpdate = true
+                    stable = false
+                }
+            }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    private _eliminateFromRegion(board: Board, region: CoordGroup): boolean {
+        let anyUpdate = false
+        for (let value = 1; value <= SIZE; value++) {
+            const mask = MASKS[value - 1]
+            const cellsWithCandidate: Coord[] = []
+
+            for (const coord of region.coords) {
+                if (board.candidatePattern(coord) & mask) {
+                    cellsWithCandidate.push(coord)
+                }
+            }
+
+            // Need 2+ cells to form a pointing pattern
+            if (cellsWithCandidate.length < 2) continue
+
+            // Check if all cells share the same row
+            const firstCoord = cellsWithCandidate[0]
+            const sameRow = cellsWithCandidate.every(c => c.row === firstCoord.row)
+            if (sameRow) {
+                // Remove candidate from other cells in this row outside region
+                const otherRowCells = CoordGroup.horizontal[firstCoord.row].coords
+                    .filter(c => !region.coords.includes(c))
+                for (const cell of otherRowCells) {
+                    if (board.eraseCandidateValue(cell, value)) {
+                        anyUpdate = true
+                    }
+                }
+            }
+
+            // Check if all cells share the same column
+            const sameCol = cellsWithCandidate.every(c => c.col === firstCoord.col)
+            if (sameCol) {
+                // Remove candidate from other cells in this column outside region
+                const otherColCells = CoordGroup.vertical[firstCoord.col].coords
+                    .filter(c => !region.coords.includes(c))
+                for (const cell of otherColCells) {
+                    if (board.eraseCandidateValue(cell, value)) {
+                        anyUpdate = true
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+}
+
+// ---------------------------------------------------------------------------
+// ClaimingCandidateEliminator (Intersection: Row/Col → Region)
+// ---------------------------------------------------------------------------
+
+/**
+ * Claiming: If in a row/column all candidates of a value are confined to one
+ * region, remove that candidate from the rest of that region.
+ *
+ * Example: In row 0, all '5' candidates are in region 0. This means cells
+ * in region 0 that are NOT in row 0 cannot be '5' — remove '5' from them.
+ */
+export class ClaimingCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Claiming'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            for (let i = 0; i < SIZE; i++) {
+                if (this._eliminateFromLine(board, CoordGroup.horizontal[i])) {
+                    anyUpdate = true
+                    stable = false
+                }
+                if (this._eliminateFromLine(board, CoordGroup.vertical[i])) {
+                    anyUpdate = true
+                    stable = false
+                }
+            }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    private _eliminateFromLine(board: Board, line: CoordGroup): boolean {
+        let anyUpdate = false
+        for (let value = 1; value <= SIZE; value++) {
+            const mask = MASKS[value - 1]
+            const cellsWithCandidate: Coord[] = []
+
+            for (const coord of line.coords) {
+                if (board.candidatePattern(coord) & mask) {
+                    cellsWithCandidate.push(coord)
+                }
+            }
+
+            if (cellsWithCandidate.length < 2) continue
+
+            // Check if all cells with this candidate are in the same region
+            const firstCell = cellsWithCandidate[0]
+            const regionIndex = firstCell.region
+            const allSameRegion = cellsWithCandidate.every(c => c.region === regionIndex)
+
+            if (allSameRegion) {
+                const region = CoordGroup.region[regionIndex]
+                // Remove candidate from cells in this region NOT in this line
+                const otherCells = region.coords.filter(c => !line.coords.includes(c))
+                for (const cell of otherCells) {
+                    if (board.eraseCandidateValue(cell, value)) {
+                        anyUpdate = true
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+}
