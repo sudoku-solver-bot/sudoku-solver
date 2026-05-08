@@ -789,3 +789,102 @@ export class TwoStringKiteCandidateEliminator implements CandidateEliminator {
         return anyUpdate
     }
 }
+
+// ---------------------------------------------------------------------------
+// EmptyRectangleCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * Empty Rectangle: In a 3×3 box, if a candidate's cells are confined to
+ * one row + at most 2 columns (or one column + at most 2 rows), find a
+ * strong link outside the box that intersects and eliminate the candidate
+ * from the chain's remote intersection.
+ */
+export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Empty Rectangle'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            for (let value = 1; value <= SIZE; value++) {
+                if (this._eliminateValue(board, value)) {
+                    anyUpdate = true
+                    stable = false
+                }
+            }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    private _eliminateValue(board: Board, value: number): boolean {
+        const mask = MASKS[value - 1]
+        let anyUpdate = false
+
+        // Build column strong links
+        const colLinks: Map<number, [number, number]> = new Map()
+        for (let c = 0; c < SIZE; c++) {
+            const rows: number[] = []
+            for (let r = 0; r < SIZE; r++) {
+                if (board.candidatePattern(Coord.all[r * 9 + c]) & mask) rows.push(r)
+            }
+            if (rows.length === 2) colLinks.set(c, [rows[0], rows[1]])
+        }
+
+        // Build row strong links
+        const rowLinks: Map<number, [number, number]> = new Map()
+        for (let r = 0; r < SIZE; r++) {
+            const cols: number[] = []
+            for (let c = 0; c < SIZE; c++) {
+                if (board.candidatePattern(Coord.all[r * 9 + c]) & mask) cols.push(c)
+            }
+            if (cols.length === 2) rowLinks.set(r, [cols[0], cols[1]])
+        }
+
+        for (const region of CoordGroup.region) {
+            const cells = region.coords.filter(c => board.candidatePattern(c) & mask)
+            if (cells.length < 2) continue
+
+            // Find rows and columns occupied by candidate in this region
+            const rows = new Set(cells.map(c => c.row))
+            const cols = new Set(cells.map(c => c.col))
+
+            // Empty Rectangle in row direction: confined to 1 row (≤2 cols used)
+            if (rows.size === 1 && cols.size >= 1 && cols.size <= 2) {
+                const er = rows.values().next().value!
+                // Find column strong links where one end is in this row
+                for (const [col, [r1, r2]] of colLinks) {
+                    if (!cols.has(col)) continue
+                    const otherR = r1 === er ? r2 : r1
+                    // The other end eliminates from cells in region that see both
+                    // Eliminate from all cells in the region in this column (not in the row)
+                    for (const cell of cells) {
+                        if (cell.col === col && cell.row !== er) continue
+                    }
+                    // Actually: eliminate from cells in otherR row at cols in the region
+                    for (const c of cols) {
+                        if (c === col) continue
+                        const target = Coord.all[otherR * 9 + c]
+                        if (board.eraseCandidateValue(target, value)) anyUpdate = true
+                    }
+                }
+            }
+
+            // Empty Rectangle in column direction: confined to 1 col (≤2 rows used)
+            if (cols.size === 1 && rows.size >= 1 && rows.size <= 2) {
+                const ec = cols.values().next().value!
+                for (const [row, [c1, c2]] of rowLinks) {
+                    if (!rows.has(row)) continue
+                    const otherC = c1 === ec ? c2 : c1
+                    for (const r of rows) {
+                        if (r === row) continue
+                        const target = Coord.all[r * 9 + otherC]
+                        if (board.eraseCandidateValue(target, value)) anyUpdate = true
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+}
