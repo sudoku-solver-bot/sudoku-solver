@@ -4,6 +4,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const mockFetch = vi.fn()
 global.fetch = mockFetch
 
+// Mock the client-side solver so it never loads in these tests.
+// This ensures we are testing the server API error paths.
+vi.mock('@/solver', () => {
+  throw new Error('Solver module not available in API tests')
+})
+
 // Re-import the API module for each test to use fresh mock
 describe('API error resilience', () => {
   beforeEach(() => {
