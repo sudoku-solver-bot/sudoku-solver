@@ -1,6 +1,7 @@
 import type { Board } from './Board'
+import { Coord } from './Coord'
 import { CoordGroup } from './CoordGroup'
-import { bitCount, MASKS, WILDCARD_PATTERN } from './Bitmask'
+import { bitCount, MASKS, SIZE, WILDCARD_PATTERN } from './Bitmask'
 
 // ---------------------------------------------------------------------------
 // CandidateEliminator interface
@@ -184,4 +185,123 @@ export class ExclusionCandidateEliminator implements CandidateEliminator {
         } while (!stable)
         return anyUpdate
     }
+}
+
+// ---------------------------------------------------------------------------
+// HiddenSubsetCandidateEliminator (Hidden Pairs, Triples, Quads)
+// ---------------------------------------------------------------------------
+
+/**
+ * Finds hidden subsets within groups.
+ *
+ * A hidden subset occurs when N candidates appear in exactly N cells within a
+ * group, even if those cells also contain other candidates. In this case, all
+ * other candidates can be removed from those N cells.
+ *
+ * Equivalent to the Kotlin `HiddenSubsetCandidateEliminator`.
+ */
+export class HiddenSubsetCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Hidden Subset'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            for (const group of CoordGroup.all) {
+                if (this._eliminateFromGroup(board, group)) {
+                    anyUpdate = true
+                    stable = false
+                }
+            }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    private _eliminateFromGroup(board: Board, group: CoordGroup): boolean {
+        const candidateToCells = new Map<number, Coord[]>()
+        for (const coord of group.coords) {
+            const candidates = board.candidateValues(coord)
+            for (const c of candidates) {
+                const list = candidateToCells.get(c)
+                if (list) list.push(coord)
+                else candidateToCells.set(c, [coord])
+            }
+        }
+
+        const limited = new Map<number, Coord[]>()
+        for (const [cand, cells] of candidateToCells) {
+            if (cells.length >= 2 && cells.length <= 4) {
+                limited.set(cand, cells)
+            }
+        }
+        if (limited.size < 2) return false
+
+        let anyUpdate = false
+        for (const size of [2, 3, 4]) {
+            if (this._checkSubset(board, limited, size)) {
+                anyUpdate = true
+            }
+        }
+        return anyUpdate
+    }
+
+    private _checkSubset(
+        board: Board,
+        candidateToCells: Map<number, Coord[]>,
+        subsetSize: number,
+    ): boolean {
+        const eligible: number[] = []
+        for (const [cand, cells] of candidateToCells) {
+            if (cells.length <= subsetSize) {
+                eligible.push(cand)
+            }
+        }
+        if (eligible.length < subsetSize) return false
+
+        let anyUpdate = false
+        const combos = combinations(eligible, subsetSize)
+
+        for (const combo of combos) {
+            const cellsWithCandidates = new Set<Coord>()
+            for (const cand of combo) {
+                const cells = candidateToCells.get(cand)
+                if (cells) {
+                    for (const c of cells) cellsWithCandidates.add(c)
+                }
+            }
+
+            if (cellsWithCandidates.size === subsetSize) {
+                const comboMasks = new Set(combo.map(v => MASKS[v - 1]))
+
+                for (const cell of cellsWithCandidates) {
+                    const pat = board.candidatePattern(cell)
+                    for (let i = 0; i < SIZE; i++) {
+                        if ((pat & MASKS[i]) !== 0 && !comboMasks.has(MASKS[i])) {
+                            if (board.eraseCandidateValue(cell, i + 1)) {
+                                anyUpdate = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+}
+
+function combinations<T>(arr: T[], size: number): T[][] {
+    if (size === 0) return [[]]
+    if (size > arr.length) return []
+    if (size === 1) return arr.map(item => [item])
+
+    const result: T[][] = []
+    for (let i = 0; i <= arr.length - size; i++) {
+        const first = arr[i]
+        const rest = arr.slice(i + 1)
+        for (const combo of combinations(rest, size - 1)) {
+            result.push([first, ...combo])
+        }
+    }
+    return result
 }
