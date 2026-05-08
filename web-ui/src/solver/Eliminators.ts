@@ -694,3 +694,98 @@ export class SkyscraperCandidateEliminator implements CandidateEliminator {
         return anyUpdate
     }
 }
+
+// ---------------------------------------------------------------------------
+// TwoStringKiteCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * 2-String Kite: A candidate forms two strong links (one in a row, one in
+ * a column) connected by a box where the candidate appears in 2 cells
+ * (different row & column). The remote ends of the chain eliminate the
+ * candidate from their intersection.
+ */
+export class TwoStringKiteCandidateEliminator implements CandidateEliminator {
+    readonly displayName = '2-String Kite'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            for (let value = 1; value <= SIZE; value++) {
+                if (this._eliminateValue(board, value)) {
+                    anyUpdate = true
+                    stable = false
+                }
+            }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    private _eliminateValue(board: Board, value: number): boolean {
+        const mask = MASKS[value - 1]
+
+        // Build row strong links: rows where candidate appears in exactly 2 cols
+        const rowLinks: Map<number, [number, number]> = new Map()
+        for (let r = 0; r < SIZE; r++) {
+            const cols: number[] = []
+            for (let c = 0; c < SIZE; c++) {
+                if (board.candidatePattern(Coord.all[r * 9 + c]) & mask) cols.push(c)
+            }
+            if (cols.length === 2) rowLinks.set(r, [cols[0], cols[1]])
+        }
+
+        // Build column strong links: cols where candidate appears in exactly 2 rows
+        const colLinks: Map<number, [number, number]> = new Map()
+        for (let c = 0; c < SIZE; c++) {
+            const rows: number[] = []
+            for (let r = 0; r < SIZE; r++) {
+                if (board.candidatePattern(Coord.all[r * 9 + c]) & mask) rows.push(r)
+            }
+            if (rows.length === 2) colLinks.set(c, [rows[0], rows[1]])
+        }
+
+        // Find 2-string kite: a box with 2 candidate cells, one forming
+        // a row strong link, the other a column strong link
+        let anyUpdate = false
+
+        for (const region of CoordGroup.region) {
+            // Find cells in this region with the candidate
+            const regionCells: Coord[] = []
+            for (const coord of region.coords) {
+                if (board.candidatePattern(coord) & mask) regionCells.push(coord)
+            }
+
+            // Need exactly 2 cells, in different rows and columns
+            if (regionCells.length !== 2) continue
+            const a = regionCells[0], b = regionCells[1]
+            if (a.row === b.row || a.col === b.col) continue
+
+            // Try: cell A forms row strong link, cell B forms col strong link
+            if (rowLinks.has(a.row) && colLinks.has(b.col)) {
+                const [ac1, ac2] = rowLinks.get(a.row)!
+                // The row link's other end (not a.col)
+                const rowOtherCol = ac1 === a.col ? ac2 : ac1
+                const [br1, br2] = colLinks.get(b.col)!
+                // The column link's other end (not b.row)
+                const colOtherRow = br1 === b.row ? br2 : br1
+                // Eliminate from intersection of rowOther and colOther
+                const target = Coord.all[colOtherRow * 9 + rowOtherCol]
+                if (board.eraseCandidateValue(target, value)) anyUpdate = true
+            }
+
+            // Try: cell A forms col strong link, cell B forms row strong link
+            if (colLinks.has(a.col) && rowLinks.has(b.row)) {
+                const [ar1, ar2] = colLinks.get(a.col)!
+                const colOtherRow = ar1 === a.row ? ar2 : ar1
+                const [bc1, bc2] = rowLinks.get(b.row)!
+                const rowOtherCol = bc1 === b.col ? bc2 : bc1
+                const target = Coord.all[colOtherRow * 9 + rowOtherCol]
+                if (board.eraseCandidateValue(target, value)) anyUpdate = true
+            }
+        }
+
+        return anyUpdate
+    }
+}
