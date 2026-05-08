@@ -1,5 +1,6 @@
 import { WILDCARD_PATTERN, valueToMask } from './Bitmask'
 import type { Board } from './Board'
+import { Coord } from './Coord'
 
 /**
  * Parses puzzle strings in various formats into a Board.
@@ -67,5 +68,15 @@ export class BoardReader {
             }
         }
         return patterns
+    }
+
+    /** Convert a solved Board back to an 81-character puzzle string. */
+    static boardToString(board: Board): string {
+        let result = ''
+        for (let i = 0; i < 81; i++) {
+            const v = board.value(Coord.all[i])
+            result += v === 0 ? '.' : String(v)
+        }
+        return result
     }
 }
