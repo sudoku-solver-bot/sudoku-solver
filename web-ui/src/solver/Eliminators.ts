@@ -888,3 +888,129 @@ export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
         return anyUpdate
     }
 }
+
+// ---------------------------------------------------------------------------
+// WWingCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * W-Wing: Two bi-value cells with the same {link, target} candidates are
+ * connected through a strong link on the 'link' candidate, meaning any
+ * cell seeing both bi-value cells cannot contain the 'target' candidate.
+ *
+ * Equivalent to the Kotlin `WWingCandidateEliminator`.
+ */
+export class WWingCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'W-Wing'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            if (this._eliminateWings(board)) { anyUpdate = true; stable = false }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    private _eliminateWings(board: Board): boolean {
+        // Find all bi-value cells grouped by candidate pair
+        const groups = new Map<string, Coord[]>()
+        for (const coord of Coord.all) {
+            if (board.isConfirmed(coord)) continue
+            const pat = board.candidatePattern(coord)
+            if (bitCount(pat) !== 2) continue
+            const vals = maskToValues(pat).sort((a, b) => a - b)
+            const key = `${vals[0]},${vals[1]}`
+            const list = groups.get(key)
+            if (list) { list.push(coord) } else { groups.set(key, [coord]) }
+        }
+
+        let anyUpdate = false
+        for (const cells of groups.values()) {
+            if (cells.length < 2) continue
+            for (let i = 0; i < cells.length; i++) {
+                for (let j = i + 1; j < cells.length; j++) {
+                    const a = cells[i]
+                    const b = cells[j]
+                    const vals = board.candidateValues(a).sort((x, y) => x - y)
+                    const link = vals[0]
+                    const target = vals[1]
+
+                    if (this._checkWWing(board, a, b, link, target) ||
+                        this._checkWWing(board, a, b, target, link)) {
+                        anyUpdate = true
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+
+    private _checkWWing(board: Board, a: Coord, b: Coord, link: number, target: number): boolean {
+        // Find cells with 'link' candidate that see cell a
+        const linkCellsA = this._findLinkCells(board, a, link)
+        const linkCellsB = this._findLinkCells(board, b, link)
+
+        for (const la of linkCellsA) {
+            for (const lb of linkCellsB) {
+                if (la === lb) continue
+                if (!this._seesEachOther(la, lb)) continue
+                if (!this._isStrongLink(board, la, lb, link)) continue
+                return this._eliminateCommonPeers(board, a, b, target)
+            }
+        }
+        return false
+    }
+
+    private _findLinkCells(board: Board, cell: Coord, candidate: number): Coord[] {
+        const mask = MASKS[candidate - 1]
+        const result: Coord[] = []
+        for (const coord of Coord.all) {
+            if (coord === cell) continue
+            if (!(board.candidatePattern(coord) & mask)) continue
+            if (this._seesEachOther(coord, cell)) result.push(coord)
+        }
+        return result
+    }
+
+    private _seesEachOther(a: Coord, b: Coord): boolean {
+        return a.row === b.row || a.col === b.col ||
+            (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
+             Math.floor(a.col / 3) === Math.floor(b.col / 3))
+    }
+
+    private _isStrongLink(board: Board, a: Coord, b: Coord, candidate: number): boolean {
+        const mask = MASKS[candidate - 1]
+
+        // Check shared units: row, col, region
+        const units: CoordGroup[] = []
+        if (a.row === b.row) units.push(CoordGroup.horizontal[a.row])
+        if (a.col === b.col) units.push(CoordGroup.vertical[a.col])
+        if (a.region === b.region) units.push(CoordGroup.region[a.region])
+
+        for (const unit of units) {
+            const cellsWithCandidate = unit.coords.filter(c =>
+                !board.isConfirmed(c) && (board.candidatePattern(c) & mask)
+            )
+            if (cellsWithCandidate.length === 2 &&
+                cellsWithCandidate.includes(a) && cellsWithCandidate.includes(b)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private _eliminateCommonPeers(board: Board, a: Coord, b: Coord, cand: number): boolean {
+        let anyUpdate = false
+        for (const coord of Coord.all) {
+            if (coord === a || coord === b) continue
+            if (board.isConfirmed(coord)) continue
+            if (!(board.candidatePattern(coord) & MASKS[cand - 1])) continue
+            if (this._seesEachOther(coord, a) && this._seesEachOther(coord, b)) {
+                if (board.eraseCandidateValue(coord, cand)) anyUpdate = true
+            }
+        }
+        return anyUpdate
+    }
+}
