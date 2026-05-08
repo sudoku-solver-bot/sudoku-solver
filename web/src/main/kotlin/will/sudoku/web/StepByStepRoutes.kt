@@ -32,7 +32,10 @@ data class StepResponse(
     val affectedCells: List<CellCoord>,
     val values: List<Int>,
     val explanation: String,
-    val boardState: String? = null
+    val boardState: String? = null,
+    val technique: String? = null,
+    val cell: CellCoord? = null,
+    val value: Int? = null
 )
 
 @Serializable
@@ -102,7 +105,10 @@ private suspend fun ApplicationCall.handleSolveSteps() {
             affectedCells = step.affectedCells.map { CellCoord(it.row, it.col) },
             values = step.values.toList(),
             explanation = step.explanation,
-            boardState = step.boardState
+            boardState = step.boardState,
+            technique = step.stepType.displayName,
+            cell = step.affectedCells.firstOrNull()?.let { CellCoord(it.row, it.col) },
+            value = step.values.firstOrNull()
         )
     }
 
