@@ -5,7 +5,6 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.util.pipeline.*
 import kotlinx.serialization.Serializable
 import will.sudoku.solver.BoardReader
 import will.sudoku.solver.SolverWithSteps
@@ -43,15 +42,15 @@ data class CellCoord(
 )
 
 fun Route.stepByStepRoutes() {
-    post("/solve/steps") { handleSolveSteps() }
-    post("/step-by-step") { handleSolveSteps() }
+    post("/solve/steps") { call.handleSolveSteps() }
+    post("/step-by-step") { call.handleSolveSteps() }
 }
 
-private suspend fun PipelineContext<Unit, ApplicationCall>.handleSolveSteps() {
+private suspend fun ApplicationCall.handleSolveSteps() {
     val request = try {
-        call.receive<SolveStepsRequest>()
+        receive<SolveStepsRequest>()
     } catch (e: Exception) {
-        call.respond(
+        respond(
             HttpStatusCode.BadRequest,
             SolveStepsResponse(
                 solved = false,
@@ -65,7 +64,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleSolveSteps() {
 
     // Validate puzzle length
     if (request.puzzle.length != 81) {
-        call.respond(
+        respond(
             HttpStatusCode.BadRequest,
             SolveStepsResponse(
                 solved = false,
@@ -81,7 +80,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleSolveSteps() {
     val board = try {
         BoardReader.readBoard(request.puzzle)
     } catch (e: Exception) {
-        call.respond(
+        respond(
             HttpStatusCode.BadRequest,
             SolveStepsResponse(
                 solved = false,
@@ -123,7 +122,7 @@ private suspend fun PipelineContext<Unit, ApplicationCall>.handleSolveSteps() {
         }
     }
 
-    call.respond(
+    respond(
         SolveStepsResponse(
             solved = progress.isSolved,
             solution = solutionString,
