@@ -1,5 +1,5 @@
 import { Coord } from './Coord'
-import { SIZE, REGION_SIZE } from './BoardSettings'
+import { SIZE, REGION_SIZE } from './Bitmask'
 
 /**
  * Represents a group of coordinates (row, column, or 3×3 region).
