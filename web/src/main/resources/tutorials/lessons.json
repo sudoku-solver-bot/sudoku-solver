@@ -242,11 +242,8 @@
         "type": "highlight",
         "cells": [
           27,
-          28,
           29,
-          30,
           31,
-          32,
           33,
           34,
           35
@@ -257,10 +254,7 @@
       {
         "order": 4,
         "type": "highlight",
-        "cells": [
-          30,
-          32
-        ],
+        "cells": [],
         "highlightColor": "yellow",
         "text": "Numbers 6 AND 7 can only appear in these two cells. No other cell in the row can hold 6 or 7!"
       },
@@ -273,10 +267,7 @@
       {
         "order": 6,
         "type": "reveal",
-        "cells": [
-          30,
-          32
-        ],
+        "cells": [],
         "highlightColor": "green",
         "text": "🎉 Hidden Pairs clear extra candidates, often revealing singles! Scan for two numbers sharing only two cells.",
         "eliminatedValue": 6
@@ -366,14 +357,9 @@
         "type": "highlight",
         "cells": [
           0,
-          1,
-          2,
           3,
           4,
-          5,
-          6,
-          7,
-          8
+          7
         ],
         "highlightColor": "blue",
         "text": "Look at row 1. Check where the number 2 can go in this row."
@@ -392,7 +378,6 @@
         "order": 4,
         "type": "highlight",
         "cells": [
-          12,
           13,
           14
         ],
@@ -649,10 +634,6 @@
         "type": "highlight",
         "cells": [
           0,
-          1,
-          2,
-          3,
-          4,
           5,
           6,
           7,
@@ -1019,10 +1000,7 @@
       {
         "order": 3,
         "type": "highlight",
-        "cells": [
-          18,
-          36
-        ],
+        "cells": [],
         "highlightColor": "yellow",
         "text": "These two highlighted cells form one ALS. Check their pencil marks — together they have N+1 candidates."
       },
@@ -1046,7 +1024,6 @@
         "order": 6,
         "type": "reveal",
         "cells": [
-          18,
           22
         ],
         "highlightColor": "green",
@@ -1084,14 +1061,10 @@
         "order": 3,
         "type": "highlight",
         "cells": [
-          0,
-          1,
           2,
           3,
           4,
-          5,
           6,
-          7,
           8
         ],
         "highlightColor": "blue",
@@ -1113,7 +1086,6 @@
         "order": 6,
         "type": "reveal",
         "cells": [
-          0,
           6,
           12
         ],
@@ -1171,9 +1143,7 @@
         "type": "reveal",
         "cells": [
           0,
-          8,
-          72,
-          80
+          72
         ],
         "highlightColor": "green",
         "text": "🎉 Mutant Fish: any mix of rows, columns, and boxes in base + cover. The most general fish pattern. If you master this, you can solve literally any valid Sudoku!",
@@ -1220,10 +1190,8 @@
         "type": "highlight",
         "cells": [
           18,
-          19,
           20,
           45,
-          46,
           47
         ],
         "highlightColor": "yellow",
@@ -1240,10 +1208,8 @@
         "type": "reveal",
         "cells": [
           18,
-          19,
           20,
           45,
-          46,
           47
         ],
         "highlightColor": "green",
@@ -1280,9 +1246,7 @@
       {
         "order": 3,
         "type": "highlight",
-        "cells": [
-          0
-        ],
+        "cells": [],
         "highlightColor": "yellow",
         "text": "Imagine this cell has candidates {1, 2, 4}. We test: 'What if it's 1?' Follow the chain of forced placements..."
       },
@@ -1296,7 +1260,6 @@
         "order": 5,
         "type": "highlight",
         "cells": [
-          0,
           40,
           80
         ],
@@ -1307,7 +1270,6 @@
         "order": 6,
         "type": "reveal",
         "cells": [
-          0,
           40,
           80
         ],
