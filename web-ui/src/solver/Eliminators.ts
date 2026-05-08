@@ -448,3 +448,128 @@ export class ClaimingCandidateEliminator implements CandidateEliminator {
         return anyUpdate
     }
 }
+
+// ---------------------------------------------------------------------------
+// FishCandidateEliminator (X-Wing, Swordfish, Jellyfish)
+// ---------------------------------------------------------------------------
+
+/**
+ * Generalized Fish pattern eliminator covering X-Wing (N=2), Swordfish
+ * (N=3), and Jellyfish (N=4).
+ *
+ * For each candidate value, if N rows have that candidate confined to the
+ * same N columns, eliminate the candidate from those N columns outside the
+ * N rows (and vice versa for columns → rows).
+ */
+export class FishCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Fish'
+    private readonly sizes: readonly number[]
+
+    /**
+     * @param sizes Fish sizes to search for (default: [2, 3, 4] for
+     *   X-Wing, Swordfish, Jellyfish). Use [2] for X-Wing only, etc.
+     */
+    constructor(sizes: readonly number[] = [2, 3, 4]) {
+        this.sizes = sizes
+    }
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            if (this._eliminateRows(board)) { anyUpdate = true; stable = false }
+            if (this._eliminateCols(board)) { anyUpdate = true; stable = false }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    private _eliminateRows(board: Board): boolean {
+        let anyUpdate = false
+        for (let value = 1; value <= SIZE; value++) {
+            const mask = MASKS[value - 1]
+            // For each row, list columns containing this candidate
+            const rowToCols = new Map<number, number[]>()
+            for (let r = 0; r < SIZE; r++) {
+                const cols: number[] = []
+                for (let c = 0; c < SIZE; c++) {
+                    const coord = Coord.all[r * 9 + c]
+                    if (board.candidatePattern(coord) & mask) {
+                        cols.push(c)
+                    }
+                }
+                if (cols.length >= 2) rowToCols.set(r, cols)
+            }
+            if (rowToCols.size < 2) continue
+
+            const rows = [...rowToCols.keys()]
+            for (const size of this.sizes) {
+                if (size > rows.length) continue
+                const rowCombos = combinations(rows, size)
+                for (const fishRows of rowCombos) {
+                    const unionCols = new Set<number>()
+                    for (const r of fishRows) {
+                        for (const c of rowToCols.get(r)!) unionCols.add(c)
+                    }
+                    if (unionCols.size !== size) continue
+                    // Fish found: eliminate from unionCols outside fishRows
+                    for (const c of unionCols) {
+                        for (let r = 0; r < SIZE; r++) {
+                            if (fishRows.includes(r)) continue
+                            const coord = Coord.all[r * 9 + c]
+                            if (board.eraseCandidateValue(coord, value)) {
+                                anyUpdate = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+
+    private _eliminateCols(board: Board): boolean {
+        let anyUpdate = false
+        for (let value = 1; value <= SIZE; value++) {
+            const mask = MASKS[value - 1]
+            const colToRows = new Map<number, number[]>()
+            for (let c = 0; c < SIZE; c++) {
+                const rows: number[] = []
+                for (let r = 0; r < SIZE; r++) {
+                    const coord = Coord.all[r * 9 + c]
+                    if (board.candidatePattern(coord) & mask) {
+                        rows.push(r)
+                    }
+                }
+                if (rows.length >= 2) colToRows.set(c, rows)
+            }
+            if (colToRows.size < 2) continue
+
+            const cols = [...colToRows.keys()]
+            for (const size of this.sizes) {
+                if (size > cols.length) continue
+                const colCombos = combinations(cols, size)
+                for (const fishCols of colCombos) {
+                    const unionRows = new Set<number>()
+                    for (const c of fishCols) {
+                        for (const r of colToRows.get(c)!) unionRows.add(r)
+                    }
+                    if (unionRows.size !== size) continue
+                    // Fish found: eliminate from unionRows outside fishCols
+                    for (const r of unionRows) {
+                        for (let c = 0; c < SIZE; c++) {
+                            if (fishCols.includes(c)) continue
+                            const coord = Coord.all[r * 9 + c]
+                            if (board.eraseCandidateValue(coord, value)) {
+                                anyUpdate = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+}
+
+// ---------------------------------------------------------------------------
