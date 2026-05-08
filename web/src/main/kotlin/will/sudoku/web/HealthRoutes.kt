@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
+import java.io.File
 import java.lang.management.ManagementFactory
 import java.lang.management.MemoryMXBean
 import java.lang.management.RuntimeMXBean
@@ -14,6 +15,7 @@ data class HealthResponse(
     val status: String,
     val version: String,
     val timestamp: Long = System.currentTimeMillis(),
+    val gitCommit: String? = null,
     val uptime: UptimeInfo? = null,
     val jvm: JvmInfo? = null,
     val system: SystemInfo? = null
@@ -116,11 +118,20 @@ fun Route.healthRoutes() {
             else -> "OK"
         }
 
+        // Read deployed commit hash (file path from env, default /opt/sudoku/.deploy-commit)
+        val gitCommit = try {
+            val commitFile = File(System.getenv("DEPLOY_COMMIT_FILE") ?: "/opt/sudoku/.deploy-commit")
+            if (commitFile.isFile) commitFile.readText().trim().takeIf { it.isNotEmpty() } else null
+        } catch (_: Exception) {
+            null
+        }
+
         call.respond(
             HttpStatusCode.OK,
             HealthResponse(
                 status = status,
                 version = "1.0.0",
+                gitCommit = gitCommit,
                 uptime = uptimeInfo,
                 jvm = jvmInfo,
                 system = systemInfo
