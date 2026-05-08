@@ -573,3 +573,124 @@ export class FishCandidateEliminator implements CandidateEliminator {
 }
 
 // ---------------------------------------------------------------------------
+// SkyscraperCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * Skyscraper: Find two rows (or two columns) where a candidate appears in
+ * exactly two cells each, with one aligned cell in the same column (for
+ * rows) or row (for columns). The two non-aligned cells can "see" each
+ * other's intersection — eliminate the candidate from any cell that sees
+ * both non-aligned ends.
+ */
+export class SkyscraperCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Skyscraper'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+        let stable: boolean
+        do {
+            stable = true
+            if (this._skyscraperRows(board)) { anyUpdate = true; stable = false }
+            if (this._skyscraperCols(board)) { anyUpdate = true; stable = false }
+        } while (!stable)
+        return anyUpdate
+    }
+
+    /** Skyscraper across rows (shared column). */
+    private _skyscraperRows(board: Board): boolean {
+        let anyUpdate = false
+        for (let value = 1; value <= SIZE; value++) {
+            const mask = MASKS[value - 1]
+            // Find rows where candidate appears in exactly 2 cells
+            const rowPositions: Map<number, number[]> = new Map()
+            for (let r = 0; r < SIZE; r++) {
+                const cols: number[] = []
+                for (let c = 0; c < SIZE; c++) {
+                    if (board.candidatePattern(Coord.all[r * 9 + c]) & mask) {
+                        cols.push(c)
+                    }
+                }
+                if (cols.length === 2) rowPositions.set(r, cols)
+            }
+            if (rowPositions.size < 2) continue
+
+            const rows = [...rowPositions.keys()]
+            for (let i = 0; i < rows.length; i++) {
+                for (let j = i + 1; j < rows.length; j++) {
+                    const r1 = rows[i], r2 = rows[j]
+                    const cols1 = rowPositions.get(r1)!
+                    const cols2 = rowPositions.get(r2)!
+
+                    // Find shared column
+                    const shared = cols1.filter(c => cols2.includes(c))
+                    if (shared.length !== 1) continue
+                    const sc = shared[0]
+
+                    // Non-shared columns
+                    const c1 = cols1.find(c => c !== sc)!
+                    const c2 = cols2.find(c => c !== sc)!
+
+                    // Eliminate from cells that see both non-aligned ends
+                    // i.e., cells in row r1, col c2 AND row r2, col c1
+                    const targets = [
+                        Coord.all[r1 * 9 + c2],
+                        Coord.all[r2 * 9 + c1],
+                    ]
+                    for (const t of targets) {
+                        if (board.eraseCandidateValue(t, value)) {
+                            anyUpdate = true
+                        }
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+
+    /** Skyscraper across columns (shared row). */
+    private _skyscraperCols(board: Board): boolean {
+        let anyUpdate = false
+        for (let value = 1; value <= SIZE; value++) {
+            const mask = MASKS[value - 1]
+            const colPositions: Map<number, number[]> = new Map()
+            for (let c = 0; c < SIZE; c++) {
+                const rows: number[] = []
+                for (let r = 0; r < SIZE; r++) {
+                    if (board.candidatePattern(Coord.all[r * 9 + c]) & mask) {
+                        rows.push(r)
+                    }
+                }
+                if (rows.length === 2) colPositions.set(c, rows)
+            }
+            if (colPositions.size < 2) continue
+
+            const cols = [...colPositions.keys()]
+            for (let i = 0; i < cols.length; i++) {
+                for (let j = i + 1; j < cols.length; j++) {
+                    const c1 = cols[i], c2 = cols[j]
+                    const rows1 = colPositions.get(c1)!
+                    const rows2 = colPositions.get(c2)!
+
+                    const shared = rows1.filter(r => rows2.includes(r))
+                    if (shared.length !== 1) continue
+                    const sr = shared[0]
+
+                    const r1 = rows1.find(r => r !== sr)!
+                    const r2 = rows2.find(r => r !== sr)!
+
+                    const targets = [
+                        Coord.all[r1 * 9 + c2],
+                        Coord.all[r2 * 9 + c1],
+                    ]
+                    for (const t of targets) {
+                        if (board.eraseCandidateValue(t, value)) {
+                            anyUpdate = true
+                        }
+                    }
+                }
+            }
+        }
+        return anyUpdate
+    }
+}
