@@ -16,6 +16,7 @@ import kotlin.time.Duration.Companion.minutes
 
 // Import route functions
 import will.sudoku.web.healthRoutes
+import will.sudoku.web.deployInfoRoutes
 import will.sudoku.web.solveRoutes
 import will.sudoku.web.hintRoutes
 import will.sudoku.web.generateRoutes
@@ -124,6 +125,7 @@ fun Application.module() {
             }
             
             healthRoutes()
+            deployInfoRoutes()
             solveRoutes()
             hintRoutes()
             generateRoutes()
@@ -147,6 +149,7 @@ fun Application.module() {
             }
             
             healthRoutes()
+            deployInfoRoutes()
             solveRoutes()
             hintRoutes()
             generateRoutes()
