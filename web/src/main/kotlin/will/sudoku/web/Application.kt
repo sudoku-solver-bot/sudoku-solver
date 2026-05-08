@@ -61,6 +61,21 @@ fun Application.module() {
     }
     
     routing {
+        // OpenAPI / Swagger UI documentation
+        get("/openapi.json") {
+            call.respondText(
+                javaClass.classLoader.getResource("openapi/openapi.json")?.readText() ?: "{}",
+                io.ktor.http.ContentType.Application.Json
+            )
+        }
+
+        get("/api-docs") {
+            call.respondText(
+                javaClass.classLoader.getResource("openapi/swagger-ui.html")?.readText() ?: "Not found",
+                io.ktor.http.ContentType.Text.Html
+            )
+        }
+
         // Serve Vue app at root
         get("/") {
             call.respondText(

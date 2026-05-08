@@ -1,0 +1,811 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Sudoku Dojo API",
+    "description": "Interactive REST API for the Sudoku Dojo platform — an educational Sudoku application with 17 solving algorithms, 20 interactive tutorials, daily challenges, and belt-rank progression.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Sudoku Dojo",
+      "url": "https://github.com/sudoku-solver-bot/sudoku-solver"
+    }
+  },
+  "servers": [
+    {
+      "url": "/api/v1",
+      "description": "Versioned API (v1)"
+    },
+    {
+      "url": "/api",
+      "description": "Legacy unversioned API (deprecated)"
+    }
+  ],
+  "tags": [
+    {"name": "Health", "description": "Service health and monitoring"},
+    {"name": "Solve", "description": "Puzzle solving"},
+    {"name": "Hints", "description": "Teaching hints and techniques"},
+    {"name": "Generate", "description": "Puzzle generation"},
+    {"name": "Validate", "description": "Puzzle validation"},
+    {"name": "Steps", "description": "Step-by-step solving"},
+    {"name": "Candidates", "description": "Candidate/pencil mark computation"},
+    {"name": "Daily Challenge", "description": "Daily puzzle challenges"},
+    {"name": "Tutorials", "description": "Interactive tutorials and quizzes"},
+    {"name": "Dashboard", "description": "Student progress dashboard"},
+    {"name": "Progress", "description": "User progress tracking"}
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Service health check",
+        "description": "Returns server health status including JVM memory, thread count, uptime, and system information.",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {"$ref": "#/components/schemas/HealthResponse"},
+                "example": {
+                  "status": "OK",
+                  "version": "1.0.0",
+                  "timestamp": 1778206647698,
+                  "uptime": {"milliseconds": 7317294, "humanReadable": "2h 1m 57s"},
+                  "jvm": {
+                    "memory": {"heapUsedMB": 87, "heapMaxMB": 1986, "heapUsedPercent": 4.39, "nonHeapUsedMB": 36, "freeMemoryMB": 194, "totalMemoryMB": 282},
+                    "threads": {"threadCount": 16, "peakThreadCount": 17, "daemonThreadCount": 15},
+                    "javaVersion": "25.0.2",
+                    "javaVendor": "Ubuntu"
+                  },
+                  "system": {"osName": "Linux", "osVersion": "6.8.0-111-generic", "osArch": "amd64", "availableProcessors": 4, "userTimezone": "Europe/Berlin"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/solve": {
+      "post": {
+        "tags": ["Solve"],
+        "summary": "Solve a Sudoku puzzle",
+        "description": "Solves a puzzle using the full solver engine (backtracking with MRV heuristic + 17 elimination techniques). Optionally includes detailed performance metrics.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/SolveRequest"},
+              "example": {"puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079", "includeMetrics": true}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Puzzle solved successfully",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SolveResponse"}}}
+          },
+          "400": {
+            "description": "Invalid puzzle or request body",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SolveResponse"}}}
+          },
+          "408": {
+            "description": "Solving timed out (10s limit)",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SolveResponse"}}}
+          },
+          "422": {
+            "description": "Puzzle has duplicate values or other validation errors",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SolveResponse"}}}
+          }
+        }
+      }
+    },
+    "/hint": {
+      "post": {
+        "tags": ["Hints"],
+        "summary": "Get a teaching hint",
+        "description": "Returns the next logical solving step with educational explanation. Optionally target a specific technique (e.g. 'Naked Single', 'X-Wing').",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/HintRequest"},
+              "example": {"puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hint generated",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/HintResponse"}}}
+          },
+          "400": {
+            "description": "Invalid puzzle format"
+          }
+        }
+      }
+    },
+    "/generate": {
+      "post": {
+        "tags": ["Generate"],
+        "summary": "Generate a random puzzle",
+        "description": "Generates a valid Sudoku puzzle at the requested difficulty level with an optional seed for reproducibility.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/GenerateRequest"},
+              "example": {"difficulty": "MEDIUM"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Puzzle generated",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/GenerateResponse"}}}
+          },
+          "400": {
+            "description": "Invalid difficulty level"
+          }
+        }
+      }
+    },
+    "/validate": {
+      "post": {
+        "tags": ["Validate"],
+        "summary": "Validate a Sudoku puzzle",
+        "description": "Checks if a puzzle is valid, optionally verifying solution uniqueness.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ValidateRequest"},
+              "example": {"puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079", "checkUniqueness": true}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Validation result",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ValidateResponse"}}}
+          },
+          "400": {
+            "description": "Invalid request"
+          }
+        }
+      }
+    },
+    "/solve/steps": {
+      "post": {
+        "tags": ["Steps"],
+        "summary": "Solve step-by-step",
+        "description": "Solves a puzzle and returns each logical step with explanations. Also available at /step-by-step.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/SolveStepsRequest"},
+              "example": {"puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Step-by-step solution",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/SolveStepsResponse"}}}
+          },
+          "400": {
+            "description": "Invalid puzzle"
+          }
+        }
+      }
+    },
+    "/candidates": {
+      "post": {
+        "tags": ["Candidates"],
+        "summary": "Compute pencil mark candidates",
+        "description": "Returns possible values (candidates) for each empty cell based on basic constraint propagation.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/CandidatesRequest"},
+              "example": {"puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Candidates computed",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/CandidatesResponse"}}}
+          },
+          "400": {
+            "description": "Invalid puzzle"
+          }
+        }
+      }
+    },
+    "/daily": {
+      "get": {
+        "tags": ["Daily Challenge"],
+        "summary": "Get today's daily challenge",
+        "description": "Returns a deterministic daily puzzle based on the current date, with belt difficulty and pre-computed candidates.",
+        "responses": {
+          "200": {
+            "description": "Today's daily challenge",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/DailyChallenge"}}}
+          }
+        }
+      }
+    },
+    "/daily/{date}": {
+      "get": {
+        "tags": ["Daily Challenge"],
+        "summary": "Get daily challenge for a specific date",
+        "parameters": [
+          {"name": "date", "in": "path", "required": true, "schema": {"type": "string", "example": "2026-05-08"}, "description": "Date in YYYY-MM-DD format"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Daily challenge for the specified date",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/DailyChallenge"}}}
+          },
+          "400": {
+            "description": "Invalid date format"
+          }
+        }
+      }
+    },
+    "/tutorials": {
+      "get": {
+        "tags": ["Tutorials"],
+        "summary": "List all tutorials",
+        "description": "Returns all 20 tutorial lessons grouped by belt level.",
+        "responses": {
+          "200": {
+            "description": "List of tutorial lessons",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/TutorialSummary"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tutorials/{id}": {
+      "get": {
+        "tags": ["Tutorials"],
+        "summary": "Get a specific tutorial lesson",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Lesson ID (e.g. 'naked-single')"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Tutorial lesson details",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TutorialLesson"}}}
+          },
+          "404": {
+            "description": "Lesson not found"
+          }
+        }
+      }
+    },
+    "/tutorials/{id}/board": {
+      "get": {
+        "tags": ["Tutorials"],
+        "summary": "Get the example puzzle board for a tutorial",
+        "parameters": [
+          {"name": "id", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Tutorial example board with candidates",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/TutorialBoardResponse"}}}
+          },
+          "404": {
+            "description": "Lesson not found"
+          }
+        }
+      }
+    },
+    "/tutorials/quizzes": {
+      "get": {
+        "tags": ["Tutorials"],
+        "summary": "List all quiz sets",
+        "description": "Returns all quiz sets grouped by belt level and technique.",
+        "responses": {
+          "200": {
+            "description": "List of quiz sets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/QuizSet"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tutorials/quizzes/{belt}": {
+      "get": {
+        "tags": ["Tutorials"],
+        "summary": "Get quiz for a specific belt",
+        "parameters": [
+          {"name": "belt", "in": "path", "required": true, "schema": {"type": "string"}, "description": "Belt level (e.g. 'white', 'orange', 'purple')"}
+        ],
+        "responses": {
+          "200": {
+            "description": "Quiz set for the belt",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/QuizSet"}}}
+          },
+          "404": {
+            "description": "Belt not found"
+          }
+        }
+      }
+    },
+    "/tutorials/practice": {
+      "get": {
+        "tags": ["Tutorials"],
+        "summary": "List all practice puzzles",
+        "description": "Returns practice puzzles grouped by technique.",
+        "responses": {
+          "200": {
+            "description": "List of practice puzzles",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {"$ref": "#/components/schemas/PracticePuzzle"}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tutorials/practice/{tutorialId}": {
+      "get": {
+        "tags": ["Tutorials"],
+        "summary": "Get practice puzzles for a technique",
+        "parameters": [
+          {"name": "tutorialId", "in": "path", "required": true, "schema": {"type": "string"}}
+        ],
+        "responses": {
+          "200": {
+            "description": "Practice puzzles for the technique"
+          },
+          "404": {
+            "description": "Technique not found"
+          }
+        }
+      }
+    },
+    "/progress": {
+      "post": {
+        "tags": ["Progress"],
+        "summary": "Get user progress",
+        "description": "Returns the user's current progress including level, XP, and puzzles solved.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/ProgressRequest"},
+              "example": {"userId": "student-1"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User progress",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ProgressResponse"}}}
+          }
+        }
+      }
+    },
+    "/dashboard/report": {
+      "post": {
+        "tags": ["Dashboard"],
+        "summary": "Get student dashboard report",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/DashboardRequest"},
+              "example": {"studentId": "student-1"}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Dashboard report",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/DashboardResponse"}}}
+          }
+        }
+      }
+    },
+    "/generate/difficulty": {
+      "post": {
+        "tags": ["Generate"],
+        "summary": "Generate puzzle by age or difficulty",
+        "description": "Generates a puzzle appropriate for a given age or at a specified difficulty level.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {"$ref": "#/components/schemas/GenerateDifficultyRequest"},
+              "example": {"age": 10}
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Generated puzzle with difficulty info",
+            "content": {"application/json": {"schema": {"$ref": "#/components/schemas/GenerateDifficultyResponse"}}}
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {"type": "string", "enum": ["OK", "DEGRADED", "WARNING"]},
+          "version": {"type": "string"},
+          "timestamp": {"type": "integer", "format": "int64"},
+          "uptime": {"$ref": "#/components/schemas/UptimeInfo"},
+          "jvm": {"$ref": "#/components/schemas/JvmInfo"},
+          "system": {"$ref": "#/components/schemas/SystemInfo"}
+        }
+      },
+      "UptimeInfo": {
+        "type": "object",
+        "properties": {
+          "milliseconds": {"type": "integer", "format": "int64"},
+          "humanReadable": {"type": "string"}
+        }
+      },
+      "JvmInfo": {
+        "type": "object",
+        "properties": {
+          "memory": {"$ref": "#/components/schemas/MemoryInfo"},
+          "threads": {"$ref": "#/components/schemas/ThreadInfo"},
+          "javaVersion": {"type": "string"},
+          "javaVendor": {"type": "string"}
+        }
+      },
+      "MemoryInfo": {
+        "type": "object",
+        "properties": {
+          "heapUsedMB": {"type": "integer", "format": "int64"},
+          "heapMaxMB": {"type": "integer", "format": "int64"},
+          "heapUsedPercent": {"type": "number", "format": "double"},
+          "nonHeapUsedMB": {"type": "integer", "format": "int64"},
+          "freeMemoryMB": {"type": "integer", "format": "int64"},
+          "totalMemoryMB": {"type": "integer", "format": "int64"}
+        }
+      },
+      "ThreadInfo": {
+        "type": "object",
+        "properties": {
+          "threadCount": {"type": "integer"},
+          "peakThreadCount": {"type": "integer"},
+          "daemonThreadCount": {"type": "integer"}
+        }
+      },
+      "SystemInfo": {
+        "type": "object",
+        "properties": {
+          "osName": {"type": "string"},
+          "osVersion": {"type": "string"},
+          "osArch": {"type": "string"},
+          "availableProcessors": {"type": "integer"},
+          "userTimezone": {"type": "string"}
+        }
+      },
+      "SolveRequest": {
+        "type": "object",
+        "required": ["puzzle"],
+        "properties": {
+          "puzzle": {"type": "string", "description": "81-character puzzle string. Use '.' or '0' for empty cells, '1'-'9' for given values.", "minLength": 81, "maxLength": 81},
+          "includeMetrics": {"type": "boolean", "description": "Include detailed solving metrics (backtrack count, techniques used, etc.)", "default": false}
+        }
+      },
+      "SolveResponse": {
+        "type": "object",
+        "properties": {
+          "solved": {"type": "boolean"},
+          "solution": {"type": "string", "description": "81-character solution string (if solved)", "nullable": true},
+          "metrics": {"$ref": "#/components/schemas/SolverMetricsResponse", "nullable": true},
+          "error": {"type": "string", "nullable": true}
+        }
+      },
+      "SolverMetricsResponse": {
+        "type": "object",
+        "properties": {
+          "solveTimeMs": {"type": "number", "format": "double"},
+          "backtrackingCount": {"type": "integer"},
+          "maxRecursionDepth": {"type": "integer"},
+          "propagationPasses": {"type": "integer"},
+          "cellsProcessed": {"type": "integer"},
+          "difficulty": {"type": "string", "nullable": true},
+          "techniquesUsed": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "HintRequest": {
+        "type": "object",
+        "required": ["puzzle"],
+        "properties": {
+          "puzzle": {"type": "string", "description": "81-character puzzle string"},
+          "technique": {"type": "string", "description": "Optional target technique (e.g. 'Naked Single', 'X-Wing', 'Hidden Pair')", "nullable": true}
+        }
+      },
+      "HintResponse": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string", "description": "Hint type (COMPLETE, NAKED_SINGLE, HIDDEN_SINGLE, etc.)"},
+          "cell": {"$ref": "#/components/schemas/CellCoordinate", "nullable": true},
+          "technique": {"type": "string"},
+          "explanation": {"type": "string"},
+          "teachingPoints": {"type": "array", "items": {"type": "string"}}
+        }
+      },
+      "CellCoordinate": {
+        "type": "object",
+        "properties": {
+          "row": {"type": "integer", "minimum": 0, "maximum": 8},
+          "col": {"type": "integer", "minimum": 0, "maximum": 8}
+        }
+      },
+      "GenerateRequest": {
+        "type": "object",
+        "properties": {
+          "difficulty": {"type": "string", "enum": ["EASY", "MEDIUM", "HARD", "EXPERT", "MASTER"], "default": "MEDIUM"},
+          "seed": {"type": "integer", "format": "int64", "nullable": true, "description": "Optional seed for reproducible generation"}
+        }
+      },
+      "GenerateResponse": {
+        "type": "object",
+        "properties": {
+          "puzzle": {"type": "string"},
+          "difficulty": {"type": "string"},
+          "error": {"type": "string", "nullable": true}
+        }
+      },
+      "ValidateRequest": {
+        "type": "object",
+        "required": ["puzzle"],
+        "properties": {
+          "puzzle": {"type": "string", "description": "81-character puzzle string"},
+          "checkUniqueness": {"type": "boolean", "default": true, "description": "Verify solution uniqueness"}
+        }
+      },
+      "ValidateResponse": {
+        "type": "object",
+        "properties": {
+          "valid": {"type": "boolean"},
+          "uniqueSolution": {"type": "boolean", "nullable": true},
+          "solutionCount": {"type": "integer", "nullable": true},
+          "errors": {"type": "array", "items": {"$ref": "#/components/schemas/ValidationErrorData"}},
+          "error": {"type": "string", "nullable": true}
+        }
+      },
+      "ValidationErrorData": {
+        "type": "object",
+        "properties": {
+          "type": {"type": "string"},
+          "message": {"type": "string"}
+        }
+      },
+      "SolveStepsRequest": {
+        "type": "object",
+        "required": ["puzzle"],
+        "properties": {
+          "puzzle": {"type": "string"}
+        }
+      },
+      "SolveStepsResponse": {
+        "type": "object",
+        "properties": {
+          "solved": {"type": "boolean"},
+          "solution": {"type": "string", "nullable": true},
+          "steps": {"type": "array", "items": {"$ref": "#/components/schemas/StepResponse"}},
+          "totalSteps": {"type": "integer"},
+          "solveTimeMs": {"type": "integer", "format": "int64", "nullable": true},
+          "error": {"type": "string", "nullable": true}
+        }
+      },
+      "StepResponse": {
+        "type": "object",
+        "properties": {
+          "stepNumber": {"type": "integer"},
+          "stepType": {"type": "string"},
+          "affectedCells": {"type": "array", "items": {"$ref": "#/components/schemas/CellCoord"}},
+          "values": {"type": "array", "items": {"type": "integer"}},
+          "explanation": {"type": "string"},
+          "boardState": {"type": "string", "nullable": true}
+        }
+      },
+      "CellCoord": {
+        "type": "object",
+        "properties": {
+          "row": {"type": "integer", "minimum": 0, "maximum": 8},
+          "col": {"type": "integer", "minimum": 0, "maximum": 8}
+        }
+      },
+      "CandidatesRequest": {
+        "type": "object",
+        "required": ["puzzle"],
+        "properties": {
+          "puzzle": {"type": "string"}
+        }
+      },
+      "CandidatesResponse": {
+        "type": "object",
+        "properties": {
+          "candidates": {
+            "type": "object",
+            "additionalProperties": {"type": "array", "items": {"type": "integer"}},
+            "description": "Map of cell index (0-80) to list of possible values (1-9)"
+          },
+          "error": {"type": "string", "nullable": true}
+        }
+      },
+      "DailyChallenge": {
+        "type": "object",
+        "properties": {
+          "date": {"type": "string", "format": "date"},
+          "puzzle": {"type": "string"},
+          "difficulty": {"type": "string"},
+          "beltEmoji": {"type": "string"},
+          "beltName": {"type": "string"},
+          "candidates": {
+            "type": "object",
+            "additionalProperties": {"type": "array", "items": {"type": "integer"}}
+          }
+        }
+      },
+      "TutorialSummary": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "order": {"type": "integer"},
+          "title": {"type": "string"},
+          "belt": {"type": "string"},
+          "beltColor": {"type": "string"},
+          "beltEmoji": {"type": "string"},
+          "beltName": {"type": "string"},
+          "description": {"type": "string"},
+          "completed": {"type": "boolean"}
+        }
+      },
+      "TutorialLesson": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "order": {"type": "integer"},
+          "title": {"type": "string"},
+          "belt": {"type": "string"},
+          "beltColor": {"type": "string"},
+          "beltEmoji": {"type": "string"},
+          "beltName": {"type": "string"},
+          "technique": {"type": "string"},
+          "description": {"type": "string"},
+          "concept": {"type": "string"},
+          "examplePuzzle": {"type": "string"},
+          "steps": {"type": "array", "items": {"$ref": "#/components/schemas/TutorialStep"}}
+        }
+      },
+      "TutorialStep": {
+        "type": "object",
+        "properties": {
+          "order": {"type": "integer"},
+          "type": {"type": "string"},
+          "cells": {"type": "array", "items": {"type": "integer"}},
+          "highlightColor": {"type": "string"},
+          "text": {"type": "string"},
+          "answer": {"type": "integer", "nullable": true},
+          "answerValue": {"type": "string", "nullable": true},
+          "eliminatedValue": {"type": "integer", "nullable": true}
+        }
+      },
+      "TutorialBoardResponse": {
+        "type": "object",
+        "properties": {
+          "puzzle": {"type": "string"},
+          "candidates": {
+            "type": "object",
+            "additionalProperties": {"type": "array", "items": {"type": "integer"}}
+          }
+        }
+      },
+      "QuizSet": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "belt": {"type": "string"},
+          "beltName": {"type": "string"},
+          "beltEmoji": {"type": "string"},
+          "beltColor": {"type": "string"},
+          "technique": {"type": "string"},
+          "questions": {"type": "array", "items": {"$ref": "#/components/schemas/QuizQuestion"}}
+        }
+      },
+      "QuizQuestion": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "puzzle": {"type": "string"},
+          "question": {"type": "string"},
+          "hint": {"type": "string"},
+          "answerCell": {"type": "integer"},
+          "answerValue": {"type": "string"},
+          "highlightCells": {"type": "array", "items": {"type": "integer"}},
+          "highlightColor": {"type": "string"}
+        }
+      },
+      "PracticePuzzle": {
+        "type": "object",
+        "properties": {
+          "id": {"type": "string"},
+          "puzzle": {"type": "string"},
+          "description": {"type": "string"}
+        }
+      },
+      "ProgressRequest": {
+        "type": "object",
+        "required": ["userId"],
+        "properties": {
+          "userId": {"type": "string"}
+        }
+      },
+      "ProgressResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {"type": "string"},
+          "level": {"type": "integer"},
+          "xp": {"type": "integer"},
+          "puzzlesSolved": {"type": "integer"}
+        }
+      },
+      "DashboardRequest": {
+        "type": "object",
+        "required": ["studentId"],
+        "properties": {
+          "studentId": {"type": "string"}
+        }
+      },
+      "DashboardResponse": {
+        "type": "object",
+        "properties": {
+          "studentId": {"type": "string"},
+          "studentName": {"type": "string"},
+          "puzzlesSolved": {"type": "integer"},
+          "averageTimeSeconds": {"type": "integer"},
+          "streak": {"type": "integer"},
+          "level": {"type": "integer"}
+        }
+      },
+      "GenerateDifficultyRequest": {
+        "type": "object",
+        "properties": {
+          "difficulty": {"type": "string", "nullable": true},
+          "age": {"type": "integer", "nullable": true}
+        }
+      },
+      "GenerateDifficultyResponse": {
+        "type": "object",
+        "properties": {
+          "puzzle": {"type": "string"},
+          "difficulty": {"type": "string"},
+          "targetAge": {"type": "string"}
+        }
+      }
+    }
+  }
+}
