@@ -573,17 +573,3 @@ export class FishCandidateEliminator implements CandidateEliminator {
 }
 
 // ---------------------------------------------------------------------------
-// Combinations helper
-// ---------------------------------------------------------------------------
-
-
-    const result: T[][] = []
-    for (let i = 0; i <= arr.length - size; i++) {
-        const first = arr[i]
-        const rest = arr.slice(i + 1)
-        for (const combo of combinations(rest, size - 1)) {
-            result.push([first, ...combo])
-        }
-    }
-    return result
-}
