@@ -14,12 +14,12 @@ repositories {
 
 dependencies {
     // Ktor server
-    implementation("io.ktor:ktor-server-core:2.3.7")
-    implementation("io.ktor:ktor-server-netty:2.3.7")
-    implementation("io.ktor:ktor-server-content-negotiation:2.3.7")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.7")
-    implementation("io.ktor:ktor-server-cors:2.3.7")
-    implementation("io.ktor:ktor-server-rate-limit:2.3.7")
+    implementation("io.ktor:ktor-server-core:3.4.3")
+    implementation("io.ktor:ktor-server-netty:3.4.3")
+    implementation("io.ktor:ktor-server-content-negotiation:3.4.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:3.4.3")
+    implementation("io.ktor:ktor-server-cors:3.4.3")
+    implementation("io.ktor:ktor-server-rate-limit:3.4.3")
     
     // Kotlinx serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
@@ -31,7 +31,7 @@ dependencies {
     implementation(project(":kotlin"))
     
     // Testing
-    testImplementation("io.ktor:ktor-server-tests:2.3.7")
+    testImplementation("io.ktor:ktor-server-test-host:3.4.3")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:1.9.22")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
