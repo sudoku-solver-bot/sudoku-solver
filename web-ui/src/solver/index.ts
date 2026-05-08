@@ -121,6 +121,7 @@ export {
     PointingCandidateEliminator,
     ClaimingCandidateEliminator,
     FishCandidateEliminator,
+    SkyscraperCandidateEliminator,
 } from './Eliminators'
 export type { CandidateEliminator } from './Eliminators'
 export { SIZE, REGION_SIZE, SYMBOLS, MASKS, WILDCARD_PATTERN, bitCount } from './Bitmask'
