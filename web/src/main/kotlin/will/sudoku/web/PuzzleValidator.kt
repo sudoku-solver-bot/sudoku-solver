@@ -142,11 +142,14 @@ object PuzzleValidator {
      * Get HTTP status code for validation error.
      */
     fun getHttpStatusCode(errorCode: String): HttpStatusCode {
+        // Return 200 for all validation errors — the response body already
+        // indicates the problem via "solved: false" and the error field.
+        // Returning 400 forces the frontend to handle both error paths.
         return when (errorCode) {
-            "NULL_INPUT", "INVALID_LENGTH", "INVALID_CHARACTERS" -> HttpStatusCode.BadRequest
-            "EMPTY_PUZZLE", "TOO_FEW_CLUES" -> HttpStatusCode.BadRequest
-            "DUPLICATE_VALUES", "STRUCTURAL_CONFLICT" -> HttpStatusCode.BadRequest
-            else -> HttpStatusCode.BadRequest
+            "NULL_INPUT", "INVALID_LENGTH", "INVALID_CHARACTERS" -> HttpStatusCode.OK
+            "EMPTY_PUZZLE", "TOO_FEW_CLUES" -> HttpStatusCode.OK
+            "DUPLICATE_VALUES", "STRUCTURAL_CONFLICT" -> HttpStatusCode.OK
+            else -> HttpStatusCode.OK
         }
     }
 }
