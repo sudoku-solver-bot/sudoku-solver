@@ -13,6 +13,9 @@ import will.sudoku.solver.HintType
 import will.sudoku.solver.TeachingHintProvider
 
 @Serializable
+data class ErrorResponse(val error: String)
+
+@Serializable
 data class HintRequest(
     val puzzle: String,
     val technique: String? = null  // Optional: target technique for tutorial mode
@@ -71,7 +74,7 @@ fun Route.hintRoutes() {
         // and can fully solve easy/medium puzzles, causing "Puzzle Complete" (bug #224).
         // TeachingHintProvider internally copies the board and applies its own elimination,
         // so passing the raw board is correct and safe.
-        
+
         // Map requested technique string to HintGenerator.Technique enum
         val targetTechnique = request.technique?.let { techName ->
             HintGenerator.Technique.entries.find {
