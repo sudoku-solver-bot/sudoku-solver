@@ -52,7 +52,7 @@ fun Route.hintRoutes() {
         } catch (e: Exception) {
             return@post call.respond(
                 HttpStatusCode.BadRequest,
-                mapOf("error" to "Invalid puzzle: ${e.message}")
+                ErrorResponse("Invalid puzzle: ${e.message}")
             )
         }
 

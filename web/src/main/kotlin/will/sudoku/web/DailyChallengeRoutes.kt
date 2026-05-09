@@ -47,7 +47,7 @@ fun Route.dailyChallengeRoutes() {
         // Expert
         ".345.....8.2.6.4..6....8.....39....4.5.....9.9....58.....3....8..1.4.6.5.....712." to "expert",
         "8..........36......7..9.2...5...7.......457.....1...3...1....68..85...1..9....4.." to "expert",
-        ".....57.....9.1......38.....6...2...4.9..5...7..1....3.2.....8....4..3......1..9." to "expert",
+        ".....6....59.....82....8....45........3........6..3.54...325..6.................." to "expert",
         "000000004760010050090002081070050010000709000080030060240100070010090045900000000".replace('0', '.') to "expert",
         // More variety
         "100000569402000008050009040000640801000010000208035000040500010900000402621000005".replace('0', '.') to "hard",
@@ -72,7 +72,7 @@ fun Route.dailyChallengeRoutes() {
         val board: Board = try {
             BoardReader.readBoard(puzzleStr)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to load daily puzzle"))
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to load daily puzzle"))
             return@get
         }
 
@@ -103,7 +103,7 @@ fun Route.dailyChallengeRoutes() {
     get("/daily/{date}") {
         val dateStr = call.parameters["date"] ?: ""
         val date = try { LocalDate.parse(dateStr) } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid date format. Use YYYY-MM-DD"))
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid date format. Use YYYY-MM-DD"))
             return@get
         }
 
@@ -114,7 +114,7 @@ fun Route.dailyChallengeRoutes() {
         val board: Board = try {
             BoardReader.readBoard(puzzleStr)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.InternalServerError, mapOf("error" to "Failed to load puzzle"))
+            call.respond(HttpStatusCode.InternalServerError, ErrorResponse("Failed to load puzzle"))
             return@get
         }
 
