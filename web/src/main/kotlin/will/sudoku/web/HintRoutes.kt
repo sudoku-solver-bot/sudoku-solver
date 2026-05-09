@@ -10,14 +10,7 @@ import will.sudoku.solver.Board
 import will.sudoku.solver.BoardReader
 import will.sudoku.solver.HintGenerator
 import will.sudoku.solver.HintType
-import will.sudoku.solver.SimpleCandidateEliminator
 import will.sudoku.solver.TeachingHintProvider
-
-fun Board.withConstraintPropagation(): Board {
-    val eliminator = SimpleCandidateEliminator()
-    eliminator.eliminate(this)
-    return this
-}
 
 @Serializable
 data class HintRequest(
@@ -74,36 +67,10 @@ fun Route.hintRoutes() {
             )
         }
 
-        val board = rawBoard.withConstraintPropagation()
-        
-        // If constraint propagation fully solved the board but the raw board wasn't solved,
-        // the puzzle is solvable by basic techniques alone. Find the first empty cell
-        // that CP solved and hint at it as a Naked Single instead of reporting "Puzzle Complete".
-        // This prevents the misleading "Puzzle Complete" message on unsolved easy puzzles.
-        if (board.isSolved() && !rawBoard.isSolved()) {
-            for (row in 0..8) {
-                for (col in 0..8) {
-                    val coord = will.sudoku.solver.Coord(row, col)
-                    if (rawBoard.value(coord) == 0 && board.value(coord) != 0) {
-                        val value = board.value(coord)
-                        return@post call.respond(
-                            HintResponse(
-                                type = HintType.NAKED_SINGLE.name,
-                                cell = CellCoordinate(row, col),
-                                technique = "Naked Single",
-                                explanation = "Cell (${row + 1}, ${col + 1}) can only be $value! " +
-                                    "Check the row, column, and box — every other number is already taken.",
-                                teachingPoints = listOf(
-                                    "Look at row ${row + 1}, column ${col + 1}, and the 3x3 box",
-                                    "Only one number is possible in this cell",
-                                    "Easy puzzles can often be solved entirely this way!"
-                                )
-                            )
-                        )
-                    }
-                }
-            }
-        }
+        // Do NOT run constraint propagation here — it mutates the board in-place
+        // and can fully solve easy/medium puzzles, causing "Puzzle Complete" (bug #224).
+        // TeachingHintProvider internally copies the board and applies its own elimination,
+        // so passing the raw board is correct and safe.
         
         // Map requested technique string to HintGenerator.Technique enum
         val targetTechnique = request.technique?.let { techName ->
@@ -113,7 +80,7 @@ fun Route.hintRoutes() {
             }
         }
         
-        val hint = hintProvider.getHint(board, targetTechnique)
+        val hint = hintProvider.getHint(rawBoard, targetTechnique)
 
         call.respond(
             HintResponse(
