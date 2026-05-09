@@ -98,6 +98,12 @@ data class PracticePuzzle(
 )
 
 @Serializable
+data class CompletionResponse(val status: String, val lesson: String, val completed: Boolean)
+
+@Serializable
+data class ErrorResponse(val error: String)
+
+@Serializable
 data class PracticeSet(
     val id: String,
     val technique: String,
@@ -155,7 +161,7 @@ fun Route.tutorialRoutes() {
         val id = call.parameters["id"] ?: ""
         val lesson = lessonsById[id]
         if (lesson == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Tutorial not found: $id"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Tutorial not found: $id"))
             return@get
         }
         call.respond(lesson)
@@ -166,14 +172,14 @@ fun Route.tutorialRoutes() {
         val id = call.parameters["id"] ?: ""
         val lesson = lessonsById[id]
         if (lesson == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Tutorial not found: $id"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Tutorial not found: $id"))
             return@get
         }
 
         val board: Board = try {
             BoardReader.readBoard(lesson.examplePuzzle)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid puzzle: ${e.message}"))
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid puzzle: ${e.message}"))
             return@get
         }
 
@@ -203,9 +209,9 @@ fun Route.tutorialRoutes() {
         val id = call.parameters["id"] ?: ""
         if (lessonsById.containsKey(id)) {
             completedTutorials[id] = true
-            call.respond(mapOf("status" to "ok", "lesson" to id, "completed" to true))
+            call.respond(CompletionResponse("ok", id, true))
         } else {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Tutorial not found: $id"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Tutorial not found: $id"))
         }
     }
 
@@ -245,7 +251,7 @@ fun Route.tutorialRoutes() {
         val belt = call.parameters["belt"] ?: ""
         val quiz = quizzesByBelt[belt]
         if (quiz == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Quiz not found for belt: $belt"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Quiz not found for belt: $belt"))
             return@get
         }
         call.respond(quiz)
@@ -256,20 +262,20 @@ fun Route.tutorialRoutes() {
         val belt = call.parameters["belt"] ?: ""
         val quiz = quizzesByBelt[belt]
         if (quiz == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Quiz not found for belt: $belt"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Quiz not found for belt: $belt"))
             return@get
         }
 
         val question = quiz.questions.firstOrNull()
         if (question == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "No questions in quiz"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("No questions in quiz"))
             return@get
         }
 
         val board: Board = try {
             BoardReader.readBoard(question.puzzle)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid puzzle: ${e.message}"))
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid puzzle: ${e.message}"))
             return@get
         }
 
@@ -302,7 +308,7 @@ fun Route.tutorialRoutes() {
         val tutorialId = call.parameters["tutorialId"] ?: ""
         val set = practiceByTutorialId[tutorialId]
         if (set == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Practice puzzles not found for: $tutorialId"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Practice puzzles not found for: $tutorialId"))
             return@get
         }
         call.respond(set)
@@ -314,20 +320,20 @@ fun Route.tutorialRoutes() {
         val puzzleId = call.parameters["puzzleId"] ?: ""
         val set = practiceByTutorialId[tutorialId]
         if (set == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Practice set not found for: $tutorialId"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Practice set not found for: $tutorialId"))
             return@get
         }
 
         val puzzleData = set.puzzles.find { it.id == puzzleId }
         if (puzzleData == null) {
-            call.respond(HttpStatusCode.NotFound, mapOf("error" to "Puzzle not found: $puzzleId"))
+            call.respond(HttpStatusCode.NotFound, ErrorResponse("Puzzle not found: $puzzleId"))
             return@get
         }
 
         val board: Board = try {
             BoardReader.readBoard(puzzleData.puzzle)
         } catch (e: Exception) {
-            call.respond(HttpStatusCode.BadRequest, mapOf("error" to "Invalid puzzle: ${e.message}"))
+            call.respond(HttpStatusCode.BadRequest, ErrorResponse("Invalid puzzle: ${e.message}"))
             return@get
         }
 

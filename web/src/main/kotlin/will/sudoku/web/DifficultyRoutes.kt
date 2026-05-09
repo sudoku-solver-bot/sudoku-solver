@@ -62,7 +62,7 @@ fun Route.difficultyRoutes() {
     get("/generate/difficulty/{level}") {
         val level = call.parameters["level"] ?: return@get call.respond(
             HttpStatusCode.BadRequest,
-            mapOf("error" to "Missing difficulty level")
+            ErrorResponse("Missing difficulty level")
         )
         
         val difficulty = try {
@@ -70,7 +70,7 @@ fun Route.difficultyRoutes() {
         } catch (e: IllegalArgumentException) {
             return@get call.respond(
                 HttpStatusCode.BadRequest,
-                mapOf("error" to "Invalid difficulty level: $level")
+                ErrorResponse("Invalid difficulty level: $level")
             )
         }
         
