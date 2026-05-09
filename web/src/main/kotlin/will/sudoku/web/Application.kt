@@ -28,6 +28,7 @@ import will.sudoku.web.dailyChallengeRoutes
 import will.sudoku.web.dashboardRoutes
 import will.sudoku.web.progressRoutes
 import will.sudoku.web.difficultyRoutes
+import will.sudoku.web.celebrationRoutes
 
 fun main() {
     val port = System.getenv("PORT")?.toInt() ?: 8080
@@ -137,6 +138,7 @@ fun Application.module() {
             dashboardRoutes()
             progressRoutes()
             difficultyRoutes()
+            celebrationRoutes()
         }
         
         // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
@@ -161,6 +163,7 @@ fun Application.module() {
             dashboardRoutes()
             progressRoutes()
             difficultyRoutes()
+            celebrationRoutes()
         }
     }
 }
