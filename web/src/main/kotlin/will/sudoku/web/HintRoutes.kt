@@ -13,9 +13,6 @@ import will.sudoku.solver.HintType
 import will.sudoku.solver.TeachingHintProvider
 
 @Serializable
-data class ErrorResponse(val error: String)
-
-@Serializable
 data class HintRequest(
     val puzzle: String,
     val technique: String? = null  // Optional: target technique for tutorial mode
