@@ -71,7 +71,7 @@ fun Route.hintRoutes() {
         // and can fully solve easy/medium puzzles, causing "Puzzle Complete" (bug #224).
         // TeachingHintProvider internally copies the board and applies its own elimination,
         // so passing the raw board is correct and safe.
-        
+
         // Map requested technique string to HintGenerator.Technique enum
         val targetTechnique = request.technique?.let { techName ->
             HintGenerator.Technique.entries.find {
