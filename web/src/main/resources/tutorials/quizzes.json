@@ -117,7 +117,7 @@
         "question": "Find the Naked Pair in this puzzle. Which two cells share exactly the same two candidates in a column?",
         "hint": "Look for two cells in the same column that both have only two candidates \u2014 and they're the same two numbers.",
         "answerCell": 57,
-        "answerValue": "",
+        "answerValue": "8",
         "explanation": "Cells R7C4 and R9C4 form a Naked Pair with candidates {1, 8}. Since these are the only two cells in column 4 that can hold 1 and 8, these values are locked to those cells and can be eliminated from other cells in the column.",
         "highlightCells": [
           57,
@@ -131,7 +131,7 @@
         "question": "Spot the Naked Pair in a row. Which cell is part of the pair?",
         "hint": "Look for two cells in the same row that can only hold the same two numbers \u2014 no other candidates are possible.",
         "answerCell": 4,
-        "answerValue": "",
+        "answerValue": "7",
         "explanation": "Cells R1C5 and R1C9 form a Naked Pair with candidates {7, 9}. Since both cells can only contain 7 or 9, these two values are locked to those cells in the row, eliminating 7 and 9 from all other cells in that row.",
         "highlightCells": [
           4,
@@ -155,7 +155,7 @@
         "question": "Find a Pointing Pair: which cells in a box force an elimination in a row or column?",
         "hint": "When a candidate in a box is restricted to a single row or column, it eliminates that candidate from the rest of the row/column outside the box.",
         "answerCell": 27,
-        "answerValue": "",
+        "answerValue": "8",
         "explanation": "A Pointing Pair occurs when a candidate within a 3\u00d73 box is confined to a single row or column. This means the candidate must appear in one of those two cells in the box, so it can be eliminated from the rest of that row or column outside the box. Look for a digit that appears as a candidate in only two cells of a box, both in the same row or column.",
         "highlightCells": [
           27,
@@ -170,7 +170,7 @@
         "question": "Where can you apply Box-Line Reduction in this puzzle?",
         "hint": "Look for a row or column where a candidate is confined to a single box, allowing elimination from other cells in that box.",
         "answerCell": 0,
-        "answerValue": "",
+        "answerValue": "4",
         "explanation": "Box-Line Reduction is the reverse of a Pointing Pair. When all instances of a candidate within a row or column fall inside a single box, that candidate can be eliminated from other cells in the box that aren't in that row or column.",
         "highlightCells": [
           0,
@@ -195,7 +195,7 @@
         "question": "Find three cells forming a Naked Triple. Which cell is part of it?",
         "hint": "Three cells that together contain only three candidates \u2014 they eliminate those candidates from other cells in the group.",
         "answerCell": 26,
-        "answerValue": "",
+        "answerValue": "7",
         "explanation": "A Naked Triple occurs when three cells in the same row, column, or box together contain exactly three candidate values. While each cell might have 2 or 3 candidates, the union of all candidates is exactly 3 values. These values are locked to those cells and can be eliminated from other cells in the unit.",
         "highlightCells": [
           24,
@@ -210,7 +210,7 @@
         "question": "Where is the Hidden Triple in this puzzle?",
         "hint": "Three numbers that can only appear in three specific cells within a group, eliminating other candidates from those cells.",
         "answerCell": 2,
-        "answerValue": "",
+        "answerValue": "4",
         "explanation": "A Hidden Triple occurs when three candidate values each appear in only three cells within a row, column, or box. Other candidates in those three cells can be eliminated, since those cells must hold exactly those three values between them.",
         "highlightCells": [
           0,
@@ -235,7 +235,7 @@
         "question": "Spot the X-Wing pattern. Which cell is part of the X-Wing?",
         "hint": "An X-Wing occurs when a candidate appears in exactly two cells in two rows, and those cells align in the same two columns.",
         "answerCell": 1,
-        "answerValue": "",
+        "answerValue": "8",
         "explanation": "An X-Wing pattern forms when a specific digit appears as a candidate in exactly two cells in each of two rows, and those cells are in the same two columns. This creates an 'X' shape that forces the digit into one diagonal pair, eliminating it from other cells in those columns.",
         "highlightCells": [
           1,
@@ -249,7 +249,7 @@
         "question": "Find the Swordfish pattern. Which row contains part of the Swordfish?",
         "hint": "A Swordfish is like an X-Wing with three rows and three columns \u2014 look for a candidate appearing in exactly three cells across three rows.",
         "answerCell": 10,
-        "answerValue": "",
+        "answerValue": "2",
         "explanation": "A Swordfish extends the X-Wing concept to three rows and three columns. When a candidate appears in exactly three cells in each of three rows, and those cells align in exactly three columns, the candidate can be eliminated from other cells in those columns.",
         "highlightCells": [
           10,
@@ -274,7 +274,7 @@
         "question": "Find the XY-Wing: which cell is the pivot of the XY-Wing?",
         "hint": "An XY-Wing has a pivot cell with two candidates, and two wing cells that each share one candidate with the pivot.",
         "answerCell": 0,
-        "answerValue": "",
+        "answerValue": "7",
         "explanation": "An XY-Wing uses three cells: a pivot with candidates XY, and two wings with candidates XZ and YZ respectively. The shared candidate Z can be eliminated from any cell that sees both wings, because one of the wings must hold Z.",
         "highlightCells": [
           0
@@ -287,13 +287,53 @@
         "question": "Where can you spot an XY-Wing or XYZ-Wing elimination?",
         "hint": "Look for three cells with specific candidate overlaps: a pivot cell and two wing cells sharing candidates.",
         "answerCell": 18,
-        "answerValue": "",
+        "answerValue": "8",
         "explanation": "The XYZ-Wing is a variant where the pivot cell has three candidates (XYZ) and two wings have two candidates each (XZ and YZ). The candidate Z common to all three cells can be eliminated from any cell that sees all three.",
         "highlightCells": [
           18,
           19
         ],
         "highlightColor": "yellow"
+      }
+    ]
+  },
+  {
+    "id": "quiz-red",
+    "belt": "red",
+    "beltName": "Red Belt",
+    "beltEmoji": "\ud83d\udd34",
+    "beltColor": "#FF0000",
+    "technique": "W-Wing / Coloring",
+    "questions": [
+      {
+        "id": "red-q1",
+        "puzzle": "800000000003600000070090200050007000000045700000100030001000068008500010090000400",
+        "question": "Find the W-Wing pattern in this puzzle. Which cell has its candidates determined by the W-Wing?",
+        "hint": "A W-Wing uses two bivalue cells with the same candidates connected by a conjugate pair in a row, column, or box.",
+        "answerCell": 36,
+        "answerValue": "3",
+        "explanation": "A W-Wing occurs when two cells (the wings) contain the same two candidates and are connected by a strong link on one of those candidates. The other candidate can be eliminated from any cell that sees both wings, which helps determine values in the connected cells.",
+        "highlightCells": [
+          36,
+          37,
+          38
+        ],
+        "highlightColor": "red"
+      },
+      {
+        "id": "red-q2",
+        "puzzle": "850002400000100000000000002080004000001000700090030005000060000372090080000000000",
+        "question": "Where can you apply a W-Wing elimination to narrow down candidates?",
+        "hint": "Look for two cells with the same two candidates that are connected through a strong link in a column or box.",
+        "answerCell": 36,
+        "answerValue": "5",
+        "explanation": "The W-Wing technique identifies two bivalue cells with the same candidates connected by a strong link on one candidate. Any cell seeing both wings cannot contain the other candidate. This elimination often reveals hidden singles or further techniques.",
+        "highlightCells": [
+          36,
+          37,
+          38
+        ],
+        "highlightColor": "red"
       }
     ]
   },
@@ -311,7 +351,7 @@
         "question": "Find the Unique Rectangle pattern. Which cell is part of the deadly pattern?",
         "hint": "A Unique Rectangle occurs when four cells form a rectangle with the same two candidates \u2014 this would create multiple solutions.",
         "answerCell": 40,
-        "answerValue": "",
+        "answerValue": "3",
         "explanation": "A Unique Rectangle exploits the fact that valid Sudoku puzzles have exactly one solution. When four cells at the corners of a rectangle share the same two candidates, one of those candidates must be eliminated to avoid creating two valid solutions.",
         "highlightCells": [
           40
@@ -324,7 +364,7 @@
         "question": "Where can Simple Coloring eliminate a candidate?",
         "hint": "Color pairs of the same candidate to find a contradiction that eliminates one color.",
         "answerCell": 2,
-        "answerValue": "",
+        "answerValue": "8",
         "explanation": "Simple Coloring chains pairs of a single candidate through the grid. By alternating two colors along the chain, if both colors appear in the same row, column, or box, we can eliminate all candidates of one color since that would create a contradiction.",
         "highlightCells": [
           2
@@ -347,8 +387,7 @@
         "question": "Which advanced technique (ALS-XZ, Death Blossom, Forcing Chains) applies here?",
         "hint": "Look for Almost Locked Sets that interact through a restricted common candidate.",
         "answerCell": 40,
-        "answerValue": "",
-        "explanation": "ALS-XZ (Almost Locked Set XZ) is an advanced technique where two Almost Locked Sets \u2014 sets of N cells with N+1 candidates \u2014 share a restricted common candidate. This allows eliminating the non-restricted candidate from cells that see all instances of it in both ALS.",
+        "answerValue": "4",
         "highlightCells": [
           40
         ],
