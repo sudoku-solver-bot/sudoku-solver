@@ -4,6 +4,8 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import will.sudoku.solver.Board
@@ -77,7 +79,13 @@ data class QuizQuestion(
     val answerValue: String,
     val explanation: String = "",
     val highlightCells: List<Int> = emptyList(),
-    val highlightColor: String = "blue"
+    val highlightColor: String = "blue",
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val options: List<String> = emptyList(),
+    @OptIn(ExperimentalSerializationApi::class)
+    @EncodeDefault(EncodeDefault.Mode.ALWAYS)
+    val correctAnswer: Int = 0
 )
 
 @Serializable

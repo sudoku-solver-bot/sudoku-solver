@@ -3,7 +3,7 @@
     "id": "quiz-white",
     "belt": "white",
     "beltName": "White Belt",
-    "beltEmoji": "\u2b1c",
+    "beltEmoji": "⬜",
     "beltColor": "#E0E0E0",
     "technique": "Naked Single",
     "questions": [
@@ -14,7 +14,7 @@
         "hint": "Look at row 5. Find a cell where all other numbers 1-9 are already present in the row, column, or box, leaving just one possibility.",
         "answerCell": 40,
         "answerValue": "5",
-        "explanation": "Cell R5C5 is a Naked Single with value 5. Every other digit (1-9 except 5) already appears in its row (row 5), column (column 5), or 3\u00d73 box (center box), so 5 is the only possible candidate.",
+        "explanation": "Cell R5C5 is a Naked Single with value 5. Every other digit (1-9 except 5) already appears in its row (row 5), column (column 5), or 3×3 box (center box), so 5 is the only possible candidate.",
         "highlightCells": [
           36,
           37,
@@ -26,16 +26,24 @@
           43,
           44
         ],
-        "highlightColor": "blue"
+        "highlightColor": "blue",
+        "options": [
+          "R5C5",
+          "R5C4",
+          "R5C6",
+          "R4C5",
+          "R6C5"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "white-q2",
         "puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
         "question": "Find another Naked Single in the bottom-right area. Which cell has just one possible value?",
-        "hint": "Check the 3\u00d73 box in the bottom-right corner for a cell where every other number is already eliminated by its row, column, and box.",
+        "hint": "Check the 3×3 box in the bottom-right corner for a cell where every other number is already eliminated by its row, column, and box.",
         "answerCell": 70,
         "answerValue": "3",
-        "explanation": "Cell R8C8 is a Naked Single with value 3. All 8 other digits appear in the same row, column, or 3\u00d73 box, leaving 3 as the only possibility.",
+        "explanation": "Cell R8C8 is a Naked Single with value 3. All 8 other digits appear in the same row, column, or 3×3 box, leaving 3 as the only possibility.",
         "highlightCells": [
           63,
           64,
@@ -47,7 +55,15 @@
           70,
           71
         ],
-        "highlightColor": "green"
+        "highlightColor": "green",
+        "options": [
+          "R8C8",
+          "R8C7",
+          "R8C9",
+          "R7C8",
+          "R9C8"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -55,7 +71,7 @@
     "id": "quiz-yellow",
     "belt": "yellow",
     "beltName": "Yellow Belt",
-    "beltEmoji": "\ud83d\udfe1",
+    "beltEmoji": "🟡",
     "beltColor": "#FFD700",
     "technique": "Hidden Single",
     "questions": [
@@ -66,7 +82,7 @@
         "hint": "Check which cells in row 6 can hold the number 3. Only ONE cell works because the others are blocked by columns or boxes already containing 3.",
         "answerCell": 47,
         "answerValue": "3",
-        "explanation": "Cell R6C3 is a Hidden Single for value 3 in row 6. No other empty cell in that row can hold 3 \u2014 columns 1, 2, 4, and 5 already have 3 in other rows, and the box constraints eliminate the rest.",
+        "explanation": "Cell R6C3 is a Hidden Single for value 3 in row 6. No other empty cell in that row can hold 3 — columns 1, 2, 4, and 5 already have 3 in other rows, and the box constraints eliminate the rest.",
         "highlightCells": [
           45,
           46,
@@ -78,7 +94,15 @@
           52,
           53
         ],
-        "highlightColor": "blue"
+        "highlightColor": "blue",
+        "options": [
+          "R6C3",
+          "R6C1",
+          "R6C2",
+          "R6C4",
+          "R6C5"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "yellow-q2",
@@ -99,7 +123,15 @@
           67,
           76
         ],
-        "highlightColor": "green"
+        "highlightColor": "green",
+        "options": [
+          "R3C5",
+          "R1C5",
+          "R2C5",
+          "R4C5",
+          "R5C5"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -107,7 +139,7 @@
     "id": "quiz-orange",
     "belt": "orange",
     "beltName": "Orange Belt",
-    "beltEmoji": "\ud83d\udfe0",
+    "beltEmoji": "🟠",
     "beltColor": "#FF8C00",
     "technique": "Naked Pair",
     "questions": [
@@ -115,7 +147,7 @@
         "id": "orange-q1",
         "puzzle": "000400008486000720002680304000205603123708490000300180200003050038950040050020000",
         "question": "Find the Naked Pair in this puzzle. Which two cells share exactly the same two candidates in a column?",
-        "hint": "Look for two cells in the same column that both have only two candidates \u2014 and they're the same two numbers.",
+        "hint": "Look for two cells in the same column that both have only two candidates — and they're the same two numbers.",
         "answerCell": 57,
         "answerValue": "8",
         "explanation": "Cells R7C4 and R9C4 form a Naked Pair with candidates {1, 8}. Since these are the only two cells in column 4 that can hold 1 and 8, these values are locked to those cells and can be eliminated from other cells in the column.",
@@ -123,13 +155,21 @@
           57,
           75
         ],
-        "highlightColor": "yellow"
+        "highlightColor": "yellow",
+        "options": [
+          "R7C4",
+          "R9C4",
+          "R7C3",
+          "R7C5",
+          "R6C4"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "orange-q2",
         "puzzle": "004600010010003005030800002600000400000050000005000003700004020800300060090020008",
         "question": "Spot the Naked Pair in a row. Which cell is part of the pair?",
-        "hint": "Look for two cells in the same row that can only hold the same two numbers \u2014 no other candidates are possible.",
+        "hint": "Look for two cells in the same row that can only hold the same two numbers — no other candidates are possible.",
         "answerCell": 4,
         "answerValue": "7",
         "explanation": "Cells R1C5 and R1C9 form a Naked Pair with candidates {7, 9}. Since both cells can only contain 7 or 9, these two values are locked to those cells in the row, eliminating 7 and 9 from all other cells in that row.",
@@ -137,7 +177,15 @@
           4,
           8
         ],
-        "highlightColor": "yellow"
+        "highlightColor": "yellow",
+        "options": [
+          "R1C5",
+          "R1C9",
+          "R1C4",
+          "R1C6",
+          "R2C5"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -145,7 +193,7 @@
     "id": "quiz-green",
     "belt": "green",
     "beltName": "Green Belt",
-    "beltEmoji": "\ud83d\udfe2",
+    "beltEmoji": "🟢",
     "beltColor": "#34A853",
     "technique": "Pointing Pair / Box-Line Reduction",
     "questions": [
@@ -156,13 +204,21 @@
         "hint": "When a candidate in a box is restricted to a single row or column, it eliminates that candidate from the rest of the row/column outside the box.",
         "answerCell": 27,
         "answerValue": "8",
-        "explanation": "A Pointing Pair occurs when a candidate within a 3\u00d73 box is confined to a single row or column. This means the candidate must appear in one of those two cells in the box, so it can be eliminated from the rest of that row or column outside the box. Look for a digit that appears as a candidate in only two cells of a box, both in the same row or column.",
+        "explanation": "A Pointing Pair occurs when a candidate within a 3×3 box is confined to a single row or column. This means the candidate must appear in one of those two cells in the box, so it can be eliminated from the rest of that row or column outside the box. Look for a digit that appears as a candidate in only two cells of a box, both in the same row or column.",
         "highlightCells": [
           27,
           28,
           29
         ],
-        "highlightColor": "green"
+        "highlightColor": "green",
+        "options": [
+          "R4C1",
+          "R4C2",
+          "R4C3",
+          "R3C9",
+          "R3C1"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "green-q2",
@@ -177,7 +233,15 @@
           1,
           2
         ],
-        "highlightColor": "green"
+        "highlightColor": "green",
+        "options": [
+          "R1C1",
+          "R1C2",
+          "R1C3",
+          "R2C1",
+          "R3C1"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -185,7 +249,7 @@
     "id": "quiz-blue",
     "belt": "blue",
     "beltName": "Blue Belt",
-    "beltEmoji": "\ud83d\udd35",
+    "beltEmoji": "🔵",
     "beltColor": "#4285F4",
     "technique": "Naked Triple / Hidden Triple",
     "questions": [
@@ -193,7 +257,7 @@
         "id": "blue-q1",
         "puzzle": "070008029002000004854020000008374200000000000003261700000090612200000400130600070",
         "question": "Find three cells forming a Naked Triple. Which cell is part of it?",
-        "hint": "Three cells that together contain only three candidates \u2014 they eliminate those candidates from other cells in the group.",
+        "hint": "Three cells that together contain only three candidates — they eliminate those candidates from other cells in the group.",
         "answerCell": 26,
         "answerValue": "7",
         "explanation": "A Naked Triple occurs when three cells in the same row, column, or box together contain exactly three candidate values. While each cell might have 2 or 3 candidates, the union of all candidates is exactly 3 values. These values are locked to those cells and can be eliminated from other cells in the unit.",
@@ -202,7 +266,15 @@
           25,
           26
         ],
-        "highlightColor": "blue"
+        "highlightColor": "blue",
+        "options": [
+          "R3C9",
+          "R3C7",
+          "R3C8",
+          "R4C9",
+          "R2C9"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "blue-q2",
@@ -217,7 +289,15 @@
           1,
           2
         ],
-        "highlightColor": "blue"
+        "highlightColor": "blue",
+        "options": [
+          "R1C3",
+          "R1C1",
+          "R1C2",
+          "R2C3",
+          "R3C3"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -225,7 +305,7 @@
     "id": "quiz-purple",
     "belt": "purple",
     "beltName": "Purple Belt",
-    "beltEmoji": "\ud83d\udfe3",
+    "beltEmoji": "🟣",
     "beltColor": "#9C27B0",
     "technique": "X-Wing / Swordfish",
     "questions": [
@@ -241,13 +321,21 @@
           1,
           5
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R1C2",
+          "R1C6",
+          "R2C2",
+          "R3C2",
+          "R4C2"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "purple-q2",
         "puzzle": "051000830400000007000109050003400605680030000200500300900807020000000001834000096",
         "question": "Find the Swordfish pattern. Which row contains part of the Swordfish?",
-        "hint": "A Swordfish is like an X-Wing with three rows and three columns \u2014 look for a candidate appearing in exactly three cells across three rows.",
+        "hint": "A Swordfish is like an X-Wing with three rows and three columns — look for a candidate appearing in exactly three cells across three rows.",
         "answerCell": 10,
         "answerValue": "2",
         "explanation": "A Swordfish extends the X-Wing concept to three rows and three columns. When a candidate appears in exactly three cells in each of three rows, and those cells align in exactly three columns, the candidate can be eliminated from other cells in those columns.",
@@ -256,7 +344,15 @@
           11,
           12
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R2C2",
+          "R2C3",
+          "R2C4",
+          "R1C2",
+          "R3C2"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -264,7 +360,7 @@
     "id": "quiz-brown",
     "belt": "brown",
     "beltName": "Brown Belt",
-    "beltEmoji": "\ud83d\udfe4",
+    "beltEmoji": "🟤",
     "beltColor": "#795548",
     "technique": "XY-Wing / XYZ-Wing",
     "questions": [
@@ -279,7 +375,15 @@
         "highlightCells": [
           0
         ],
-        "highlightColor": "yellow"
+        "highlightColor": "yellow",
+        "options": [
+          "R1C1",
+          "R2C1",
+          "R3C1",
+          "R4C1",
+          "R5C1"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "brown-q2",
@@ -293,7 +397,15 @@
           18,
           19
         ],
-        "highlightColor": "yellow"
+        "highlightColor": "yellow",
+        "options": [
+          "R3C1",
+          "R3C2",
+          "R1C1",
+          "R2C1",
+          "R4C1"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -301,7 +413,7 @@
     "id": "quiz-red",
     "belt": "red",
     "beltName": "Red Belt",
-    "beltEmoji": "\ud83d\udd34",
+    "beltEmoji": "🔴",
     "beltColor": "#FF0000",
     "technique": "W-Wing / Coloring",
     "questions": [
@@ -318,7 +430,15 @@
           37,
           38
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R5C1",
+          "R5C2",
+          "R5C3",
+          "R4C1",
+          "R6C1"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "red-q2",
@@ -333,7 +453,15 @@
           37,
           38
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R5C1",
+          "R5C2",
+          "R5C3",
+          "R4C1",
+          "R6C1"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -341,7 +469,7 @@
     "id": "quiz-black",
     "belt": "black",
     "beltName": "Black Belt",
-    "beltEmoji": "\u2b1b",
+    "beltEmoji": "⬛",
     "beltColor": "#333333",
     "technique": "Unique Rectangle / Simple Coloring / W-Wing",
     "questions": [
@@ -349,14 +477,22 @@
         "id": "black-q1",
         "puzzle": "080090030030000000002060108020800500800907006004005070503040900000000010010050020",
         "question": "Find the Unique Rectangle pattern. Which cell is part of the deadly pattern?",
-        "hint": "A Unique Rectangle occurs when four cells form a rectangle with the same two candidates \u2014 this would create multiple solutions.",
+        "hint": "A Unique Rectangle occurs when four cells form a rectangle with the same two candidates — this would create multiple solutions.",
         "answerCell": 40,
         "answerValue": "3",
         "explanation": "A Unique Rectangle exploits the fact that valid Sudoku puzzles have exactly one solution. When four cells at the corners of a rectangle share the same two candidates, one of those candidates must be eliminated to avoid creating two valid solutions.",
         "highlightCells": [
           40
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R5C5",
+          "R4C5",
+          "R6C5",
+          "R5C4",
+          "R5C6"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "black-q2",
@@ -369,7 +505,15 @@
         "highlightCells": [
           2
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R1C3",
+          "R1C1",
+          "R1C2",
+          "R2C3",
+          "R3C3"
+        ],
+        "correctAnswer": 0
       }
     ]
   },
@@ -377,7 +521,7 @@
     "id": "quiz-master",
     "belt": "master",
     "beltName": "Master Belt",
-    "beltEmoji": "\ud83c\udf93",
+    "beltEmoji": "🎓",
     "beltColor": "#FFD700",
     "technique": "Advanced Techniques",
     "questions": [
@@ -388,11 +532,19 @@
         "hint": "Look for Almost Locked Sets that interact through a restricted common candidate.",
         "answerCell": 40,
         "answerValue": "4",
-        "explanation": "ALS-XZ (Almost Locked Set XZ) is an advanced technique where two Almost Locked Sets \u2014 sets of N cells with N+1 candidates \u2014 share a restricted common candidate. This allows eliminating the non-restricted candidate from cells that see all instances of it in both ALS.",
+        "explanation": "ALS-XZ (Almost Locked Set XZ) is an advanced technique where two Almost Locked Sets — sets of N cells with N+1 candidates — share a restricted common candidate. This allows eliminating the non-restricted candidate from cells that see all instances of it in both ALS.",
         "highlightCells": [
           40
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R5C5",
+          "R4C5",
+          "R6C5",
+          "R5C4",
+          "R5C6"
+        ],
+        "correctAnswer": 0
       },
       {
         "id": "master-q2",
@@ -405,7 +557,15 @@
         "highlightCells": [
           0
         ],
-        "highlightColor": "red"
+        "highlightColor": "red",
+        "options": [
+          "R1C1",
+          "R1C2",
+          "R2C1",
+          "R1C3",
+          "R3C1"
+        ],
+        "correctAnswer": 0
       }
     ]
   }
