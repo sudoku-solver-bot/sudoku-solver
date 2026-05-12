@@ -388,7 +388,6 @@
         "hint": "Look for Almost Locked Sets that interact through a restricted common candidate.",
         "answerCell": 40,
         "answerValue": "4",
-        "explanation": "ALS-XZ (Almost Locked Set XZ) is an advanced technique where two Almost Locked Sets \u2014 sets of N cells with N+1 candidates \u2014 share a restricted common candidate. This allows eliminating the non-restricted candidate from cells that see all instances of it in both ALS.",
         "highlightCells": [
           40
         ],
