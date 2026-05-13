@@ -85,10 +85,12 @@ class UniqueRectanglesCandidateEliminator : CandidateEliminator {
         val box3 = getBoxIndex(corners[2]) // (r2, c1)
         val box4 = getBoxIndex(corners[3]) // (r2, c2)
 
-        // Diagonal corners must be in same boxes:
-        // (r1,c1) and (r2,c2) in same box, (r1,c2) and (r2,c1) in same box
-        // And the two boxes must be different
-        if (box1 != box4 || box2 != box3) return null
+        // Same-side corners must be in the same boxes:
+        // (r1,c1) and (r2,c1) in same box (left column, both rows)
+        // (r1,c2) and (r2,c2) in same box (right column, both rows)
+        // This happens when both rows are in the same box-row (r1//3 == r2//3)
+        // and the two columns are in different box-cols (c1//3 != c2//3)
+        if (box1 != box3 || box2 != box4) return null
         if (box1 == box2) return null // All in same box, not a valid rectangle
 
         // Get candidates for all 4 corners
