@@ -77,59 +77,59 @@
     "questions": [
       {
         "id": "yellow-q1",
-        "puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
-        "question": "Where is the Hidden Single for the number 3 in row 6?",
-        "hint": "Check which cells in row 6 can hold the number 3. Only ONE cell works because the others are blocked by columns or boxes already containing 3.",
-        "answerCell": 47,
-        "answerValue": "3",
-        "explanation": "Cell R6C3 is a Hidden Single for value 3 in row 6. No other empty cell in that row can hold 3 — columns 1, 2, 4, and 5 already have 3 in other rows, and the box constraints eliminate the rest.",
+        "puzzle": "000300054008000627500200030900050000000607003002900005006093540000005276051762300",
+        "question": "Where is the Hidden Single for the number 5 in row 2?",
+        "hint": "Check which empty cell in row 2 is the only one that can hold the number 5. Other cells are blocked by columns or boxes already containing 5.",
+        "answerCell": 12,
+        "answerValue": "5",
+        "explanation": "Cell R2C4 is a Hidden Single for value 5 in row 2. Every other empty cell in row 2 is blocked from holding 5 — column 1 already has 5, column 2 already has 5, column 5 already has 5, and column 6 already has 5. R2C4 is the only cell in the row where 5 can go.",
         "highlightCells": [
-          45,
-          46,
-          47,
-          48,
-          49,
-          50,
-          51,
-          52,
-          53
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17
         ],
         "highlightColor": "blue",
         "options": [
-          "R6C3",
-          "R6C1",
-          "R6C2",
-          "R6C4",
-          "R6C5"
+          "R2C4",
+          "R2C1",
+          "R2C5",
+          "R2C6",
+          "R3C4"
         ],
         "correctAnswer": 0
       },
       {
         "id": "yellow-q2",
-        "puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
-        "question": "Find the Hidden Single for the number 4 in column 5. Which cell?",
-        "hint": "Look for a cell in column 5 where 4 can go. All other cells in that column either already have a value or are blocked by rows/boxes containing 4.",
-        "answerCell": 22,
-        "answerValue": "4",
-        "explanation": "Cell R3C5 is a Hidden Single for value 4 in column 5. Every other empty cell in column 5 is blocked from holding 4 by the row or box already containing that digit.",
+        "puzzle": "800000010009006800001000002200071500508209670010004000006400020902060050085920007",
+        "question": "Find the Hidden Single for the number 2 in column 6. Which cell?",
+        "hint": "Look for a cell in column 6 where 2 can go. All other cells in that column either already have a value or are blocked by rows/boxes containing 2.",
+        "answerCell": 5,
+        "answerValue": "2",
+        "explanation": "Cell R1C6 is a Hidden Single for value 2 in column 6. Every other empty cell in column 6 is blocked from holding 2 by the row or box already containing that digit — rows 2, 3, 5, 7, and 9 each have a 2 elsewhere, and box constraints eliminate the remaining cells.",
         "highlightCells": [
-          4,
-          13,
-          22,
-          31,
-          40,
-          49,
-          58,
-          67,
-          76
+          5,
+          14,
+          23,
+          32,
+          41,
+          50,
+          59,
+          68,
+          77
         ],
         "highlightColor": "green",
         "options": [
-          "R3C5",
-          "R1C5",
-          "R2C5",
-          "R4C5",
-          "R5C5"
+          "R1C6",
+          "R3C6",
+          "R7C6",
+          "R8C6",
+          "R9C6"
         ],
         "correctAnswer": 0
       }
@@ -532,6 +532,7 @@
         "hint": "Look for Almost Locked Sets that interact through a restricted common candidate.",
         "answerCell": 40,
         "answerValue": "4",
+        "explanation": "Cell R5C5 can be determined using ALS-XZ (Almost Locked Set elimination). Two Almost Locked Sets share a restricted common candidate, and the interaction eliminates all but one possibility at R5C5, giving value 4. This technique requires identifying sets of cells that are one candidate short of being a locked set.",
         "highlightCells": [
           40
         ],
