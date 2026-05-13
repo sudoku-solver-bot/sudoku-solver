@@ -77,59 +77,59 @@
     "questions": [
       {
         "id": "yellow-q1",
-        "puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
-        "question": "Where is the Hidden Single for the number 3 in row 6?",
-        "hint": "Check which cells in row 6 can hold the number 3. Only ONE cell works because the others are blocked by columns or boxes already containing 3.",
-        "answerCell": 47,
+        "puzzle": "8.4...53.5..2.....316.9..2...5.4.8..1..6.29...728..3.......5.....1...7.4.5....6.3",
+        "question": "Where is the Hidden Single for the number 3 in row 8?",
+        "hint": "Check which empty cell in row 8 is the only one that can hold the number 3. Other cells are blocked by columns or boxes already containing 3.",
+        "answerCell": 66,
         "answerValue": "3",
-        "explanation": "Cell R6C3 is a Hidden Single for value 3 in row 6. No other empty cell in that row can hold 3 — columns 1, 2, 4, and 5 already have 3 in other rows, and the box constraints eliminate the rest.",
+        "explanation": "Cell R8C4 is a Hidden Single for value 3 in row 8. No other empty cell in that row can hold 3 — columns 1, 2, 3, 5, and 6 already have 3 in other rows, and the box constraints eliminate the rest.",
         "highlightCells": [
-          45,
-          46,
-          47,
-          48,
-          49,
-          50,
-          51,
-          52,
-          53
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71
         ],
         "highlightColor": "blue",
         "options": [
-          "R6C3",
-          "R6C1",
-          "R6C2",
-          "R6C4",
-          "R6C5"
+          "R8C4",
+          "R8C3",
+          "R8C5",
+          "R8C6",
+          "R7C4"
         ],
         "correctAnswer": 0
       },
       {
         "id": "yellow-q2",
-        "puzzle": "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
-        "question": "Find the Hidden Single for the number 4 in column 5. Which cell?",
-        "hint": "Look for a cell in column 5 where 4 can go. All other cells in that column either already have a value or are blocked by rows/boxes containing 4.",
-        "answerCell": 22,
-        "answerValue": "4",
-        "explanation": "Cell R3C5 is a Hidden Single for value 4 in column 5. Every other empty cell in column 5 is blocked from holding 4 by the row or box already containing that digit.",
+        "puzzle": "517..6...8...9....493.7..5......3.8.9384....71.2.59..4....1.4....4.....33.1......",
+        "question": "Find the Hidden Single for the number 7 in column 7. Which cell?",
+        "hint": "Look for a cell in column 7 where 7 can go. All other cells in that column either already have a value or are blocked by rows/boxes containing 7.",
+        "answerCell": 15,
+        "answerValue": "7",
+        "explanation": "Cell R2C7 is a Hidden Single for value 7 in column 7. Every other empty cell in column 7 is blocked from holding 7 by the row or box already containing that digit.",
         "highlightCells": [
-          4,
-          13,
-          22,
-          31,
-          40,
-          49,
-          58,
-          67,
-          76
+          6,
+          15,
+          24,
+          33,
+          42,
+          51,
+          60,
+          69,
+          78
         ],
         "highlightColor": "green",
         "options": [
-          "R3C5",
-          "R1C5",
-          "R2C5",
-          "R4C5",
-          "R5C5"
+          "R2C7",
+          "R1C7",
+          "R3C7",
+          "R4C7",
+          "R5C7"
         ],
         "correctAnswer": 0
       }
@@ -532,6 +532,7 @@
         "hint": "Look for Almost Locked Sets that interact through a restricted common candidate.",
         "answerCell": 40,
         "answerValue": "4",
+        "explanation": "Cell R5C5 can be determined using ALS-XZ (Almost Locked Set elimination). Two Almost Locked Sets share a restricted common candidate, and the interaction eliminates all but one possibility at R5C5, giving value 4. This technique requires identifying sets of cells that are one candidate short of being a locked set.",
         "highlightCells": [
           40
         ],
