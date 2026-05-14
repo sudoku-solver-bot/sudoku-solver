@@ -5,7 +5,6 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import java.io.File
 import java.lang.management.ManagementFactory
 import java.lang.management.MemoryMXBean
 import java.lang.management.RuntimeMXBean
@@ -118,13 +117,8 @@ fun Route.healthRoutes() {
             else -> "OK"
         }
 
-        // Read deployed commit hash (file path from env, default /opt/sudoku/.deploy-commit)
-        val gitCommit = try {
-            val commitFile = File(System.getenv("DEPLOY_COMMIT_FILE") ?: "/opt/sudoku/.deploy-commit")
-            if (commitFile.isFile) commitFile.readText().trim().takeIf { it.isNotEmpty() } else null
-        } catch (_: Exception) {
-            null
-        }
+        // Read git commit hash — classpath version.properties first, then deploy file
+        val gitCommit = readGitCommit()
 
         call.respond(
             HttpStatusCode.OK,
