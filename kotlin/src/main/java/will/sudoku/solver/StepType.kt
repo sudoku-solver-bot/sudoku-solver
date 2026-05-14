@@ -14,6 +14,8 @@ enum class StepType(val displayName: String, val description: String) {
     X_WING("X-Wing", "Found X-Wing pattern eliminating candidates"),
     SWORDFISH("Swordfish", "Found Swordfish pattern eliminating candidates"),
     XY_WING("XY-Wing", "Found XY-Wing pattern eliminating candidates"),
+    NAKED_SUBSET("Naked Subset", "Found naked pair/triple/quad eliminating candidates in a group"),
+    HIDDEN_SUBSET("Hidden Subset", "Found hidden pair/triple/quad values in a group"),
 
     // Actions
     CELL_FILLED("Cell Filled", "Filled a cell with its only remaining candidate"),
@@ -33,12 +35,32 @@ enum class StepType(val displayName: String, val description: String) {
         /**
          * Try to find a matching StepType for an eliminator display name.
          * Falls back to TECHNIQUE_APPLIED if no match.
+         *
+         * Matching strategy:
+         * 1. Exact match on displayName or enum name (case-insensitive)
+         * 2. Normalized match (strip hyphens, spaces, parentheses)
+         * 3. Explicit aliases for generic eliminators
          */
         fun fromTechniqueName(name: String): StepType {
-            return entries.firstOrNull {
+            // Direct match on display name or enum name
+            entries.firstOrNull {
                 it.displayName.equals(name, ignoreCase = true) ||
                 it.name.replace("_", " ").equals(name, ignoreCase = true)
-            } ?: TECHNIQUE_APPLIED
+            }?.let { return it }
+
+            // Normalized match: strip hyphens, spaces, parentheses for comparison
+            // e.g. "XWing" matches "X-Wing", "XYWing" matches "XY-Wing"
+            val normalized = name.lowercase().replace("[-\\s()]", "")
+            entries.firstOrNull {
+                it.displayName.lowercase().replace("[-\\s()]", "") == normalized ||
+                it.name.lowercase().replace("_", "") == normalized
+            }?.let { return it }
+
+            // Explicit aliases for generic eliminator names
+            return when {
+                name.startsWith("Exclusion", ignoreCase = true) -> SIMPLE_ELIMINATION
+                else -> TECHNIQUE_APPLIED
+            }
         }
     }
 }
