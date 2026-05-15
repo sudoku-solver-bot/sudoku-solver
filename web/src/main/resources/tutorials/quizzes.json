@@ -446,7 +446,7 @@
         "question": "Where can you apply a W-Wing elimination to narrow down candidates?",
         "hint": "Look for two cells with the same two candidates that are connected through a strong link in a column or box.",
         "answerCell": 36,
-        "answerValue": "5",
+        "answerValue": "6",
         "explanation": "The W-Wing technique identifies two bivalue cells with the same candidates connected by a strong link on one candidate. Any cell seeing both wings cannot contain the other candidate. This elimination often reveals hidden singles or further techniques.",
         "highlightCells": [
           36,
