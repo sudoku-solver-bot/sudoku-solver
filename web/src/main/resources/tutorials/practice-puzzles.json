@@ -30,13 +30,13 @@
     "puzzles": [
       {
         "id": "hs-p1",
-        "puzzle": "200070038000006070300040600008020700100000006007030400004080009060400000910060002",
-        "description": "Hidden Single practice \u2014 find numbers that can only go in one place (source: SudokuWiki Getting Started)"
+        "puzzle": "000000001004060208070320400900018000005000600000540009008037040609080300100000000",
+        "description": "Hidden Single practice \u2014 find numbers that can only go in one place (source: SudokuWiki Y-Wing Exemplar 5)"
       },
       {
         "id": "hs-p2",
-        "puzzle": "000000000904607000076804100309701080008000300050308702007502610000403208000000000",
-        "description": "Another Hidden Single exercise (source: SudokuWiki Hidden Pairs example)"
+        "puzzle": "306709405070030000000000070130080002000010000200070049020000000000050060403806207",
+        "description": "Another Hidden Single exercise (source: SudokuWiki Y-Wing Exemplar 6)"
       }
     ]
   },
@@ -48,13 +48,13 @@
     "puzzles": [
       {
         "id": "np-p1",
-        "puzzle": "080090030030000000002060108020800500800907006004005070503040900000000010010050020",
-        "description": "Naked Pair practice \u2014 find pairs of cells with same two candidates (source: SudokuWiki Naked Pairs ex.2)"
+        "puzzle": "002070500000805000080020060090000031005609700140000020030090050000102000007040800",
+        "description": "Naked Pair practice \u2014 find pairs of cells with same two candidates (source: SudokuWiki Y-Wing Exemplar 7)"
       },
       {
         "id": "np-p2",
-        "puzzle": "070008029002000004854020000008374200000000000003261700000090612200000400130600070",
-        "description": "Another Naked Pair exercise (source: SudokuWiki Naked Triples example)"
+        "puzzle": "005000000090803000001200536060300000203000801000008090186004900000901040000000600",
+        "description": "Another Naked Pair exercise (source: SudokuWiki Y-Wing Exemplar 8)"
       }
     ]
   },
@@ -84,8 +84,8 @@
     "puzzles": [
       {
         "id": "pp-p1",
-        "puzzle": "010903600000080000900000507002010430000402000064070200701000005000030000005601020",
-        "description": "Pointing Pair practice \u2014 find candidates locked to one row/col in a box (source: SudokuWiki Pointing Pairs ex.1)"
+        "puzzle": "003608000207000000000700340000000019301209507490000000076005000000000208000806700",
+        "description": "Pointing Pair practice \u2014 find candidates locked to one row/col in a box (source: SudokuWiki Y-Wing Exemplar 9)"
       },
       {
         "id": "pp-p2",
@@ -102,8 +102,8 @@
     "puzzles": [
       {
         "id": "blr-p1",
-        "puzzle": "016007803000800000070001060048000300600000002009000650060900020000002000904600510",
-        "description": "Box/Line Reduction practice \u2014 eliminate candidates confined to one box in a row/col (source: SudokuWiki Box/Line Reduction)"
+        "puzzle": "400000006026000070080040090007800200100302007005004800070020080090000160600000003",
+        "description": "Box/Line Reduction practice \u2014 eliminate candidates confined to one box (source: SudokuWiki Y-Wing Exemplar 10)"
       },
       {
         "id": "blr-p2",
@@ -138,8 +138,8 @@
     "puzzles": [
       {
         "id": "ht-p1",
-        "puzzle": "000000000231090000065003100008924000100050006000136700009300570000010843000000000",
-        "description": "Hidden Triple practice \u2014 find three values appearing in only three cells (source: SudokuWiki Hidden Triples ex.1)"
+        "puzzle": "000805000090040060030090001008000040500604003070000200100080009060010030000206000",
+        "description": "Hidden Triple practice \u2014 find three values appearing in only three cells (source: SudokuWiki Unique Rectangles Type 2B)"
       },
       {
         "id": "ht-p2",
@@ -192,8 +192,8 @@
     "puzzles": [
       {
         "id": "xyw-p1",
-        "puzzle": "034500000802060400600008000003900004050000090900005800000300008001040605000007120",
-        "description": "XY-Wing practice \u2014 find a pivot cell connecting two wings (source: SudokuWiki Y-Wing ex.1)"
+        "puzzle": "607945023395062000402037569743516298569283741821000635970650312136020050250301006",
+        "description": "XY-Wing practice \u2014 find a pivot cell connecting two wings (source: SudokuWiki Double Y-Wing)"
       },
       {
         "id": "xyw-p2",
@@ -282,8 +282,8 @@
     "puzzles": [
       {
         "id": "adv-p1",
-        "puzzle": "800409000200070000050200300042801030030000090080903210006007040000020001000604003",
-        "description": "Advanced practice \u2014 Death Blossom and ALS-XZ techniques (source: SudokuWiki Death Blossom)"
+        "puzzle": "007030000500400060800100009092500700000000000030009510300008007070006008000020600",
+        "description": "Advanced practice \u2014 Death Blossom and ALS-XZ techniques (source: SudokuWiki Hidden Quad)"
       },
       {
         "id": "adv-p2",
