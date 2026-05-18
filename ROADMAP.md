@@ -1,6 +1,6 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-05-17
+**Last updated:** 2026-05-18
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 **Live:** https://sudoku-solver-r5y8.onrender.com
 
@@ -12,29 +12,59 @@ After 304+ PRs merged and the full feature set shipped, focus is on quality and 
 
 ### Active Goals
 
-- [ ] Fix all 🟠+ bugs filed by tester
-- [ ] Quiz consistency audit — cross-belt duplicates, wrong answers, technique mismatches
-- [ ] Hint quality improvement — technique-specific hints instead of generic "Scanning"
-- [ ] Server stability — eliminate logback crash loop (PR #216 needs merge + deploy)
+- [ ] **Architecture Debt Cleanup (Epic #434)** — remove 6,000+ LOC dead code, add integration tests, build-time validation
+- [ ] Fix all 🔴 high-priority bugs (quiz data, practice puzzles, hint accuracy)
+- [ ] Quiz consistency — add options/correctAnswer to all belt quizzes, fix cross-belt duplicates
+- [ ] Tutorial quality — fix broken example puzzles, validate lesson data at build time
+- [ ] Server reliability — deploy race condition fix, systemd rate limiting
 
-### In Progress
+### Top Priority Plans (🔴 high)
 
-| Issue | Title | Priority | Owner |
-|-------|-------|----------|-------|
-| #318 | Fix local server crash loop (logback) | 🔴 high | coder |
-| #319 | Add OpenAPI/Swagger docs | 🟡 medium | coder |
-| #320 | Puzzle sharing via URL | 🟡 medium | coder |
-| #321 | Keyboard shortcut help overlay | 🟢 low | coder |
-| #24 | Branch protection config | 🟢 low | infra |
+| Issue | Title | Category |
+|-------|-------|----------|
+| #433 | Build-time validation for quiz data | Architecture |
+| #432 | Build-time validation for tutorial lesson data | Architecture |
+| #431 | Ktor integration tests (DailyChallenge, Solve, Validate) | Architecture |
+| #430 | Ktor integration tests (TutorialRoutes) | Architecture |
+| #428 | Delete com.sudoku.testing package (1,127 LOC) | Architecture |
+| #427 | Delete 9 dead solver classes (4,877 LOC) | Architecture |
+| #408 | Fix deploy race condition — atomic artifact swap | Infra |
+| #407 | Add systemd rate limiting to prevent crash loops | Infra |
+| #406 | Add options + correctAnswer to advanced belt quizzes | Quiz |
+| #405 | Add options + correctAnswer to intermediate belt quizzes | Quiz |
+| #404 | Add options + correctAnswer to beginner belt quizzes | Quiz |
+| #403 | Fix 3 advanced tutorial example puzzles | Tutorial |
+| #402 | Fix 3 intermediate tutorial example puzzles | Tutorial |
+| #399 | Expose gitCommit in health endpoint | Infra |
+
+### Open Bugs
+
+| Issue | Title | Priority |
+|-------|-------|----------|
+| #418 | Remote serving stale quiz data from initial commit | 🟡 |
+| #388 | All belt-level quiz questions have empty/missing explanations | 🟡 |
+| #375 | 15 of 34 practice puzzles broken | 🔴 |
+| #374 | Daily challenge crashes for certain dates | 🔴 |
+| #373 | Celebration and Undo-Redo routes return 404 | 🔴 |
+| #367 | Quiz questions reuse same puzzle across different belts | 🟡 |
+| #366 | Quiz answerCell points to already-filled cells | 🔴 |
 
 ### Recently Completed
 
+- ✅ #318 Fix local server crash loop (May 17)
+- ✅ #319 OpenAPI/Swagger docs (May 17)
+- ✅ #320 Puzzle sharing via URL (May 17)
+- ✅ #321 Keyboard shortcut help overlay (May 17)
+- ✅ #24 Branch protection config (May 17)
+- ✅ #414 Unit tests for tutorial/quiz validation (May 17)
+- ✅ #401 Build-time version injection via Gradle (May 17)
+- ✅ #372 Tutorial completion 500 serialization fix (May 17)
+- ✅ #394 Quiz missing options/correctAnswer (May 13)
+- ✅ #396 6 tutorial example puzzles solvable without taught technique (May 13)
 - ✅ 304+ PRs merged — full feature set (May 8)
-- ✅ All known bugs closed (May 8)
 - ✅ 20 tutorials with quizzes across 9 belt levels
 - ✅ 20-language i18n support
 - ✅ PWA with offline support
-- ✅ Comprehensive E2E test suite
 
 ---
 
