@@ -15,6 +15,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":board"))
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
     
     // Logging

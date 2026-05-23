@@ -73,6 +73,8 @@ dependencies {
     // Logging
     implementation("ch.qos.logback:logback-classic:1.4.14")
     
+    // Core board data types
+    implementation(project(":board"))
     // Core solver module
     implementation(project(":kotlin"))
     
