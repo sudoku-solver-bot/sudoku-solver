@@ -24,7 +24,7 @@ import will.sudoku.web.validateRoutes
 import will.sudoku.web.stepByStepRoutes
 import will.sudoku.web.candidateRoutes
 import will.sudoku.web.tutorialRoutes
-import will.sudoku.web.dailyChallengeRoutes
+import will.sudoku.web.candidateRoutes
 import will.sudoku.web.difficultyRoutes
 
 fun main() {
@@ -126,7 +126,6 @@ fun Application.module() {
             stepByStepRoutes()
             candidateRoutes()
             tutorialRoutes()
-            dailyChallengeRoutes()
             difficultyRoutes()
         }
 

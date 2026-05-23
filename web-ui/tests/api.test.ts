@@ -97,13 +97,6 @@ describe('API error resilience', () => {
       const result = await fetchTutorials()
       expect(result).toBeDefined()
     })
-
-    it('fetchDailyChallenge handles 404', async () => {
-      mockFetch.mockResolvedValue({ ok: false, status: 404, json: () => Promise.resolve({ error: 'Not found' }) })
-      const { fetchDailyChallenge } = await getApiModule()
-      const result = await fetchDailyChallenge()
-      expect(result).toBeDefined()
-    })
   })
 
   describe('empty body responses', () => {

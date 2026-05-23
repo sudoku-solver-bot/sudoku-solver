@@ -22,13 +22,6 @@
             🏠
           </button>
           <button
-            class="header-btn daily-btn"
-            :title="dailyMode ? 'Exit Daily' : 'Daily Challenge'"
-            @click="dailyMode = !dailyMode"
-          >
-            📅
-          </button>
-          <button
             class="header-btn dark-toggle"
             :title="isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'"
             @click="toggleDarkMode"
@@ -60,31 +53,10 @@
               </button>
               <button
                 class="menu-item"
-                @click="leaderboardOpen = !leaderboardOpen; moreMenuOpen = false"
-              >
-                <span class="menu-icon">🏆</span>
-                <span class="menu-label">Leaderboard</span>
-              </button>
-              <button
-                class="menu-item"
                 @click="savesOpen = !savesOpen; moreMenuOpen = false"
               >
                 <span class="menu-icon">💾</span>
                 <span class="menu-label">Saved Puzzles</span>
-              </button>
-              <button
-                class="menu-item"
-                @click="openAchievements(); moreMenuOpen = false"
-              >
-                <span class="menu-icon">🏅</span>
-                <span class="menu-label">Achievements</span>
-              </button>
-              <button
-                class="menu-item"
-                @click="openStats(); moreMenuOpen = false"
-              >
-                <span class="menu-icon">📊</span>
-                <span class="menu-label">Statistics</span>
               </button>
               <button
                 class="menu-item"
@@ -112,20 +84,9 @@
         </div>
       </div>
 
-      <!-- Dashboard (home) -->
-      <Dashboard
-        v-if="!tutorialMode && !tutorialSelectorOpen && !dailyMode && !playMode && !settingsOpen && !aboutOpen && !helpOpen && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen && !statsOpen && !savesOpen"
-        :completed-tutorials="completedTutorials"
-        :total-tutorials="tutorialList.length || 15"
-        :is-dark="isDark"
-        @daily="dailyMode = true"
-        @learn="toggleTutorialMode"
-        @play="playMode = true"
-      />
-
       <!-- Settings -->
       <Settings
-        v-if="settingsOpen && !tutorialMode && !dailyMode"
+        v-if="settingsOpen && !tutorialMode"
         :is-dark="isDark"
         :color-blind="colorBlindMode"
         :high-contrast="highContrastMode"
@@ -141,35 +102,21 @@
 
       <!-- About -->
       <AboutPage
-        v-if="aboutOpen && !tutorialMode && !dailyMode"
+        v-if="aboutOpen && !tutorialMode"
         :is-dark="isDark"
         @exit="aboutOpen = false"
       />
 
       <!-- Help Page -->
       <HelpPage
-        v-if="helpOpen && !tutorialMode && !dailyMode"
+        v-if="helpOpen && !tutorialMode"
         :is-dark="isDark"
         @exit="helpOpen = false"
       />
 
-      <!-- Leaderboard -->
-      <Leaderboard
-        v-if="leaderboardOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !savesOpen && !whatsNewOpen"
-        :is-dark="isDark"
-        @back="leaderboardOpen = false"
-      />
-
-      <!-- What's New -->
-      <WhatsNew
-        v-if="whatsNewOpen"
-        :is-dark="isDark"
-        @close="whatsNewOpen = false"
-      />
-
       <!-- Saved Puzzles -->
       <SavedPuzzles
-        v-if="savesOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !achievementsOpen && !statsOpen && !leaderboardOpen"
+        v-if="savesOpen && !tutorialMode && !quizMode && !practiceMode"
         :is-dark="isDark"
         :current-puzzle="puzzle"
         :current-difficulty="puzzleDifficulty"
@@ -177,28 +124,7 @@
         @load="onLoadSave"
       />
 
-      <!-- Achievements -->
-      <Achievements
-        v-if="achievementsOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !leaderboardOpen && !statsOpen"
-        :is-dark="isDark"
-        :stats="achievementStats"
-        @back="achievementsOpen = false"
-      />
-
-      <!-- Stats -->
-      <StatsPage
-        v-if="statsOpen && !tutorialMode && !dailyMode && !quizMode && !practiceMode && !leaderboardOpen && !achievementsOpen"
-        :is-dark="isDark"
-        @back="statsOpen = false"
-        @reset-stats="statsOpen = false"
-      />
-
-      <!-- Daily Challenge -->
-      <DailyChallenge
-        v-if="dailyMode && !tutorialMode && !tutorialSelectorOpen && !quizMode && !practiceMode"
-        :is-dark="isDark"
-        @exit="dailyMode = false"
-      />
+      <!-- Daily Challenge removed -->
 
       <!-- Tutorial Selector -->
       <TutorialSelector
@@ -242,7 +168,7 @@
       />
 
       <!-- Normal mode (hidden in tutorial/daily/dashboard) -->
-      <template v-if="playMode && !tutorialMode && !tutorialSelectorOpen && !dailyMode">
+      <template v-if="playMode && !tutorialMode && !tutorialSelectorOpen">
         <!-- Toast notification -->
         <ToastNotification
           :visible="toast.visible"
@@ -379,14 +305,6 @@
 
       <!-- PWA update prompt -->
       <UpdatePrompt :is-dark="isDark" />
-
-      <!-- First-time onboarding -->
-      <OnboardingTour
-        :visible="onboardingOpen"
-        :is-dark="isDark"
-        @close="onboardingOpen = false"
-        @done="onboardingOpen = false; localStorage.setItem('sudoku-seen-onboarding', 'true')"
-      />
     </div>
   </div>
 </template>
@@ -405,13 +323,7 @@ import TutorialMode from './components/TutorialMode.vue'
 import TutorialSelector from './components/TutorialSelector.vue'
 import QuizMode from './components/QuizMode.vue'
 import PracticeMode from './components/PracticeMode.vue'
-import DailyChallenge from './components/DailyChallenge.vue'
-import Dashboard from './components/Dashboard.vue'
 import ImportPuzzle from './components/ImportPuzzle.vue'
-import Leaderboard from './components/Leaderboard.vue'
-import Achievements from './components/Achievements.vue'
-import StatsPage from './components/StatsPage.vue'
-import { getStatsForAchievements } from './stats-tracker'
 import { playSound } from './sounds'
 import { updateFavicon } from './favicon'
 import { printPuzzle } from './print'
@@ -426,7 +338,6 @@ import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
 import AboutPage from './components/AboutPage.vue'
 import HelpPage from './components/HelpPage.vue'
-import OnboardingTour from './components/OnboardingTour.vue'
 import UpdatePrompt from './components/UpdatePrompt.vue'
 import {
   solvePuzzle,
@@ -514,13 +425,10 @@ const tutorialMode = ref(false)
 const tutorialList = ref([])
 const currentTutorialLesson = ref(null)
 const tutorialSelectorOpen = ref(false)
-const dailyMode = ref(false)
 const playMode = ref(false)
 const settingsOpen = ref(false)
 const aboutOpen = ref(false)
 const helpOpen = ref(false)
-const onboardingOpen = ref(false)
-const hasSeenOnboarding = ref(localStorage.getItem('sudoku-seen-onboarding') === 'true')
 const moreMenuOpen = ref(false)
 const colorBlindMode = ref(false)
 const highContrastMode = ref(false)
@@ -534,15 +442,10 @@ const quizList = ref([])
 const practiceMode = ref(false)
 const currentPracticeSet = ref(null)
 const practiceList = ref([])
-const leaderboardOpen = ref(false)
-const whatsNewOpen = ref(false)
 const savesOpen = ref(false)
 const confettiVisible = ref(false)
 const importModalOpen = ref(false)
 const keyboardHelpOpen = ref(false)
-const achievementsOpen = ref(false)
-const statsOpen = ref(false)
-const achievementStats = ref({})
 
 // Load completed tutorials from localStorage
 try {
@@ -627,18 +530,10 @@ onMounted(() => {
   // Check if mobile device
   checkMobile()
 
-  // Show What's New on version change (not for brand new users who get onboarding)
+  // Version tracking
   const seenVersion = localStorage.getItem('sudoku-version')
-  const isNewUser = !seenVersion && !localStorage.getItem('sudoku-seen-onboarding')
-  if (seenVersion && seenVersion !== '2.0') {
-    whatsNewOpen.value = true
+  if (!seenVersion) {
     localStorage.setItem('sudoku-version', '2.0')
-  } else if (!seenVersion) {
-    // First visit ever — set version and show onboarding
-    localStorage.setItem('sudoku-version', '2.0')
-    if (!hasSeenOnboarding.value && !navigator.webdriver) {
-      onboardingOpen.value = true
-    }
   }
   window.addEventListener('resize', checkMobile)
 
@@ -1288,19 +1183,6 @@ const exitPracticeMode = () => {
   if (tutorialList.value.length > 0) {
     tutorialSelectorOpen.value = true
   }
-}
-
-const openAchievements = () => {
-  achievementStats.value = getStatsForAchievements()
-  leaderboardOpen.value = false
-  statsOpen.value = false
-  achievementsOpen.value = true
-}
-
-const openStats = () => {
-  achievementsOpen.value = false
-  leaderboardOpen.value = false
-  statsOpen.value = true
 }
 
 const onPracticeCompleted = (result) => {

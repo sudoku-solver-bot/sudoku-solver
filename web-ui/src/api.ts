@@ -184,12 +184,6 @@ export async function fetchTutorialProgress(): Promise<unknown> {
   return apiGet(`${API_BASE}/v1/tutorials/progress`)
 }
 
-// Daily Challenge
-export async function fetchDailyChallenge(date: string | null = null): Promise<unknown> {
-  const url = date ? `${API_BASE}/v1/daily/${date}` : `${API_BASE}/v1/daily`
-  return apiGet(url)
-}
-
 // Quiz
 export async function fetchQuizzes(): Promise<unknown> {
   return apiGet(`${API_BASE}/v1/tutorials/quizzes`)
