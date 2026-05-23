@@ -36,7 +36,6 @@ sudoku-solver/
 │       ├── DifficultyRater.kt       # Rates puzzles by required technique depth
 │       ├── HintGenerator.kt         # Produces TeachingHint for next logical move
 │       ├── TeachingHint.kt          # Hint data model
-│       ├── TutorialSystem.kt        # Tutorial lesson integration
 │       ├── DifficultyLevel.kt       # 8 difficulty levels (EASY → EVIL)
 │       ├── StepType.kt              # Enum of elimination step types
 │       ├── SolvingStep.kt           # Recorded elimination step (for playback)
@@ -44,7 +43,6 @@ sudoku-solver/
 │       ├── StepRecorder.kt          # Collects SolvingSteps during solve
 │       ├── SolvingListener.kt       # Observer interface for solver events
 │       ├── MetricsCollector.kt      # Aggregates solver performance metrics
-│       ├── MetricsEnabledEliminator.kt # Decorator: adds metrics to any eliminator
 │       ├── SolverMetrics.kt         # Metrics data model
 │       └── SolverLogger.kt          # Structured solver logging
 ├── web/                             # Ktor web server (:web)
@@ -61,7 +59,6 @@ sudoku-solver/
 │       ├── DifficultyRoutes.kt      # GET  /api/v1/difficulty
 │       ├── HealthRoutes.kt          # GET  /api/v1/health
 │       ├── DeployInfoRoutes.kt      # GET  /api/v1/deploy-info, /version
-│       ├── PuzzleCache.kt           # Daily puzzle cache (deterministic)
 │       ├── PuzzleEncoder.kt         # Board ↔ 81-char string encoding
 │       ├── PuzzleValidator.kt       # Request validation utilities
 │       ├── RequestLogging.kt        # Ktor plugin for request logging
@@ -195,7 +192,7 @@ Frontend sends current board + player state → API → `HintGenerator.generateH
 Frontend fetches lesson via `GET /api/v1/tutorials/{id}` → `TutorialRoutes` reads `lessons.json` → returns lesson with puzzle, explanation, and step list → `TutorialMode.vue` plays through step-by-step solving with highlighted cells and technique explanations.
 
 ### Daily Challenge
-Server generates puzzle deterministically (seed = date) → cached in `PuzzleCache` for the day → frontend fetches via `GET /api/v1/daily` → `DailyChallenge.vue` displays puzzle + tracks streak count in `localStorage`.
+Server generates puzzle deterministically (seed = date) → frontend fetches via `GET /api/v1/daily` → `DailyChallenge.vue` displays puzzle + tracks streak count in `localStorage`.
 
 ---
 
