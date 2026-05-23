@@ -19,6 +19,13 @@ data class DeployInfoResponse(
     val buildTimestamp: String?
 )
 
+@Serializable
+data class VersionResponse(
+    val version: String,
+    val gitCommit: String?,
+    val buildTimestamp: String?
+)
+
 /**
  * Build version info loaded from classpath version.properties (injected at build time by Gradle).
  * Falls back to null if properties are not available (e.g. during development without build).
@@ -76,6 +83,17 @@ internal fun readBuildTimestamp(): String? {
 }
 
 fun Route.deployInfoRoutes() {
+    get("/version") {
+        call.respond(
+            HttpStatusCode.OK,
+            VersionResponse(
+                version = "1.0.0",
+                gitCommit = readGitCommit(),
+                buildTimestamp = readBuildTimestamp()
+            )
+        )
+    }
+
     get("/deploy-info") {
         call.respond(
             HttpStatusCode.OK,
