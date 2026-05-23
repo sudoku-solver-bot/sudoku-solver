@@ -2,7 +2,6 @@
 
 An **educational** Sudoku platform that teaches 21 solving techniques through interactive tutorials, belt-rank progression, and daily challenges. Target audience: learners mastering Sudoku logic + contributors extending the system.
 
-**Live:** [sudoku-solver-r5y8.onrender.com](https://sudoku-solver-r5y8.onrender.com)
 
 ---
 

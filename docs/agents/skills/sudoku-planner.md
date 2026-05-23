@@ -29,7 +29,6 @@ Strategic planning agent. Understands the codebase and production state without 
 
 - **Repo:** `/home/claw1/repos/sudoku-solver`
 - **Stack:** Kotlin 2.1 (Ktor) backend + Vue 3 frontend
-- **Production:** `https://sudoku-solver-r5y8.onrender.com`
 - **Local:** `http://localhost:25321`
 - **Roadmap:** `memory/sudoku-solver-roadmap.md`
 - **Architecture doc:** `CLAUDE.md` in repo root
@@ -77,7 +76,6 @@ Use `web_fetch` or `exec` with curl to check:
 curl -sf http://localhost:25321/api/health | python3 -m json.tool
 
 # Remote health check
-curl -sf https://sudoku-solver-r5y8.onrender.com/api/health | python3 -m json.tool
 
 # Solve a test puzzle
 curl -sf -X POST http://localhost:25321/api/v1/solve \

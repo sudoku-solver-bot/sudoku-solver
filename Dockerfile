@@ -15,9 +15,8 @@ WORKDIR /app
 # Copy the built application
 COPY --from=build /app/web/build/install/web ./app
 
-# Render sets PORT environment variable
 ENV PORT=10000
 
-EXPOSE $PORT
+EXPOSE ${PORT}
 
 CMD ["./app/bin/web"]

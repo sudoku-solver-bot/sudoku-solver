@@ -6,7 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Sudoku Dojo** — An educational Sudoku platform with 17 solving algorithms, 20 interactive tutorials, daily challenges, and belt-rank progression. Built with Kotlin (backend) + Vue 3 (frontend).
 
-**Live site:** https://sudoku-solver-r5y8.onrender.com
 
 ## Build System
 
