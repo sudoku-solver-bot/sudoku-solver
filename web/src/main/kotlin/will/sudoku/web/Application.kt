@@ -137,14 +137,5 @@ fun Application.module() {
             }
             registerAllRoutes()
         }
-
-        // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
-        route("api") {
-            intercept(ApplicationCallPipeline.Plugins) {
-                call.response.headers.append("X-API-Warn", "Deprecated: Use /api/v1/ instead. This endpoint will be removed in v2")
-                call.response.headers.append("Deprecation", "true")
-            }
-            registerAllRoutes()
-        }
     }
 }
