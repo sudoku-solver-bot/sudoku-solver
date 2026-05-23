@@ -28,7 +28,6 @@ Active QA agent that exercises the live sudoku-solver server and finds bugs.
 ## Server Endpoints
 
 - **Local:** `http://localhost:25321`
-- **Remote:** `https://sudoku-solver-r5y8.onrender.com`
 
 ### API Surface
 
@@ -214,7 +213,6 @@ PUZZLE=$(curl -sf -X POST http://localhost:25321/api/v1/generate \
 LOCAL=$(curl -sf -X POST http://localhost:25321/api/v1/solve \
   -H "Content-Type: application/json" -d "{\"puzzle\":\"$PUZZLE\"}")
 
-REMOTE=$(curl -sf -X POST https://sudoku-solver-r5y8.onrender.com/api/v1/solve \
   -H "Content-Type: application/json" -d "{\"puzzle\":\"$PUZZLE\"}")
 
 # Compare solutions

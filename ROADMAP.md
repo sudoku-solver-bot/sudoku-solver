@@ -2,7 +2,6 @@
 
 **Last updated:** 2026-05-18
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
-**Live:** https://sudoku-solver-r5y8.onrender.com
 
 ---
 
