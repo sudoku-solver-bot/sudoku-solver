@@ -76,7 +76,7 @@ dependencies {
     // Core board data types
     implementation(project(":board"))
     // Core solver module
-    implementation(project(":kotlin"))
+    implementation(project(":solver"))
     
     // Testing
     testImplementation("io.ktor:ktor-server-test-host:3.4.3")

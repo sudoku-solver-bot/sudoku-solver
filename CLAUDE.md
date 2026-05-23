@@ -36,7 +36,7 @@ cd web-ui && npm run dev
 cd web-ui && npm run build
 
 # Run JMH benchmarks (manual trigger only)
-./gradlew :kotlin:jmh
+./gradlew :solver:jmh
 ```
 
 ## CI/CD

@@ -6,24 +6,24 @@ This project uses JMH (Java Microbenchmark Harness) for performance testing.
 
 ### Run all benchmarks
 ```bash
-./gradlew :kotlin:jmh
+./gradlew :solver:jmh
 ```
 
 ### Run specific benchmark class
 ```bash
-./gradlew :kotlin:jmh -PjmhInclude=SolverBenchmark
-./gradlew :kotlin:jmh -PjmhInclude=EliminatorBenchmark
+./gradlew :solver:jmh -PjmhInclude=SolverBenchmark
+./gradlew :solver:jmh -PjmhInclude=EliminatorBenchmark
 ```
 
 ### Run specific benchmark method
 ```bash
-./gradlew :kotlin:jmh -PjmhInclude=SolverBenchmark.solvePuzzle
+./gradlew :solver:jmh -PjmhInclude=SolverBenchmark.solvePuzzle
 ```
 
 ### Run with specific parameters
 ```bash
 # Test only g1 and g2 puzzles
-./gradlew :kotlin:jmh -PjmhInclude=SolverBenchmark -PjmhParams=boardName=g1,boardName=g2
+./gradlew :solver:jmh -PjmhInclude=SolverBenchmark -PjmhParams=boardName=g1,boardName=g2
 ```
 
 ## Available Benchmarks
@@ -86,7 +86,7 @@ Benchmarks run via manual GitHub Actions workflow dispatch:
 1. Create a new Java class in `kotlin/src/jmh/java/will/sudoku/solver/`
 2. Annotate with `@Benchmark` methods
 3. Use `@State` for shared state
-4. Run `./gradlew :kotlin:jmh` to verify
+4. Run `./gradlew :solver:jmh` to verify
 
 ## Performance Tips
 

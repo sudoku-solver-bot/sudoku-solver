@@ -122,7 +122,7 @@ jobs:
         with:
           name: test-reports
           path: |
-            kotlin/build/reports/tests/test/
+            solver/build/reports/tests/test/
             web/build/reports/tests/test/
             build/reports/jacoco/
 
