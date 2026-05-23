@@ -36,19 +36,19 @@ fun main() {
 fun Application.module() {
     // Install request logging with request ID tracking
     installRequestLogging()
-    
+
     install(ContentNegotiation) {
         json(Json {
             prettyPrint = true
             isLenient = true
         })
     }
-    
+
     install(CORS) {
         anyHost()
         allowHeader(io.ktor.http.HttpHeaders.ContentType)
     }
-    
+
     // Rate limiting: 100 requests per minute per IP
     install(RateLimit) {
         register {
@@ -58,7 +58,7 @@ fun Application.module() {
             }
         }
     }
-    
+
     routing {
         // OpenAPI / Swagger UI documentation
         get("/openapi.json") {
@@ -82,12 +82,12 @@ fun Application.module() {
                 io.ktor.http.ContentType.Text.Html
             )
         }
-        
+
         // Serve static assets (JS, CSS, images)
         static("/assets") {
             resources("static/assets")
         }
-        
+
         // Serve PWA files
         get("/sw.js") {
             call.respondText(
@@ -95,33 +95,28 @@ fun Application.module() {
                 io.ktor.http.ContentType.Application.JavaScript
             )
         }
-        
+
         get("/manifest.webmanifest") {
             call.respondText(
                 javaClass.classLoader.getResource("static/manifest.webmanifest")?.readText() ?: "{}",
                 io.ktor.http.ContentType.Application.Json
             )
         }
-        
+
         get("/registerSW.js") {
             call.respondText(
                 javaClass.classLoader.getResource("static/registerSW.js")?.readText() ?: "",
                 io.ktor.http.ContentType.Application.JavaScript
             )
         }
-        
+
         // Serve workbox library
         static("/workbox") {
             resources("static")
         }
-        
-        // Versioned API routes (v1)
-        route("api/v1") {
-            // Add API version header to all responses
-            intercept(ApplicationCallPipeline.Plugins) {
-                call.response.headers.append("X-API-Version", "1.0")
-            }
-            
+
+        // Shared route registration — avoids duplicating route groups
+        fun Route.registerAllRoutes() {
             healthRoutes()
             deployInfoRoutes()
             solveRoutes()
@@ -134,27 +129,22 @@ fun Application.module() {
             dailyChallengeRoutes()
             difficultyRoutes()
         }
-        
+
+        // Versioned API routes (v1)
+        route("api/v1") {
+            intercept(ApplicationCallPipeline.Plugins) {
+                call.response.headers.append("X-API-Version", "1.0")
+            }
+            registerAllRoutes()
+        }
+
         // Legacy routes (unversioned) - DEPRECATED, will be removed in v2
-        // These redirect to /api/v1/* for backward compatibility
         route("api") {
-            // Add deprecation warning header
             intercept(ApplicationCallPipeline.Plugins) {
                 call.response.headers.append("X-API-Warn", "Deprecated: Use /api/v1/ instead. This endpoint will be removed in v2")
                 call.response.headers.append("Deprecation", "true")
             }
-            
-            healthRoutes()
-            deployInfoRoutes()
-            solveRoutes()
-            hintRoutes()
-            generateRoutes()
-            validateRoutes()
-            stepByStepRoutes()
-            candidateRoutes()
-            tutorialRoutes()
-            dailyChallengeRoutes()
-            difficultyRoutes()
+            registerAllRoutes()
         }
     }
 }
