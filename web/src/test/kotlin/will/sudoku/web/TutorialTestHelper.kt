@@ -32,6 +32,7 @@ object TutorialTestHelper {
     data class TutorialLesson(
         val id: String,
         val title: String = "",
+        val belt: String = "",
         val technique: String = "",
         val examplePuzzle: String,
         val steps: List<LessonStep> = emptyList()
