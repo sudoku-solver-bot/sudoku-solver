@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { BoardReader } from '@/solver/BoardReader'
-import { Board } from '@/solver/Board'
-import type { CandidateEliminator } from '@/solver/Eliminators'
+import { BoardReader } from '../src/BoardReader'
+import { Board } from '../src/Board'
+import type { CandidateEliminator } from '../src/Eliminators'
 
 describe('BoardReader', () => {
   const simplePuzzle = '534678912672195348198342567859761423426853791713924856961537284287419635345286179'

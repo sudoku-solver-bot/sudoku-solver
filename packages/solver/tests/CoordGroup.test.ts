@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { CoordGroup } from '@/solver/CoordGroup'
-import { Coord } from '@/solver/Coord'
+import { CoordGroup } from '../src/CoordGroup'
+import { Coord } from '../src/Coord'
 
 describe('CoordGroup', () => {
   describe('vertical (columns)', () => {

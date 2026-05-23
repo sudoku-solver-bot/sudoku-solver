@@ -24,7 +24,7 @@ let _clientSolver: any = null
 async function loadClientSolver(): Promise<any> {
   if (_clientSolver) return _clientSolver
   try {
-    _clientSolver = await import('./solver')
+    _clientSolver = await import('@sudoku-dojo/solver')
     return _clientSolver
   } catch {
     return null

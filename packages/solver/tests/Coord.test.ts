@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { Coord } from '@/solver/Coord'
+import { Coord } from '../src/Coord'
 
 describe('Coord', () => {
   describe('static all', () => {

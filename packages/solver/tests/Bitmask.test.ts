@@ -11,7 +11,7 @@ import {
   lowestValue,
   maskToValues,
   valueToMask
-} from '@/solver/Bitmask'
+} from '../src/Bitmask'
 
 describe('Bitmask constants', () => {
   it('SIZE is 9', () => expect(SIZE).toBe(9))
