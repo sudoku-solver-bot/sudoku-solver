@@ -8,23 +8,29 @@ An **educational** Sudoku platform that teaches 21 solving techniques through in
 
 ## Module Map
 
-Three Gradle modules with strict boundaries:
+Four Gradle modules (3 Kotlin + frontend) with strict boundaries:
 
 | Module | Directory | Responsibility | Boundary |
 |--------|-----------|---------------|----------|
-| **Solver Engine** (`:kotlin`) | `kotlin/src/main/java/will/sudoku/solver/` | Pure solving logic — board representation, 21 elimination algorithms, puzzle generation, difficulty rating, hint generation | No HTTP, no I/O, no framework dependencies. Input: `Board`, output: `Board`/metrics/steps. |
-| **Web Server** (`:web`) | `web/src/main/kotlin/will/sudoku/web/` | Ktor REST API — routes, request/response serialization, rate limiting, CORS, serves built Vue assets | Depends on `:kotlin` module only. Each route file owns one domain. No business logic duplication. |
+| **Board** (`:board`) | `board/src/main/kotlin/will/sudoku/solver/` | Pure data types — Board, Coord, CoordGroup, BoardReader, BoardSettings, ValidationException | Zero dependencies. No eliminators, no solver logic. |
+| **Solver Engine** (`:kotlin`) | `kotlin/src/main/java/will/sudoku/solver/` | Pure solving logic — 21 elimination algorithms, puzzle generation, difficulty rating, hint generation | Depends on `:board`. No HTTP, no I/O, no framework dependencies. Input: `Board`, output: step/hint/solution. |
+| **Web Server** (`:web`) | `web/src/main/kotlin/will/sudoku/web/` | Ktor REST API — routes, request/response serialization, rate limiting, CORS, serves built Vue assets | Depends on `:board` + `:kotlin`. Each route file owns one domain. No business logic duplication. |
 | **Frontend** (`web-ui/`) | `web-ui/src/` | Vue 3 SPA — grid UI, tutorials, dashboard, settings, PWA. Includes a client-side TypeScript solver mirror | Builds to `web/src/main/resources/static/`. Communicates exclusively via REST API. Owns all client state (localStorage). |
 
 ### Directory Layout
 
 ```
 sudoku-solver/
-├── kotlin/                          # Solver engine (:kotlin)
-│   └── src/main/java/will/sudoku/solver/
+├── board/                           # Pure data layer (:board)
+│   └── src/main/kotlin/will/sudoku/solver/
 │       ├── Board.kt                 # 81-cell IntArray bitmask representation
 │       ├── BoardReader.kt           # Text → Board parser
-│       ├── Coord.kt / CoordGroup.kt # Coordinate system + house groups
+│       ├── BoardSettings.kt         # Board dimensions, symbols, validation
+│       ├── Coord.kt                 # Coordinate type with index/candidates
+│       ├── CoordGroup.kt            # Row/col/box/unit coordinate groups
+│       └── ValidationException.kt   # Input validation error type
+├── kotlin/                          # Solver engine (:kotlin)
+│   └── src/main/java/will/sudoku/solver/
 │       ├── Solver.kt                # Backtracking solver with MRV heuristic
 │       ├── SolverConfig.kt          # Configurable eliminator chain
 │       ├── SolverWithMetrics.kt     # Instrumented solver (step count, timings)
@@ -93,7 +99,7 @@ sudoku-solver/
 
 ### Dependency Graph
 ```
-web-ui  ──REST JSON──►  :web  ──compile dep──►  :kotlin
+web-ui  ──REST JSON──►  :web  ──compile dep──►  :kotlin  ──compile dep──►  :board
  (Vue 3)               (Ktor)                  (pure JVM)
     │                      │
     ├── TypeScript solver   ├── serves static/
@@ -175,6 +181,22 @@ web-ui  ──REST JSON──►  :web  ──compile dep──►  :kotlin
                                                          │  │ Generator     │  │
                                                          │  │ Rater, Hint   │  │
                                                          │  └───────────────┘  │
+                                                         │                      │
+                                                         │  compile project(":board")
+                                                         └──────────┬───────────┘
+                                                                    │
+                                                         ┌──────────▼──────────┐
+                                                         │  Board Data         │
+                                                         │  (:board)            │
+                                                         │                      │
+                                                         │  ┌───────────────┐  │
+                                                         │  │ Board + Coord │  │
+                                                         │  │ CoordGroup    │  │
+                                                         │  │ BoardReader   │  │
+                                                         │  │ BoardSettings │  │
+                                                         │  └───────────────┘  │
+                                                         │                      │
+                                                         │  Zero dependencies   │
                                                          └──────────────────────┘
 ```
 
