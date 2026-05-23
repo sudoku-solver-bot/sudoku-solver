@@ -67,33 +67,7 @@ data class SolverConfig(
             )
         )
 
-        /**
-         * Creates a config with eliminators up to a certain difficulty level.
-         *
-         * @param maxDifficulty Maximum difficulty level to include
-         */
-        fun withMaxDifficulty(maxDifficulty: DifficultyLevel): SolverConfig {
-            val eliminators = mutableListOf<CandidateEliminator>(
-                SimpleCandidateEliminator(),
-                ExclusionCandidateEliminator(9)
-            )
 
-            if (maxDifficulty >= DifficultyLevel.HARD) {
-                eliminators.add(GroupCandidateEliminator())
-                eliminators.add(HiddenSubsetCandidateEliminator())
-            }
-
-            if (maxDifficulty >= DifficultyLevel.EXPERT) {
-                eliminators.add(XWingCandidateEliminator())
-                eliminators.add(SwordfishCandidateEliminator())
-                eliminators.add(XYWingCandidateEliminator())
-                eliminators.add(XYZWingCandidateEliminator())
-                eliminators.add(WWingCandidateEliminator())
-                eliminators.add(SimpleColoringCandidateEliminator())
-            }
-
-            return SolverConfig(eliminators = eliminators)
-        }
     }
 
     /**
@@ -104,15 +78,7 @@ data class SolverConfig(
         return eliminators.any { it is UniqueRectanglesCandidateEliminator }
     }
 
-    /**
-     * Difficulty levels for solver configuration.
-     */
-    enum class DifficultyLevel {
-        EASY,   // Simple elimination only
-        MEDIUM, // Hidden singles
-        HARD,   // Naked/hidden subsets
-        EXPERT  // X-Wing, Swordfish, XY-Wing
-    }
+
 }
 
 /**
