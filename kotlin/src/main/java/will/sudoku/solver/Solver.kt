@@ -156,8 +156,8 @@ class Solver(private val config: SolverConfig = SolverConfig()) {
 
                     val totalEliminated = eliminations.sumOf { it.eliminatedValues.size }
                     if (totalEliminated > 0) {
-                        listener.onEliminatorApplied(eliminator.displayName, totalEliminated)
-                        listener.onCandidatesEliminated(eliminator.displayName, eliminations)
+                        listener.onEliminatorApplied(eliminator.lastTechniqueName, totalEliminated)
+                        listener.onCandidatesEliminated(eliminator.lastTechniqueName, eliminations)
                     }
                     anyProgress = true
                 }

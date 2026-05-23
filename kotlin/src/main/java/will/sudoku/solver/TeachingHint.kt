@@ -46,7 +46,10 @@ class TeachingHintProvider {
 
     fun getHint(board: Board, targetTechnique: HintGenerator.Technique? = null): TeachingHint {
         // Try Naked Single (easiest) — local check for richer teaching points
-        findNakedSingle(board)?.let { return it }
+        // Skip when a specific technique is requested so it doesn't short-circuit
+        if (targetTechnique == null) {
+            findNakedSingle(board)?.let { return it }
+        }
 
         // Delegate to HintGenerator for all other techniques.
         // For tutorials that need a specific advanced technique, pass targetTechnique

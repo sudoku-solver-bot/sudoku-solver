@@ -26,6 +26,9 @@ package will.sudoku.solver
 class HiddenSubsetCandidateEliminator : CandidateEliminator {
     override val displayName = "Hidden Subset"
 
+    private var _lastTechniqueName: String = displayName
+    override val lastTechniqueName: String get() = _lastTechniqueName
+
     override fun eliminate(board: Board): Boolean {
         var anyUpdate = false
         var stable: Boolean
@@ -93,6 +96,11 @@ class HiddenSubsetCandidateEliminator : CandidateEliminator {
         candidateToCells: Map<Int, List<Coord>>,
         subsetSize: Int
     ): Boolean {
+        _lastTechniqueName = when (subsetSize) {
+            2 -> "Hidden Pair"
+            3 -> "Hidden Triple"
+            else -> "Hidden Subset"
+        }
         // Get all candidates that appear in <= subsetSize cells
         val eligibleCandidates = candidateToCells.filterValues { it.size <= subsetSize }
 

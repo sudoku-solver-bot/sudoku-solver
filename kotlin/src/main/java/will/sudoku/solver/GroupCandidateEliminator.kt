@@ -2,6 +2,10 @@ package will.sudoku.solver
 
 class GroupCandidateEliminator : CandidateEliminator {
     override val displayName = "Naked Subset"
+
+    private var _lastTechniqueName: String = displayName
+    override val lastTechniqueName: String get() = _lastTechniqueName
+
     override fun eliminate(board: Board): Boolean {
         var anyUpdate = false
         var stable: Boolean
@@ -19,6 +23,13 @@ class GroupCandidateEliminator : CandidateEliminator {
                     .keys
 
                 for (candidatePattern in candidatePatterns) {
+                    val size = candidatePattern.countOneBits()
+                    _lastTechniqueName = when (size) {
+                        2 -> "Naked Pair"
+                        3 -> "Naked Triple"
+                        else -> "Naked Subset"
+                    }
+
                     // and then exclude that pattern from other cells in the same group
                     val updated = coordGroup.coords
                         .filterNot { board.candidatePattern(it) == candidatePattern }
