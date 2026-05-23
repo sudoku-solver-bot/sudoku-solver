@@ -1,7 +1,7 @@
 package will.sudoku.web
 
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -13,9 +13,12 @@ data class TutorialStep(
 )
 
 @Serializable
-data class TutorialLesson(
+data class TutorialLessonFull(
     val id: String,
+    val order: Int,
     val title: String,
+    val belt: String,
+    val technique: String,
     val examplePuzzle: String,
     val steps: List<TutorialStep>
 )
@@ -24,13 +27,26 @@ class TutorialValidationTest {
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    private fun loadLessons(): List<TutorialLesson> {
+    private fun loadLessons(): List<TutorialLessonFull> {
         val lessonsJson = javaClass.classLoader
             .getResource("tutorials/lessons.json")
             ?.readText()
             ?: error("tutorials/lessons.json not found")
         return json.decodeFromString(lessonsJson)
     }
+
+    private val knownTechniques = setOf(
+        "Naked Single", "Hidden Single", "Naked Pair", "Hidden Pair",
+        "Pointing Pair", "Box/Line Reduction", "Naked Triple", "Hidden Triple",
+        "X-Wing", "Swordfish", "XY-Wing", "XYZ-Wing",
+        "Unique Rectangle", "Simple Coloring", "W-Wing",
+        "ALS-XZ", "Franken Fish", "Mutant Fish", "Death Blossom", "Forcing Chains"
+    )
+
+    private val validBelts = setOf(
+        "white", "yellow", "orange", "green", "blue",
+        "purple", "brown", "black", "master"
+    )
 
     @Test
     fun `no tutorial step highlights already-filled cells`() {
@@ -97,5 +113,130 @@ class TutorialValidationTest {
         }
 
         assertNotNull(lessons, "Lessons should be loaded")
+    }
+
+    @Test
+    fun `lesson techniques are valid and known`() {
+        val lessons = loadLessons()
+        val problems = mutableListOf<String>()
+
+        for (lesson in lessons) {
+            if (lesson.technique.isBlank()) {
+                problems.add("${lesson.id}: technique is blank")
+            } else if (lesson.technique !in knownTechniques) {
+                problems.add("${lesson.id}: unknown technique '${lesson.technique}'")
+            }
+        }
+
+        assertTrue(problems.isEmpty(), "Unknown technique names: ${problems.joinToString(", ")}")
+    }
+
+    @Test
+    fun `lesson belt assignments are valid`() {
+        val lessons = loadLessons()
+        val problems = mutableListOf<String>()
+
+        for (lesson in lessons) {
+            if (lesson.belt.isBlank()) {
+                problems.add("${lesson.id}: belt is blank")
+            } else if (lesson.belt !in validBelts) {
+                problems.add("${lesson.id}: unknown belt '${lesson.belt}'")
+            }
+        }
+
+        assertTrue(problems.isEmpty(), "Invalid belt assignments: ${problems.joinToString(", ")}")
+    }
+
+    @Test
+    fun `lesson IDs are unique`() {
+        val lessons = loadLessons()
+        val ids = lessons.map { it.id }
+        val duplicates = ids.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+
+        assertTrue(duplicates.isEmpty(), "Duplicate lesson IDs: $duplicates")
+    }
+
+    @Test
+    fun `lesson orders are unique and sequential`() {
+        val lessons = loadLessons()
+        val orders = lessons.map { it.order }
+
+        // Orders should be unique
+        val duplicateOrders = orders.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        assertTrue(duplicateOrders.isEmpty(), "Duplicate lesson orders: $duplicateOrders")
+
+        // Orders should start at 1 and be sequential
+        val sortedOrders = orders.sorted()
+        val expectedOrders = (1..lessons.size).toList()
+        assertEquals(expectedOrders, sortedOrders,
+            "Lesson orders should be sequential starting at 1")
+    }
+
+    @Test
+    fun `lesson examplePuzzles are solvable`() {
+        val lessons = loadLessons()
+        val problems = mutableListOf<String>()
+
+        for (lesson in lessons) {
+            val puzzle = lesson.examplePuzzle
+
+            // Must be exactly 81 chars
+            if (puzzle.length != 81) {
+                problems.add("${lesson.id}: puzzle is ${puzzle.length} chars")
+                continue
+            }
+
+            // Must contain only digits, dots, or 0s
+            val normalized = puzzle.replace('.', '0')
+            if (!normalized.all { it.isDigit() }) {
+                problems.add("${lesson.id}: puzzle contains invalid characters")
+                continue
+            }
+
+            // Must have at least 17 filled cells for a unique solution
+            val filledCount = normalized.count { it != '0' }
+            if (filledCount < 17) {
+                problems.add("${lesson.id}: only $filledCount filled cells (minimum 17 for unique solution)")
+            }
+
+            // No row should have duplicate non-zero values
+            for (row in 0..8) {
+                val values = (0..8).map { normalized[row * 9 + it] }
+                    .filter { it != '0' }
+                    .groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+                if (values.isNotEmpty()) {
+                    problems.add("${lesson.id}: duplicate values in row ${row + 1}: $values")
+                }
+            }
+
+            // No column should have duplicate non-zero values
+            for (col in 0..8) {
+                val values = (0..8).map { normalized[col + it * 9] }
+                    .filter { it != '0' }
+                    .groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+                if (values.isNotEmpty()) {
+                    problems.add("${lesson.id}: duplicate values in col ${col + 1}: $values")
+                }
+            }
+
+            // No box should have duplicate non-zero values
+            for (boxRow in 0..2) {
+                for (boxCol in 0..2) {
+                    val values = mutableListOf<Char>()
+                    for (r in 0..2) {
+                        for (c in 0..2) {
+                            val idx = (boxRow * 3 + r) * 9 + (boxCol * 3 + c)
+                            if (normalized[idx] != '0') values.add(normalized[idx])
+                        }
+                    }
+                    val dups = values.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+                    if (dups.isNotEmpty()) {
+                        problems.add("${lesson.id}: duplicate values in box (${boxRow + 1},${boxCol + 1}): $dups")
+                    }
+                }
+            }
+        }
+
+        assertTrue(problems.isEmpty(), "Lesson puzzle validation errors:\n  - ${problems.joinToString("\n  - ")}")
     }
 }
