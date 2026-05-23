@@ -1,5 +1,7 @@
 package will.sudoku.solver
 
+import kotlin.reflect.KClass
+
 /**
  * Configuration for Sudoku solver behavior.
  *
@@ -92,6 +94,31 @@ data class SolverConfig(
 
             return SolverConfig(eliminators = eliminators)
         }
+
+        /**
+         * Creates a config with all default eliminators EXCEPT those matching
+         * the given technique type. Used to check if a technique is truly required.
+         */
+        fun withoutTechnique(technique: StepType): SolverConfig {
+            val excludedClasses = techniqueToEliminatorClasses(technique)
+            val filtered = defaultEliminators().filter { eliminator ->
+                eliminator::class !in excludedClasses
+            }
+            return SolverConfig(eliminators = filtered)
+        }
+
+        /**
+         * Map StepType to the eliminator class(es) that produce it.
+         */
+        private fun techniqueToEliminatorClasses(technique: StepType): Set<KClass<out CandidateEliminator>> = when (technique) {
+            StepType.SIMPLE_ELIMINATION -> setOf(SimpleCandidateEliminator::class, ExclusionCandidateEliminator::class)
+            StepType.NAKED_PAIR, StepType.NAKED_TRIPLE, StepType.NAKED_SUBSET -> setOf(GroupCandidateEliminator::class)
+            StepType.HIDDEN_SINGLE, StepType.HIDDEN_PAIR, StepType.HIDDEN_TRIPLE, StepType.HIDDEN_SUBSET -> setOf(HiddenSubsetCandidateEliminator::class)
+            StepType.X_WING -> setOf(XWingCandidateEliminator::class)
+            StepType.SWORDFISH -> setOf(SwordfishCandidateEliminator::class)
+            StepType.XY_WING -> setOf(XYWingCandidateEliminator::class)
+            else -> emptySet() // unknown/generic: can't exclude
+        }
     }
 
     /**
@@ -112,6 +139,5 @@ data class SolverConfig(
         EXPERT  // X-Wing, Swordfish, XY-Wing
     }
 }
-
 
 
