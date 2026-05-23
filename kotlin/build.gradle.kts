@@ -39,9 +39,11 @@ tasks.jar {
 
 tasks.register<JavaExec>("run") {
     group = "application"
-    description = "Run the Sudoku solver with a sample puzzle"
+    description = "Run the Sudoku puzzle cataloger"
     classpath = sourceSets.main.get().runtimeClasspath
-    mainClass.set("will.sudoku.solver.Solver")
+    mainClass.set("will.sudoku.solver.PuzzleCatalogerCliKt")
+    // Pass all CLI args through
+    args = (project.findProperty("cliArgs") as? String)?.split(" ") ?: emptyList()
 }
 
 tasks.test {
