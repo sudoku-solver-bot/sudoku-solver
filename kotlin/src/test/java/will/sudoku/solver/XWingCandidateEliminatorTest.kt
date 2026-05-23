@@ -99,7 +99,7 @@ class XWingCandidateEliminatorTest {
 
     @Test
     fun `X-Wing eliminator is registered in settings`() {
-        val hasXWingEliminator = Settings.eliminators.any {
+        val hasXWingEliminator = SolverConfig.defaultEliminators().any {
             it is XWingCandidateEliminator
         }
 

@@ -131,37 +131,4 @@ object BoardSettings {
     }
 }
 
-/**
- * Legacy Settings object for backward compatibility.
- *
- * @deprecated Use SolverConfig instead. This object will be removed in a future version.
- */
-@Deprecated(
-    message = "Use SolverConfig for dependency injection. This object will be removed in a future version.",
-    replaceWith = ReplaceWith("SolverConfig", "will.sudoku.solver.SolverConfig")
-)
-object Settings {
-    const val size: Int = BoardSettings.size
-    val regionSize: Int = BoardSettings.regionSize
-    val symbols: CharArray = BoardSettings.symbols
 
-    val eliminators: List<CandidateEliminator> = SolverConfig.defaultEliminators()
-
-    // Individual eliminators for backward compatibility
-    val simpleCandidateEliminator = SimpleCandidateEliminator()
-    val groupCandidateEliminator = GroupCandidateEliminator()
-    val hiddenSubsetCandidateEliminator = HiddenSubsetCandidateEliminator()
-    val exclusionCandidateEliminator = ExclusionCandidateEliminator(9)
-    val xWingCandidateEliminator = XWingCandidateEliminator()
-    val swordfishCandidateEliminator = SwordfishCandidateEliminator()
-    val xyWingCandidateEliminator = XYWingCandidateEliminator()
-    val xyzWingCandidateEliminator = XYZWingCandidateEliminator()
-    val wWingCandidateEliminator = WWingCandidateEliminator()
-    val simpleColoringCandidateEliminator = SimpleColoringCandidateEliminator()
-    val uniqueRectanglesCandidateEliminator = UniqueRectanglesCandidateEliminator()
-    val forcingChainsCandidateEliminator = ForcingChainsCandidateEliminator()
-    val alsxzCandidateEliminator = ALSXZCandidateEliminator()
-    val frankenFishCandidateEliminator = FrankenFishCandidateEliminator()
-    val mutantFishCandidateEliminator = MutantFishCandidateEliminator()
-    val deathBlossomCandidateEliminator = DeathBlossomCandidateEliminator()
-}

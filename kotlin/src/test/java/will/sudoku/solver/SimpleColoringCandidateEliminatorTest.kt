@@ -34,7 +34,7 @@ class SimpleColoringCandidateEliminatorTest {
 
     @Test
     fun `Simple Coloring eliminator is registered in settings`() {
-        val hasSimpleColoringEliminator = Settings.eliminators.any {
+        val hasSimpleColoringEliminator = SolverConfig.defaultEliminators().any {
             it is SimpleColoringCandidateEliminator
         }
 

@@ -137,7 +137,7 @@ class SolverConfigTest {
     @Test
     fun `deprecated settings still works for backward compatibility`() {
         @Suppress("DEPRECATION")
-        val eliminators = Settings.eliminators
+        val eliminators = SolverConfig.defaultEliminators()
 
         assertThat(eliminators).hasSize(16)
     }
