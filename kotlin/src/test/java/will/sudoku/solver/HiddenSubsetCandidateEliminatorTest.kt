@@ -34,7 +34,7 @@ class HiddenSubsetCandidateEliminatorTest {
     @Test
     fun `integration test - solver uses hidden subset eliminator`() {
         // Verify that the solver includes HiddenSubsetCandidateEliminator in its eliminators
-        val hasHiddenSubsetEliminator = Settings.eliminators.any {
+        val hasHiddenSubsetEliminator = SolverConfig.defaultEliminators().any {
             it is HiddenSubsetCandidateEliminator
         }
 

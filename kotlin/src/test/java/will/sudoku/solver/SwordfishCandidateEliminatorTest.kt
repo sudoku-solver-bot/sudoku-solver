@@ -33,7 +33,7 @@ class SwordfishCandidateEliminatorTest {
 
     @Test
     fun `Swordfish eliminator is registered in settings`() {
-        val hasSwordfishEliminator = Settings.eliminators.any {
+        val hasSwordfishEliminator = SolverConfig.defaultEliminators().any {
             it is SwordfishCandidateEliminator
         }
 

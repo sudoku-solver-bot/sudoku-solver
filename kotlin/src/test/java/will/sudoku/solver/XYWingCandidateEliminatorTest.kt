@@ -33,7 +33,7 @@ class XYWingCandidateEliminatorTest {
 
     @Test
     fun `XY-Wing eliminator is registered in settings`() {
-        val hasXYWingEliminator = Settings.eliminators.any {
+        val hasXYWingEliminator = SolverConfig.defaultEliminators().any {
             it is XYWingCandidateEliminator
         }
 
