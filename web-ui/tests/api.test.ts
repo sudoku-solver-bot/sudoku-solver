@@ -6,7 +6,7 @@ global.fetch = mockFetch
 
 // Mock the client-side solver so it never loads in these tests.
 // This ensures we are testing the server API error paths.
-vi.mock('@/solver', () => {
+vi.mock('@sudoku-dojo/solver', () => {
   throw new Error('Solver module not available in API tests')
 })
 

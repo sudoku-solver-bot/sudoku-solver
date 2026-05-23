@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { Board } from '@/solver/Board'
-import { BoardReader } from '@/solver/BoardReader'
+import { Board } from '../src/Board'
+import { BoardReader } from '../src/BoardReader'
 import {
   PointingCandidateEliminator,
   ClaimingCandidateEliminator,
-} from '@/solver/Eliminators'
+} from '../src/Eliminators'
 
 describe('PointingCandidateEliminator', () => {
   it('has correct displayName', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { Board } from '@/solver/Board'
-import { BoardReader } from '@/solver/BoardReader'
-import { FishCandidateEliminator } from '@/solver/Eliminators'
+import { Board } from '../src/Board'
+import { BoardReader } from '../src/BoardReader'
+import { FishCandidateEliminator } from '../src/Eliminators'
 
 describe('FishCandidateEliminator', () => {
   it('has correct displayName', () => {

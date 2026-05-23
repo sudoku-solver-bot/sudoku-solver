@@ -1,13 +1,13 @@
 import { describe, it, expect } from 'vitest'
-import { Board } from '@/solver/Board'
-import { BoardReader } from '@/solver/BoardReader'
-import { Coord } from '@/solver/Coord'
-import { Solver, SolverConfig, NoOpListener } from '@/solver/Solver'
+import { Board } from '../src/Board'
+import { BoardReader } from '../src/BoardReader'
+import { Coord } from '../src/Coord'
+import { Solver, SolverConfig, NoOpListener } from '../src/Solver'
 import {
   SimpleCandidateEliminator,
   GroupCandidateEliminator,
   ExclusionCandidateEliminator
-} from '@/solver/Eliminators'
+} from '../src/Eliminators'
 
 const EASY_PUZZLE = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'
 const EASY_SOLUTION = '534678912672195348198342567859761423426853791713924856961537284287419635345286179'

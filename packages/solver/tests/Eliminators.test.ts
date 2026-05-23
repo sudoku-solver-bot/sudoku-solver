@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { Board } from '@/solver/Board'
-import { BoardReader } from '@/solver/BoardReader'
-import { Coord } from '@/solver/Coord'
-import { SimpleCandidateEliminator, GroupCandidateEliminator, ExclusionCandidateEliminator } from '@/solver/Eliminators'
+import { Board } from '../src/Board'
+import { BoardReader } from '../src/BoardReader'
+import { Coord } from '../src/Coord'
+import { SimpleCandidateEliminator, GroupCandidateEliminator, ExclusionCandidateEliminator } from '../src/Eliminators'
 
 describe('SimpleCandidateEliminator', () => {
   it('has correct displayName', () => {

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { Board } from '@/solver/Board'
-import { BoardReader } from '@/solver/BoardReader'
-import { HiddenSubsetCandidateEliminator } from '@/solver/Eliminators'
+import { Board } from '../src/Board'
+import { BoardReader } from '../src/BoardReader'
+import { HiddenSubsetCandidateEliminator } from '../src/Eliminators'
 
 describe('HiddenSubsetCandidateEliminator', () => {
   it('has correct displayName', () => {

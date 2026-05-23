@@ -13,6 +13,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@sudoku-dojo/solver": "file:../packages/solver",
     "vue": "^3.4.0"
   },
   "devDependencies": {
