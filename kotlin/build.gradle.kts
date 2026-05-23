@@ -4,7 +4,6 @@ plugins {
     java
     kotlin("jvm") version "2.3.21"
     kotlin("plugin.serialization") version "2.3.21"
-    id("me.champeau.jmh") version "0.7.3"
     jacoco
 }
 
@@ -27,8 +26,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.26.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    jmh("org.openjdk.jmh:jmh-core:1.37")
-    jmh("org.openjdk.jmh:jmh-generator-annprocess:1.37")
+
 }
 
 tasks.jar {
