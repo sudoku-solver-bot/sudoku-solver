@@ -2,6 +2,9 @@ package will.sudoku.web
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import will.sudoku.solver.BoardReader
+import will.sudoku.solver.Solver
+import will.sudoku.solver.SolverConfig
 
 /**
  * Validates that every tutorial lesson's step data is consistent with
@@ -152,5 +155,50 @@ class TutorialLessonStepValidationTest {
 
         assertTrue(violations.isEmpty(),
             "Invalid cell indices in lesson steps:\n${violations.joinToString("\n  ")}")
+    }
+
+    @Test
+    fun `step text fields are non-empty`() {
+        val lessons = helper.loadLessons()
+        val violations = mutableListOf<String>()
+
+        for (lesson in lessons) {
+            for (step in lesson.steps) {
+                if (step.text.isBlank()) {
+                    violations.add(
+                        "${lesson.id} step ${step.order}: text is blank"
+                    )
+                }
+            }
+        }
+
+        assertTrue(violations.isEmpty(),
+            "Steps with blank text:\n${violations.joinToString("\n  ")}")
+    }
+
+    @Test
+    fun `lesson examplePuzzles are solvable with full solver`() {
+        val lessons = helper.loadLessons()
+        val problems = mutableListOf<String>()
+        val solver = Solver(SolverConfig(eliminators = SolverConfig.defaultEliminators()))
+
+        for (lesson in lessons) {
+            val puzzle = lesson.examplePuzzle
+            // Normalize 0 -> . for BoardReader compatibility
+            val normalized = puzzle.replace('0', '.')
+
+            try {
+                val board = BoardReader.readBoard(normalized)
+                val result = solver.solve(board)
+                if (result == null) {
+                    problems.add("${lesson.id}: puzzle could not be solved by full solver")
+                }
+            } catch (e: Exception) {
+                problems.add("${lesson.id}: solver threw ${e::class.simpleName}: ${e.message}")
+            }
+        }
+
+        assertTrue(problems.isEmpty(),
+            "Unsolvable lesson puzzles:\n${problems.joinToString("\n  ")}")
     }
 }
