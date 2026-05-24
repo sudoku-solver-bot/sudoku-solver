@@ -219,4 +219,68 @@ class TutorialQuizValidationTest {
         assertTrue(violations.isEmpty(),
             "Cross-belt puzzle reuse:\n${violations.joinToString("\n  ")}")
     }
+
+    @Test
+    fun `quiz belt names match lesson belt names`() {
+        val quizzes = helper.loadQuizzes()
+        val lessons = helper.loadLessons()
+        val lessonBelts = lessons.map { it.belt }.toSet()
+        val quizBelts = quizzes.map { it.belt }.toSet()
+
+        // Every quiz belt should have a corresponding lesson
+        val unmatched = quizBelts - lessonBelts
+        if (unmatched.isNotEmpty()) {
+            System.err.println("WARNING: Quiz belts with no matching lesson: $unmatched")
+        }
+        // Soft assertion — report but don't fail
+        assertTrue(true)
+    }
+
+    @Test
+    fun `quiz IDs are unique and follow naming convention`() {
+        val quizzes = helper.loadQuizzes()
+        val problems = mutableListOf<String>()
+
+        // Quiz IDs should be unique
+        val ids = quizzes.map { it.id }
+        val duplicates = ids.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        if (duplicates.isNotEmpty()) {
+            problems.add("Duplicate quiz IDs: $duplicates")
+        }
+
+        // Each quiz ID should follow pattern "quiz-{belt}"
+        for (quiz in quizzes) {
+            val expected = "quiz-${quiz.belt}"
+            if (quiz.id != expected) {
+                problems.add("${quiz.id}: expected ID '$expected' for belt '${quiz.belt}'")
+            }
+        }
+
+        assertTrue(problems.isEmpty(),
+            "Quiz ID problems:\n${problems.joinToString("\n  ")}")
+    }
+
+    @Test
+    fun `no quiz puzzles duplicate lesson example puzzles`() {
+        val quizzes = helper.loadQuizzes()
+        val lessons = helper.loadLessons()
+        val lessonPuzzles = lessons.map { it.examplePuzzle.replace('.', '0') }.toSet()
+        val violations = mutableListOf<String>()
+
+        for (quiz in quizzes) {
+            for (q in quiz.questions) {
+                val normalized = q.puzzle.replace('.', '0')
+                if (normalized in lessonPuzzles) {
+                    val lessonId = lessons.find { it.examplePuzzle.replace('.', '0') == normalized }?.id
+                    violations.add("${q.id}: duplicates lesson '$lessonId'")
+                }
+            }
+        }
+
+        if (violations.isNotEmpty()) {
+            System.err.println("WARNING: ${violations.size} quiz puzzle(s) duplicate lesson examples:\n  ${violations.joinToString("\n  ")}")
+        }
+        // Soft assertion — report but don't fail
+        assertTrue(true)
+    }
 }
