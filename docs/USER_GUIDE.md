@@ -70,3 +70,54 @@ Practice specific techniques with curated puzzle sets:
 4. Solve puzzles filtered to challenge that specific skill
 
 Practice puzzles are grouped by belt level — complete tutorials first to unlock practice sets.
+
+---
+
+## Solving Interface
+
+### Grid Controls
+
+- **Select a cell** — tap any empty or filled cell
+- **Enter a number** — tap a number on the pad (bottom) or press 1-9 on keyboard
+- **Clear a cell** — select it and press Delete/Backspace, or tap the ✕ button
+- **Navigate** — use arrow keys or swipe to move between cells
+
+### Pencil Marks
+
+Pencil marks let you note possible candidates in a cell:
+
+1. Select a cell
+2. Toggle pencil mode (✏️ button or keyboard shortcut)
+3. Enter numbers — they appear as small notes instead of final answers
+4. Toggle off to return to normal entry mode
+
+### Hints
+
+Stuck? Tap the 💡 **Hint** button for a guided next step:
+
+- The hint highlights relevant cells and explains the technique to use
+- Follow the hint to learn how the technique works in context
+- Hints are part of the learning experience — use them freely!
+
+### Error Checking
+
+The app validates your puzzle as you go:
+- **Conflict highlighting** — cells with duplicate numbers in a row/column/box are flagged
+- **Completion detection** — the app knows when you've solved the puzzle
+- No time penalty for mistakes — this is a learning tool, not a race
+
+### Timer
+
+A timer tracks how long you've been solving. It's informational only — no pressure!
+
+### Keyboard Shortcuts
+
+| Key | Action |
+|-----|--------|
+| `↑ ↓ ← →` | Navigate between cells |
+| `1-9` | Enter a number |
+| `Delete` / `⌫` | Clear cell |
+| `Ctrl+Z` | Undo |
+| `Ctrl+Y` | Redo |
+| `?` | Show keyboard shortcuts |
+| `Esc` | Deselect cell |
