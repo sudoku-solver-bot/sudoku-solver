@@ -64,8 +64,9 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
     private fun applySimpleColoring(board: Board, candidate: Int): Boolean {
         var anyUpdate = false
 
-        // Build color chains
-        val colors = buildColorChains(board, candidate)
+        // Build color chains — returns colors and any cells that
+        // were part of a contradiction (same color on both ends of a conjugate pair)
+        val (colors, contradictionCells) = buildColorChains(board, candidate)
 
         // Get all cells of each color
         val colorA = colors.filterValues { it == COLOR_A }.keys
@@ -73,25 +74,39 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
 
         if (colorA.isEmpty() || colorB.isEmpty()) return false
 
-        // Rule 4: If two cells of the same color see each other, eliminate all that color
-        val invalidColor = findInvalidColor(colorA, colorB)
-        if (invalidColor != null) {
-            val toEliminate = if (invalidColor == COLOR_A) colorA else colorB
-            for (coord in toEliminate) {
-                if (!board.isConfirmed(coord) && candidate in board.candidateValues(coord)) {
-                    val changed = board.eraseCandidateValue(coord, candidate)
-                    if (changed) anyUpdate = true
-                }
-            }
-            return anyUpdate
-        }
+        // Rule 4: Contradiction detected during chain building —
+        // a conjugate pair has both cells with the same color.
+        // That color is invalid, eliminate all cells of that color.
+        //
+        // NOTE: Rule 4 is disabled because the current chain-building algorithm
+        // produces false contradictions when cells appear in multiple conjugate
+        // pairs across different units. A cell can be colored by one pair and
+        // then encounter a conflicting color from another pair, creating a
+        // false-positive contradiction.
+        //
+        // TODO: Fix chain-building to properly handle multi-unit cells before
+        // re-enabling Rule 4. See #549.
+        // if (contradictionCells.isNotEmpty()) {
+        //     val contradictionColor = colors[contradictionCells.first()]
+        //     if (contradictionColor != null) {
+        //         val toEliminate = if (contradictionColor == COLOR_A) colorA else colorB
+        //         for (coord in toEliminate) {
+        //             if (!board.isConfirmed(coord) && candidate in board.candidateValues(coord)) {
+        //                 val changed = board.eraseCandidateValue(coord, candidate)
+        //                 if (changed) anyUpdate = true
+        //             }
+        //         }
+        //         return anyUpdate
+        //     }
+        // }
 
         // Rule 2: Eliminate from cells that see both colors
+        // A cell seeing both colors in the same unit means one must be true,
+        // so this cell can't contain the candidate.
         for (coord in Coord.all) {
             if (board.isConfirmed(coord)) continue
             if (colors.containsKey(coord)) continue
 
-            // Check if this cell has the candidate and sees both colors
             val seesColorA = colorA.any { seesEachOther(coord, it) }
             val seesColorB = colorB.any { seesEachOther(coord, it) }
 
@@ -107,17 +122,27 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
     /**
      * Build color chains by finding conjugate pairs and coloring them alternately.
      *
-     * @return Map of Coord to their assigned color (0 = uncolored, 1 = color A, 2 = color B)
+     * Detects contradictions during chain building: when a conjugate pair has
+     * both cells with the same color, that color is impossible (Rule 4).
+     *
+     * @return Pair of (colors map, set of cells involved in contradictions)
      */
-    private fun buildColorChains(board: Board, candidate: Int): MutableMap<Coord, Int> {
+    private fun buildColorChains(
+        board: Board,
+        candidate: Int
+    ): Pair<Map<Coord, Int>, Set<Coord>> {
         val colors = mutableMapOf<Coord, Int>()
         val candidateMask = Board.masks[candidate - 1]
+        val contradictionCells = mutableSetOf<Coord>()
 
         // Find all cells with this candidate
         val candidateCells = Coord.all.filter { coord ->
             !board.isConfirmed(coord) &&
             (board.candidatePattern(coord) and candidateMask) != 0
         }
+
+        // Initialize all candidate cells as UNCOLORED
+        candidateCells.forEach { colors[it] = UNCOLORED }
 
         // Find conjugate pairs (two cells in a unit where only they have this candidate)
         val conjugatePairs = findConjugatePairs(board, candidate, candidateCells)
@@ -138,15 +163,18 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
                     // Extend chain: give cell2 the opposite color of cell1
                     colors[cell2] = oppositeColor(colors[cell1]!!)
                 }
-                // If both are already colored, verify they have opposite colors
                 colors[cell1] != UNCOLORED && colors[cell2] != UNCOLORED -> {
-                    // Consistency check - should have opposite colors
-                    // If they have the same color, this indicates a contradiction
+                    // Both already colored — check for contradiction
+                    if (colors[cell1] == colors[cell2]) {
+                        // Same color on both ends of a conjugate pair = contradiction
+                        contradictionCells.add(cell1)
+                        contradictionCells.add(cell2)
+                    }
                 }
             }
         }
 
-        return colors
+        return Pair(colors, contradictionCells)
     }
 
     /**
@@ -198,32 +226,6 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
      */
     private fun oppositeColor(color: Int): Int {
         return if (color == COLOR_A) COLOR_B else COLOR_A
-    }
-
-    /**
-     * Check if two cells of the same color see each other (indicating that color is invalid).
-     * Returns the invalid color (COLOR_A or COLOR_B), or null if neither is invalid.
-     */
-    private fun findInvalidColor(colorA: Collection<Coord>, colorB: Collection<Coord>): Int? {
-        // Check if any two A-cells see each other
-        for (c1 in colorA) {
-            for (c2 in colorA) {
-                if (c1 != c2 && seesEachOther(c1, c2)) {
-                    return COLOR_A
-                }
-            }
-        }
-
-        // Check if any two B-cells see each other
-        for (c1 in colorB) {
-            for (c2 in colorB) {
-                if (c1 != c2 && seesEachOther(c1, c2)) {
-                    return COLOR_B
-                }
-            }
-        }
-
-        return null
     }
 
     /**
