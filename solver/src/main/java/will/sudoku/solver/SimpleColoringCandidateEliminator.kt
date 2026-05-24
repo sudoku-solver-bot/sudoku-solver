@@ -75,30 +75,22 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
         if (colorA.isEmpty() || colorB.isEmpty()) return false
 
         // Rule 4: Contradiction detected during chain building —
-        // a conjugate pair has both cells with the same color.
+        // a conjugate-pair graph component is not bipartite (has odd cycle).
         // That color is invalid, eliminate all cells of that color.
-        //
-        // NOTE: Rule 4 is disabled because the current chain-building algorithm
-        // produces false contradictions when cells appear in multiple conjugate
-        // pairs across different units. A cell can be colored by one pair and
-        // then encounter a conflicting color from another pair, creating a
-        // false-positive contradiction.
-        //
-        // TODO: Fix chain-building to properly handle multi-unit cells before
-        // re-enabling Rule 4. See #549.
-        // if (contradictionCells.isNotEmpty()) {
-        //     val contradictionColor = colors[contradictionCells.first()]
-        //     if (contradictionColor != null) {
-        //         val toEliminate = if (contradictionColor == COLOR_A) colorA else colorB
-        //         for (coord in toEliminate) {
-        //             if (!board.isConfirmed(coord) && candidate in board.candidateValues(coord)) {
-        //                 val changed = board.eraseCandidateValue(coord, candidate)
-        //                 if (changed) anyUpdate = true
-        //             }
-        //         }
-        //         return anyUpdate
-        //     }
-        // }
+        if (contradictionCells.isNotEmpty()) {
+            // Find the contradiction color from the cells
+            val contradictionColor = colors[contradictionCells.first()]
+            if (contradictionColor != null) {
+                val toEliminate = if (contradictionColor == COLOR_A) colorA else colorB
+                for (coord in toEliminate) {
+                    if (!board.isConfirmed(coord) && candidate in board.candidateValues(coord)) {
+                        val changed = board.eraseCandidateValue(coord, candidate)
+                        if (changed) anyUpdate = true
+                    }
+                }
+                return anyUpdate
+            }
+        }
 
         // Rule 2: Eliminate from cells that see both colors
         // A cell seeing both colors in the same unit means one must be true,
@@ -122,8 +114,11 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
     /**
      * Build color chains by finding conjugate pairs and coloring them alternately.
      *
-     * Detects contradictions during chain building: when a conjugate pair has
-     * both cells with the same color, that color is impossible (Rule 4).
+     * Uses a proper graph approach:
+     * 1. Build the conjugate-pair graph (edges between cells in same pair)
+     * 2. Find connected components using BFS
+     * 3. Check bipartiteness per component (2-colorable = consistent chain)
+     * 4. If a component is NOT bipartite, it has a real contradiction
      *
      * @return Pair of (colors map, set of cells involved in contradictions)
      */
@@ -131,46 +126,63 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
         board: Board,
         candidate: Int
     ): Pair<Map<Coord, Int>, Set<Coord>> {
-        val colors = mutableMapOf<Coord, Int>()
         val candidateMask = Board.masks[candidate - 1]
-        val contradictionCells = mutableSetOf<Coord>()
 
         // Find all cells with this candidate
         val candidateCells = Coord.all.filter { coord ->
             !board.isConfirmed(coord) &&
             (board.candidatePattern(coord) and candidateMask) != 0
+        }.toSet()
+
+        if (candidateCells.isEmpty()) return Pair(emptyMap(), emptySet())
+
+        // Build conjugate-pair graph: adjacency list
+        val adj = mutableMapOf<Coord, MutableSet<Coord>>()
+        for (cell in candidateCells) {
+            adj[cell] = mutableSetOf()
         }
 
-        // Initialize all candidate cells as UNCOLORED
-        candidateCells.forEach { colors[it] = UNCOLORED }
-
-        // Find conjugate pairs (two cells in a unit where only they have this candidate)
-        val conjugatePairs = findConjugatePairs(board, candidate, candidateCells)
-
-        // Build chains by coloring conjugate pairs
+        val conjugatePairs = findConjugatePairs(board, candidate, candidateCells.toList())
         for ((cell1, cell2) in conjugatePairs) {
-            when {
-                colors[cell1] == UNCOLORED && colors[cell2] == UNCOLORED -> {
-                    // Start a new chain: color one cell A, the other B
-                    colors[cell1] = COLOR_A
-                    colors[cell2] = COLOR_B
-                }
-                colors[cell1] == UNCOLORED && colors[cell2] != UNCOLORED -> {
-                    // Extend chain: give cell1 the opposite color of cell2
-                    colors[cell1] = oppositeColor(colors[cell2]!!)
-                }
-                colors[cell1] != UNCOLORED && colors[cell2] == UNCOLORED -> {
-                    // Extend chain: give cell2 the opposite color of cell1
-                    colors[cell2] = oppositeColor(colors[cell1]!!)
-                }
-                colors[cell1] != UNCOLORED && colors[cell2] != UNCOLORED -> {
-                    // Both already colored — check for contradiction
-                    if (colors[cell1] == colors[cell2]) {
-                        // Same color on both ends of a conjugate pair = contradiction
-                        contradictionCells.add(cell1)
-                        contradictionCells.add(cell2)
+            adj[cell1]?.add(cell2)
+            adj[cell2]?.add(cell1)
+        }
+
+        // Find connected components and check bipartiteness via BFS
+        val colors = mutableMapOf<Coord, Int>()
+        val contradictionCells = mutableSetOf<Coord>()
+        val visited = mutableSetOf<Coord>()
+
+        for (start in candidateCells) {
+            if (start in visited) continue
+
+            // BFS to find component and check bipartiteness
+            val component = mutableSetOf<Coord>()
+            val queue = ArrayDeque<Coord>()
+            queue.add(start)
+            colors[start] = COLOR_A
+            var isBipartite = true
+
+            while (queue.isNotEmpty()) {
+                val current = queue.removeFirst()
+                if (current in visited) continue
+                visited.add(current)
+                component.add(current)
+
+                for (neighbor in adj[current] ?: emptySet()) {
+                    if (neighbor !in visited) {
+                        colors[neighbor] = oppositeColor(colors[current]!!)
+                        queue.add(neighbor)
+                    } else if (colors[neighbor] == colors[current]) {
+                        // Same color as neighbor = not bipartite = real contradiction
+                        isBipartite = false
                     }
                 }
+            }
+
+            if (!isBipartite) {
+                // Real contradiction: mark all cells in this component
+                contradictionCells.addAll(component)
             }
         }
 
