@@ -32,3 +32,41 @@ Once you're comfortable with basic solving, explore:
 - **Tutorials** — learn 21+ advanced techniques with guided lessons
 - **Practice Mode** — solve puzzles that require specific techniques
 - **Belt Progression** — unlock belts as you master techniques
+
+---
+
+## Game Modes
+
+### Free Play
+
+Generate a new puzzle by selecting a difficulty level:
+
+| Difficulty | Givens | Description |
+|-----------|--------|-------------|
+| **Easy** | 36-45 | Perfect for beginners |
+| **Medium** | 30-35 | A gentle challenge |
+| **Hard** | 26-29 | Requires some technique |
+| **Expert** | 22-25 | Advanced strategies needed |
+| **Master** | 17-21 | For the truly dedicated |
+
+Tap **Generate** to create a new puzzle, then solve it at your own pace.
+
+### Import
+
+Have a puzzle from a book, newspaper, or website? Import it:
+
+1. Tap the **Import** button
+2. Paste an 81-character puzzle string (use `0` or `.` for empty cells)
+   - Example: `000000030002090500080706004900054006...`
+3. Tap **Load** to start solving
+
+### Practice Mode
+
+Practice specific techniques with curated puzzle sets:
+
+1. Open the **Tutorial** menu
+2. Select a technique you've learned
+3. Choose **Practice** to get puzzles that require that technique
+4. Solve puzzles filtered to challenge that specific skill
+
+Practice puzzles are grouped by belt level — complete tutorials first to unlock practice sets.
