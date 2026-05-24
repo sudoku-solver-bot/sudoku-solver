@@ -64,8 +64,9 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
     private fun applySimpleColoring(board: Board, candidate: Int): Boolean {
         var anyUpdate = false
 
-        // Build color chains
-        val colors = buildColorChains(board, candidate)
+        // Build color chains — returns colors and any cells that
+        // were part of a contradiction (same color on both ends of a conjugate pair)
+        val (colors, contradictionCells) = buildColorChains(board, candidate)
 
         // Get all cells of each color
         val colorA = colors.filterValues { it == COLOR_A }.keys
@@ -73,25 +74,31 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
 
         if (colorA.isEmpty() || colorB.isEmpty()) return false
 
-        // Rule 4: If two cells of the same color see each other, eliminate all that color
-        val invalidColor = findInvalidColor(colorA, colorB)
-        if (invalidColor != null) {
-            val toEliminate = if (invalidColor == COLOR_A) colorA else colorB
-            for (coord in toEliminate) {
-                if (!board.isConfirmed(coord) && candidate in board.candidateValues(coord)) {
-                    val changed = board.eraseCandidateValue(coord, candidate)
-                    if (changed) anyUpdate = true
+        // Rule 4: Contradiction detected during chain building —
+        // a conjugate-pair graph component is not bipartite (has odd cycle).
+        // That color is invalid, eliminate all cells of that color.
+        if (contradictionCells.isNotEmpty()) {
+            // Find the contradiction color from the cells
+            val contradictionColor = colors[contradictionCells.first()]
+            if (contradictionColor != null) {
+                val toEliminate = if (contradictionColor == COLOR_A) colorA else colorB
+                for (coord in toEliminate) {
+                    if (!board.isConfirmed(coord) && candidate in board.candidateValues(coord)) {
+                        val changed = board.eraseCandidateValue(coord, candidate)
+                        if (changed) anyUpdate = true
+                    }
                 }
+                return anyUpdate
             }
-            return anyUpdate
         }
 
         // Rule 2: Eliminate from cells that see both colors
+        // A cell seeing both colors in the same unit means one must be true,
+        // so this cell can't contain the candidate.
         for (coord in Coord.all) {
             if (board.isConfirmed(coord)) continue
             if (colors.containsKey(coord)) continue
 
-            // Check if this cell has the candidate and sees both colors
             val seesColorA = colorA.any { seesEachOther(coord, it) }
             val seesColorB = colorB.any { seesEachOther(coord, it) }
 
@@ -107,46 +114,79 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
     /**
      * Build color chains by finding conjugate pairs and coloring them alternately.
      *
-     * @return Map of Coord to their assigned color (0 = uncolored, 1 = color A, 2 = color B)
+     * Uses a proper graph approach:
+     * 1. Build the conjugate-pair graph (edges between cells in same pair)
+     * 2. Find connected components using BFS
+     * 3. Check bipartiteness per component (2-colorable = consistent chain)
+     * 4. If a component is NOT bipartite, it has a real contradiction
+     *
+     * @return Pair of (colors map, set of cells involved in contradictions)
      */
-    private fun buildColorChains(board: Board, candidate: Int): MutableMap<Coord, Int> {
-        val colors = mutableMapOf<Coord, Int>()
+    private fun buildColorChains(
+        board: Board,
+        candidate: Int
+    ): Pair<Map<Coord, Int>, Set<Coord>> {
         val candidateMask = Board.masks[candidate - 1]
 
         // Find all cells with this candidate
         val candidateCells = Coord.all.filter { coord ->
             !board.isConfirmed(coord) &&
             (board.candidatePattern(coord) and candidateMask) != 0
+        }.toSet()
+
+        if (candidateCells.isEmpty()) return Pair(emptyMap(), emptySet())
+
+        // Build conjugate-pair graph: adjacency list
+        val adj = mutableMapOf<Coord, MutableSet<Coord>>()
+        for (cell in candidateCells) {
+            adj[cell] = mutableSetOf()
         }
 
-        // Find conjugate pairs (two cells in a unit where only they have this candidate)
-        val conjugatePairs = findConjugatePairs(board, candidate, candidateCells)
-
-        // Build chains by coloring conjugate pairs
+        val conjugatePairs = findConjugatePairs(board, candidate, candidateCells.toList())
         for ((cell1, cell2) in conjugatePairs) {
-            when {
-                colors[cell1] == UNCOLORED && colors[cell2] == UNCOLORED -> {
-                    // Start a new chain: color one cell A, the other B
-                    colors[cell1] = COLOR_A
-                    colors[cell2] = COLOR_B
+            adj[cell1]?.add(cell2)
+            adj[cell2]?.add(cell1)
+        }
+
+        // Find connected components and check bipartiteness via BFS
+        val colors = mutableMapOf<Coord, Int>()
+        val contradictionCells = mutableSetOf<Coord>()
+        val visited = mutableSetOf<Coord>()
+
+        for (start in candidateCells) {
+            if (start in visited) continue
+
+            // BFS to find component and check bipartiteness
+            val component = mutableSetOf<Coord>()
+            val queue = ArrayDeque<Coord>()
+            queue.add(start)
+            colors[start] = COLOR_A
+            var isBipartite = true
+
+            while (queue.isNotEmpty()) {
+                val current = queue.removeFirst()
+                if (current in visited) continue
+                visited.add(current)
+                component.add(current)
+
+                for (neighbor in adj[current] ?: emptySet()) {
+                    if (neighbor !in visited) {
+                        colors[neighbor] = oppositeColor(colors[current]!!)
+                        queue.add(neighbor)
+                    } else if (colors[neighbor] == colors[current]) {
+                        // Same color as neighbor = not bipartite = real contradiction
+                        isBipartite = false
+                    }
                 }
-                colors[cell1] == UNCOLORED && colors[cell2] != UNCOLORED -> {
-                    // Extend chain: give cell1 the opposite color of cell2
-                    colors[cell1] = oppositeColor(colors[cell2]!!)
-                }
-                colors[cell1] != UNCOLORED && colors[cell2] == UNCOLORED -> {
-                    // Extend chain: give cell2 the opposite color of cell1
-                    colors[cell2] = oppositeColor(colors[cell1]!!)
-                }
-                // If both are already colored, verify they have opposite colors
-                colors[cell1] != UNCOLORED && colors[cell2] != UNCOLORED -> {
-                    // Consistency check - should have opposite colors
-                    // If they have the same color, this indicates a contradiction
-                }
+            }
+
+            if (!isBipartite) {
+                // Real contradiction: mark all cells in this component
+                contradictionCells.addAll(component)
             }
         }
 
-        return colors
+        return Pair(colors, contradictionCells)
     }
 
     /**
@@ -198,32 +238,6 @@ class SimpleColoringCandidateEliminator : CandidateEliminator {
      */
     private fun oppositeColor(color: Int): Int {
         return if (color == COLOR_A) COLOR_B else COLOR_A
-    }
-
-    /**
-     * Check if two cells of the same color see each other (indicating that color is invalid).
-     * Returns the invalid color (COLOR_A or COLOR_B), or null if neither is invalid.
-     */
-    private fun findInvalidColor(colorA: Collection<Coord>, colorB: Collection<Coord>): Int? {
-        // Check if any two A-cells see each other
-        for (c1 in colorA) {
-            for (c2 in colorA) {
-                if (c1 != c2 && seesEachOther(c1, c2)) {
-                    return COLOR_A
-                }
-            }
-        }
-
-        // Check if any two B-cells see each other
-        for (c1 in colorB) {
-            for (c2 in colorB) {
-                if (c1 != c2 && seesEachOther(c1, c2)) {
-                    return COLOR_B
-                }
-            }
-        }
-
-        return null
     }
 
     /**

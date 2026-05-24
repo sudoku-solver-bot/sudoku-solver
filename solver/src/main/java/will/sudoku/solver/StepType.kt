@@ -15,6 +15,7 @@ enum class StepType(val displayName: String, val description: String) {
     SWORDFISH("Swordfish", "Found Swordfish pattern eliminating candidates"),
     XY_WING("XY-Wing", "Found XY-Wing pattern eliminating candidates"),
     UNIQUE_RECTANGLE("Unique Rectangle", "Found Unique Rectangle pattern eliminating candidates"),
+    SIMPLE_COLORING("Simple Coloring", "Found Simple Coloring pattern eliminating candidates"),
     NAKED_SUBSET("Naked Subset", "Found naked pair/triple/quad eliminating candidates in a group"),
     HIDDEN_SUBSET("Hidden Subset", "Found hidden pair/triple/quad values in a group"),
 
@@ -61,7 +62,7 @@ enum class StepType(val displayName: String, val description: String) {
             return when {
                 name.startsWith("Exclusion", ignoreCase = true) -> SIMPLE_ELIMINATION
                 name.equals("UniqueRectangles", ignoreCase = true) -> UNIQUE_RECTANGLE
-                name.equals("SimpleColoring", ignoreCase = true) -> TECHNIQUE_APPLIED  // placeholder until SC works
+                name.equals("SimpleColoring", ignoreCase = true) -> SIMPLE_COLORING
                 else -> TECHNIQUE_APPLIED
             }
         }
