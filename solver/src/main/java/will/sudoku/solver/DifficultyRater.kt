@@ -30,7 +30,8 @@ object DifficultyRater {
         MEDIUM(2, "Medium", "Hidden singles required"),
         HARD(3, "Hard", "Naked/hidden subsets required"),
         EXPERT(4, "Expert", "X-Wing technique required"),
-        MASTER(5, "Master", "Requires backtracking");
+        VERY_HARD(5, "Very Hard", "Advanced techniques beyond X-Wing"),
+        MASTER(6, "Master", "Requires backtracking");
 
         override fun toString(): String = displayName
     }

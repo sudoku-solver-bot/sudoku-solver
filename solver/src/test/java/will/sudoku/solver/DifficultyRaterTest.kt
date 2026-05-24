@@ -173,6 +173,7 @@ class DifficultyRaterTest {
         assertThat(DifficultyRater.Level.MEDIUM.value).isEqualTo(2)
         assertThat(DifficultyRater.Level.HARD.value).isEqualTo(3)
         assertThat(DifficultyRater.Level.EXPERT.value).isEqualTo(4)
-        assertThat(DifficultyRater.Level.MASTER.value).isEqualTo(5)
+        assertThat(DifficultyRater.Level.VERY_HARD.value).isEqualTo(5)
+        assertThat(DifficultyRater.Level.MASTER.value).isEqualTo(6)
     }
 }

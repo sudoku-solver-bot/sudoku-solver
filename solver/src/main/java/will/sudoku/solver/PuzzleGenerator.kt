@@ -85,6 +85,7 @@ object PuzzleGenerator {
             DifficultyRater.Level.MEDIUM -> 45    // 36 cells remaining
             DifficultyRater.Level.HARD -> 52      // 29 cells remaining
             DifficultyRater.Level.EXPERT -> 56    // 25 cells remaining
+            DifficultyRater.Level.VERY_HARD -> 58    // 23 cells remaining
             DifficultyRater.Level.MASTER -> 60    // 21 cells remaining
         }
     }
