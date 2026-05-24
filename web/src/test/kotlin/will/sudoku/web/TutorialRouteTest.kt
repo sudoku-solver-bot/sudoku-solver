@@ -3,6 +3,7 @@ package will.sudoku.web
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.json.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -58,5 +59,48 @@ class TutorialRouteTest {
 
         val body = response.bodyAsText()
         assertTrue(body.startsWith("[") || body.startsWith("{"), "Should be JSON")
+    }
+
+    @Test
+    fun `POST complete valid tutorial returns completion response`() = ktorTest {
+        val response = client.post("/api/v1/tutorials/naked-single/complete")
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val body = response.bodyAsText()
+        val json = testJson.parseToJsonElement(body).jsonObject
+        assertEquals("ok", json["status"]?.jsonPrimitive?.content)
+        assertEquals("naked-single", json["lesson"]?.jsonPrimitive?.content)
+        assertEquals("true", json["completed"]?.jsonPrimitive?.content)
+    }
+
+    @Test
+    fun `POST complete nonexistent tutorial returns 404`() = ktorTest {
+        val response = client.post("/api/v1/tutorials/nonexistent-xyz/complete")
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        val body = response.bodyAsText()
+        assertTrue(body.contains("Not found") || body.contains("not found") || body.contains("NotFound"),
+            "Should contain error message")
+    }
+
+    @Test
+    fun `GET tutorials progress returns progress data`() = ktorTest {
+        val response = client.get("/api/v1/tutorials/progress")
+        assertEquals(HttpStatusCode.OK, response.status)
+
+        val body = response.bodyAsText()
+        val json = testJson.parseToJsonElement(body).jsonObject
+        assertTrue(json.containsKey("completedLessons"), "Should have completedLessons")
+        assertTrue(json.containsKey("totalLessons"), "Should have totalLessons")
+        assertTrue(json.containsKey("currentBelt"), "Should have currentBelt")
+    }
+
+    @Test
+    fun `GET tutorials board nonexistent returns 404`() = ktorTest {
+        val response = client.get("/api/v1/tutorials/nonexistent-xyz/board")
+        assertEquals(HttpStatusCode.NotFound, response.status)
+
+        val body = response.bodyAsText()
+        assertTrue(body.contains("not found"), "Should mention 'not found'")
     }
 }
