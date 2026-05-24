@@ -124,8 +124,6 @@
         @load="onLoadSave"
       />
 
-      <!-- Daily Challenge removed -->
-
       <!-- Tutorial Selector -->
       <TutorialSelector
         v-if="tutorialSelectorOpen && !tutorialMode && !quizMode && !practiceMode"
@@ -167,7 +165,7 @@
         @completed="onPracticeCompleted"
       />
 
-      <!-- Normal mode (hidden in tutorial/daily/dashboard) -->
+      <!-- Play mode (hidden during tutorial/quiz/practice) -->
       <template v-if="playMode && !tutorialMode && !tutorialSelectorOpen">
         <!-- Toast notification -->
         <ToastNotification
@@ -332,7 +330,6 @@ import ConfettiCelebration from './components/ConfettiCelebration.vue'
 import SavedPuzzles from './components/SavedPuzzles.vue'
 import InstallPrompt from './components/InstallPrompt.vue'
 
-import WhatsNew from './components/WhatsNew.vue'
 import OfflineIndicator from './components/OfflineIndicator.vue'
 import KeyboardHelp from './components/KeyboardHelp.vue'
 import Settings from './components/Settings.vue'
