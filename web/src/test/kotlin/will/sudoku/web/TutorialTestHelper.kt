@@ -61,6 +61,22 @@ object TutorialTestHelper {
         val questions: List<QuizQuestion> = emptyList()
     )
 
+    @Serializable
+    data class PracticePuzzleEntry(
+        val id: String,
+        val puzzle: String,
+        val description: String = ""
+    )
+
+    @Serializable
+    data class PracticePuzzleSet(
+        val id: String,
+        val technique: String = "",
+        val tutorialId: String = "",
+        val belt: String = "",
+        val puzzles: List<PracticePuzzleEntry> = emptyList()
+    )
+
     // ── Data Loading ─────────────────────────────────────────
 
     fun loadLessons(): List<TutorialLesson> {
@@ -76,6 +92,14 @@ object TutorialTestHelper {
             ?.getResource("tutorials/quizzes.json")
             ?.readText()
             ?: error("tutorials/quizzes.json not found in classpath")
+        return json.decodeFromString(text)
+    }
+
+    fun loadPracticePuzzles(): List<PracticePuzzleSet> {
+        val text = javaClass.classLoader
+            ?.getResource("tutorials/practice-puzzles.json")
+            ?.readText()
+            ?: error("tutorials/practice-puzzles.json not found in classpath")
         return json.decodeFromString(text)
     }
 
