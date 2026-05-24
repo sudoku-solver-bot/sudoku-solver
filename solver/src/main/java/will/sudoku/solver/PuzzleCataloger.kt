@@ -106,10 +106,12 @@ object PuzzleCataloger {
     /**
      * Generate and catalog puzzles.
      *
-     * @param count Number of puzzles to generate
+     * @param count Number of puzzles to generate (max with --stop-after-first)
      * @param difficulty Difficulty level (harder = more techniques used)
      * @param targetTechnique If set, only collect puzzles that use this technique
      * @param requireTechnique If true, verify the puzzle CANNOT be solved without the target technique
+     * @param stopAfterFirst If true, stop as soon as a matching puzzle is found
+     * @param maxAttempts Maximum puzzles to generate when stopAfterFirst is true (default: 10000)
      * @param startSeed Starting seed for reproducibility
      * @return CatalogResult with entries grouped by technique
      */
@@ -118,6 +120,8 @@ object PuzzleCataloger {
         difficulty: DifficultyRater.Level = DifficultyRater.Level.EXPERT,
         targetTechnique: String? = null,
         requireTechnique: Boolean = false,
+        stopAfterFirst: Boolean = false,
+        maxAttempts: Int = 10000,
         startSeed: Long = 1
     ): CatalogResult {
         val byTechnique = mutableMapOf<String, MutableList<CatalogEntry>>()
@@ -136,7 +140,9 @@ object PuzzleCataloger {
             Solver(SolverConfig.withoutTechnique(targetStepType))
         } else null
 
-        for (i in 0 until count) {
+        val effectiveCount = if (stopAfterFirst) maxAttempts else count
+
+        for (i in 0 until effectiveCount) {
             val seed = startSeed + i
 
             // Generate puzzle
@@ -196,10 +202,20 @@ object PuzzleCataloger {
             for (tech in techniques) {
                 byTechnique.getOrPut(tech) { mutableListOf() }.add(entry)
             }
+
+            // Early termination: stop as soon as a matching puzzle is found
+            if (stopAfterFirst) {
+                return CatalogResult(
+                    totalGenerated = i + 1,
+                    totalSolved = totalSolved,
+                    byTechnique = byTechnique,
+                    unmatched = unmatched
+                )
+            }
         }
 
         return CatalogResult(
-            totalGenerated = count,
+            totalGenerated = if (stopAfterFirst) effectiveCount else count,
             totalSolved = totalSolved,
             byTechnique = byTechnique,
             unmatched = unmatched

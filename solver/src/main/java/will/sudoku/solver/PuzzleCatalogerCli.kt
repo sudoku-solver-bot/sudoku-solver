@@ -13,6 +13,8 @@ fun main(args: Array<String>) {
     var difficulty = DifficultyRater.Level.EXPERT
     var targetTechnique: String? = null
     var requireTechnique = false
+    var stopAfterFirst = false
+    var maxAttempts = 10000
     var startSeed = 1L
 
     // Parse args
@@ -26,12 +28,15 @@ fun main(args: Array<String>) {
                     "MEDIUM" -> DifficultyRater.Level.MEDIUM
                     "HARD" -> DifficultyRater.Level.HARD
                     "EXPERT" -> DifficultyRater.Level.EXPERT
+                    "VERY_HARD" -> DifficultyRater.Level.VERY_HARD
                     "MASTER" -> DifficultyRater.Level.MASTER
                     else -> difficulty
                 }
             }
             "--technique" -> { targetTechnique = args[++i] }
             "--require" -> { requireTechnique = true }
+            "--stop-after-first" -> { stopAfterFirst = true }
+            "--max-attempts" -> { maxAttempts = args[++i].toIntOrNull() ?: maxAttempts }
             "--seed" -> { startSeed = args[++i].toLongOrNull() ?: startSeed }
             "--help" -> {
                 println("""
@@ -41,9 +46,11 @@ fun main(args: Array<String>) {
                     
                     Options:
                       --count N          Number of puzzles to generate (default: 100)
-                      --difficulty LEVEL  EASY, MEDIUM, HARD, EXPERT, MASTER (default: EXPERT)
+                      --difficulty LEVEL  EASY, MEDIUM, HARD, EXPERT, VERY_HARD, MASTER (default: EXPERT)
                       --technique NAME    Target technique to find (default: all)
                       --require           Only return puzzles that REQUIRE the technique
+                      --stop-after-first  Stop as soon as a matching puzzle is found
+                      --max-attempts N    Max puzzles to generate with --stop-after-first (default: 10000)
                       --seed N            Starting seed (default: 1)
                       --help              Show this help
                     
@@ -59,6 +66,12 @@ fun main(args: Array<String>) {
                       Find 50 puzzles requiring Simple Coloring:
                         --count 50 --technique SIMPLE_COLORING --require --difficulty MASTER
                     
+                      Find first puzzle requiring Unique Rectangles (stop early):
+                        --technique UNIQUE_RECTANGLES --require --stop-after-first --difficulty VERY_HARD
+                    
+                      Find first puzzle requiring Simple Coloring with safety limit:
+                        --technique SIMPLE_COLORING --require --stop-after-first --max-attempts 5000 --difficulty VERY_HARD
+                    
                       Catalog ALL techniques across 1000 MASTER puzzles:
                         --count 1000 --difficulty MASTER
                 """.trimIndent())
@@ -71,6 +84,7 @@ fun main(args: Array<String>) {
     println("PuzzleCataloger")
     println("─".repeat(50))
     println("Count: $count, Difficulty: $difficulty")
+    if (stopAfterFirst) println("Stop after first: true (max attempts: $maxAttempts)")
     if (targetTechnique != null) {
         println("Target: $targetTechnique")
         println("Required: $requireTechnique")
@@ -85,6 +99,8 @@ fun main(args: Array<String>) {
         difficulty = difficulty,
         targetTechnique = targetTechnique,
         requireTechnique = requireTechnique,
+        stopAfterFirst = stopAfterFirst,
+        maxAttempts = maxAttempts,
         startSeed = startSeed
     )
     val elapsed = System.currentTimeMillis() - startTime
