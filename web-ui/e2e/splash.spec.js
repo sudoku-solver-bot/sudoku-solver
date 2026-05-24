@@ -29,12 +29,19 @@ test.describe('Sudoku Dojo - App Load', () => {
     }
   });
 
-  test('should show dashboard with play button', async ({ page }) => {
+  // After non-core feature removal (Phase 1), the app loads directly
+  // with a header + more menu instead of a Dashboard
+  test('should show header with more menu after load', async ({ page }) => {
     await page.goto('http://localhost:25321/', { waitUntil: 'networkidle' });
 
-    // Dashboard should be visible
-    const playButton = page.locator('button:has-text("Play"), [class*="play"]');
-    await expect(playButton.first()).toBeVisible({ timeout: 10000 });
+    // Header should be visible with the app title
+    const header = page.locator('h1');
+    await expect(header).toBeVisible({ timeout: 10000 });
+    await expect(header).toContainText('Sudoku');
+
+    // "⋯" more menu button should be present
+    const moreBtn = page.locator('.more-btn');
+    await expect(moreBtn).toBeVisible({ timeout: 10000 });
   });
 });
 
@@ -81,7 +88,7 @@ test.describe('App Mount - No JS Errors', () => {
 });
 
 test.describe('Grid Rendering', () => {
-  test('should render puzzle grid when starting a game', async ({ page }) => {
+  test('should render puzzle grid when starting a tutorial lesson', async ({ page }) => {
     // Track JS errors
     const errors = [];
     page.on('pageerror', err => errors.push(err.message));
@@ -95,16 +102,29 @@ test.describe('Grid Rendering', () => {
       await page.waitForTimeout(500);
     }
 
-    // Wait for dashboard to load
-    await page.waitForTimeout(1000);
+    // Navigate: "⋯" menu → "Learn Techniques" → select a lesson
+    const moreBtn = page.locator('.more-btn');
+    await expect(moreBtn).toBeVisible({ timeout: 10000 });
+    await moreBtn.click();
+    await page.waitForTimeout(500);
 
-    // Click Free Play to start a game
-    const playButton = page.locator('button:has-text("Free Play")').first();
-    await expect(playButton).toBeVisible({ timeout: 10000 });
-    await playButton.click();
+    // Click "Learn Techniques" in the dropdown
+    const learnBtn = page.locator('.menu-item:has-text("Learn Techniques")');
+    await expect(learnBtn).toBeVisible({ timeout: 5000 });
+    await learnBtn.click();
     await page.waitForTimeout(2000);
 
-    // Wait for grid to appear
+    // Tutorial selector should appear with lesson cards
+    const lessonCards = page.locator('.lesson-card');
+    await expect(lessonCards.first()).toBeVisible({ timeout: 10000 });
+
+    // Select the first unlocked lesson
+    const firstUnlocked = page.locator('.lesson-card:not(.locked)').first();
+    await expect(firstUnlocked).toBeVisible({ timeout: 5000 });
+    await firstUnlocked.click();
+    await page.waitForTimeout(2000);
+
+    // Wait for grid to appear in tutorial mode
     const grid = page.locator('.grid, [class*="grid"]');
     await expect(grid.first()).toBeVisible({ timeout: 10000 });
 
