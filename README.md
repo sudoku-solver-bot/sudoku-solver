@@ -12,8 +12,8 @@ Four Gradle modules (3 Kotlin + frontend) with strict boundaries:
 | Module | Directory | Responsibility | Boundary |
 |--------|-----------|---------------|----------|
 | **Board** (`:board`) | `board/src/main/kotlin/will/sudoku/solver/` | Pure data types — Board, Coord, CoordGroup, BoardReader, BoardSettings, ValidationException | Zero dependencies. No eliminators, no solver logic. |
-| **Solver Engine** (`:kotlin`) | `kotlin/src/main/java/will/sudoku/solver/` | Pure solving logic — 21 elimination algorithms, puzzle generation, difficulty rating, hint generation | Depends on `:board`. No HTTP, no I/O, no framework dependencies. Input: `Board`, output: step/hint/solution. |
-| **Web Server** (`:web`) | `web/src/main/kotlin/will/sudoku/web/` | Ktor REST API — routes, request/response serialization, rate limiting, CORS, serves built Vue assets | Depends on `:board` + `:kotlin`. Each route file owns one domain. No business logic duplication. |
+| **Solver Engine** (`:solver`) | `solver/src/main/java/will/sudoku/solver/` | Pure solving logic — 21 elimination algorithms, puzzle generation, difficulty rating, hint generation | Depends on `:board`. No HTTP, no I/O, no framework dependencies. Input: `Board`, output: step/hint/solution. |
+| **Web Server** (`:web`) | `web/src/main/kotlin/will/sudoku/web/` | Ktor REST API — routes, request/response serialization, rate limiting, CORS, serves built Vue assets | Depends on `:board` + `:solver`. Each route file owns one domain. No business logic duplication. |
 | **Frontend** (`web-ui/`) | `web-ui/src/` | Vue 3 SPA — grid UI, tutorials, dashboard, settings, PWA. Includes a client-side TypeScript solver mirror | Builds to `web/src/main/resources/static/`. Communicates exclusively via REST API. Owns all client state (localStorage). |
 
 ### Directory Layout
@@ -28,7 +28,7 @@ sudoku-solver/
 │       ├── Coord.kt                 # Coordinate type with index/candidates
 │       ├── CoordGroup.kt            # Row/col/box/unit coordinate groups
 │       └── ValidationException.kt   # Input validation error type
-├── kotlin/                          # Solver engine (:kotlin)
+├── solver/                          # Solver engine (:solver)
 │   └── src/main/java/will/sudoku/solver/
 │       ├── Solver.kt                # Backtracking solver with MRV heuristic
 │       ├── SolverConfig.kt          # Configurable eliminator chain
@@ -98,7 +98,7 @@ sudoku-solver/
 
 ### Dependency Graph
 ```
-web-ui  ──REST JSON──►  :web  ──compile dep──►  :kotlin  ──compile dep──►  :board
+web-ui  ──REST JSON──►  :web  ──compile dep──►  :solver  ──compile dep──►  :board
  (Vue 3)               (Ktor)                  (pure JVM)
     │                      │
     ├── TypeScript solver   ├── serves static/
@@ -152,11 +152,11 @@ web-ui  ──REST JSON──►  :web  ──compile dep──►  :kotlin  ─
 │  ┌───────────────┐  │                                   │  └────────────────┘  │
 │  │ localStorage │  │                                   └──────────┬──────────┘
 │  │ (state)      │  │                                              │
-│  └───────────────┘  │                                  compile project(":kotlin")
+│  └───────────────┘  │                                  compile project(":solver")
 └────────────────────┘                                              │
                                                          ┌──────────▼──────────┐
                                                          │  Solver Engine      │
-                                                         │  (:kotlin)           │
+                                                         │  (:solver)           │
                                                          │                      │
                                                          │  ┌───────────────┐  │
                                                          │  │ Board         │  │
