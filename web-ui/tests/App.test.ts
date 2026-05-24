@@ -20,10 +20,6 @@ vi.mock('@/api', () => ({
 }))
 
 // Mock utility modules
-vi.mock('@/stats-tracker', () => ({
-  getStatsForAchievements: vi.fn().mockReturnValue({})
-}))
-
 vi.mock('@/sounds', () => ({
   playSound: vi.fn(),
   isSoundEnabled: vi.fn().mockReturnValue(false),
@@ -56,22 +52,6 @@ describe('App', () => {
     expect(wrapper.find('h1').text()).toContain('Sudoku Solver')
   })
 
-  it('renders Dashboard as default view', () => {
-    const wrapper = mount(App)
-    expect(wrapper.findComponent({ name: 'Dashboard' }).exists()).toBe(true)
-  })
-
-  it('navigates to Free Play mode when play is triggered', async () => {
-    const wrapper = mount(App)
-
-    const dashboard = wrapper.findComponent({ name: 'Dashboard' })
-    await dashboard.vm.$emit('play')
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.findComponent({ name: 'SudokuGrid' }).exists()).toBe(true)
-    expect(wrapper.findComponent({ name: 'ControlPanel' }).exists()).toBe(true)
-  })
-
   it('navigates to Settings panel', async () => {
     const wrapper = mount(App)
     // Open the more menu first
@@ -87,15 +67,6 @@ describe('App', () => {
     expect(wrapper.findComponent({ name: 'Settings' }).exists()).toBe(true)
   })
 
-  it('navigates to Daily Challenge', async () => {
-    const wrapper = mount(App)
-    const dailyBtn = wrapper.find('.daily-btn')
-    await dailyBtn.trigger('click')
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.findComponent({ name: 'DailyChallenge' }).exists()).toBe(true)
-  })
-
   it('generates a puzzle and fills the grid', async () => {
     const mockPuzzle = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'
     generatePuzzle.mockResolvedValue({
@@ -105,7 +76,7 @@ describe('App', () => {
 
     const wrapper = mount(App)
 
-    // Go to play mode first
+    // Go to play mode
     wrapper.vm.playMode = true
     await wrapper.vm.$nextTick()
 

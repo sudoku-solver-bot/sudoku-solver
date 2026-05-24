@@ -91,146 +91,6 @@
         </div>
       </div>
 
-      <!-- Language section -->
-      <div class="settings-section">
-        <h3>Language / 語言 / 言語 / 언어</h3>
-        <div class="lang-selector">
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'en' }"
-            @click="setLocale('en')"
-          >
-            🇬🇧 English
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'zh-Hant' }"
-            @click="setLocale('zh-Hant')"
-          >
-            🇭🇰 繁體中文
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'zh-Hans' }"
-            @click="setLocale('zh-Hans')"
-          >
-            🇨🇳 简体中文
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'ja' }"
-            @click="setLocale('ja')"
-          >
-            🇯🇵 日本語
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'ko' }"
-            @click="setLocale('ko')"
-          >
-            🇰🇷 한국어
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'fr' }"
-            @click="setLocale('fr')"
-          >
-            🇫🇷 Français
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'es' }"
-            @click="setLocale('es')"
-          >
-            🇪🇸 Español
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'de' }"
-            @click="setLocale('de')"
-          >
-            🇩🇪 Deutsch
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'pt' }"
-            @click="setLocale('pt')"
-          >
-            🇧🇷 Português
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'hi' }"
-            @click="setLocale('hi')"
-          >
-            🇮🇳 हिन्दी
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'ar' }"
-            @click="setLocale('ar')"
-          >
-            🇸🇦 العربية
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'it' }"
-            @click="setLocale('it')"
-          >
-            🇮🇹 Italiano
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'ru' }"
-            @click="setLocale('ru')"
-          >
-            🇷🇺 Русский
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'tr' }"
-            @click="setLocale('tr')"
-          >
-            🇹🇷 Türkçe
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'nl' }"
-            @click="setLocale('nl')"
-          >
-            🇳🇱 Nederlands
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'sv' }"
-            @click="setLocale('sv')"
-          >
-            🇸🇪 Svenska
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'pl' }"
-            @click="setLocale('pl')"
-          >
-            🇵🇱 Polski
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'th' }"
-            @click="setLocale('th')"
-          >
-            🇹🇭 ไทย
-          </button>
-          <button
-            class="lang-btn"
-            :class="{ active: currentLocale === 'vi' }"
-            @click="setLocale('vi')"
-          >
-            🇻🇳 Tiếng Việt
-          </button>
-        </div>
-      </div>
-
       <!-- Data section -->
       <div class="settings-section">
         <h3>Data</h3>
@@ -282,7 +142,6 @@
 
 import { ref } from 'vue'
 import { isSoundEnabled, setSoundEnabled, playSound } from '../sounds'
-import { useI18n } from '../i18n'
 
 interface Props {
     isDark?: boolean
@@ -301,7 +160,6 @@ interface Props {
 const emit = defineEmits<{ exit: []; 'toggle-dark': []; 'toggle-colorblind': []; 'toggle-highcontrast': []; 'change-theme': [id: string]; 'toggle-challenge': [] }>()
 
 const soundEnabled = ref<boolean>(isSoundEnabled())
-const { currentLocale, setLocale } = useI18n()
 
 const themes = [
   { id: 'default', name: 'Default' },
