@@ -18,6 +18,10 @@ Five specialized agents manage the Sudoku Dojo project autonomously.
 Tester (finds bugs) → Planner (creates fix plans) → Coder (implements) → Reviewer (merges) → Deployer (deploys)
 ```
 
+## References
+
+- [**UI/UX Guidelines**](../UI-GUIDELINES.md) — authoritative frontend UX reference for all agents.
+
 ## Current Priority
 
 **Bug Squash Phase** — no new features or i18n languages. Focus on finding and fixing bugs only.
