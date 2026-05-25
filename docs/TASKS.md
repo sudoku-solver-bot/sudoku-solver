@@ -66,7 +66,6 @@
 **Phase 5: Build Integration**
 - [x] Update Ktor to serve Vue build output
 - [x] Test end-to-end locally
-- [ ] Test on Render preview
 
 ### Workflow
 - [x] 📦 Commit Phase 1-3

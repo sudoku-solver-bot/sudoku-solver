@@ -14,7 +14,7 @@ Implementation agent for sudoku-solver. Follows plans and standard git flow.
 - **Stack:** Kotlin 2.1 (Ktor) + Vue 3 + Vite
 - **JDK:** 21
 - **CI:** GitHub Actions (tests on push/PR)
-- **Deploy:** Auto-deploys to Render on merge to master
+- **Deploy:** Deploys via `scripts/deploy.sh` to systemd service
 
 ## Context Loading (Before Every Task)
 
