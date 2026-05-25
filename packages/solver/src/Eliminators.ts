@@ -1168,3 +1168,187 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
              Math.floor(a.col / 3) === Math.floor(b.col / 3))
     }
 }
+
+// ---------------------------------------------------------------------------
+// ALSXZCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * ALS-XZ (Almost Locked Sets XZ) finds two Almost Locked Sets (N cells with
+ * N+1 candidates) that share a "Restricted Common" (X). When X is restricted
+ * (all cells with X in ALS1 see all cells with X in ALS2), the non-restricted
+ * common candidate Z can be eliminated from any cell that sees all cells
+ * containing Z in both ALSs.
+ *
+ * Reference: https://www.sudopedia.org/wiki/ALS-XZ
+ *
+ * Equivalent to the Kotlin `ALSXZCandidateEliminator`.
+ */
+export class ALSXZCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'ALS-XZ'
+
+    /**
+     * Internal ALS representation: N cells with exactly N+1 candidates.
+     */
+    private static _Als(coords: Coord[], candidates: Set<number>) {
+        const coordsSet = new Set(coords)
+        return { coords, candidates, coordsSet }
+    }
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        const allALS = this._findAllALS(board)
+        const uniqueALS = this._deduplicateALS(allALS)
+
+        for (let i = 0; i < uniqueALS.length; i++) {
+            for (let j = i + 1; j < uniqueALS.length; j++) {
+                const als1 = uniqueALS[i]
+                const als2 = uniqueALS[j]
+
+                // Skip overlapping ALSs
+                if (als1.coords.some(c => als2.coordsSet.has(c))) continue
+
+                const restrictedCommons = this._findRestrictedCommons(board, als1, als2)
+                if (restrictedCommons.length === 0) continue
+
+                const sharedCandidates = new Set(
+                    [...als1.candidates].filter(c => als2.candidates.has(c))
+                )
+                const nonRestricted = [...sharedCandidates].filter(
+                    c => !restrictedCommons.includes(c)
+                )
+
+                for (const z of nonRestricted) {
+                    if (this._applyType1Elimination(board, als1, als2, z)) {
+                        anyUpdate = true
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    private _findAllALS(board: Board): ReturnType<typeof ALSXZCandidateEliminator._Als>[] {
+        const result: ReturnType<typeof ALSXZCandidateEliminator._Als>[] = []
+
+        for (const group of CoordGroup.all) {
+            const unconfirmed = group.coords.filter(c => !board.isConfirmed(c))
+            if (unconfirmed.length < 2) continue
+
+            for (
+                let size = 2;
+                size <= Math.min(5, unconfirmed.length);
+                size++
+            ) {
+                for (const combo of this._generateCombinations(unconfirmed, size)) {
+                    const allCands = new Set(
+                        combo.flatMap(c => board.candidateValues(c))
+                    )
+                    if (allCands.size === size + 1) {
+                        result.push(
+                            ALSXZCandidateEliminator._Als(combo, allCands)
+                        )
+                    }
+                }
+            }
+        }
+
+        return result
+    }
+
+    private _deduplicateALS(
+        alsList: ReturnType<typeof ALSXZCandidateEliminator._Als>[]
+    ): ReturnType<typeof ALSXZCandidateEliminator._Als>[] {
+        const seen = new Set<string>()
+        const result: ReturnType<typeof ALSXZCandidateEliminator._Als>[] = []
+        for (const als of alsList) {
+            const key = als.coords.map(c => c.index).sort((a, b) => a - b).join(',')
+            if (!seen.has(key)) {
+                seen.add(key)
+                result.push(als)
+            }
+        }
+        return result
+    }
+
+    private _findRestrictedCommons(
+        board: Board,
+        als1: ReturnType<typeof ALSXZCandidateEliminator._Als>,
+        als2: ReturnType<typeof ALSXZCandidateEliminator._Als>
+    ): number[] {
+        const shared = [...als1.candidates].filter(c => als2.candidates.has(c))
+        const restricted: number[] = []
+
+        for (const x of shared) {
+            const cellsX1 = als1.coords.filter(c =>
+                board.candidateValues(c).includes(x)
+            )
+            const cellsX2 = als2.coords.filter(c =>
+                board.candidateValues(c).includes(x)
+            )
+
+            if (cellsX1.length === 0 || cellsX2.length === 0) continue
+
+            const allSee = cellsX1.every(c1 =>
+                cellsX2.every(c2 => this._seesEachOther(c1, c2))
+            )
+
+            if (allSee) restricted.push(x)
+        }
+
+        return restricted
+    }
+
+    private _applyType1Elimination(
+        board: Board,
+        als1: ReturnType<typeof ALSXZCandidateEliminator._Als>,
+        als2: ReturnType<typeof ALSXZCandidateEliminator._Als>,
+        z: number
+    ): boolean {
+        let anyUpdate = false
+
+        const cellsZ1 = als1.coords.filter(c => board.candidateValues(c).includes(z))
+        const cellsZ2 = als2.coords.filter(c => board.candidateValues(c).includes(z))
+
+        if (cellsZ1.length === 0 || cellsZ2.length === 0) return false
+
+        for (const coord of Coord.all) {
+            if (als1.coordsSet.has(coord) || als2.coordsSet.has(coord)) continue
+            if (board.isConfirmed(coord)) continue
+            if (!board.candidateValues(coord).includes(z)) continue
+
+            const seesAllZ =
+                cellsZ1.every(zc => this._seesEachOther(coord, zc)) &&
+                cellsZ2.every(zc => this._seesEachOther(coord, zc))
+
+            if (seesAllZ) {
+                if (board.eraseCandidateValue(coord, z)) anyUpdate = true
+            }
+        }
+
+        return anyUpdate
+    }
+
+    private _generateCombinations<T>(list: T[], k: number): T[][] {
+        if (k === 0) return [[]]
+        if (list.length === 0 || k > list.length) return []
+        const result: T[][] = []
+        for (let i = 0; i < list.length; i++) {
+            for (const rest of this._generateCombinations(list.slice(i + 1), k - 1)) {
+                result.push([list[i], ...rest])
+            }
+        }
+        return result
+    }
+
+    private _seesEachOther(a: Coord, b: Coord): boolean {
+        return (
+            a.row === b.row ||
+            a.col === b.col ||
+            (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
+                Math.floor(a.col / 3) === Math.floor(b.col / 3))
+        )
+    }
+}

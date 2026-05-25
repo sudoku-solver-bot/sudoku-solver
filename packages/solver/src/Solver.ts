@@ -11,6 +11,7 @@ import {
     SkyscraperCandidateEliminator,
     TwoStringKiteCandidateEliminator,
     WWingCandidateEliminator,
+    ALSXZCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
 
@@ -66,7 +67,7 @@ export class SolverConfig {
 }
 
 /**
- * Default eliminators: all 10 production-ready TS eliminators.
+ * Default eliminators: all 11 production-ready TS eliminators.
  *
  * Excluded:
  *   EmptyRectangle — makes incorrect eliminations (known bug, breaks solver)
@@ -84,6 +85,7 @@ function defaultEliminators(): readonly CandidateEliminator[] {
         new SkyscraperCandidateEliminator(),
         new TwoStringKiteCandidateEliminator(),
         new WWingCandidateEliminator(),
+        new ALSXZCandidateEliminator(),
     ]
 }
 
