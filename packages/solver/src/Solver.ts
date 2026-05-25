@@ -4,6 +4,7 @@ import {
     SimpleCandidateEliminator,
     GroupCandidateEliminator,
     ExclusionCandidateEliminator,
+    DeathBlossomCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
 
@@ -64,6 +65,7 @@ function defaultEliminators(): readonly CandidateEliminator[] {
         new SimpleCandidateEliminator(),
         new GroupCandidateEliminator(),
         new ExclusionCandidateEliminator(9),
+        new DeathBlossomCandidateEliminator(),
     ]
 }
 

@@ -1,7 +1,7 @@
 import type { Board } from './Board'
 import { Coord } from './Coord'
 import { CoordGroup } from './CoordGroup'
-import { bitCount, MASKS, SIZE, WILDCARD_PATTERN } from './Bitmask'
+import { bitCount, maskToValues, MASKS, SIZE, WILDCARD_PATTERN } from './Bitmask'
 
 // ---------------------------------------------------------------------------
 // CandidateEliminator interface
@@ -1012,5 +1012,159 @@ export class WWingCandidateEliminator implements CandidateEliminator {
             }
         }
         return anyUpdate
+    }
+}
+
+// ---------------------------------------------------------------------------
+// DeathBlossomCandidateEliminator
+// ---------------------------------------------------------------------------
+
+interface ALS {
+    cells: Coord[]
+    candidates: Set<number>
+}
+
+/**
+ * Death Blossom finds a stem cell with N candidates and N Almost Locked Sets
+ * (petals). Each petal ALS contains one of the stem's candidates, and every
+ * cell in the ALS with that candidate can see the stem. Candidates shared
+ * between all petals can be eliminated from cells seeing all instances.
+ *
+ * Reference: https://www.sudopedia.org/wiki/Death_Blossom
+ *
+ * Equivalent to the Kotlin `DeathBlossomCandidateEliminator`.
+ */
+export class DeathBlossomCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Death Blossom'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        const allALS = this._findAllALS(board)
+        if (allALS.length === 0) return false
+
+        for (const stem of Coord.all) {
+            if (board.isConfirmed(stem)) continue
+            const stemCandidates = new Set(board.candidateValues(stem))
+            if (stemCandidates.size < 2) continue
+
+            const petalsByCandidate = new Map<number, ALS[]>()
+
+            for (const x of stemCandidates) {
+                const eligible: ALS[] = []
+                for (const als of allALS) {
+                    if (!als.candidates.has(x)) continue
+                    if (als.cells.includes(stem)) continue
+                    const allXSeeStem = als.cells.every(cell =>
+                        board.candidateValues(cell).includes(x) &&
+                        this._seesEachOther(cell, stem)
+                    )
+                    if (allXSeeStem) eligible.push(als)
+                }
+                if (eligible.length > 0) petalsByCandidate.set(x, eligible)
+            }
+
+            if (petalsByCandidate.size < stemCandidates.size) continue
+
+            const candidateList = [...stemCandidates]
+            const combos = this._generatePetalCombinations(petalsByCandidate, candidateList)
+
+            for (const petals of combos) {
+                const allCells = petals.flatMap(p => p.cells)
+                if (new Set(allCells).size !== allCells.length) continue
+
+                const commonCandidates = new Set(
+                    [...petals[0].candidates].filter(c =>
+                        petals.every(p => p.candidates.has(c))
+                    )
+                )
+                for (const sc of stemCandidates) commonCandidates.delete(sc)
+                if (commonCandidates.size === 0) continue
+
+                for (const z of commonCandidates) {
+                    const zCellsPerALS = petals.map(als =>
+                        als.cells.filter(c => board.candidateValues(c).includes(z))
+                    )
+
+                    for (const coord of Coord.all) {
+                        if (coord === stem) continue
+                        if (allCells.includes(coord)) continue
+                        if (board.isConfirmed(coord)) continue
+                        if (!board.candidateValues(coord).includes(z)) continue
+
+                        const seesAllZ = zCellsPerALS.every(zCells =>
+                            zCells.every(zc => this._seesEachOther(coord, zc))
+                        )
+
+                        if (seesAllZ) {
+                            if (board.eraseCandidateValue(coord, z)) anyUpdate = true
+                        }
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    private _findAllALS(board: Board): ALS[] {
+        const result: ALS[] = []
+        for (const group of CoordGroup.all) {
+            const unconfirmed = group.coords.filter(c => !board.isConfirmed(c))
+            for (let size = 2; size <= Math.min(4, unconfirmed.length); size++) {
+                for (const combo of this._generateCombinations(unconfirmed, size)) {
+                    const allCands = new Set(combo.flatMap(c => board.candidateValues(c)))
+                    if (allCands.size === size + 1) {
+                        result.push({ cells: combo, candidates: allCands })
+                    }
+                }
+            }
+        }
+        return result
+    }
+
+    private _generatePetalCombinations(
+        petalsByCandidate: Map<number, ALS[]>,
+        candidates: number[]
+    ): ALS[][] {
+        if (candidates.length === 0) return [[]]
+
+        const head = candidates[0]
+        const tail = candidates.slice(1)
+        const headALS = petalsByCandidate.get(head)
+        if (!headALS) return []
+
+        const restCombos = this._generatePetalCombinations(petalsByCandidate, tail)
+        if (restCombos.length === 0 && tail.length > 0) return []
+
+        const result: ALS[][] = []
+        for (const als of headALS) {
+            if (tail.length === 0) {
+                result.push([als])
+            } else {
+                for (const rest of restCombos) {
+                    result.push([als, ...rest])
+                }
+            }
+        }
+        return result
+    }
+
+    private _generateCombinations<T>(list: T[], k: number): T[][] {
+        if (k === 0) return [[]]
+        if (list.length === 0 || k > list.length) return []
+        const result: T[][] = []
+        for (let i = 0; i < list.length; i++) {
+            for (const rest of this._generateCombinations(list.slice(i + 1), k - 1)) {
+                result.push([list[i], ...rest])
+            }
+        }
+        return result
+    }
+
+    private _seesEachOther(a: Coord, b: Coord): boolean {
+        return a.row === b.row || a.col === b.col ||
+            (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
+             Math.floor(a.col / 3) === Math.floor(b.col / 3))
     }
 }
