@@ -1,0 +1,28 @@
+[Unit]
+Description=Sudoku Dojo (Staging)
+After=network.target
+
+[Service]
+Type=simple
+User=sudoku
+WorkingDirectory=/opt/sudoku-solver-staging
+Environment=PORT=25322
+Environment=STAGING=true
+Environment=DEPLOY_COMMIT_FILE=/opt/sudoku-solver-staging/.deploy-commit
+Environment=BUILD_TIMESTAMP_FILE=/opt/sudoku-solver-staging/.build-timestamp
+ExecStart=/opt/sudoku-solver-staging/bin/web
+Restart=on-failure
+RestartSec=2s
+StartLimitIntervalSec=60s
+StartLimitBurst=5
+
+# Security hardening
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/opt/sudoku-solver-staging
+PrivateTmp=yes
+PrivateDevices=yes
+
+[Install]
+WantedBy=multi-user.target

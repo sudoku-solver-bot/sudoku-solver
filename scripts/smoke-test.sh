@@ -2,6 +2,11 @@
 # Sudoku Dojo — Deploy Smoke Test
 # Verifies the deployment is healthy after a deploy.
 # Exit code: 0 = success, 1 = failure
+#
+# Usage:
+#   Production:  ./scripts/smoke-test.sh
+#   Staging:     SUDOKU_URL=http://localhost:25322 ./scripts/smoke-test.sh
+#   Commit check: EXPECTED_COMMIT=abc1234 ./scripts/smoke-test.sh
 
 set -euo pipefail
 

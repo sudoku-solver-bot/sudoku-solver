@@ -15,6 +15,7 @@ data class HealthResponse(
     val version: String,
     val timestamp: Long = System.currentTimeMillis(),
     val gitCommit: String? = null,
+    val environment: String = if (System.getenv("STAGING") == "true") "staging" else "production",
     val uptime: UptimeInfo? = null,
     val jvm: JvmInfo? = null,
     val system: SystemInfo? = null
