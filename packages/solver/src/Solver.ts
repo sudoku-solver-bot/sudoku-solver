@@ -3,8 +3,14 @@ import type { CandidateEliminator } from './Eliminators'
 import {
     SimpleCandidateEliminator,
     GroupCandidateEliminator,
+    HiddenSubsetCandidateEliminator,
     ExclusionCandidateEliminator,
-    DeathBlossomCandidateEliminator,
+    PointingCandidateEliminator,
+    ClaimingCandidateEliminator,
+    FishCandidateEliminator,
+    SkyscraperCandidateEliminator,
+    TwoStringKiteCandidateEliminator,
+    WWingCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
 
@@ -59,13 +65,25 @@ export class SolverConfig {
     }
 }
 
-/** Default eliminators: the 3 core techniques. */
+/**
+ * Default eliminators: all 10 production-ready TS eliminators.
+ *
+ * Excluded:
+ *   EmptyRectangle — makes incorrect eliminations (known bug, breaks solver)
+ *   DeathBlossom  — too slow for default set (combinatorial explosion)
+ */
 function defaultEliminators(): readonly CandidateEliminator[] {
     return [
         new SimpleCandidateEliminator(),
         new GroupCandidateEliminator(),
+        new HiddenSubsetCandidateEliminator(),
         new ExclusionCandidateEliminator(9),
-        new DeathBlossomCandidateEliminator(),
+        new PointingCandidateEliminator(),
+        new ClaimingCandidateEliminator(),
+        new FishCandidateEliminator(),
+        new SkyscraperCandidateEliminator(),
+        new TwoStringKiteCandidateEliminator(),
+        new WWingCandidateEliminator(),
     ]
 }
 
