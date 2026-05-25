@@ -205,7 +205,6 @@ After merge, confirm deployment:
 
 ```bash
 # Trigger local deploy if needed
-# (Remote auto-deploys to Render)
 ```
 
 ## Rules

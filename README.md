@@ -328,7 +328,7 @@ docker run -p 10000:10000 sudoku-dojo
 ## CI/CD
 
 - **GitHub Actions** — Java CI (tests), Detekt (static analysis), CodeQL (security), JMH (manual benchmarks)
-- **Auto-deploy** to Render on merge to `master`
+- **Deploy** via `scripts/deploy.sh` with atomic swap and smoke test
 - **Branch protection** — CI required, reviews required, linear history, admin enforcement
 
 ---

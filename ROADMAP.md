@@ -81,7 +81,7 @@ After 304+ PRs merged and the full feature set shipped, focus is on quality and 
 ### Stack
 - **Backend:** Kotlin 2.1 (Ktor) + JUnit 5
 - **Frontend:** Vue 3 (Composition API) + Vite 5 + Vitest
-- **Infrastructure:** Render.com, GitHub Actions CI
+- **Infrastructure:** Systemd service on VPS, GitHub Actions CI
 - **Tests:** 389 tests, 0 failures
 
 ### Architecture

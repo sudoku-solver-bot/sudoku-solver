@@ -46,7 +46,7 @@ GitHub Actions:
 - **Detekt** — Kotlin static analysis on push to `master` + weekly
 - **JMH** — Manual dispatch only
 
-JDK 21 required. Auto-deploys to Render on merge to `master`.
+JDK 21 required. Deployed via `scripts/deploy.sh` to systemd service.
 
 ## Architecture
 
@@ -148,7 +148,7 @@ Tests in `kotlin/src/test/`:
 
 ## Branch Strategy
 
-- **master** — Stable, auto-deploys to Render
+- **master** — Stable, deployed via `scripts/deploy.sh`
 - Branch protection: CI required, reviews required, linear history, admin enforcement
 
 ## Adding a New Feature
