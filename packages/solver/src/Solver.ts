@@ -71,6 +71,7 @@ export class SolverConfig {
  * Excluded:
  *   EmptyRectangle — makes incorrect eliminations (known bug, breaks solver)
  *   DeathBlossom  — too slow for default set (combinatorial explosion)
+ *   FrankenFish   — makes incorrect eliminations (known bug, breaks solver)
  */
 function defaultEliminators(): readonly CandidateEliminator[] {
     return [
