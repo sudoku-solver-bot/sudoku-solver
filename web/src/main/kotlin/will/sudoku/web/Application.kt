@@ -26,6 +26,8 @@ import will.sudoku.web.candidateRoutes
 import will.sudoku.web.tutorialRoutes
 import will.sudoku.web.candidateRoutes
 import will.sudoku.web.difficultyRoutes
+import will.sudoku.web.progressRoutes
+import will.sudoku.web.dashboardRoutes
 
 fun main() {
     val port = System.getenv("PORT")?.toInt() ?: 8080
@@ -41,6 +43,7 @@ fun Application.module() {
         json(Json {
             prettyPrint = true
             isLenient = true
+            encodeDefaults = true
         })
     }
 
@@ -127,6 +130,8 @@ fun Application.module() {
             candidateRoutes()
             tutorialRoutes()
             difficultyRoutes()
+            progressRoutes()
+            dashboardRoutes()
         }
 
         // Versioned API routes (v1)
