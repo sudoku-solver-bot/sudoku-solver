@@ -680,6 +680,7 @@
           "beltColor": {"type": "string"},
           "beltEmoji": {"type": "string"},
           "beltName": {"type": "string"},
+          "difficulty": {"type": "string", "description": "Difficulty level (EASY, MEDIUM, HARD, EXPERT, MASTER)"},
           "description": {"type": "string"},
           "completed": {"type": "boolean"}
         }
@@ -694,6 +695,7 @@
           "beltColor": {"type": "string"},
           "beltEmoji": {"type": "string"},
           "beltName": {"type": "string"},
+          "difficulty": {"type": "string", "description": "Difficulty level (EASY, MEDIUM, HARD, EXPERT, MASTER)"},
           "technique": {"type": "string"},
           "description": {"type": "string"},
           "concept": {"type": "string"},
