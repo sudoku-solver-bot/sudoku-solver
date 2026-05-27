@@ -16,13 +16,13 @@
       @click="selectCell(index)"
     >
       <input
-        v-if="puzzle[index] !== '.' || !showCandidates || givenCells.has(index)"
+        v-if="!isEmpty(puzzle[index]) || !showCandidates || givenCells.has(index)"
         ref="inputs"
         type="text"
         inputmode="numeric"
         pattern="[1-9]"
         maxlength="1"
-        :value="puzzle[index] === '.' ? '' : puzzle[index]"
+        :value="isEmpty(puzzle[index]) ? '' : puzzle[index]"
         :readonly="givenCells.has(index)"
         :data-index="index"
         @input="onInput(index, $event)"
@@ -92,6 +92,9 @@ const emit = defineEmits<{
 const inputs = ref([])
 const candidateGrids = ref([])
 
+/** Treat both '.' and '0' as empty cells — defensive against API normalisation. */
+const isEmpty = (char: string) => !char || char === '.' || char === '0'
+
 const cellCandidates = (index, n) => {
   const key = String(index)
   return props.candidates[key]?.includes(n) ?? false
@@ -110,7 +113,7 @@ const conflicts = computed(() => {
   if (!props.showConflicts) return new Set()
   const set = new Set()
   for (let i = 0; i < 81; i++) {
-    if (props.puzzle[i] === '.') continue
+    if (isEmpty(props.puzzle[i])) continue
     const val = props.puzzle[i]
     const row = getRow(i), col = getCol(i), region = getRegion(i)
     for (let j = 0; j < 81; j++) {
@@ -143,7 +146,7 @@ const getCellClasses = (index) => {
     classes['related-col'] = getCol(index) === selectedCol && index !== props.selectedCell
     classes['related-region'] = getRegion(index) === selectedRegion && index !== props.selectedCell
     classes['same-value'] =
-      props.puzzle[index] !== '.' &&
+      !isEmpty(props.puzzle[index]) &&
       props.puzzle[index] === props.puzzle[props.selectedCell] &&
       index !== props.selectedCell
   }
@@ -180,7 +183,7 @@ const getCellLabel = (index) => {
   const row = Math.floor(index / 9) + 1
   const col = (index % 9) + 1
   const value = props.puzzle[index]
-  if (value !== '.') {
+  if (!isEmpty(value)) {
     return `Row ${row}, Column ${col}: ${value}`
   }
   const key = String(index)
