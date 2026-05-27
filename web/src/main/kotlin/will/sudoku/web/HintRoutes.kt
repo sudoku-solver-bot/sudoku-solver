@@ -22,6 +22,7 @@ data class HintRequest(
 data class HintResponse(
     val type: String,
     val cell: CellCoordinate?,
+    val value: Int? = null,
     val technique: String,
     val explanation: String,
     val teachingPoints: List<String>
@@ -86,6 +87,7 @@ fun Route.hintRoutes() {
             HintResponse(
                 type = hint.type.name,
                 cell = hint.cell?.let { CellCoordinate(it.row, it.col) },
+                value = hint.value,
                 technique = hint.technique,
                 explanation = hint.explanation,
                 teachingPoints = hint.teachingPoints
