@@ -50,6 +50,15 @@ fun Route.hintRoutes() {
             )
         }
 
+        // Validate puzzle for constraint violations before attempting hint generation
+        val validationErrors = rawBoard.validate()
+        if (validationErrors.isNotEmpty()) {
+            return@post call.respond(
+                HttpStatusCode.BadRequest,
+                ErrorResponse("Invalid puzzle: ${validationErrors.joinToString("; ")}")
+            )
+        }
+
         // Check if puzzle was already solved BEFORE constraint propagation
         // Easy puzzles can be fully solved by constraint propagation alone,
         // so checking after would incorrectly report them as "Puzzle Complete"
