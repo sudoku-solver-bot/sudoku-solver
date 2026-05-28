@@ -98,7 +98,16 @@ object HintGenerator {
             lastHiddenSingle = applyHiddenSinglesUntilStable(workingBoard)
         }
 
-        // Step 2.5: If the board is now solved, return the last hidden single found.
+        // Step 2.5: Exhaust intermediate techniques (pointing pairs, box/line reductions)
+        // before checking advanced techniques. Without this, harder puzzles may mask
+        // their first non-trivial technique behind pointing pairs/box-line reductions
+        // that need to be resolved first (Refs #610).
+        if (exhaustHiddenSingles) {
+            applyPointingPairsUntilStable(workingBoard)
+            applyBoxLineReductionsUntilStable(workingBoard)
+        }
+
+        // Step 2.6: If the board is now solved, return the last hidden single found.
         // Without this, puzzles solvable entirely by hidden singles would fall through
         // to the generic "Scanning" fallback (bug #224).
         if (workingBoard.isSolved() && lastHiddenSingle != null) {
@@ -246,6 +255,104 @@ object HintGenerator {
                 }
             }
         }
+        return eliminations
+    }
+
+    /**
+     * Apply box/line reductions to advance the board before checking for advanced techniques.
+     *
+     * Iteratively finds box/line reductions, eliminates the locked candidates, and re-runs
+     * constraint propagation. Continues until no more box/line reductions are found.
+     */
+    internal fun applyBoxLineReductionsUntilStable(board: Board) {
+        var foundAny = true
+        while (foundAny) {
+            foundAny = false
+            val eliminations = findBoxLineReductionEliminations(board)
+            if (eliminations.isNotEmpty()) {
+                foundAny = true
+                for ((coord, value) in eliminations) {
+                    board.eraseCandidatePattern(coord, Board.masks[value - 1])
+                }
+                applyBasicElimination(board)
+            }
+        }
+    }
+
+    /**
+     * Find all box/line reduction eliminations on the board.
+     * Returns a list of (coord, value) pairs to eliminate.
+     *
+     * Box/line reduction: When a candidate value in a row (or column) is restricted
+     * to cells within a single box, that value can be eliminated from the rest of that box.
+     */
+    private fun findBoxLineReductionEliminations(board: Board): List<Pair<Coord, Int>> {
+        val eliminations = mutableListOf<Pair<Coord, Int>>()
+
+        // Check each row for box/line reductions
+        for (row in 0..8) {
+            for (value in 1..9) {
+                val cells = mutableListOf<Coord>()
+                for (col in 0..8) {
+                    val coord = Coord(row, col)
+                    if (!board.isConfirmed(coord) &&
+                        board.candidateValues(coord).contains(value)
+                    ) {
+                        cells.add(coord)
+                    }
+                }
+                if (cells.size in 2..3) {
+                    val boxes = cells.map { Pair(it.row / 3, it.col / 3) }.toSet()
+                    if (boxes.size == 1) {
+                        val (boxRow, boxCol) = boxes.first()
+                        for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                            if (r == row) continue
+                            for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                                val coord = Coord(r, c)
+                                if (!board.isConfirmed(coord) &&
+                                    board.candidateValues(coord).contains(value)
+                                ) {
+                                    eliminations.add(Pair(coord, value))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Check each column for box/line reductions
+        for (col in 0..8) {
+            for (value in 1..9) {
+                val cells = mutableListOf<Coord>()
+                for (row in 0..8) {
+                    val coord = Coord(row, col)
+                    if (!board.isConfirmed(coord) &&
+                        board.candidateValues(coord).contains(value)
+                    ) {
+                        cells.add(coord)
+                    }
+                }
+                if (cells.size in 2..3) {
+                    val boxes = cells.map { Pair(it.row / 3, it.col / 3) }.toSet()
+                    if (boxes.size == 1) {
+                        val (boxRow, boxCol) = boxes.first()
+                        for (c in boxCol * 3 until (boxCol + 1) * 3) {
+                            if (c == col) continue
+                            for (r in boxRow * 3 until (boxRow + 1) * 3) {
+                                val coord = Coord(r, c)
+                                if (!board.isConfirmed(coord) &&
+                                    board.candidateValues(coord).contains(value)
+                                ) {
+                                    eliminations.add(Pair(coord, value))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         return eliminations
     }
 
