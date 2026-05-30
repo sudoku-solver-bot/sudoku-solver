@@ -87,7 +87,7 @@ const emit = defineEmits<{ 'toggle-pause': [] }>()
 const filledCells = computed(() => {
   let count = 0
   for (let i = 0; i < props.puzzle.length; i++) {
-    if (props.puzzle[i] !== '.') {
+    if (props.puzzle[i] !== '.' && props.puzzle[i] !== '0') {
       count++
     }
   }

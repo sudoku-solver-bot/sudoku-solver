@@ -6,6 +6,7 @@ package will.sudoku.solver
 data class TeachingHint(
     val type: HintType,
     val cell: Coord?,
+    val value: Int? = null,
     val technique: String,
     val explanation: String,
     val teachingPoints: List<String> = emptyList()
@@ -59,6 +60,7 @@ class TeachingHintProvider {
             return TeachingHint(
                 type = mapTechniqueToHintType(hintGenHint.technique),
                 cell = hintGenHint.coord,
+                value = hintGenHint.value,
                 technique = hintGenHint.technique.displayName,
                 explanation = hintGenHint.explanation,
                 teachingPoints = techniqueTeachingPoints(hintGenHint.technique)
@@ -148,10 +150,11 @@ class TeachingHintProvider {
                         return TeachingHint(
                             type = HintType.NAKED_SINGLE,
                             cell = coord,
+                            value = value,
                             technique = "Naked Single",
-                            explanation = "Cell (${row + 1}, ${col + 1}) can only be $value! This is the only number that fits here.",
+                            explanation = "Cell (${row}, ${col}) can only be $value! This is the only number that fits here.",
                             teachingPoints = listOf(
-                                "Look at row ${row + 1}, column ${col + 1}, and the 3x3 box",
+                                "Look at row ${row}, column ${col}, and the 3x3 box",
                                 "Only one number is possible in this cell",
                                 "This is called a 'Naked Single' because the answer is obvious"
                             )

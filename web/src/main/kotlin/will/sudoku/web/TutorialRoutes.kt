@@ -39,7 +39,8 @@ data class TutorialLesson(
     val description: String,
     val concept: String,
     val examplePuzzle: String,
-    val steps: List<TutorialStep>
+    val steps: List<TutorialStep>,
+    val difficulty: String = ""
 )
 
 @Serializable
@@ -51,6 +52,7 @@ data class TutorialSummary(
     val beltColor: String,
     val beltEmoji: String,
     val beltName: String,
+    val difficulty: String,
     val description: String,
     val completed: Boolean = false
 )
@@ -122,6 +124,21 @@ data class PracticeSet(
 )
 
 fun Route.tutorialRoutes() {
+    // Belt → difficulty mapping (from OpenAPI difficulty enum)
+    fun beltToDifficulty(belt: String): String = when (belt.lowercase()) {
+        "white" -> "EASY"
+        "yellow" -> "MEDIUM"
+        "orange" -> "MEDIUM"
+        "green" -> "HARD"
+        "blue" -> "HARD"
+        "purple" -> "EXPERT"
+        "brown" -> "EXPERT"
+        "red" -> "EXPERT"
+        "black" -> "MASTER"
+        "master" -> "MASTER"
+        else -> "MEDIUM"
+    }
+
     // Load lessons from JSON resource
     val lessonsJson = javaClass.classLoader
         .getResource("tutorials/lessons.json")
@@ -146,6 +163,7 @@ fun Route.tutorialRoutes() {
                 beltColor = lesson.beltColor,
                 beltEmoji = lesson.beltEmoji,
                 beltName = lesson.beltName,
+                difficulty = beltToDifficulty(lesson.belt),
                 description = lesson.description,
                 completed = completedTutorials.containsKey(lesson.id)
             )
@@ -173,7 +191,7 @@ fun Route.tutorialRoutes() {
             call.respond(HttpStatusCode.NotFound, ErrorResponse("Tutorial not found: $id"))
             return@get
         }
-        call.respond(lesson)
+        call.respond(lesson.copy(difficulty = beltToDifficulty(lesson.belt)))
     }
 
     // GET /tutorials/{id}/board — get example puzzle with candidates

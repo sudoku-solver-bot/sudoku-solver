@@ -61,7 +61,7 @@ export function generatePuzzleImage(puzzle, difficulty = 'EASY', timeStr = '') {
   ctx.textBaseline = 'middle'
   for (let i = 0; i < 81; i++) {
     const val = puzzle[i]
-    if (val === '.') continue
+    if (val === '.' || val === '0') continue
     const row = Math.floor(i / 9)
     const col = i % 9
     const x = offset + col * cellSize + cellSize / 2

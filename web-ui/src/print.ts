@@ -5,8 +5,9 @@ export function printPuzzle(puzzle: string, difficulty?: string): void {
     const v = puzzle[i]
     const br = (i % 9 === 2 || i % 9 === 5) ? ' br' : ''
     const bb = (Math.floor(i / 9) === 2 || Math.floor(i / 9) === 5) ? ' bb' : ''
-    const cls = v === '.' ? 'empty' : 'given'
-    const content = v === '.' ? '&nbsp;' : v
+    const emptyVal = v === '.' || v === '0'
+    const cls = emptyVal ? 'empty' : 'given'
+    const content = emptyVal ? '&nbsp;' : v
     cells += '<div class="cell ' + cls + br + bb + '">' + content + '</div>'
   }
   const html = [
