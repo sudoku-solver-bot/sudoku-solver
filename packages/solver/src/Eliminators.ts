@@ -1170,6 +1170,162 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
 }
 
 // ---------------------------------------------------------------------------
+// FrankenFishCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * Franken Fish extends basic fish patterns by detecting sets of rows (or
+ * columns) that share identical candidate column (or row) positions.
+ *
+ * If N rows each contain candidate V in exactly the same N columns, then V
+ * can be eliminated from those N columns in all other rows. The symmetric
+ * operation eliminates V from rows outside a matching set of columns.
+ *
+ * Supports fish sizes 2–4.
+ *
+ * Reference: https://www.sudopedia.org/wiki/Franken_Fish
+ *
+ * Equivalent to the Kotlin `FrankenFishCandidateEliminator`.
+ */
+export class FrankenFishCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Franken Fish'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        for (let v = 1; v <= 9; v++) {
+            if (this._eliminateRowFrankenFish(board, v)) anyUpdate = true
+            if (this._eliminateColumnFrankenFish(board, v)) anyUpdate = true
+        }
+
+        return anyUpdate
+    }
+
+    // -----------------------------------------------------------------------
+    // Row-based: find N rows whose candidate-V positions sit in the same N
+    // columns → eliminate V from those columns in all other rows.
+    // -----------------------------------------------------------------------
+    private _eliminateRowFrankenFish(board: Board, v: number): boolean {
+        let anyUpdate = false
+
+        // Map: row → set of columns where candidate V appears
+        const rowToColumns = new Map<number, Set<number>>()
+        for (let row = 0; row < 9; row++) {
+            const cols = new Set<number>()
+            for (let col = 0; col < 9; col++) {
+                const coord = Coord.all[row * 9 + col]
+                if (
+                    !board.isConfirmed(coord) &&
+                    board.candidateValues(coord).includes(v)
+                ) {
+                    cols.add(col)
+                }
+            }
+            if (cols.size >= 2 && cols.size <= 4) {
+                rowToColumns.set(row, cols)
+            }
+        }
+
+        // Group rows by their column sets (using a serialised key)
+        const columnSetKey = (s: Set<number>) =>
+            [...s].sort((a, b) => a - b).join(',')
+        const groups = new Map<string, number[]>()
+        for (const [row, cols] of rowToColumns) {
+            const key = columnSetKey(cols)
+            if (!groups.has(key)) groups.set(key, [])
+            groups.get(key)!.push(row)
+        }
+
+        for (const [, rows] of groups) {
+            if (rows.length < 2) continue
+
+            // For each row that contributed, its column set size is the fish
+            // size. Take the first row's column set as representative.
+            const representativeRow = rows[0]
+            const cols = rowToColumns.get(representativeRow)
+            if (!cols) continue
+            const n = cols.size
+            if (rows.length < n) continue
+            if (n < 2 || n > 4) continue
+
+            const fishRows = new Set(rows.slice(0, n))
+
+            for (let row = 0; row < 9; row++) {
+                if (fishRows.has(row)) continue
+                for (const col of cols) {
+                    const coord = Coord.all[row * 9 + col]
+                    if (!board.isConfirmed(coord)) {
+                        if (board.eraseCandidateValue(coord, v)) anyUpdate = true
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    // -----------------------------------------------------------------------
+    // Column-based: find N columns whose candidate-V positions sit in the
+    // same N rows → eliminate V from those rows in all other columns.
+    // -----------------------------------------------------------------------
+    private _eliminateColumnFrankenFish(board: Board, v: number): boolean {
+        let anyUpdate = false
+
+        // Map: column → set of rows where candidate V appears
+        const columnToRows = new Map<number, Set<number>>()
+        for (let col = 0; col < 9; col++) {
+            const rows = new Set<number>()
+            for (let row = 0; row < 9; row++) {
+                const coord = Coord.all[row * 9 + col]
+                if (
+                    !board.isConfirmed(coord) &&
+                    board.candidateValues(coord).includes(v)
+                ) {
+                    rows.add(row)
+                }
+            }
+            if (rows.size >= 2 && rows.size <= 4) {
+                columnToRows.set(col, rows)
+            }
+        }
+
+        // Group columns by their row sets
+        const rowSetKey = (s: Set<number>) =>
+            [...s].sort((a, b) => a - b).join(',')
+        const groups = new Map<string, number[]>()
+        for (const [col, rows] of columnToRows) {
+            const key = rowSetKey(rows)
+            if (!groups.has(key)) groups.set(key, [])
+            groups.get(key)!.push(col)
+        }
+
+        for (const [, cols] of groups) {
+            const representativeCol = cols[0]
+            const rows = columnToRows.get(representativeCol)
+            if (!rows) continue
+            const n = rows.size
+            if (cols.length < n) continue
+            if (n < 2 || n > 4) continue
+
+            const fishCols = new Set(cols.slice(0, n))
+
+            for (let col = 0; col < 9; col++) {
+                if (fishCols.has(col)) continue
+                for (const row of rows) {
+                    const coord = Coord.all[row * 9 + col]
+                    if (!board.isConfirmed(coord)) {
+                        if (board.eraseCandidateValue(coord, v)) anyUpdate = true
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+}
+
+
+// ---------------------------------------------------------------------------
 // ALSXZCandidateEliminator
 // ---------------------------------------------------------------------------
 
