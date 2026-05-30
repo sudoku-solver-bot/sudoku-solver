@@ -135,6 +135,65 @@ class Board private constructor(val candidatePatterns: IntArray) {
         return Coord.all.all { isConfirmed(it) }
     }
 
+    /**
+     * Validate the board for constraint violations.
+     * Returns a list of validation error messages, or empty list if valid.
+     */
+    fun validate(): List<String> {
+        val errors = mutableListOf<String>()
+
+        // Check rows for duplicates
+        for (row in 0 until size) {
+            val seen = mutableMapOf<Int, Int>() // value -> column
+            for (col in 0 until size) {
+                val v = value(Coord(row, col))
+                if (v != 0) {
+                    if (seen.containsKey(v)) {
+                        errors.add("Row ${row + 1}: duplicate value $v in columns ${seen[v]!! + 1} and ${col + 1}")
+                    }
+                    seen[v] = col
+                }
+            }
+        }
+
+        // Check columns for duplicates
+        for (col in 0 until size) {
+            val seen = mutableMapOf<Int, Int>() // value -> row
+            for (row in 0 until size) {
+                val v = value(Coord(row, col))
+                if (v != 0) {
+                    if (seen.containsKey(v)) {
+                        errors.add("Column ${col + 1}: duplicate value $v in rows ${seen[v]!! + 1} and ${row + 1}")
+                    }
+                    seen[v] = row
+                }
+            }
+        }
+
+        // Check boxes for duplicates
+        for (boxRow in 0 until regionSize) {
+            for (boxCol in 0 until regionSize) {
+                val seen = mutableListOf<Pair<Int, Coord>>()
+                for (r in boxRow * regionSize until (boxRow + 1) * regionSize) {
+                    for (c in boxCol * regionSize until (boxCol + 1) * regionSize) {
+                        val coord = Coord(r, c)
+                        val v = value(coord)
+                        if (v != 0) {
+                            for ((seenVal, seenCoord) in seen) {
+                                if (seenVal == v) {
+                                    errors.add("Box (${boxRow + 1},${boxCol + 1}): duplicate value $v at (${seenCoord.row + 1},${seenCoord.col + 1}) and (${r + 1},${c + 1})")
+                                }
+                            }
+                            seen.add(Pair(v, coord))
+                        }
+                    }
+                }
+            }
+        }
+
+        return errors
+    }
+
     //
     // methods for printing boards -------------------------------
     //

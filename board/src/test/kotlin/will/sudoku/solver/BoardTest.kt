@@ -159,6 +159,56 @@ class BoardTest {
     }
 
     @Test
+    fun `validate returns empty list for valid board`() {
+        val values = IntArray(81) { 0 }
+        values[0] = 1
+        values[4] = 2  // Different row/col, no conflict
+
+        val board = Board(values)
+
+        assertThat(board.validate()).isEmpty()
+    }
+
+    @Test
+    fun `validate detects duplicate in row`() {
+        val values = IntArray(81) { 0 }
+        values[0] = 1
+        values[1] = 1  // Duplicate in same row
+
+        val board = Board(values)
+        val errors = board.validate()
+
+        assertThat(errors).isNotEmpty
+        assertThat(errors.any { it.contains("Row 1") && it.contains("duplicate value 1") }).isTrue()
+    }
+
+    @Test
+    fun `validate detects duplicate in column`() {
+        val values = IntArray(81) { 0 }
+        values[0] = 5   // (0,0)
+        values[9] = 5   // (1,0) same column
+
+        val board = Board(values)
+        val errors = board.validate()
+
+        assertThat(errors).isNotEmpty
+        assertThat(errors.any { it.contains("Column 1") && it.contains("duplicate value 5") }).isTrue()
+    }
+
+    @Test
+    fun `validate detects duplicate in box`() {
+        val values = IntArray(81) { 0 }
+        values[0] = 3  // (0,0) box (1,1)
+        values[10] = 3 // (1,1) same box
+
+        val board = Board(values)
+        val errors = board.validate()
+
+        assertThat(errors).isNotEmpty
+        assertThat(errors.any { it.contains("Box (1,1)") && it.contains("duplicate value 3") }).isTrue()
+    }
+
+    @Test
     fun `unresolvedCoord returns null for solved board`() {
         val values = intArrayOf(
             5, 4, 9, 3, 7, 8, 1, 6, 2,
