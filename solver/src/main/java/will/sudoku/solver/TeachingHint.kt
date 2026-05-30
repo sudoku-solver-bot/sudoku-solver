@@ -152,9 +152,9 @@ class TeachingHintProvider {
                             cell = coord,
                             value = value,
                             technique = "Naked Single",
-                            explanation = "Cell (${row}, ${col}) can only be $value! This is the only number that fits here.",
+                            explanation = "Cell (${row + 1}, ${col + 1}) can only be $value! This is the only number that fits here.",
                             teachingPoints = listOf(
-                                "Look at row ${row}, column ${col}, and the 3x3 box",
+                                "Look at row ${row + 1}, column ${col + 1}, and the 3x3 box",
                                 "Only one number is possible in this cell",
                                 "This is called a 'Naked Single' because the answer is obvious"
                             )

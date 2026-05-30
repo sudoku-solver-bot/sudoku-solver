@@ -33,7 +33,7 @@ object HintGenerator {
         val explanation: String
     ) {
         override fun toString(): String = buildString {
-            appendLine("Hint: Look at cell (${coord.row}, ${coord.col})")
+            appendLine("Hint: Look at cell (${coord.row + 1}, ${coord.col + 1})")
             appendLine("  Value: $value")
             appendLine("  Technique: ${technique.displayName}")
             appendLine("  Explanation: $explanation")
@@ -305,7 +305,7 @@ object HintGenerator {
                     value = eliminated.first(),
                     technique = technique,
                     explanation = "${technique.description} " +
-                            "Candidate $eliminatedStr can be eliminated from cell (${coord.row}, ${coord.col})."
+                            "Candidate $eliminatedStr can be eliminated from cell (${coord.row + 1}, ${coord.col + 1})."
                 )
             }
         }
@@ -355,7 +355,7 @@ object HintGenerator {
                     coord = coord,
                     value = value,
                     technique = Technique.NAKED_SINGLE,
-                    explanation = "Cell (${coord.row}, ${coord.col}) can only be $value! " +
+                    explanation = "Cell (${coord.row + 1}, ${coord.col + 1}) can only be $value! " +
                             "All other numbers ${(1..9).filter { it != value && it !in seen }.joinToString(", ")} " +
                             "are already present in the row, column, or box."
                 )
@@ -389,8 +389,8 @@ object HintGenerator {
                     val firstCoord = coordGroup.coords[0]
                     val lastCoord = coordGroup.coords[8]
                     val groupName = when {
-                        firstCoord.row == lastCoord.row -> "row ${firstCoord.row}"
-                        firstCoord.col == lastCoord.col -> "column ${firstCoord.col}"
+                        firstCoord.row == lastCoord.row -> "row ${firstCoord.row + 1}"
+                        firstCoord.col == lastCoord.col -> "column ${firstCoord.col + 1}"
                         else -> {
                             val regionRow = coord.row / 3 + 1
                             val regionCol = coord.col / 3 + 1
@@ -402,7 +402,7 @@ object HintGenerator {
                         coord = coord,
                         value = value,
                         technique = Technique.HIDDEN_SINGLE,
-                        explanation = "Value $value appears only once in $groupName. It must go here!"
+                        explanation = "Value $value appears only once in $groupName. Fill it in at (${coord.row + 1}, ${coord.col + 1})!"
                     )
                 }
             }
@@ -492,8 +492,8 @@ object HintGenerator {
                                         value = value,
                                         technique = Technique.POINTING_PAIR,
                                         explanation = "Value $value in box (${boxRow + 1},${boxCol + 1}) " +
-                                                "is restricted to row ${row}. " +
-                                                "Eliminate $value from row ${row} in other boxes."
+                                                "is restricted to row ${row + 1}. " +
+                                                "Eliminate $value from row ${row + 1} in other boxes."
                                     )
                                 }
                             }
@@ -513,8 +513,8 @@ object HintGenerator {
                                         value = value,
                                         technique = Technique.POINTING_PAIR,
                                         explanation = "Value $value in box (${boxRow + 1},${boxCol + 1}) " +
-                                                "is restricted to column ${col}. " +
-                                                "Eliminate $value from column ${col} in other boxes."
+                                                "is restricted to column ${col + 1}. " +
+                                                "Eliminate $value from column ${col + 1} in other boxes."
                                     )
                                 }
                             }
@@ -561,7 +561,7 @@ object HintGenerator {
                                         coord = coord,
                                         value = value,
                                         technique = Technique.BOX_LINE_REDUCTION,
-                                        explanation = "Value $value in row ${row} " +
+                                        explanation = "Value $value in row ${row + 1} " +
                                                 "is restricted to box (${boxRow + 1},${boxCol + 1}). " +
                                                 "Eliminate $value from other rows in this box."
                                     )
@@ -602,7 +602,7 @@ object HintGenerator {
                                         coord = coord,
                                         value = value,
                                         technique = Technique.BOX_LINE_REDUCTION,
-                                        explanation = "Value $value in column ${col} " +
+                                        explanation = "Value $value in column ${col + 1} " +
                                                 "is restricted to box (${boxRow + 1},${boxCol + 1}). " +
                                                 "Eliminate $value from other columns in this box."
                                     )
@@ -641,7 +641,7 @@ object HintGenerator {
                             coord = coord1,
                             value = values[0],
                             technique = Technique.NAKED_PAIR,
-                            explanation = "Cells (${coord1.row},${coord1.col}) and (${coord2.row},${coord2.col}) " +
+                            explanation = "Cells (${coord1.row + 1},${coord1.col + 1}) and (${coord2.row + 1},${coord2.col + 1}) " +
                                     "form a naked pair with values ${values[0]} and ${values[1]}. " +
                                     "These values can be eliminated from other cells in this group."
                         )
@@ -682,9 +682,9 @@ object HintGenerator {
                                         coord = other,
                                         value = overlap.first(),
                                         technique = Technique.NAKED_TRIPLE,
-                                        explanation = "Cells (${unresolved[i].row},${unresolved[i].col}), " +
-                                                "(${unresolved[j].row},${unresolved[j].col}), and " +
-                                                "(${unresolved[k].row},${unresolved[k].col}) " +
+                                        explanation = "Cells (${unresolved[i].row + 1},${unresolved[i].col + 1}), " +
+                                                "(${unresolved[j].row + 1},${unresolved[j].col + 1}), and " +
+                                                "(${unresolved[k].row + 1},${unresolved[k].col + 1}) " +
                                                 "form a naked triple. " +
                                                 "Eliminate these values from other cells in this group."
                                     )
@@ -739,8 +739,8 @@ object HintGenerator {
                                 value = extraCandidates1.first(),
                                 technique = Technique.HIDDEN_PAIR,
                                 explanation = "Values $v1 and $v2 form a hidden pair in cells " +
-                                        "(${cells[0].row},${cells[0].col}) and " +
-                                        "(${cells[1].row},${cells[1].col}). " +
+                                        "(${cells[0].row + 1},${cells[0].col + 1}) and " +
+                                        "(${cells[1].row + 1},${cells[1].col + 1}). " +
                                         "Other candidates can be eliminated from these cells."
                             )
                         }
@@ -750,8 +750,8 @@ object HintGenerator {
                                 value = extraCandidates2.first(),
                                 technique = Technique.HIDDEN_PAIR,
                                 explanation = "Values $v1 and $v2 form a hidden pair in cells " +
-                                        "(${cells[0].row},${cells[0].col}) and " +
-                                        "(${cells[1].row},${cells[1].col}). " +
+                                        "(${cells[0].row + 1},${cells[0].col + 1}) and " +
+                                        "(${cells[1].row + 1},${cells[1].col + 1}). " +
                                         "Other candidates can be eliminated from these cells."
                             )
                         }
@@ -1003,9 +1003,9 @@ object HintGenerator {
                                 coord = coord,
                                 value = z1,
                                 technique = Technique.XY_WING,
-                                explanation = "XY-Wing found! Pivot (${pivot.row},${pivot.col}) " +
-                                        "has {$x,$y}, Wing1 (${wing1.row},${wing1.col}) " +
-                                        "has {$shared1,$z1}, Wing2 (${wing2.row},${wing2.col}) " +
+                                explanation = "XY-Wing found! Pivot (${pivot.row + 1},${pivot.col + 1}) " +
+                                        "has {$x,$y}, Wing1 (${wing1.row + 1},${wing1.col + 1}) " +
+                                        "has {$shared1,$z1}, Wing2 (${wing2.row + 1},${wing2.col + 1}) " +
                                         "has {$shared2,$z1}. Eliminate $z1 from cells seeing both wings."
                             )
                         }
@@ -1065,9 +1065,9 @@ object HintGenerator {
                                     coord = coord,
                                     value = z,
                                     technique = Technique.XYZ_WING,
-                                    explanation = "XYZ-Wing found! Pivot (${pivot.row},${pivot.col}) " +
-                                            "has {$pivotCands}, Wing1 (${wing1.row},${wing1.col}) " +
-                                            "has {$w1Cands}, Wing2 (${wing2.row},${wing2.col}) " +
+                                    explanation = "XYZ-Wing found! Pivot (${pivot.row + 1},${pivot.col + 1}) " +
+                                            "has {$pivotCands}, Wing1 (${wing1.row + 1},${wing1.col + 1}) " +
+                                            "has {$w1Cands}, Wing2 (${wing2.row + 1},${wing2.col + 1}) " +
                                             "has {$w2Cands}. Eliminate $z from cells seeing all three."
                                 )
                             }
