@@ -88,4 +88,52 @@ class HintGeneratorTest {
         assertThat(HintGenerator.Technique.NAKED_PAIR.displayName).isEqualTo("Naked Pair")
         assertThat(HintGenerator.Technique.X_WING.displayName).isEqualTo("X-Wing")
     }
+
+    @Test
+    fun `generate does not crash on red belt Q1 puzzle with intermediate exhaustion`() {
+        // Red belt Q1 puzzle — tests that generate() runs intermediate exhaustion
+        // (pointing pairs + box/line reductions) without errors.
+        val puzzle = "800000000003600000070090200050007000000045700000100030001000068008500010090000400"
+        val board = BoardReader.readBoard(puzzle)
+
+        val hint = HintGenerator.generate(board)
+
+        // The generate() method should run without exceptions.
+        if (hint != null) {
+            assertThat(hint.technique).isNotNull
+            assertThat(hint.explanation).isNotBlank()
+            assertThat(hint.value).isIn(1..9)
+        }
+    }
+
+    @Test
+    fun `X-Wing puzzle still found after intermediate technique exhaustion`() {
+        // Same puzzle used in HintAdvancedTechniqueTest.
+        // Verifies that adding pointing pair/box-line exhaustion doesn't break
+        // existing technique detection.
+        val puzzle = "1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5"
+        val board = BoardReader.readBoard(puzzle)
+        SimpleCandidateEliminator().eliminate(board)
+
+        val hint = HintGenerator.generate(board)
+
+        assertThat(hint).isNotNull()
+        assertThat(hint!!.technique)
+            .`as`("After exhausting intermediate techniques, should still find an advanced technique")
+            .isNotEqualTo(HintGenerator.Technique.HIDDEN_SINGLE)
+    }
+
+    @Test
+    fun `applyPointingPairsUntilStable and applyBoxLineReductionsUntilStable are internal methods`() {
+        // Verify the exhaustion methods are accessible (internal visibility)
+        val puzzle = "800000000003600000070090200050007000000045700000100030001000068008500010090000400"
+        val board = BoardReader.readBoard(puzzle)
+        val workingBoard = board.copy()
+
+        // Should run without exceptions
+        HintGenerator.applyPointingPairsUntilStable(workingBoard)
+        HintGenerator.applyBoxLineReductionsUntilStable(workingBoard)
+
+        assertThat(workingBoard.isValid()).isTrue()
+    }
 }
