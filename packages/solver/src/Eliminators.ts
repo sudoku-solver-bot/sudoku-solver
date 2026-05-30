@@ -2,6 +2,15 @@ import type { Board } from './Board'
 import { Coord } from './Coord'
 import { CoordGroup } from './CoordGroup'
 import { bitCount, maskToValues, MASKS, SIZE, WILDCARD_PATTERN } from './Bitmask'
+import {
+    type House,
+    allHouses,
+    houseContains,
+    houseKey,
+    findCandidatePositions,
+    findHousesWithCandidates,
+    generateCombinations,
+} from './FishHelpers'
 
 // ---------------------------------------------------------------------------
 // CandidateEliminator interface
@@ -1484,5 +1493,133 @@ export class ALSXZCandidateEliminator implements CandidateEliminator {
             (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
                 Math.floor(a.col / 3) === Math.floor(b.col / 3))
         )
+    }
+}
+
+// ---------------------------------------------------------------------------
+// MutantFishCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * Mutant Fish — the most advanced fish pattern where both base sets and
+ * cover sets can be a MIX of rows, columns, and boxes.
+ *
+ * A fish of size N for candidate V has:
+ * - N base sets (rows/cols/boxes) containing V positions
+ * - N cover sets that also contain those V positions
+ * - Every V position in a cover set must also be in a base set
+ * - Eliminate V from cover-set positions NOT in any base set
+ *
+ * Reference: https://www.sudopedia.org/wiki/Mutant_Fish
+ *
+ * Equivalent to the Kotlin `MutantFishCandidateEliminator`.
+ */
+export class MutantFishCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Mutant Fish'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        for (let v = 1; v <= SIZE; v++) {
+            for (const size of [2, 3, 4]) {
+                if (this._findMutantFish(board, v, size)) {
+                    anyUpdate = true
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    /**
+     * For a given candidate value and fish size, enumerate base-set
+     * combinations and attempt to find valid mutant fish patterns.
+     */
+    private _findMutantFish(board: Board, value: number, size: number): boolean {
+        const positions = findCandidatePositions(board, value)
+        if (positions.length < size * 2) return false
+
+        // Only consider houses with at least 2 candidate positions
+        const candidateHouses = findHousesWithCandidates(positions, 2)
+        if (candidateHouses.length < size) return false
+
+        const baseCombos = generateCombinations(candidateHouses, size)
+        let anyUpdate = false
+
+        for (const baseHouses of baseCombos) {
+            if (this._tryFishPattern(board, value, baseHouses, positions)) {
+                anyUpdate = true
+            }
+        }
+
+        return anyUpdate
+    }
+
+    /**
+     * Try a specific set of base houses as a mutant fish pattern.
+     *
+     * 1. Collect V positions in the base houses
+     * 2. Derive cover sets: houses that contain those V positions
+     * 3. Validate: exactly N cover sets, no V position escapes a base
+     * 4. Eliminate V from cover positions outside all base sets
+     */
+    private _tryFishPattern(
+        board: Board,
+        value: number,
+        baseHouses: readonly House[],
+        allPositions: readonly Coord[],
+    ): boolean {
+        const baseSet = new Set(baseHouses.map(houseKey))
+
+        // Find V positions in base houses
+        const fishPositions = allPositions.filter((coord) =>
+            baseHouses.some((h) => houseContains(h, coord)),
+        )
+        if (fishPositions.length === 0) return false
+
+        // Derive cover sets: all houses that contain at least one fish position
+        const coverHouses: House[] = []
+        const seenCovers = new Set<string>()
+        for (const house of allHouses) {
+            const key = houseKey(house)
+            if (seenCovers.has(key)) continue
+            if (fishPositions.some((c) => houseContains(house, c))) {
+                coverHouses.push(house)
+                seenCovers.add(key)
+            }
+        }
+
+        // Must have exactly N cover sets
+        if (coverHouses.length !== baseHouses.length) return false
+
+        // Validate: every V position in each cover house must be in a base house
+        for (const coverHouse of coverHouses) {
+            const vPositionsInCover = allPositions.filter((c) =>
+                houseContains(coverHouse, c),
+            )
+            const escaped = vPositionsInCover.some((coord) =>
+                baseHouses.every((h) => !houseContains(h, coord)),
+            )
+            if (escaped) return false
+        }
+
+        // Valid mutant fish — eliminate V from cover positions outside base sets
+        let anyUpdate = false
+        for (const coverHouse of coverHouses) {
+            for (const coord of Coord.all) {
+                if (
+                    houseContains(coverHouse, coord) &&
+                    !board.isConfirmed(coord) &&
+                    board.candidateValues(coord).includes(value) &&
+                    baseHouses.every((h) => !houseContains(h, coord))
+                ) {
+                    if (board.eraseCandidateValue(coord, value)) {
+                        anyUpdate = true
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
     }
 }
