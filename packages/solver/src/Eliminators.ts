@@ -850,40 +850,18 @@ export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
             const rows = new Set(cells.map(c => c.row))
             const cols = new Set(cells.map(c => c.col))
 
-            // Empty Rectangle in row direction: confined to 1 row (≤2 cols used)
-            if (rows.size === 1 && cols.size >= 1 && cols.size <= 2) {
-                const er = rows.values().next().value!
-                // Find column strong links where one end is in this row
-                for (const [col, [r1, r2]] of colLinks) {
-                    if (!cols.has(col)) continue
-                    const otherR = r1 === er ? r2 : r1
-                    // The other end eliminates from cells in region that see both
-                    // Eliminate from all cells in the region in this column (not in the row)
-                    for (const cell of cells) {
-                        if (cell.col === col && cell.row !== er) continue
-                    }
-                    // Actually: eliminate from cells in otherR row at cols in the region
-                    for (const c of cols) {
-                        if (c === col) continue
-                        const target = Coord.all[otherR * 9 + c]
-                        if (board.eraseCandidateValue(target, value)) anyUpdate = true
-                    }
-                }
-            }
-
-            // Empty Rectangle in column direction: confined to 1 col (≤2 rows used)
-            if (cols.size === 1 && rows.size >= 1 && rows.size <= 2) {
-                const ec = cols.values().next().value!
-                for (const [row, [c1, c2]] of rowLinks) {
-                    if (!rows.has(row)) continue
-                    const otherC = c1 === ec ? c2 : c1
-                    for (const r of rows) {
-                        if (r === row) continue
-                        const target = Coord.all[r * 9 + otherC]
-                        if (board.eraseCandidateValue(target, value)) anyUpdate = true
-                    }
-                }
-            }
+            // NOTE: Single-row / single-column ER patterns do NOT produce valid
+            // Empty Rectangle eliminations. The standard ER technique requires an
+            // L-shaped candidate pattern (both a row AND a column in the box).
+            // The previous logic eliminated from (otherR, otherCol) which is not
+            // logically forced — placing the candidate there creates no contradiction.
+            // See failing tests in EmptyRectangle.test.ts for proof.
+            //
+            // TODO (#616): Implement proper L-shaped Empty Rectangle detection.
+            // A true ER has candidates confined to the intersection of one row and
+            // one column in a box (forming an L), with a strong link intersecting
+            // one arm. The elimination target is the cell seeing both the far end
+            // of the strong link and the other arm of the L.
         }
         return anyUpdate
     }
