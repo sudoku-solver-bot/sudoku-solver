@@ -1,6 +1,6 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-05-29
+**Last updated:** 2026-05-30
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
@@ -11,19 +11,13 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 
 ### Active Goals
 
-- [ ] **TS Solver Parity (Epic #566)** — port remaining 5 Kotlin eliminators to TypeScript
-- [ ] Fix hint accuracy — stop returning generic "Scanning" for hard puzzles (#603 → #610 + #611)
-- [ ] Fix EmptyRectangle incorrect eliminations (#582 → #615 + #616)
+- [ ] **TS Solver Parity (Epic #566)** — port remaining eliminators to TypeScript (MutantFish, ALS, SimpleColoring, UniqueRectangles, ForcingChains, XYWing, XYZWing)
 - [ ] Optimize DeathBlossom performance (#583 → #617 + #618)
-- [ ] Investigate missing dashboard/progress endpoints (#605 → #623)
 
 ### 🔴 High Priority
 
 | Issue | Title | Category |
 |-------|-------|----------|
-| #610 | Add intermediate technique exhaustion to HintGenerator | Hint System |
-| #615 | Diagnose EmptyRectangle eliminator incorrect eliminations | Solver Bug |
-| #616 | Fix EmptyRectangle eliminator logic (blocked by #615) | Solver Bug |
 | #619 | Port MutantFish candidate position enumeration to TS | Solver Parity |
 | #620 | Complete MutantFish with cover set logic (blocked by #619) | Solver Parity |
 | #621 | Port ALS detection helper to TypeScript | Solver Parity |
@@ -33,15 +27,13 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 
 | Issue | Title | Category |
 |-------|-------|----------|
-| #611 | Add puzzle validation to hint endpoint | Hint System |
-| #617 | Profile DeathBlossom bottlenecks and add ALS caching | Performance |
 | #618 | Add timeout guard to DeathBlossom + deep eliminators | Performance |
-| #623 | Investigate dashboard/progress endpoint 404s | API Bug |
+| #617 | Profile DeathBlossom bottlenecks and add ALS caching | Performance |
 | #571 | Port SimpleColoringCandidateEliminator to TS | Solver Parity |
 | #570 | Port UniqueRectanglesCandidateEliminator to TS | Solver Parity |
 | #569 | Port ForcingChainsCandidateEliminator to TS | Solver Parity |
-| #555 | Test systemd crash loop prevention after rate limiting | Infra |
 | #585 | Close Kotlin ↔ TypeScript solver parity gap (umbrella) | Architecture |
+| #555 | Test systemd crash loop prevention after rate limiting | Infra |
 
 ### 🟢 Low Priority
 
@@ -51,17 +43,21 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 | #567 | Port XYWingCandidateEliminator to TS | Solver Parity |
 | #445 | Evaluate pure TypeScript + CDN deployment (future) | Architecture |
 
-### Open Bugs (awaiting plans)
+### Open Bugs
 
 | Issue | Title | Priority |
 |-------|-------|----------|
-| #603 | Hint API returns generic "Scanning" for some valid puzzles | 🔴 (plans: #610, #611) |
-| #605 | Dashboard report and Progress endpoints return 404 | 🟡 (investigation: #623) |
-| #582 | EmptyRectangleCandidateEliminator incorrect eliminations | 🔴 (plans: #615, #616) |
-| #583 | DeathBlossomCandidateEliminator too slow | 🟡 (plans: #617, #618) |
+| #583 | DeathBlossomCandidateEliminator too slow (TS side) | 🟡 (plan: #617) |
 
 ### Recently Completed (May 2026)
 
+- ✅ #626 Fix EmptyRectangle eliminator logic
+- ✅ #625 Remove DeathBlossom from Kotlin default eliminators
+- ✅ #624 Diagnose EmptyRectangle eliminator (failing tests)
+- ✅ #614 Add intermediate technique exhaustion to HintGenerator
+- ✅ #613 Add puzzle validation to hint endpoint
+- ✅ #612 Use 1-based coordinates in hint explanations
+- ✅ #607 Fix Dashboard/Progress endpoints (404s)
 - ✅ #609 Add difficulty field to tutorial responses
 - ✅ #608 Fix 0-based coordinates in hint explanations
 - ✅ #602 Slim repo-root AGENTS.md to thin dispatcher
