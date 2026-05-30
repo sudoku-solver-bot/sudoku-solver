@@ -52,8 +52,8 @@ data class SolverConfig(
             ForcingChainsCandidateEliminator(),
             ALSXZCandidateEliminator(),
             FrankenFishCandidateEliminator(),
-            MutantFishCandidateEliminator(),
-            DeathBlossomCandidateEliminator()
+            MutantFishCandidateEliminator()
+            // DeathBlossom excluded — too slow for default set (combinatorial explosion)
         )
 
         /**
