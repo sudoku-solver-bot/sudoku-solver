@@ -857,21 +857,67 @@ export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
             if (cells.length < 2) continue
 
             // Find rows and columns occupied by candidate in this region
-            const rows = new Set(cells.map(c => c.row))
-            const cols = new Set(cells.map(c => c.col))
+            const candidateRows = new Set(cells.map(c => c.row))
+            const candidateCols = new Set(cells.map(c => c.col))
 
-            // NOTE: Single-row / single-column ER patterns do NOT produce valid
-            // Empty Rectangle eliminations. The standard ER technique requires an
-            // L-shaped candidate pattern (both a row AND a column in the box).
-            // The previous logic eliminated from (otherR, otherCol) which is not
-            // logically forced — placing the candidate there creates no contradiction.
-            // See failing tests in EmptyRectangle.test.ts for proof.
-            //
-            // TODO (#616): Implement proper L-shaped Empty Rectangle detection.
-            // A true ER has candidates confined to the intersection of one row and
-            // one column in a box (forming an L), with a strong link intersecting
-            // one arm. The elimination target is the cell seeing both the far end
-            // of the strong link and the other arm of the L.
+            // Need L-shaped pattern: candidate occupies both multiple rows AND
+            // multiple columns within the box
+            if (candidateRows.size < 2 || candidateCols.size < 2) continue
+
+            // For each pair of candidate rows and columns in the box,
+            // the ERI is at their intersection. Check for strong links.
+            const candRowArr = Array.from(candidateRows)
+            const candColArr = Array.from(candidateCols)
+
+            for (const erRow of candRowArr) {
+                for (const erCol of candColArr) {
+                    // Check for strong link in erRow — one end must be in the box
+                    const rowLink = rowLinks.get(erRow)
+                    if (rowLink) {
+                        const [r1, r2] = rowLink
+                        const r1InBox = Coord.all[r1 * 9 + erCol].region === region.coords[0].region
+                        const r2InBox = Coord.all[r2 * 9 + erCol].region === region.coords[0].region
+                        if (r1InBox && !r2InBox) {
+                            // r2 is outside — eliminate from (r2, erCol)
+                            const target = Coord.all[r2 * 9 + erCol]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eraseCandidateValue(target, value)
+                                anyUpdate = true
+                            }
+                        } else if (r2InBox && !r1InBox) {
+                            // r1 is outside — eliminate from (r1, erCol)
+                            const target = Coord.all[r1 * 9 + erCol]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eraseCandidateValue(target, value)
+                                anyUpdate = true
+                            }
+                        }
+                    }
+
+                    // Check for strong link in erCol — one end must be in the box
+                    const colLink = colLinks.get(erCol)
+                    if (colLink) {
+                        const [c1, c2] = colLink
+                        const c1InBox = Coord.all[erRow * 9 + c1].region === region.coords[0].region
+                        const c2InBox = Coord.all[erRow * 9 + c2].region === region.coords[0].region
+                        if (c1InBox && !c2InBox) {
+                            // c2 is outside — eliminate from (erRow, c2)
+                            const target = Coord.all[erRow * 9 + c2]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eraseCandidateValue(target, value)
+                                anyUpdate = true
+                            }
+                        } else if (c2InBox && !c1InBox) {
+                            // c1 is outside — eliminate from (erRow, c1)
+                            const target = Coord.all[erRow * 9 + c1]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eraseCandidateValue(target, value)
+                                anyUpdate = true
+                            }
+                        }
+                    }
+                }
+            }
         }
         return anyUpdate
     }
@@ -997,6 +1043,121 @@ export class WWingCandidateEliminator implements CandidateEliminator {
             if (!(board.candidatePattern(coord) & MASKS[cand - 1])) continue
             if (this._seesEachOther(coord, a) && this._seesEachOther(coord, b)) {
                 if (board.eraseCandidateValue(coord, cand)) anyUpdate = true
+            }
+        }
+        return anyUpdate
+    }
+}
+
+// ---------------------------------------------------------------------------
+// XYWingCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * XY-Wing finds 3 cells forming a pattern: a pivot cell with 2 candidates
+ * (X,Y) and two wing cells — one with (X,Z) and one with (Y,Z) — where Z
+ * can be eliminated from any cell that sees both wings.
+ *
+ * Reference: https://www.sudopedia.org/wiki/XY-Wing
+ *
+ * Equivalent to the Kotlin `XYWingCandidateEliminator`.
+ */
+export class XYWingCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'XY-Wing'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        // Find all cells with exactly 2 candidates (potential pivots)
+        const pivots: Coord[] = []
+        for (const coord of Coord.all) {
+            if (!board.isConfirmed(coord) && bitCount(board.candidatePattern(coord)) === 2) {
+                pivots.push(coord)
+            }
+        }
+
+        for (const pivot of pivots) {
+            const pivotCandidates = board.candidateValues(pivot)
+            if (pivotCandidates.length !== 2) continue
+
+            const x = pivotCandidates[0]
+            const y = pivotCandidates[1]
+
+            // Find wings with {X, Z} that see the pivot
+            const wingsWithX = this._findWings(board, pivot, x)
+            // Find wings with {Y, Z} that see the pivot
+            const wingsWithY = this._findWings(board, pivot, y)
+
+            // Try all combinations of wings
+            for (const wing1 of wingsWithX) {
+                for (const wing2 of wingsWithY) {
+                    // Wing1 has {X, Z}, Wing2 has {Y, Z}
+                    // Z is the candidate in both wings that's not X or Y
+                    const wing1Candidates = board.candidateValues(wing1)
+                    const wing2Candidates = board.candidateValues(wing2)
+
+                    const z1 = wing1Candidates.find(c => c !== x)
+                    const z2 = wing2Candidates.find(c => c !== y)
+
+                    if (z1 == null || z2 == null || z1 !== z2) continue
+                    const z = z1
+
+                    // Check if wings see each other
+                    if (!this._seesEachOther(wing1, wing2)) continue
+
+                    // Find cells that see both wings and eliminate Z
+                    if (this._eliminateFromCommonPeers(board, wing1, wing2, z)) {
+                        anyUpdate = true
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    /**
+     * Find cells with exactly 2 candidates that see the pivot and share
+     * the specified candidate with the pivot.
+     */
+    private _findWings(board: Board, pivot: Coord, sharedCandidate: number): Coord[] {
+        const result: Coord[] = []
+        for (const coord of Coord.all) {
+            if (coord === pivot) continue
+            if (board.isConfirmed(coord)) continue
+            const candidates = board.candidateValues(coord)
+            if (candidates.length !== 2) continue
+            if (!candidates.includes(sharedCandidate)) continue
+            if (!this._seesEachOther(coord, pivot)) continue
+            result.push(coord)
+        }
+        return result
+    }
+
+    private _seesEachOther(a: Coord, b: Coord): boolean {
+        return (
+            a.row === b.row ||
+            a.col === b.col ||
+            (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
+                Math.floor(a.col / 3) === Math.floor(b.col / 3))
+        )
+    }
+
+    /**
+     * Eliminate a candidate from all cells that see both wing1 and wing2.
+     */
+    private _eliminateFromCommonPeers(
+        board: Board,
+        wing1: Coord,
+        wing2: Coord,
+        candidate: number,
+    ): boolean {
+        let anyUpdate = false
+        for (const coord of Coord.all) {
+            if (coord === wing1 || coord === wing2) continue
+            if (board.isConfirmed(coord)) continue
+            if (this._seesEachOther(coord, wing1) && this._seesEachOther(coord, wing2)) {
+                if (board.eraseCandidateValue(coord, candidate)) anyUpdate = true
             }
         }
         return anyUpdate
