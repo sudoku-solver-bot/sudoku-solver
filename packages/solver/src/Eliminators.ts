@@ -857,21 +857,67 @@ export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
             if (cells.length < 2) continue
 
             // Find rows and columns occupied by candidate in this region
-            const rows = new Set(cells.map(c => c.row))
-            const cols = new Set(cells.map(c => c.col))
+            const candidateRows = new Set(cells.map(c => c.row))
+            const candidateCols = new Set(cells.map(c => c.col))
 
-            // NOTE: Single-row / single-column ER patterns do NOT produce valid
-            // Empty Rectangle eliminations. The standard ER technique requires an
-            // L-shaped candidate pattern (both a row AND a column in the box).
-            // The previous logic eliminated from (otherR, otherCol) which is not
-            // logically forced — placing the candidate there creates no contradiction.
-            // See failing tests in EmptyRectangle.test.ts for proof.
-            //
-            // TODO (#616): Implement proper L-shaped Empty Rectangle detection.
-            // A true ER has candidates confined to the intersection of one row and
-            // one column in a box (forming an L), with a strong link intersecting
-            // one arm. The elimination target is the cell seeing both the far end
-            // of the strong link and the other arm of the L.
+            // Need L-shaped pattern: candidate occupies both multiple rows AND
+            // multiple columns within the box
+            if (candidateRows.size < 2 || candidateCols.size < 2) continue
+
+            // For each pair of candidate rows and columns in the box,
+            // the ERI is at their intersection. Check for strong links.
+            const candRowArr = Array.from(candidateRows)
+            const candColArr = Array.from(candidateCols)
+
+            for (const erRow of candRowArr) {
+                for (const erCol of candColArr) {
+                    // Check for strong link in erRow — one end must be in the box
+                    const rowLink = rowLinks.get(erRow)
+                    if (rowLink) {
+                        const [r1, r2] = rowLink
+                        const r1InBox = Coord.all[r1 * 9 + erCol].region === region.coords[0].region
+                        const r2InBox = Coord.all[r2 * 9 + erCol].region === region.coords[0].region
+                        if (r1InBox && !r2InBox) {
+                            // r2 is outside — eliminate from (r2, erCol)
+                            const target = Coord.all[r2 * 9 + erCol]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eliminateCandidate(target, value)
+                                anyUpdate = true
+                            }
+                        } else if (r2InBox && !r1InBox) {
+                            // r1 is outside — eliminate from (r1, erCol)
+                            const target = Coord.all[r1 * 9 + erCol]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eliminateCandidate(target, value)
+                                anyUpdate = true
+                            }
+                        }
+                    }
+
+                    // Check for strong link in erCol — one end must be in the box
+                    const colLink = colLinks.get(erCol)
+                    if (colLink) {
+                        const [c1, c2] = colLink
+                        const c1InBox = Coord.all[erRow * 9 + c1].region === region.coords[0].region
+                        const c2InBox = Coord.all[erRow * 9 + c2].region === region.coords[0].region
+                        if (c1InBox && !c2InBox) {
+                            // c2 is outside — eliminate from (erRow, c2)
+                            const target = Coord.all[erRow * 9 + c2]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eliminateCandidate(target, value)
+                                anyUpdate = true
+                            }
+                        } else if (c2InBox && !c1InBox) {
+                            // c1 is outside — eliminate from (erRow, c1)
+                            const target = Coord.all[erRow * 9 + c1]
+                            if (board.candidatePattern(target) & mask) {
+                                board.eliminateCandidate(target, value)
+                                anyUpdate = true
+                            }
+                        }
+                    }
+                }
+            }
         }
         return anyUpdate
     }
@@ -1603,9 +1649,9 @@ export class MutantFishCandidateEliminator implements CandidateEliminator {
         // Valid mutant fish — eliminate V from cover positions outside base sets
         let anyUpdate = false
         for (const coverHouse of coverHouses) {
-            for (const coord of Coord.all) {
+            // Only iterate coords that are actually in this cover house
+            for (const coord of coverHouse.coords) {
                 if (
-                    houseContains(coverHouse, coord) &&
                     !board.isConfirmed(coord) &&
                     board.candidateValues(coord).includes(value) &&
                     baseHouses.every((h) => !houseContains(h, coord))
