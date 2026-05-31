@@ -11,6 +11,7 @@ import {
     SkyscraperCandidateEliminator,
     TwoStringKiteCandidateEliminator,
     WWingCandidateEliminator,
+    XYZWingCandidateEliminator,
     ALSXZCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
@@ -85,6 +86,7 @@ function defaultEliminators(): readonly CandidateEliminator[] {
         new SkyscraperCandidateEliminator(),
         new TwoStringKiteCandidateEliminator(),
         new WWingCandidateEliminator(),
+        new XYZWingCandidateEliminator(),
         new ALSXZCandidateEliminator(),
     ]
 }
