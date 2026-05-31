@@ -3,7 +3,7 @@
 **Date:** 2026-05-31
 **Status:** accepted
 **Author:** Architect agent 🏗️
-**Updated:** 2026-05-31 — reconciled with PR #632 (coder shipped proper L-shaped ER detection)
+**Updated:** 2026-05-31 — team consensus from Discussion #629
 
 ## Context
 
@@ -13,7 +13,7 @@ The Kotlin solver was ported from a reference implementation that included sever
 - **EmptyRectangleCandidateEliminator** (#582) — was buggy (incorrect eliminations), excluded from `defaultEliminators()`. The Kotlin solver has NO implementation of this technique — it's TypeScript-only.
 - **SudokuWiki retired Empty Rectangles** in October 2023 in favor of the simpler "Rectangle Elimination" pattern. The wiki explicitly states: *"Empty Rectangles has been retired in favour of the simpler pattern Rectangle Elimination."*
 - The algorithm is fundamentally different from what was initially understood — it's about the **absence** of candidates in a rectangular area, not L-shapes of presence.
-- **PR #632** (2026-05-31) shipped proper L-shaped ER detection with 6 tests. The technique is now correctly implemented in the TypeScript solver. #582 remains open pending merge.
+- **PR #632** attempted L-shaped ER detection but the implementation failed and was reverted. #582 remains open with `bug` + `priority:high` labels.
 - Several other techniques in the solver may also be deprecated or subsumed by simpler equivalents.
 
 ### The Problem
@@ -30,7 +30,7 @@ We will **not implement deprecated sudoku techniques** in the TypeScript solver 
 Specifically:
 1. **Empty Rectangles** — skip. Use Rectangle Elimination or Grouped X-Cycles as the equivalent technique.
 2. **Future technique ports** — before implementing any Kotlin technique in TypeScript, verify it hasn't been deprecated by the sudoku community (check SudokuWiki, Hodoku).
-3. **Existing deprecated implementations** — evaluate on a case-by-case basis. If buggy and deprecated, remove rather than fix. Exception: if a technique is correctly implemented with good test coverage (e.g., Empty Rectangles in PR #632), it may be retained despite being deprecated — the policy applies to *new* implementations, not retroactive removal of working code.
+3. **Existing deprecated implementations** — evaluate on a case-by-case basis. If buggy and deprecated, remove rather than fix (see #582).
 
 ## Consequences
 
