@@ -2,6 +2,7 @@ import type { Board } from './Board'
 import { Coord } from './Coord'
 import { CoordGroup } from './CoordGroup'
 import { bitCount, maskToValues, MASKS, SIZE, WILDCARD_PATTERN } from './Bitmask'
+import { ALS, findALSes, deduplicateALS, seesEachOther, generateCombinations } from './ALSHelper'
 
 // ---------------------------------------------------------------------------
 // CandidateEliminator interface
@@ -997,11 +998,7 @@ export class WWingCandidateEliminator implements CandidateEliminator {
 // DeathBlossomCandidateEliminator
 // ---------------------------------------------------------------------------
 
-interface ALS {
-    cells: Coord[]
-    candidates: Set<number>
-}
-
+// ALS type imported from ALSHelper
 /**
  * Death Blossom finds a stem cell with N candidates and N Almost Locked Sets
  * (petals). Each petal ALS contains one of the stem's candidates, and every
