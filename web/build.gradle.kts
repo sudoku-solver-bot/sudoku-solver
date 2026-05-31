@@ -101,21 +101,31 @@ val validateJsonData by tasks.registering {
                 val seen = mutableSetOf<Char>()
                 for (c in 0..8) {
                     val ch = puzzle[r * 9 + c]
-                    if (ch != '.' && ch != '0') { if (!seen.add(ch)) return true }
+                    if (ch != '.' && ch != '0') {
+                        if (!seen.add(ch)) return true
+                    }
                 }
             }
             for (c in 0..8) {
                 val seen = mutableSetOf<Char>()
                 for (r in 0..8) {
                     val ch = puzzle[r * 9 + c]
-                    if (ch != '.' && ch != '0') { if (!seen.add(ch)) return true }
+                    if (ch != '.' && ch != '0') {
+                        if (!seen.add(ch)) return true
+                    }
                 }
             }
-            for (br in 0..2) for (bc in 0..2) {
-                val seen = mutableSetOf<Char>()
-                for (r in br * 3 until br * 3 + 3) for (c in bc * 3 until bc * 3 + 3) {
-                    val ch = puzzle[r * 9 + c]
-                    if (ch != '.' && ch != '0') { if (!seen.add(ch)) return true }
+            for (br in 0..2) {
+                for (bc in 0..2) {
+                    val seen = mutableSetOf<Char>()
+                    for (r in br * 3 until br * 3 + 3) {
+                        for (c in bc * 3 until bc * 3 + 3) {
+                            val ch = puzzle[r * 9 + c]
+                            if (ch != '.' && ch != '0') {
+                                if (!seen.add(ch)) return true
+                            }
+                        }
+                    }
                 }
             }
             return false
@@ -168,9 +178,7 @@ val validateJsonData by tasks.registering {
             return if (solve()) board.joinToString("") else null
         }
 
-        // ============================================================
-        // 1. Validate lessons.json
-        // ============================================================
+        // ---- 1. Validate lessons.json ----
         println("Validating lessons from lessons.json...")
         val lessonsFile = File(resourcesDir, "lessons.json")
         if (!lessonsFile.exists()) throw GradleException("lessons.json not found")
@@ -197,9 +205,7 @@ val validateJsonData by tasks.registering {
             error("lessons.json: Duplicate IDs: $lessonDuplicates")
         }
 
-        // ============================================================
-        // 2. Validate quizzes.json
-        // ============================================================
+        // ---- 2. Validate quizzes.json ----
         println("Validating quizzes from quizzes.json...")
         val quizzesFile = File(resourcesDir, "quizzes.json")
         if (!quizzesFile.exists()) throw GradleException("quizzes.json not found")
@@ -235,12 +241,18 @@ val validateJsonData by tasks.registering {
             val qId = qIdMatch?.groupValues?.get(1) ?: "unknown-q$totalQuestions"
 
             val acMatch = Regex("\"answerCell\"\\s*:\\s*(\\d+)").find(qJson)
-            if (acMatch == null) { error("$qId: missing answerCell"); continue }
+            if (acMatch == null) {
+                error("$qId: missing answerCell"); continue
+            }
             val ac = acMatch.groupValues[1].toIntOrNull()
-            if (ac == null || ac !in 0..80) { error("$qId: answerCell=$ac out of range 0-80"); continue }
+            if (ac == null || ac !in 0..80) {
+                error("$qId: answerCell=$ac out of range 0-80"); continue
+            }
 
             val puzzleMatch = Regex("\"puzzle\"\\s*:\\s*\"([^\"]+)\"").find(qJson)
-            if (puzzleMatch == null) { error("$qId: missing puzzle"); continue }
+            if (puzzleMatch == null) {
+                error("$qId: missing puzzle"); continue
+            }
             val puzzle = puzzleMatch.groupValues[1]
             validatePuzzleString(puzzle, "$qId puzzle")
             if (puzzle.length == 81 && puzzle[ac] != '.' && puzzle[ac] != '0') {
@@ -248,8 +260,9 @@ val validateJsonData by tasks.registering {
             }
 
             val avMatch = Regex("\"answerValue\"\\s*:\\s*\"([^\"]+)\"").find(qJson)
-            if (avMatch == null) { error("$qId: missing answerValue") }
-            else {
+            if (avMatch == null) {
+                error("$qId: missing answerValue")
+            } else {
                 val av = avMatch.groupValues[1]
                 if (av.length != 1 || av[0] !in '1'..'9') {
                     error("$qId: answerValue='$av' is not a digit 1-9")
@@ -257,25 +270,33 @@ val validateJsonData by tasks.registering {
             }
 
             val optMatch = Regex("\"options\"\\s*:\\s*\\[([^\\]]*)\\]").find(qJson)
-            if (optMatch == null) { error("$qId: missing options array") }
-            else {
+            if (optMatch == null) {
+                error("$qId: missing options array")
+            } else {
                 val optContent = optMatch.groupValues[1].trim()
-                if (optContent.isEmpty()) { error("$qId: options array is empty") }
-                else {
+                if (optContent.isEmpty()) {
+                    error("$qId: options array is empty")
+                } else {
                     val optCount = optContent.split(",").size
-                    if (optCount < 2) { error("$qId: options has only $optCount entry, need >= 2") }
+                    if (optCount < 2) {
+                        error("$qId: options has only $optCount entry, need >= 2")
+                    }
                 }
             }
 
             val caMatch = Regex("\"correctAnswer\"\\s*:\\s*(\\d+)").find(qJson)
-            if (caMatch == null) { error("$qId: missing correctAnswer") }
-            else {
+            if (caMatch == null) {
+                error("$qId: missing correctAnswer")
+            } else {
                 val ca = caMatch.groupValues[1].toIntOrNull()
-                if (ca == null) { error("$qId: correctAnswer is not a valid integer") }
-                else if (optMatch != null) {
+                if (ca == null) {
+                    error("$qId: correctAnswer is not a valid integer")
+                } else if (optMatch != null) {
                     val optContent = optMatch.groupValues[1].trim()
                     val optCount = if (optContent.isEmpty()) 0 else optContent.split(",").size
-                    if (ca < 0 || ca >= optCount) { error("$qId: correctAnswer=$ca out of range for $optCount options") }
+                    if (ca < 0 || ca >= optCount) {
+                        error("$qId: correctAnswer=$ca out of range for $optCount options")
+                    }
                 }
             }
 
@@ -310,9 +331,7 @@ val validateJsonData by tasks.registering {
         }
         println("  Validated $totalQuestions quiz questions")
 
-        // ============================================================
-        // 3. Validate practice-puzzles.json
-        // ============================================================
+        // ---- 3. Validate practice-puzzles.json ----
         println("Validating practice puzzles from practice-puzzles.json...")
         val practiceFile = File(resourcesDir, "practice-puzzles.json")
         if (!practiceFile.exists()) throw GradleException("practice-puzzles.json not found")
@@ -364,9 +383,7 @@ val validateJsonData by tasks.registering {
         }
         println("  Validated $totalPP practice puzzles")
 
-        // ============================================================
-        // 4. Duplicate puzzle detection across all files
-        // ============================================================
+        // ---- 4. Duplicate puzzle detection across all files ----
         println("Checking for duplicate puzzles across files...")
         val puzzleIndex = mutableMapOf<String, MutableList<String>>()
 
@@ -397,9 +414,7 @@ val validateJsonData by tasks.registering {
         }
         println("  Checked ${puzzleIndex.size} unique puzzles across files")
 
-        // ============================================================
-        // Summary
-        // ============================================================
+        // ---- Summary ----
         if (totalErrors > 0) {
             throw GradleException("JSON validation failed: $totalErrors error(s) found")
         }
