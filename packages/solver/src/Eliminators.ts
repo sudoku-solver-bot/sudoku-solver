@@ -2,6 +2,7 @@ import type { Board } from './Board'
 import { Coord } from './Coord'
 import { CoordGroup } from './CoordGroup'
 import { bitCount, maskToValues, MASKS, SIZE, WILDCARD_PATTERN } from './Bitmask'
+import { ALS, findALSes, deduplicateALS, seesEachOther, generateCombinations } from './ALSHelper'
 import {
     type House,
     allHouses,
@@ -9,7 +10,7 @@ import {
     houseKey,
     findCandidatePositions,
     findHousesWithCandidates,
-    generateCombinations,
+    generateCombinations as generateCombinationsFH,
 } from './FishHelpers'
 
 // ---------------------------------------------------------------------------
@@ -1006,11 +1007,7 @@ export class WWingCandidateEliminator implements CandidateEliminator {
 // DeathBlossomCandidateEliminator
 // ---------------------------------------------------------------------------
 
-interface ALS {
-    cells: Coord[]
-    candidates: Set<number>
-}
-
+// ALS type imported from ALSHelper
 /**
  * Death Blossom finds a stem cell with N candidates and N Almost Locked Sets
  * (petals). Each petal ALS contains one of the stem's candidates, and every
@@ -1543,7 +1540,7 @@ export class MutantFishCandidateEliminator implements CandidateEliminator {
         const candidateHouses = findHousesWithCandidates(positions, 2)
         if (candidateHouses.length < size) return false
 
-        const baseCombos = generateCombinations(candidateHouses, size)
+        const baseCombos = generateCombinationsFH(candidateHouses, size)
         let anyUpdate = false
 
         for (const baseHouses of baseCombos) {
