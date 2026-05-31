@@ -12,6 +12,7 @@ import {
     TwoStringKiteCandidateEliminator,
     WWingCandidateEliminator,
     XYWingCandidateEliminator,
+    XYZWingCandidateEliminator,
     ALSXZCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
@@ -87,6 +88,7 @@ function defaultEliminators(): readonly CandidateEliminator[] {
         new TwoStringKiteCandidateEliminator(),
         new WWingCandidateEliminator(),
         new XYWingCandidateEliminator(),
+        new XYZWingCandidateEliminator(),
         new ALSXZCandidateEliminator(),
     ]
 }
