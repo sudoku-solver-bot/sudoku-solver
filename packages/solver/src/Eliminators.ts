@@ -1764,9 +1764,9 @@ export class MutantFishCandidateEliminator implements CandidateEliminator {
         // Valid mutant fish — eliminate V from cover positions outside base sets
         let anyUpdate = false
         for (const coverHouse of coverHouses) {
-            for (const coord of Coord.all) {
+            // Only iterate coords that are actually in this cover house
+            for (const coord of coverHouse.coords) {
                 if (
-                    houseContains(coverHouse, coord) &&
                     !board.isConfirmed(coord) &&
                     board.candidateValues(coord).includes(value) &&
                     baseHouses.every((h) => !houseContains(h, coord))
