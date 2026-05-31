@@ -74,7 +74,7 @@ dependencies {
 // ============================================================
 val validateJsonData by tasks.registering {
     group = "verification"
-    description = "Validate JSON data files for required fields and correct structure"
+    description = "Validate JSON data files for required fields, structure, and cross-data integrity"
 
     val resourcesDir = file("src/main/resources/tutorials")
 
@@ -101,37 +101,76 @@ val validateJsonData by tasks.registering {
                 val seen = mutableSetOf<Char>()
                 for (c in 0..8) {
                     val ch = puzzle[r * 9 + c]
-                    if (ch != '.' && ch != '0') {
-                        if (!seen.add(ch)) return true
-                    }
+                    if (ch != '.' && ch != '0') { if (!seen.add(ch)) return true }
                 }
             }
             for (c in 0..8) {
                 val seen = mutableSetOf<Char>()
                 for (r in 0..8) {
                     val ch = puzzle[r * 9 + c]
-                    if (ch != '.' && ch != '0') {
-                        if (!seen.add(ch)) return true
-                    }
+                    if (ch != '.' && ch != '0') { if (!seen.add(ch)) return true }
                 }
             }
-            for (br in 0..2) {
-                for (bc in 0..2) {
-                    val seen = mutableSetOf<Char>()
-                    for (r in br * 3 until br * 3 + 3) {
-                        for (c in bc * 3 until bc * 3 + 3) {
-                            val ch = puzzle[r * 9 + c]
-                            if (ch != '.' && ch != '0') {
-                                if (!seen.add(ch)) return true
-                            }
-                        }
-                    }
+            for (br in 0..2) for (bc in 0..2) {
+                val seen = mutableSetOf<Char>()
+                for (r in br * 3 until br * 3 + 3) for (c in bc * 3 until bc * 3 + 3) {
+                    val ch = puzzle[r * 9 + c]
+                    if (ch != '.' && ch != '0') { if (!seen.add(ch)) return true }
                 }
             }
             return false
         }
 
-        // ---- 1. Validate lessons.json ----
+        // ---- Minimal backtracking solver for solvability checks ----
+        fun isSafe(board: CharArray, row: Int, col: Int, ch: Char): Boolean {
+            for (i in 0..8) {
+                if (board[row * 9 + i] == ch) return false
+                if (board[i * 9 + col] == ch) return false
+            }
+            val br = (row / 3) * 3; val bc = (col / 3) * 3
+            for (r in br until br + 3) for (c in bc until bc + 3) {
+                if (board[r * 9 + c] == ch) return false
+            }
+            return true
+        }
+
+        fun countSolutions(board: CharArray, limit: Int): Int {
+            val idx = board.indexOf('.')
+            if (idx == -1) return 1
+            val row = idx / 9; val col = idx % 9
+            var count = 0
+            for (ch in '1'..'9') {
+                if (isSafe(board, row, col, ch)) {
+                    board[idx] = ch
+                    count += countSolutions(board, limit - count)
+                    board[idx] = '.'
+                    if (count >= limit) return count
+                }
+            }
+            return count
+        }
+
+        fun solvePuzzle(puzzle: String): String? {
+            val board = puzzle.replace('.', '0').toCharArray()
+            fun solve(): Boolean {
+                val idx = board.indexOf('0')
+                if (idx == -1) return true
+                val row = idx / 9; val col = idx % 9
+                for (ch in '1'..'9') {
+                    if (isSafe(board, row, col, ch)) {
+                        board[idx] = ch
+                        if (solve()) return true
+                        board[idx] = '0'
+                    }
+                }
+                return false
+            }
+            return if (solve()) board.joinToString("") else null
+        }
+
+        // ============================================================
+        // 1. Validate lessons.json
+        // ============================================================
         println("Validating lessons from lessons.json...")
         val lessonsFile = File(resourcesDir, "lessons.json")
         if (!lessonsFile.exists()) throw GradleException("lessons.json not found")
@@ -158,7 +197,9 @@ val validateJsonData by tasks.registering {
             error("lessons.json: Duplicate IDs: $lessonDuplicates")
         }
 
-        // ---- 2. Validate quizzes.json ----
+        // ============================================================
+        // 2. Validate quizzes.json
+        // ============================================================
         println("Validating quizzes from quizzes.json...")
         val quizzesFile = File(resourcesDir, "quizzes.json")
         if (!quizzesFile.exists()) throw GradleException("quizzes.json not found")
@@ -180,7 +221,6 @@ val validateJsonData by tasks.registering {
             error("quizzes.json: Duplicate quiz IDs: $quizDuplicates")
         }
 
-        // Parse questions by splitting on question id pattern
         val questionSplitPattern = Regex("\"id\"\\s*:\\s*\"([^\"]*-q\\d+)\"")
         val questionStarts = questionSplitPattern.findAll(quizzesContent).map { it.range.first }.toList()
 
@@ -195,18 +235,12 @@ val validateJsonData by tasks.registering {
             val qId = qIdMatch?.groupValues?.get(1) ?: "unknown-q$totalQuestions"
 
             val acMatch = Regex("\"answerCell\"\\s*:\\s*(\\d+)").find(qJson)
-            if (acMatch == null) {
-                error("$qId: missing answerCell"); continue
-            }
+            if (acMatch == null) { error("$qId: missing answerCell"); continue }
             val ac = acMatch.groupValues[1].toIntOrNull()
-            if (ac == null || ac !in 0..80) {
-                error("$qId: answerCell=$ac out of range 0-80"); continue
-            }
+            if (ac == null || ac !in 0..80) { error("$qId: answerCell=$ac out of range 0-80"); continue }
 
             val puzzleMatch = Regex("\"puzzle\"\\s*:\\s*\"([^\"]+)\"").find(qJson)
-            if (puzzleMatch == null) {
-                error("$qId: missing puzzle"); continue
-            }
+            if (puzzleMatch == null) { error("$qId: missing puzzle"); continue }
             val puzzle = puzzleMatch.groupValues[1]
             validatePuzzleString(puzzle, "$qId puzzle")
             if (puzzle.length == 81 && puzzle[ac] != '.' && puzzle[ac] != '0') {
@@ -214,9 +248,8 @@ val validateJsonData by tasks.registering {
             }
 
             val avMatch = Regex("\"answerValue\"\\s*:\\s*\"([^\"]+)\"").find(qJson)
-            if (avMatch == null) {
-                error("$qId: missing answerValue")
-            } else {
+            if (avMatch == null) { error("$qId: missing answerValue") }
+            else {
                 val av = avMatch.groupValues[1]
                 if (av.length != 1 || av[0] !in '1'..'9') {
                     error("$qId: answerValue='$av' is not a digit 1-9")
@@ -224,33 +257,25 @@ val validateJsonData by tasks.registering {
             }
 
             val optMatch = Regex("\"options\"\\s*:\\s*\\[([^\\]]*)\\]").find(qJson)
-            if (optMatch == null) {
-                error("$qId: missing options array")
-            } else {
+            if (optMatch == null) { error("$qId: missing options array") }
+            else {
                 val optContent = optMatch.groupValues[1].trim()
-                if (optContent.isEmpty()) {
-                    error("$qId: options array is empty")
-                } else {
+                if (optContent.isEmpty()) { error("$qId: options array is empty") }
+                else {
                     val optCount = optContent.split(",").size
-                    if (optCount < 2) {
-                        error("$qId: options has only $optCount entry, need >= 2")
-                    }
+                    if (optCount < 2) { error("$qId: options has only $optCount entry, need >= 2") }
                 }
             }
 
             val caMatch = Regex("\"correctAnswer\"\\s*:\\s*(\\d+)").find(qJson)
-            if (caMatch == null) {
-                error("$qId: missing correctAnswer")
-            } else {
+            if (caMatch == null) { error("$qId: missing correctAnswer") }
+            else {
                 val ca = caMatch.groupValues[1].toIntOrNull()
-                if (ca == null) {
-                    error("$qId: correctAnswer is not a valid integer")
-                } else if (optMatch != null) {
+                if (ca == null) { error("$qId: correctAnswer is not a valid integer") }
+                else if (optMatch != null) {
                     val optContent = optMatch.groupValues[1].trim()
                     val optCount = if (optContent.isEmpty()) 0 else optContent.split(",").size
-                    if (ca < 0 || ca >= optCount) {
-                        error("$qId: correctAnswer=$ca out of range for $optCount options")
-                    }
+                    if (ca < 0 || ca >= optCount) { error("$qId: correctAnswer=$ca out of range for $optCount options") }
                 }
             }
 
@@ -263,10 +288,31 @@ val validateJsonData by tasks.registering {
             if (qtMatch == null || qtMatch.groupValues[1].isBlank()) {
                 error("$qId: missing or empty question")
             }
+
+            // Solvability check: puzzle must have exactly one solution matching answerValue at answerCell
+            if (puzzle.length == 81 && avMatch != null) {
+                val av = avMatch.groupValues[1]
+                if (av.length == 1 && av[0] in '1'..'9') {
+                    val normalized = puzzle.replace('.', '0')
+                    val solutionCount = countSolutions(normalized.toCharArray(), 2)
+                    if (solutionCount == 0) {
+                        error("$qId: puzzle has no solution")
+                    } else if (solutionCount > 1) {
+                        error("$qId: puzzle has $solutionCount solutions (expected exactly 1)")
+                    } else {
+                        val solution = solvePuzzle(puzzle)
+                        if (solution != null && solution[ac] != av[0]) {
+                            error("$qId: solution has '${solution[ac]}' at cell $ac, expected '$av'")
+                        }
+                    }
+                }
+            }
         }
         println("  Validated $totalQuestions quiz questions")
 
-        // ---- 3. Validate practice-puzzles.json ----
+        // ============================================================
+        // 3. Validate practice-puzzles.json
+        // ============================================================
         println("Validating practice puzzles from practice-puzzles.json...")
         val practiceFile = File(resourcesDir, "practice-puzzles.json")
         if (!practiceFile.exists()) throw GradleException("practice-puzzles.json not found")
@@ -305,14 +351,59 @@ val validateJsonData by tasks.registering {
             if (hasRowColBoxDuplicate(puzzle)) {
                 error("practice puzzle #$totalPP: has duplicate values in row/col/box")
             }
+            // Solvability check
+            if (puzzle.length == 81) {
+                val normalized = puzzle.replace('.', '0')
+                val solutionCount = countSolutions(normalized.toCharArray(), 2)
+                if (solutionCount == 0) {
+                    error("practice puzzle #$totalPP: has no solution")
+                } else if (solutionCount > 1) {
+                    error("practice puzzle #$totalPP: has $solutionCount solutions (expected exactly 1)")
+                }
+            }
         }
         println("  Validated $totalPP practice puzzles")
 
-        // ---- Summary ----
+        // ============================================================
+        // 4. Duplicate puzzle detection across all files
+        // ============================================================
+        println("Checking for duplicate puzzles across files...")
+        val puzzleIndex = mutableMapOf<String, MutableList<String>>()
+
+        // Lessons
+        for (match in lessonPuzzlePattern.findAll(lessonsContent)) {
+            val puzzle = match.groupValues[1]
+            puzzleIndex.getOrPut(puzzle) { mutableListOf() }.add("lessons.json")
+        }
+
+        // Quizzes
+        val quizPuzzlePattern = Regex("\"puzzle\"\\s*:\\s*\"([^\"]+)\"")
+        for (match in quizPuzzlePattern.findAll(quizzesContent)) {
+            val puzzle = match.groupValues[1]
+            puzzleIndex.getOrPut(puzzle) { mutableListOf() }.add("quizzes.json")
+        }
+
+        // Practice
+        for (match in ppPattern.findAll(practiceContent)) {
+            val puzzle = match.groupValues[1]
+            puzzleIndex.getOrPut(puzzle) { mutableListOf() }.add("practice-puzzles.json")
+        }
+
+        val crossFileDuplicates = puzzleIndex.filter { it.value.size > 1 }
+        if (crossFileDuplicates.isNotEmpty()) {
+            for ((puzzle, sources) in crossFileDuplicates) {
+                error("Duplicate puzzle found in: ${sources.joinToString(", ")} (puzzle: ${puzzle.take(20)}...)")
+            }
+        }
+        println("  Checked ${puzzleIndex.size} unique puzzles across files")
+
+        // ============================================================
+        // Summary
+        // ============================================================
         if (totalErrors > 0) {
             throw GradleException("JSON validation failed: $totalErrors error(s) found")
         }
-        println("✅ All JSON data files valid")
+        println("✅ All JSON data files valid (structural + cross-data integrity)")
     }
 }
 
