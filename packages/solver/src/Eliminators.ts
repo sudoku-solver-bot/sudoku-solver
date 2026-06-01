@@ -1165,6 +1165,120 @@ export class XYWingCandidateEliminator implements CandidateEliminator {
 }
 
 // ---------------------------------------------------------------------------
+// XYZWingCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * XYZ-Wing is an extension of XY-Wing where the pivot has 3 candidates
+ * {X, Y, Z}. Wing 1 has {X, Z} and sees the pivot. Wing 2 has {Y, Z}
+ * and sees the pivot. Z can be eliminated from any cell that sees all
+ * three cells (pivot + both wings).
+ *
+ * Reference: https://www.sudopedia.org/wiki/XYZ-Wing
+ *
+ * Equivalent to the Kotlin `XYZWingCandidateEliminator`.
+ */
+export class XYZWingCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'XYZ-Wing'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        // Find all cells with exactly 3 candidates (potential pivots)
+        const pivots: Coord[] = []
+        for (const coord of Coord.all) {
+            if (!board.isConfirmed(coord) && bitCount(board.candidatePattern(coord)) === 3) {
+                pivots.push(coord)
+            }
+        }
+
+        for (const pivot of pivots) {
+            const pivotCandidates = board.candidateValues(pivot)
+            if (pivotCandidates.length !== 3) continue
+
+            // Try all combinations of which candidate is Z (the common one)
+            for (let zi = 0; zi < 3; zi++) {
+                const z = pivotCandidates[zi]
+                const remaining = pivotCandidates.filter((_, i) => i !== zi)
+                if (remaining.length !== 2) continue
+
+                const x = remaining[0]
+                const y = remaining[1]
+
+                // Find wings with exactly {X, Z} that see the pivot
+                const wingsWithX = this._findWings(board, pivot, x, z)
+                // Find wings with exactly {Y, Z} that see the pivot
+                const wingsWithY = this._findWings(board, pivot, y, z)
+
+                // Try all combinations of wings
+                for (const wing1 of wingsWithX) {
+                    for (const wing2 of wingsWithY) {
+                        // Eliminate Z from cells seeing all three
+                        if (this._eliminateFromCommonPeers(board, pivot, wing1, wing2, z)) {
+                            anyUpdate = true
+                        }
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    /**
+     * Find cells with exactly 2 candidates {c1, c2} that see the pivot.
+     */
+    private _findWings(board: Board, pivot: Coord, c1: number, c2: number): Coord[] {
+        const result: Coord[] = []
+        for (const coord of Coord.all) {
+            if (coord === pivot) continue
+            if (board.isConfirmed(coord)) continue
+            const candidates = board.candidateValues(coord)
+            if (candidates.length !== 2) continue
+            if (candidates[0] !== c1 || candidates[1] !== c2) continue
+            if (!this._seesEachOther(coord, pivot)) continue
+            result.push(coord)
+        }
+        return result
+    }
+
+    private _seesEachOther(a: Coord, b: Coord): boolean {
+        return (
+            a.row === b.row ||
+            a.col === b.col ||
+            (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
+                Math.floor(a.col / 3) === Math.floor(b.col / 3))
+        )
+    }
+
+    /**
+     * Eliminate a candidate from all cells that see all three (pivot, wing1, wing2).
+     */
+    private _eliminateFromCommonPeers(
+        board: Board,
+        pivot: Coord,
+        wing1: Coord,
+        wing2: Coord,
+        candidate: number,
+    ): boolean {
+        let anyUpdate = false
+        for (const coord of Coord.all) {
+            if (coord === pivot || coord === wing1 || coord === wing2) continue
+            if (board.isConfirmed(coord)) continue
+            if (!board.candidateValues(coord).includes(candidate)) continue
+            if (
+                this._seesEachOther(coord, pivot) &&
+                this._seesEachOther(coord, wing1) &&
+                this._seesEachOther(coord, wing2)
+            ) {
+                if (board.eraseCandidateValue(coord, candidate)) anyUpdate = true
+            }
+        }
+        return anyUpdate
+    }
+}
+
+// ---------------------------------------------------------------------------
 // DeathBlossomCandidateEliminator
 // ---------------------------------------------------------------------------
 
