@@ -74,7 +74,7 @@ dependencies {
 // ============================================================
 val validateJsonData by tasks.registering {
     group = "verification"
-    description = "Validate JSON data files for required fields and correct structure"
+    description = "Validate JSON data files for required fields, structure, and cross-data integrity"
 
     val resourcesDir = file("src/main/resources/tutorials")
 
@@ -131,6 +131,53 @@ val validateJsonData by tasks.registering {
             return false
         }
 
+        // ---- Minimal backtracking solver for solvability checks ----
+        fun isSafe(board: CharArray, row: Int, col: Int, ch: Char): Boolean {
+            for (i in 0..8) {
+                if (board[row * 9 + i] == ch) return false
+                if (board[i * 9 + col] == ch) return false
+            }
+            val br = (row / 3) * 3; val bc = (col / 3) * 3
+            for (r in br until br + 3) for (c in bc until bc + 3) {
+                if (board[r * 9 + c] == ch) return false
+            }
+            return true
+        }
+
+        fun countSolutions(board: CharArray, limit: Int): Int {
+            val idx = board.indexOf('.')
+            if (idx == -1) return 1
+            val row = idx / 9; val col = idx % 9
+            var count = 0
+            for (ch in '1'..'9') {
+                if (isSafe(board, row, col, ch)) {
+                    board[idx] = ch
+                    count += countSolutions(board, limit - count)
+                    board[idx] = '.'
+                    if (count >= limit) return count
+                }
+            }
+            return count
+        }
+
+        fun solvePuzzle(puzzle: String): String? {
+            val board = puzzle.replace('.', '0').toCharArray()
+            fun solve(): Boolean {
+                val idx = board.indexOf('0')
+                if (idx == -1) return true
+                val row = idx / 9; val col = idx % 9
+                for (ch in '1'..'9') {
+                    if (isSafe(board, row, col, ch)) {
+                        board[idx] = ch
+                        if (solve()) return true
+                        board[idx] = '0'
+                    }
+                }
+                return false
+            }
+            return if (solve()) board.joinToString("") else null
+        }
+
         // ---- 1. Validate lessons.json ----
         println("Validating lessons from lessons.json...")
         val lessonsFile = File(resourcesDir, "lessons.json")
@@ -180,7 +227,6 @@ val validateJsonData by tasks.registering {
             error("quizzes.json: Duplicate quiz IDs: $quizDuplicates")
         }
 
-        // Parse questions by splitting on question id pattern
         val questionSplitPattern = Regex("\"id\"\\s*:\\s*\"([^\"]*-q\\d+)\"")
         val questionStarts = questionSplitPattern.findAll(quizzesContent).map { it.range.first }.toList()
 
@@ -263,6 +309,25 @@ val validateJsonData by tasks.registering {
             if (qtMatch == null || qtMatch.groupValues[1].isBlank()) {
                 error("$qId: missing or empty question")
             }
+
+            // Solvability check: puzzle must have exactly one solution matching answerValue at answerCell
+            if (puzzle.length == 81 && avMatch != null) {
+                val av = avMatch.groupValues[1]
+                if (av.length == 1 && av[0] in '1'..'9') {
+                    val normalized = puzzle.replace('.', '0')
+                    val solutionCount = countSolutions(normalized.toCharArray(), 2)
+                    if (solutionCount == 0) {
+                        error("$qId: puzzle has no solution")
+                    } else if (solutionCount > 1) {
+                        error("$qId: puzzle has $solutionCount solutions (expected exactly 1)")
+                    } else {
+                        val solution = solvePuzzle(puzzle)
+                        if (solution != null && solution[ac] != av[0]) {
+                            error("$qId: solution has '${solution[ac]}' at cell $ac, expected '$av'")
+                        }
+                    }
+                }
+            }
         }
         println("  Validated $totalQuestions quiz questions")
 
@@ -305,14 +370,55 @@ val validateJsonData by tasks.registering {
             if (hasRowColBoxDuplicate(puzzle)) {
                 error("practice puzzle #$totalPP: has duplicate values in row/col/box")
             }
+            // Solvability check
+            if (puzzle.length == 81) {
+                val normalized = puzzle.replace('.', '0')
+                val solutionCount = countSolutions(normalized.toCharArray(), 2)
+                if (solutionCount == 0) {
+                    error("practice puzzle #$totalPP: has no solution")
+                } else if (solutionCount > 1) {
+                    error("practice puzzle #$totalPP: has $solutionCount solutions (expected exactly 1)")
+                }
+            }
         }
         println("  Validated $totalPP practice puzzles")
+
+        // ---- 4. Duplicate puzzle detection across all files ----
+        println("Checking for duplicate puzzles across files...")
+        val puzzleIndex = mutableMapOf<String, MutableList<String>>()
+
+        // Lessons
+        for (match in lessonPuzzlePattern.findAll(lessonsContent)) {
+            val puzzle = match.groupValues[1]
+            puzzleIndex.getOrPut(puzzle) { mutableListOf() }.add("lessons.json")
+        }
+
+        // Quizzes
+        val quizPuzzlePattern = Regex("\"puzzle\"\\s*:\\s*\"([^\"]+)\"")
+        for (match in quizPuzzlePattern.findAll(quizzesContent)) {
+            val puzzle = match.groupValues[1]
+            puzzleIndex.getOrPut(puzzle) { mutableListOf() }.add("quizzes.json")
+        }
+
+        // Practice
+        for (match in ppPattern.findAll(practiceContent)) {
+            val puzzle = match.groupValues[1]
+            puzzleIndex.getOrPut(puzzle) { mutableListOf() }.add("practice-puzzles.json")
+        }
+
+        val crossFileDuplicates = puzzleIndex.filter { it.value.size > 1 }
+        if (crossFileDuplicates.isNotEmpty()) {
+            for ((puzzle, sources) in crossFileDuplicates) {
+                error("Duplicate puzzle found in: ${sources.joinToString(", ")} (puzzle: ${puzzle.take(20)}...)")
+            }
+        }
+        println("  Checked ${puzzleIndex.size} unique puzzles across files")
 
         // ---- Summary ----
         if (totalErrors > 0) {
             throw GradleException("JSON validation failed: $totalErrors error(s) found")
         }
-        println("✅ All JSON data files valid")
+        println("✅ All JSON data files valid (structural + cross-data integrity)")
     }
 }
 
