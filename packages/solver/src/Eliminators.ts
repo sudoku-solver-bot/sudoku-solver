@@ -1410,6 +1410,142 @@ export class UniqueRectanglesCandidateEliminator implements CandidateEliminator 
     }
 }
 
+
+// ---------------------------------------------------------------------------
+// ForcingChainsCandidateEliminator
+// ---------------------------------------------------------------------------
+
+export class ForcingChainsCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Forcing Chains'
+
+    private static readonly MAX_CHAIN_DEPTH = 10
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        // Find all bi-value cells
+        const biValueCells = Coord.all.filter((coord) => {
+            if (board.isConfirmed(coord)) return false
+            return bitCount(board.candidatePattern(coord)) === 2
+        })
+
+        for (const pivot of biValueCells) {
+            const candidates = maskToValues(board.candidatePattern(pivot))
+            if (candidates.length !== 2) continue
+
+            const [x, y] = candidates
+
+            // Explore both paths on copies of the board
+            const boardX = board.copy()
+            const boardY = board.copy()
+
+            const resultX = this._exploreConsequences(boardX, pivot, x, 0)
+            const resultY = this._exploreConsequences(boardY, pivot, y, 0)
+
+            // Contradiction-based eliminations
+            if (resultX.isContradiction) {
+                if (board.eraseCandidateValue(pivot, x)) anyUpdate = true
+                continue
+            }
+
+            if (resultY.isContradiction) {
+                if (board.eraseCandidateValue(pivot, y)) anyUpdate = true
+                continue
+            }
+        }
+
+        return anyUpdate
+    }
+
+    /**
+     * Explore consequences of setting a cell to a specific value.
+     * Applies eliminations on the board copy for accurate propagation.
+     */
+    private _exploreConsequences(
+        board: Board,
+        startCoord: Coord,
+        startValue: number,
+        startDepth: number,
+    ): ForcingChainResult {
+        const confirmed = new Map<Coord, number>()
+        const toProcess: Array<{ coord: Coord; value: number; depth: number }> = []
+
+        toProcess.push({ coord: startCoord, value: startValue, depth: startDepth })
+
+        while (toProcess.length > 0) {
+            const { coord, value, depth } = toProcess.shift()!
+
+            if (depth > ForcingChainsCandidateEliminator.MAX_CHAIN_DEPTH) continue
+
+            // If this cell is already confirmed to a different value, contradiction
+            if (board.isConfirmed(coord)) {
+                const existingValue = board.value(coord)
+                if (existingValue !== 0 && existingValue !== value) {
+                    return { isContradiction: true, confirmedValues: confirmed }
+                }
+                if (existingValue === value) continue
+            }
+
+            // If this cell doesn't have this candidate, contradiction
+            if ((board.candidatePattern(coord) & MASKS[value - 1]) === 0) {
+                return { isContradiction: true, confirmedValues: confirmed }
+            }
+
+            // Apply: set the cell to this value
+            board.markValue(coord, value)
+            confirmed.set(coord, value)
+
+            // Propagate: eliminate this value from all peers
+            const peers = this._getPeers(coord)
+            for (const peer of peers) {
+                const erased = board.eraseCandidateValue(peer, value)
+                if (erased) {
+                    // Check if peer now has zero candidates — contradiction
+                    if (board.candidatePattern(peer) === 0) {
+                        return { isContradiction: true, confirmedValues: confirmed }
+                    }
+                    // If peer now has exactly one candidate, it's a forced value
+                    if (
+                        !confirmed.has(peer) &&
+                        bitCount(board.candidatePattern(peer)) === 1
+                    ) {
+                        const forcedValue = board.value(peer)
+                        if (forcedValue !== 0) {
+                            toProcess.push({
+                                coord: peer,
+                                value: forcedValue,
+                                depth: depth + 1,
+                            })
+                        }
+                    }
+                }
+            }
+        }
+
+        return { isContradiction: false, confirmedValues: confirmed }
+    }
+
+    /**
+     * Get all peers of a coordinate (cells sharing row, column, or box).
+     */
+    private _getPeers(coord: Coord): Coord[] {
+        const peers: Coord[] = []
+        const seen = new Set<number>()
+        for (const group of CoordGroup.all) {
+            if (group.coords.includes(coord)) {
+                for (const c of group.coords) {
+                    if (!seen.has(c.index)) {
+                        seen.add(c.index)
+                        peers.push(c)
+                    }
+                }
+            }
+        }
+        return peers.filter((c) => c !== coord)
+    }
+}
+
+
 // ---------------------------------------------------------------------------
 // SimpleColoringCandidateEliminator
 // ---------------------------------------------------------------------------
