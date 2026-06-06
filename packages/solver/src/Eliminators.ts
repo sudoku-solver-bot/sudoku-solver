@@ -1776,16 +1776,32 @@ export class SimpleColoringCandidateEliminator implements CandidateEliminator {
  *
  * Equivalent to the Kotlin `DeathBlossomCandidateEliminator`.
  */
+/** Default timeout in milliseconds for DeathBlossom per invocation. */
+const DEATH_BLOSSOM_TIMEOUT_MS = 50
+
+function _isExpired(startTime: number): boolean {
+    return Date.now() - startTime >= DEATH_BLOSSOM_TIMEOUT_MS
+}
+
 export class DeathBlossomCandidateEliminator implements CandidateEliminator {
     readonly displayName = 'Death Blossom'
 
+    /**
+     * @param timeoutMs Optional per-invocation timeout. Defaults to 50ms.
+     */
+    constructor(private readonly timeoutMs: number = DEATH_BLOSSOM_TIMEOUT_MS) {}
+
     eliminate(board: Board): boolean {
+        const startTime = Date.now()
         let anyUpdate = false
 
         const allALS = this._findAllALS(board)
         if (allALS.length === 0) return false
 
         for (const stem of Coord.all) {
+            // Timeout guard: return early if exceeded
+            if (_isExpired(startTime)) return anyUpdate
+
             if (board.isConfirmed(stem)) continue
             const stemCandidates = new Set(board.candidateValues(stem))
             if (stemCandidates.size < 2) continue
@@ -1812,6 +1828,9 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
             const combos = this._generatePetalCombinations(petalsByCandidate, candidateList)
 
             for (const petals of combos) {
+                // Timeout guard: check inside petal loop too
+                if (_isExpired(startTime)) return anyUpdate
+
                 const allCells = petals.flatMap(p => p.cells)
                 if (new Set(allCells).size !== allCells.length) continue
 
