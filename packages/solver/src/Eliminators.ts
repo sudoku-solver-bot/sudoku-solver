@@ -1783,6 +1783,125 @@ function _isExpired(startTime: number): boolean {
     return Date.now() - startTime >= DEATH_BLOSSOM_TIMEOUT_MS
 }
 
+// ---------------------------------------------------------------------------
+// Shared ALS Cache
+// ---------------------------------------------------------------------------
+
+/**
+ * A cached ALS found by scanning all groups for N cells with N+1 candidates.
+ */
+interface CachedALS {
+    cells: Coord[]
+    candidates: Set<number>
+}
+
+/** Cache keyed by board fingerprint string. */
+const _alsCache = new Map<string, CachedALS[]>()
+const _alsCacheMaxSize = 5
+
+/**
+ * Compute a lightweight fingerprint for the current board state.
+ * Uses confirmed values + unresolved candidate counts.
+ */
+function _boardFingerprint(board: Board): string {
+    let fp = ''
+    for (const c of Coord.all) {
+        if (board.isConfirmed(c)) {
+            fp += String.fromCharCode(48 + board.value(c))
+        } else {
+            fp += '.'
+        }
+        fp += String.fromCharCode(64 + board.candidateValues(c).length)
+    }
+    return fp
+}
+
+/**
+ * Find all ALS cells for a given board, using a cache to avoid redundant
+ * computation across multiple eliminators in the same solve iteration.
+ * Clears stale entries when the cache exceeds max size.
+ */
+function _findAllALSCached(board: Board): CachedALS[] {
+    const fp = _boardFingerprint(board)
+    const cached = _alsCache.get(fp)
+    if (cached) return cached
+
+    // Evict oldest if cache full
+    if (_alsCache.size >= _alsCacheMaxSize) {
+        const firstKey = _alsCache.keys().next().value
+        if (firstKey !== undefined) _alsCache.delete(firstKey)
+    }
+
+    const result: CachedALS[] = []
+    for (const group of CoordGroup.all) {
+        const unconfirmed = group.coords.filter(c => !board.isConfirmed(c))
+        if (unconfirmed.length < 2) continue
+        const maxAlsSize = Math.min(4, unconfirmed.length)
+        for (let size = 2; size <= maxAlsSize; size++) {
+            for (const combo of _generateCombinations(unconfirmed, size)) {
+                const allCands = new Set(combo.flatMap(c => board.candidateValues(c)))
+                if (allCands.size === size + 1) {
+                    result.push({ cells: combo, candidates: allCands })
+                }
+            }
+        }
+    }
+
+    _alsCache.set(fp, result)
+    return result
+}
+
+/** Generic combination generator shared across eliminators. */
+function _generateCombinations<T>(list: T[], k: number): T[][] {
+    if (k === 0) return [[]]
+    if (list.length === 0 || k > list.length) return []
+    const result: T[][] = []
+    for (let i = 0; i < list.length; i++) {
+        for (const rest of _generateCombinations(list.slice(i + 1), k - 1)) {
+            result.push([list[i], ...rest])
+        }
+    }
+    return result
+}
+
+/** Check if two coordinates share a row, column, or box. */
+function _seesEachOther(a: Coord, b: Coord): boolean {
+    return a.row === b.row || a.col === b.col ||
+        (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
+         Math.floor(a.col / 3) === Math.floor(b.col / 3))
+}
+
+/**
+ * Generate all combinations of ALS petals — one ALS per candidate.
+ * Used by DeathBlossomCandidateEliminator.
+ */
+function _generatePetalCombinations(
+    petalsByCandidate: Map<number, CachedALS[]>,
+    candidates: number[]
+): CachedALS[][] {
+    if (candidates.length === 0) return [[]]
+
+    const head = candidates[0]
+    const tail = candidates.slice(1)
+    const headALS = petalsByCandidate.get(head)
+    if (!headALS) return []
+
+    const restCombos = _generatePetalCombinations(petalsByCandidate, tail)
+    if (restCombos.length === 0 && tail.length > 0) return []
+
+    const result: CachedALS[][] = []
+    for (const als of headALS) {
+        if (tail.length === 0) {
+            result.push([als])
+        } else {
+            for (const rest of restCombos) {
+                result.push([als, ...rest])
+            }
+        }
+    }
+    return result
+}
+
 export class DeathBlossomCandidateEliminator implements CandidateEliminator {
     readonly displayName = 'Death Blossom'
 
@@ -1795,7 +1914,7 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
         const startTime = Date.now()
         let anyUpdate = false
 
-        const allALS = this._findAllALS(board)
+        const allALS = _findAllALSCached(board)
         if (allALS.length === 0) return false
 
         for (const stem of Coord.all) {
@@ -1806,16 +1925,16 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
             const stemCandidates = new Set(board.candidateValues(stem))
             if (stemCandidates.size < 2) continue
 
-            const petalsByCandidate = new Map<number, ALS[]>()
+            const petalsByCandidate = new Map<number, CachedALS[]>()
 
             for (const x of stemCandidates) {
-                const eligible: ALS[] = []
+                const eligible: CachedALS[] = []
                 for (const als of allALS) {
                     if (!als.candidates.has(x)) continue
                     if (als.cells.includes(stem)) continue
                     const allXSeeStem = als.cells.every(cell =>
                         board.candidateValues(cell).includes(x) &&
-                        this._seesEachOther(cell, stem)
+                        _seesEachOther(cell, stem)
                     )
                     if (allXSeeStem) eligible.push(als)
                 }
@@ -1824,8 +1943,14 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
 
             if (petalsByCandidate.size < stemCandidates.size) continue
 
+            // Early pruning: skip if any candidate has fewer petals than
+            // the maximum, as a valid combo requires one ALS per candidate
+            const petalSizes = [...petalsByCandidate.values()].map(p => p.length)
+            const maxPetalSizes = stemCandidates.size
+            if (petalSizes.some(s => s === 0) || petalSizes.reduce((a, b) => a + b, 0) < maxPetalSizes) continue
+
             const candidateList = [...stemCandidates]
-            const combos = this._generatePetalCombinations(petalsByCandidate, candidateList)
+            const combos = _generatePetalCombinations(petalsByCandidate, candidateList)
 
             for (const petals of combos) {
                 // Timeout guard: check inside petal loop too
@@ -1854,7 +1979,7 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
                         if (!board.candidateValues(coord).includes(z)) continue
 
                         const seesAllZ = zCellsPerALS.every(zCells =>
-                            zCells.every(zc => this._seesEachOther(coord, zc))
+                            zCells.every(zc => _seesEachOther(coord, zc))
                         )
 
                         if (seesAllZ) {
@@ -1866,67 +1991,6 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
         }
 
         return anyUpdate
-    }
-
-    private _findAllALS(board: Board): ALS[] {
-        const result: ALS[] = []
-        for (const group of CoordGroup.all) {
-            const unconfirmed = group.coords.filter(c => !board.isConfirmed(c))
-            for (let size = 2; size <= Math.min(4, unconfirmed.length); size++) {
-                for (const combo of this._generateCombinations(unconfirmed, size)) {
-                    const allCands = new Set(combo.flatMap(c => board.candidateValues(c)))
-                    if (allCands.size === size + 1) {
-                        result.push({ cells: combo, candidates: allCands })
-                    }
-                }
-            }
-        }
-        return result
-    }
-
-    private _generatePetalCombinations(
-        petalsByCandidate: Map<number, ALS[]>,
-        candidates: number[]
-    ): ALS[][] {
-        if (candidates.length === 0) return [[]]
-
-        const head = candidates[0]
-        const tail = candidates.slice(1)
-        const headALS = petalsByCandidate.get(head)
-        if (!headALS) return []
-
-        const restCombos = this._generatePetalCombinations(petalsByCandidate, tail)
-        if (restCombos.length === 0 && tail.length > 0) return []
-
-        const result: ALS[][] = []
-        for (const als of headALS) {
-            if (tail.length === 0) {
-                result.push([als])
-            } else {
-                for (const rest of restCombos) {
-                    result.push([als, ...rest])
-                }
-            }
-        }
-        return result
-    }
-
-    private _generateCombinations<T>(list: T[], k: number): T[][] {
-        if (k === 0) return [[]]
-        if (list.length === 0 || k > list.length) return []
-        const result: T[][] = []
-        for (let i = 0; i < list.length; i++) {
-            for (const rest of this._generateCombinations(list.slice(i + 1), k - 1)) {
-                result.push([list[i], ...rest])
-            }
-        }
-        return result
-    }
-
-    private _seesEachOther(a: Coord, b: Coord): boolean {
-        return a.row === b.row || a.col === b.col ||
-            (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
-             Math.floor(a.col / 3) === Math.floor(b.col / 3))
     }
 }
 
