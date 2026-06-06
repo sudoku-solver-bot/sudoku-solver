@@ -1408,6 +1408,218 @@ export class UniqueRectanglesCandidateEliminator implements CandidateEliminator 
         }
         return [...result]
     }
+
+
+// ---------------------------------------------------------------------------
+// SimpleColoringCandidateEliminator
+// ---------------------------------------------------------------------------
+
+export class SimpleColoringCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Simple Coloring'
+
+    private readonly UNCOLORED = 0
+    private readonly COLOR_A = 1
+    private readonly COLOR_B = 2
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        for (let candidate = 1; candidate <= 9; candidate++) {
+            if (this._applySimpleColoring(board, candidate)) {
+                anyUpdate = true
+            }
+        }
+
+        return anyUpdate
+    }
+
+    private _applySimpleColoring(board: Board, candidate: number): boolean {
+        let anyUpdate = false
+
+        const { colors, contradictionCells } = this._buildColorChains(board, candidate)
+        if (colors.size === 0) return false
+
+        const colorA: Coord[] = []
+        const colorB: Coord[] = []
+        for (const [coord, color] of colors) {
+            if (color === this.COLOR_A) colorA.push(coord)
+            else if (color === this.COLOR_B) colorB.push(coord)
+        }
+
+        if (colorA.length === 0 || colorB.length === 0) return false
+
+        // Rule 4: Contradiction detected — eliminate all cells of the
+        // affected color.
+        if (contradictionCells.size > 0) {
+            const firstContradiction = contradictionCells.values().next().value
+            if (firstContradiction != null) {
+                const contradictionColor = colors.get(firstContradiction)
+                const toEliminate =
+                    contradictionColor === this.COLOR_A ? colorA : colorB
+                for (const coord of toEliminate) {
+                    if (
+                        !board.isConfirmed(coord) &&
+                        (board.candidatePattern(coord) & MASKS[candidate - 1]) !== 0
+                    ) {
+                        if (board.eraseCandidateValue(coord, candidate)) {
+                            anyUpdate = true
+                        }
+                    }
+                }
+            }
+            return anyUpdate
+        }
+
+        // Rule 2: Eliminate from cells that see both colors.
+        // A cell seeing both Color A and Color B in the same unit means one
+        // of those colors must be the solution, so this cell can't contain
+        // the candidate.
+        for (const coord of Coord.all) {
+            if (board.isConfirmed(coord)) continue
+            if (colors.has(coord)) continue
+            if ((board.candidatePattern(coord) & MASKS[candidate - 1]) === 0) continue
+
+            const seesColorA = colorA.some((c) => this._seesEachOther(coord, c))
+            const seesColorB = colorB.some((c) => this._seesEachOther(coord, c))
+
+            if (seesColorA && seesColorB) {
+                if (board.eraseCandidateValue(coord, candidate)) {
+                    anyUpdate = true
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    private _buildColorChains(
+        board: Board,
+        candidate: number,
+    ): { colors: Map<Coord, number>; contradictionCells: Set<Coord> } {
+        const candidateMask = MASKS[candidate - 1]
+
+        // Find all unresolved cells with this candidate
+        const candidateCells: Coord[] = []
+        for (const coord of Coord.all) {
+            if (
+                !board.isConfirmed(coord) &&
+                (board.candidatePattern(coord) & candidateMask) !== 0
+            ) {
+                candidateCells.push(coord)
+            }
+        }
+
+        if (candidateCells.length === 0) {
+            return { colors: new Map(), contradictionCells: new Set() }
+        }
+
+        const candidateSet = new Set(candidateCells)
+
+        // Build adjacency list from conjugate pairs
+        const adj = new Map<Coord, Coord[]>()
+        for (const cell of candidateCells) {
+            adj.set(cell, [])
+        }
+
+        const pairs = this._findConjugatePairs(board, candidate, candidateCells)
+        for (const [c1, c2] of pairs) {
+            adj.get(c1)!.push(c2)
+            adj.get(c2)!.push(c1)
+        }
+
+        // BFS: find connected components and check bipartiteness
+        const colors = new Map<Coord, number>()
+        const contradictionCells = new Set<Coord>()
+        const visited = new Set<Coord>()
+
+        for (const start of candidateSet) {
+            if (visited.has(start)) continue
+
+            const component: Coord[] = []
+            const queue: Coord[] = [start]
+            colors.set(start, this.COLOR_A)
+            let isBipartite = true
+
+            while (queue.length > 0) {
+                const current = queue.shift()!
+                if (visited.has(current)) continue
+                visited.add(current)
+                component.push(current)
+
+                const neighbors = adj.get(current) ?? []
+                const currentColor = colors.get(current)!
+                for (const neighbor of neighbors) {
+                    if (!visited.has(neighbor)) {
+                        colors.set(
+                            neighbor,
+                            currentColor === this.COLOR_A
+                                ? this.COLOR_B
+                                : this.COLOR_A,
+                        )
+                        queue.push(neighbor)
+                    } else if (colors.get(neighbor) === currentColor) {
+                        isBipartite = false
+                    }
+                }
+            }
+
+            if (!isBipartite) {
+                for (const cell of component) {
+                    contradictionCells.add(cell)
+                }
+            }
+        }
+
+        return { colors, contradictionCells }
+    }
+
+    private _findConjugatePairs(
+        board: Board,
+        candidate: number,
+        candidateCells: Coord[],
+    ): Array<[Coord, Coord]> {
+        const pairs: Array<[Coord, Coord]> = []
+
+        for (let row = 0; row < 9; row++) {
+            const cellsInRow = candidateCells.filter((c) => c.row === row)
+            if (cellsInRow.length === 2) {
+                pairs.push([cellsInRow[0], cellsInRow[1]])
+            }
+        }
+
+        for (let col = 0; col < 9; col++) {
+            const cellsInCol = candidateCells.filter((c) => c.col === col)
+            if (cellsInCol.length === 2) {
+                pairs.push([cellsInCol[0], cellsInCol[1]])
+            }
+        }
+
+        for (let regionRow = 0; regionRow < 3; regionRow++) {
+            for (let regionCol = 0; regionCol < 3; regionCol++) {
+                const cellsInRegion = candidateCells.filter(
+                    (c) =>
+                        Math.floor(c.row / 3) === regionRow &&
+                        Math.floor(c.col / 3) === regionCol,
+                )
+                if (cellsInRegion.length === 2) {
+                    pairs.push([cellsInRegion[0], cellsInRegion[1]])
+                }
+            }
+        }
+
+        return pairs
+    }
+
+    private _seesEachOther(a: Coord, b: Coord): boolean {
+        return (
+            a.row === b.row ||
+            a.col === b.col ||
+            (Math.floor(a.row / 3) === Math.floor(b.row / 3) &&
+                Math.floor(a.col / 3) === Math.floor(b.col / 3))
+        )
+    }
+}
+
 }
 
 // ---------------------------------------------------------------------------
