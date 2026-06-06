@@ -14,6 +14,7 @@ import {
     XYWingCandidateEliminator,
     XYZWingCandidateEliminator,
     UniqueRectanglesCandidateEliminator,
+    SimpleColoringCandidateEliminator,
     ALSXZCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
@@ -91,6 +92,7 @@ function defaultEliminators(): readonly CandidateEliminator[] {
         new XYWingCandidateEliminator(),
         new XYZWingCandidateEliminator(),
         new UniqueRectanglesCandidateEliminator(),
+        new SimpleColoringCandidateEliminator(),
         new ALSXZCandidateEliminator(),
     ]
 }
