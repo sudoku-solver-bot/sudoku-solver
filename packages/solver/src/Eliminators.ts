@@ -1279,6 +1279,138 @@ export class XYZWingCandidateEliminator implements CandidateEliminator {
 }
 
 // ---------------------------------------------------------------------------
+// UniqueRectanglesCandidateEliminator
+// ---------------------------------------------------------------------------
+
+/**
+ * Unique Rectangles elimination technique, Type 1.
+ *
+ * Detects deadly rectangle patterns based on the uniqueness constraint:
+ * a proper Sudoku puzzle has exactly one solution. A deadly pattern would
+ * create multiple solutions, so candidates that force it can be eliminated.
+ *
+ * A deadly rectangle consists of 4 cells at (r1,c1), (r1,c2), (r2,c1),
+ * (r2,c2) where all 4 contain the same 2 candidates {X, Y}. They must span
+ * exactly 2 rows, 2 columns, and 2 different 3×3 boxes.
+ *
+ * Type 1 (Single Extra Candidate): If exactly one of the 4 cells has
+ * additional candidates beyond {X, Y}, then X and Y can be eliminated from
+ * that cell, leaving only the extra candidates.
+ *
+ * Reference:
+ * - https://www.sudokuwiki.org/Unique_Rectangles (SudokuWiki)
+ * - https://www.sudopedia.org/wiki/Unique_Rectangle
+ *
+ * Equivalent to the Kotlin `UniqueRectanglesCandidateEliminator`.
+ */
+export class UniqueRectanglesCandidateEliminator implements CandidateEliminator {
+    readonly displayName = 'Unique Rectangles'
+
+    eliminate(board: Board): boolean {
+        let anyUpdate = false
+
+        for (let r1 = 0; r1 < 8; r1++) {
+            for (let r2 = r1 + 1; r2 < 9; r2++) {
+                for (let c1 = 0; c1 < 8; c1++) {
+                    for (let c2 = c1 + 1; c2 < 9; c2++) {
+                        const corners: Coord[] = [
+                            Coord.all[r1 * 9 + c1],
+                            Coord.all[r1 * 9 + c2],
+                            Coord.all[r2 * 9 + c1],
+                            Coord.all[r2 * 9 + c2],
+                        ]
+
+                        const pattern = this._findDeadlyRectangle(board, corners)
+                        if (pattern != null) {
+                            if (this._applyType1(board, corners, pattern[0], pattern[1])) {
+                                anyUpdate = true
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return anyUpdate
+    }
+
+    private _findDeadlyRectangle(
+        board: Board,
+        corners: Coord[],
+    ): [number, number] | null {
+        for (const coord of corners) {
+            if (board.isConfirmed(coord)) return null
+        }
+
+        const box1 = this._getBoxIndex(corners[0])
+        const box2 = this._getBoxIndex(corners[1])
+        const box3 = this._getBoxIndex(corners[2])
+        const box4 = this._getBoxIndex(corners[3])
+
+        if (box1 !== box3 || box2 !== box4) return null
+        if (box1 === box2) return null
+
+        const candidatesList = corners.map((c) => [
+            ...maskToValues(board.candidatePattern(c)),
+        ])
+
+        const common = this._intersectAll(candidatesList)
+        if (common.length < 2 || common.length !== 2) return null
+
+        const [x, y] = common
+
+        const cellsWithExtras = candidatesList.filter((c) => c.length > 2).length
+        const cellsWithTwo = candidatesList.filter((c) => c.length === 2).length
+
+        if (cellsWithExtras < 1 || cellsWithTwo < 3) return null
+
+        return [x, y]
+    }
+
+    private _applyType1(
+        board: Board,
+        corners: Coord[],
+        x: number,
+        y: number,
+    ): boolean {
+        let anyUpdate = false
+        const maskX = MASKS[x - 1]
+        const maskY = MASKS[y - 1]
+
+        const cellsWithExtras = corners.filter((coord) => {
+            const pattern = board.candidatePattern(coord)
+            return (
+                (pattern & maskX) !== 0 &&
+                (pattern & maskY) !== 0 &&
+                bitCount(pattern) > 2
+            )
+        })
+
+        if (cellsWithExtras.length === 1) {
+            const target = cellsWithExtras[0]
+            const erasedX = board.eraseCandidateValue(target, x)
+            const erasedY = board.eraseCandidateValue(target, y)
+            if (erasedX || erasedY) anyUpdate = true
+        }
+
+        return anyUpdate
+    }
+
+    private _getBoxIndex(coord: Coord): number {
+        return Math.floor(coord.row / 3) * 3 + Math.floor(coord.col / 3)
+    }
+
+    private _intersectAll(lists: number[][]): number[] {
+        if (lists.length === 0) return []
+        let result = new Set(lists[0])
+        for (let i = 1; i < lists.length; i++) {
+            result = new Set(lists[i].filter((v) => result.has(v)))
+        }
+        return [...result]
+    }
+}
+
+// ---------------------------------------------------------------------------
 // DeathBlossomCandidateEliminator
 // ---------------------------------------------------------------------------
 
