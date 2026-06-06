@@ -1902,6 +1902,33 @@ function _generatePetalCombinations(
     return result
 }
 
+/** Enable/disable DeathBlossom profiling instrumentation. */
+const DEATH_BLOSSOM_PROFILING = true
+
+// Accumulators for profiling — reset each run, logged on unload
+let _dbProfiling: Record<string, { calls: number; totalMs: number }> = {}
+
+function _dbProfile(label: string, time: number): void {
+    if (!DEATH_BLOSSOM_PROFILING) return
+    if (!_dbProfiling[label]) _dbProfiling[label] = { calls: 0, totalMs: 0 }
+    _dbProfiling[label].calls++
+    _dbProfiling[label].totalMs += time
+}
+
+function _dbProfileReport(): string {
+    if (!DEATH_BLOSSOM_PROFILING) return ''
+    const entries = Object.entries(_dbProfiling)
+    if (entries.length === 0) return ''
+    return entries
+        .map(([k, v]) => `${k}: ${v.calls} calls, ${v.totalMs.toFixed(2)}ms total, ${(v.totalMs / v.calls).toFixed(2)}ms avg`)
+        .join(' | ')
+}
+
+function _dbProfilingReset(): void {
+    if (!DEATH_BLOSSOM_PROFILING) return
+    _dbProfiling = {}
+}
+
 export class DeathBlossomCandidateEliminator implements CandidateEliminator {
     readonly displayName = 'Death Blossom'
 
@@ -1914,17 +1941,28 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
         const startTime = Date.now()
         let anyUpdate = false
 
+        _dbProfilingReset()
+        const t0 = DEATH_BLOSSOM_PROFILING ? performance.now() : 0
+
         const allALS = _findAllALSCached(board)
-        if (allALS.length === 0) return false
+        _dbProfile('findAllALS', (DEATH_BLOSSOM_PROFILING ? performance.now() : 0) - t0)
+        if (allALS.length === 0) {
+            _dbProfile('total', performance.now() - startTime)
+            return false
+        }
 
         for (const stem of Coord.all) {
             // Timeout guard: return early if exceeded
-            if (_isExpired(startTime)) return anyUpdate
+            if (_isExpired(startTime)) {
+                _dbProfile('total', performance.now() - startTime)
+                return anyUpdate
+            }
 
             if (board.isConfirmed(stem)) continue
             const stemCandidates = new Set(board.candidateValues(stem))
             if (stemCandidates.size < 2) continue
 
+            const tStem = DEATH_BLOSSOM_PROFILING ? performance.now() : 0
             const petalsByCandidate = new Map<number, CachedALS[]>()
 
             for (const x of stemCandidates) {
@@ -1941,6 +1979,8 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
                 if (eligible.length > 0) petalsByCandidate.set(x, eligible)
             }
 
+            _dbProfile('petalCollection', (DEATH_BLOSSOM_PROFILING ? performance.now() : 0) - tStem)
+
             if (petalsByCandidate.size < stemCandidates.size) continue
 
             // Early pruning: skip if any candidate has fewer petals than
@@ -1949,12 +1989,17 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
             const maxPetalSizes = stemCandidates.size
             if (petalSizes.some(s => s === 0) || petalSizes.reduce((a, b) => a + b, 0) < maxPetalSizes) continue
 
+            const t2 = DEATH_BLOSSOM_PROFILING ? performance.now() : 0
             const candidateList = [...stemCandidates]
             const combos = _generatePetalCombinations(petalsByCandidate, candidateList)
+            _dbProfile('petalCombinations', (DEATH_BLOSSOM_PROFILING ? performance.now() : 0) - t2)
 
             for (const petals of combos) {
                 // Timeout guard: check inside petal loop too
-                if (_isExpired(startTime)) return anyUpdate
+                if (_isExpired(startTime)) {
+                    _dbProfile('total', performance.now() - startTime)
+                    return anyUpdate
+                }
 
                 const allCells = petals.flatMap(p => p.cells)
                 if (new Set(allCells).size !== allCells.length) continue
@@ -1966,6 +2011,8 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
                 )
                 for (const sc of stemCandidates) commonCandidates.delete(sc)
                 if (commonCandidates.size === 0) continue
+
+                const t3 = DEATH_BLOSSOM_PROFILING ? performance.now() : 0
 
                 for (const z of commonCandidates) {
                     const zCellsPerALS = petals.map(als =>
@@ -1987,7 +2034,17 @@ export class DeathBlossomCandidateEliminator implements CandidateEliminator {
                         }
                     }
                 }
+
+                _dbProfile('eliminationLoop', (DEATH_BLOSSOM_PROFILING ? performance.now() : 0) - t3)
             }
+        }
+
+        const totalTime = performance.now() - startTime
+        _dbProfile('total', totalTime)
+
+        // On slow invocations (>10ms), log breakdown
+        if (totalTime > 10) {
+            console.log(`[DeathBlossom] ${_dbProfileReport()}`)
         }
 
         return anyUpdate
