@@ -1408,7 +1408,7 @@ export class UniqueRectanglesCandidateEliminator implements CandidateEliminator 
         }
         return [...result]
     }
-
+}
 
 // ---------------------------------------------------------------------------
 // SimpleColoringCandidateEliminator
@@ -1618,8 +1618,6 @@ export class SimpleColoringCandidateEliminator implements CandidateEliminator {
                 Math.floor(a.col / 3) === Math.floor(b.col / 3))
         )
     }
-}
-
 }
 
 // ---------------------------------------------------------------------------
