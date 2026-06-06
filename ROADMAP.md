@@ -1,25 +1,24 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-05-30
+**Last updated:** 2026-06-06
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
 
-## Current Phase: Improvement & Solver Parity (May 2026)
+## Current Phase: Improvement & Solver Parity (June 2026)
 
-Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity, bug fixes, and quality.
+Core feature set shipped (315+ PRs merged). Focus is on TypeScript solver parity, bug fixes, and quality.
 
 ### Active Goals
 
-- [ ] **TS Solver Parity (Epic #566)** — port remaining eliminators to TypeScript (MutantFish, ALS, SimpleColoring, UniqueRectangles, ForcingChains, XYWing, XYZWing)
+- [ ] **TS Solver Parity (Epic #566)** — remaining: SimpleColoring (#639), ForcingChains (#569), ALS (#621, #622)
 - [ ] Optimize DeathBlossom performance (#583 → #617 + #618)
 
 ### 🔴 High Priority
 
 | Issue | Title | Category |
 |-------|-------|----------|
-| #619 | Port MutantFish candidate position enumeration to TS | Solver Parity |
-| #620 | Complete MutantFish with cover set logic (blocked by #619) | Solver Parity |
+| #639 | Port SimpleColoringCandidateEliminator to TS (PR open) | Solver Parity |
 | #621 | Port ALS detection helper to TypeScript | Solver Parity |
 | #622 | Port ALS-XZ elimination logic (blocked by #621) | Solver Parity |
 
@@ -29,8 +28,6 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 |-------|-------|----------|
 | #618 | Add timeout guard to DeathBlossom + deep eliminators | Performance |
 | #617 | Profile DeathBlossom bottlenecks and add ALS caching | Performance |
-| #571 | Port SimpleColoringCandidateEliminator to TS | Solver Parity |
-| #570 | Port UniqueRectanglesCandidateEliminator to TS | Solver Parity |
 | #569 | Port ForcingChainsCandidateEliminator to TS | Solver Parity |
 | #585 | Close Kotlin ↔ TypeScript solver parity gap (umbrella) | Architecture |
 | #555 | Test systemd crash loop prevention after rate limiting | Infra |
@@ -39,8 +36,6 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 
 | Issue | Title | Category |
 |-------|-------|----------|
-| #568 | Port XYZWingCandidateEliminator to TS | Solver Parity |
-| #567 | Port XYWingCandidateEliminator to TS | Solver Parity |
 | #445 | Evaluate pure TypeScript + CDN deployment (future) | Architecture |
 
 ### Open Bugs
@@ -49,8 +44,17 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 |-------|-------|----------|
 | #583 | DeathBlossomCandidateEliminator too slow (TS side) | 🟡 (plan: #617) |
 
-### Recently Completed (May 2026)
+### Recently Completed (May–June 2026)
 
+- ✅ #641, #642, #643 — plan issues closed (already shipping)
+- ✅ #640 Port UniqueRectanglesCandidateEliminator to TS
+- ✅ #638 Optimize MutantFish elimination loop (cover set perf)
+- ✅ #637 Port XYZWingCandidateEliminator to TS (v2)
+- ✅ #636 Add cross-data integrity validation
+- ✅ #635 Extend validateJsonData with quiz and practice validation
+- ✅ #631 Port XYWingCandidateEliminator to TS (Closes #567)
+- ✅ #628 Add shared ALS detection helper
+- ✅ #627 Port MutantFish candidate position enumeration to TS
 - ✅ #626 Fix EmptyRectangle eliminator logic
 - ✅ #625 Remove DeathBlossom from Kotlin default eliminators
 - ✅ #624 Diagnose EmptyRectangle eliminator (failing tests)
@@ -72,7 +76,7 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 - ✅ #576 Remove remaining Render deployment references
 - ✅ #564 Deploy script with atomic swap + smoke test
 - ✅ #563 Staging environment support
-- ✅ 309+ PRs merged total
+- ✅ 315+ PRs merged total
 
 ---
 
@@ -86,7 +90,7 @@ Core feature set shipped (309+ PRs merged). Focus is on TypeScript solver parity
 
 ### Architecture
 - 17 Kotlin elimination algorithms (Naked Single → Death Blossom)
-- 12+ TypeScript eliminators (porting in progress)
+- 16+ TypeScript eliminators (porting in progress)
 - REST API at `/api/v1/*`
 - Step-by-step solving for educational use
 - Daily challenge with streak tracking
