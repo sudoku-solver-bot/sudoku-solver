@@ -1415,6 +1415,11 @@ export class UniqueRectanglesCandidateEliminator implements CandidateEliminator 
 // ForcingChainsCandidateEliminator
 // ---------------------------------------------------------------------------
 
+interface ForcingChainResult {
+    isContradiction: boolean
+    confirmedValues: Map<Coord, number>
+}
+
 export class ForcingChainsCandidateEliminator implements CandidateEliminator {
     readonly displayName = 'Forcing Chains'
 
