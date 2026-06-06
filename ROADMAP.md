@@ -18,7 +18,6 @@ Core feature set shipped (320+ PRs merged). **TS solver parity achieved!** Epic 
 
 | Issue | Title | Category |
 |-------|-------|----------|
-| #618 | Add timeout guard to DeathBlossom + deep eliminators | Performance |
 | #617 | Profile DeathBlossom bottlenecks and add ALS caching | Performance |
 
 ### 🟢 Low Priority
@@ -36,6 +35,7 @@ Core feature set shipped (320+ PRs merged). **TS solver parity achieved!** Epic 
 
 ### Recently Completed (May–June 2026)
 
+- ✅ #645 Add timeout guard to DeathBlossom + deepEliminators set
 - ✅ #644 Port ForcingChainsCandidateEliminator to TS
 - ✅ #639 Port SimpleColoringCandidateEliminator to TS
 - ✅ #585, #566 — parity umbrella + epic closed
