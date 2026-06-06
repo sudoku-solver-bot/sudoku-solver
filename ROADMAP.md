@@ -11,14 +11,13 @@ Core feature set shipped (315+ PRs merged). Focus is on TypeScript solver parity
 
 ### Active Goals
 
-- [ ] **TS Solver Parity (Epic #566)** — remaining: SimpleColoring (#639), ForcingChains (#569), ALS (#621, #622)
+- [ ] **TS Solver Parity (Epic #566)** — remaining: ALS (#621, #622), DeathBlossom, FrankenFish, MutantFish
 - [ ] Optimize DeathBlossom performance (#583 → #617 + #618)
 
 ### 🔴 High Priority
 
 | Issue | Title | Category |
 |-------|-------|----------|
-| #639 | Port SimpleColoringCandidateEliminator to TS (PR open) | Solver Parity |
 | #621 | Port ALS detection helper to TypeScript | Solver Parity |
 | #622 | Port ALS-XZ elimination logic (blocked by #621) | Solver Parity |
 
@@ -28,7 +27,6 @@ Core feature set shipped (315+ PRs merged). Focus is on TypeScript solver parity
 |-------|-------|----------|
 | #618 | Add timeout guard to DeathBlossom + deep eliminators | Performance |
 | #617 | Profile DeathBlossom bottlenecks and add ALS caching | Performance |
-| #569 | Port ForcingChainsCandidateEliminator to TS | Solver Parity |
 | #585 | Close Kotlin ↔ TypeScript solver parity gap (umbrella) | Architecture |
 | #555 | Test systemd crash loop prevention after rate limiting | Infra |
 
@@ -46,7 +44,8 @@ Core feature set shipped (315+ PRs merged). Focus is on TypeScript solver parity
 
 ### Recently Completed (May–June 2026)
 
-- ✅ #641, #642, #643 — plan issues closed (already shipping)
+- ✅ #644 Port ForcingChainsCandidateEliminator to TS
+- ✅ #639 Port SimpleColoringCandidateEliminator to TS
 - ✅ #640 Port UniqueRectanglesCandidateEliminator to TS
 - ✅ #638 Optimize MutantFish elimination loop (cover set perf)
 - ✅ #637 Port XYZWingCandidateEliminator to TS (v2)
