@@ -5,21 +5,14 @@
 
 ---
 
-## Current Phase: Improvement & Solver Parity (June 2026)
+## Current Phase: Performance & Polish (June 2026)
 
-Core feature set shipped (315+ PRs merged). Focus is on TypeScript solver parity, bug fixes, and quality.
+Core feature set shipped (320+ PRs merged). **TS solver parity achieved!** Epic #566 and umbrella #585 closed. Focus is on DeathBlossom performance optimization and polish.
 
 ### Active Goals
 
-- [ ] **TS Solver Parity (Epic #566)** — remaining: ALS (#621, #622), DeathBlossom, FrankenFish, MutantFish
+- ✅ **TS Solver Parity (Epic #566)** — all 9 eliminators ported 🎉
 - [ ] Optimize DeathBlossom performance (#583 → #617 + #618)
-
-### 🔴 High Priority
-
-| Issue | Title | Category |
-|-------|-------|----------|
-| #621 | Port ALS detection helper to TypeScript | Solver Parity |
-| #622 | Port ALS-XZ elimination logic (blocked by #621) | Solver Parity |
 
 ### 🟡 Medium Priority
 
@@ -27,13 +20,12 @@ Core feature set shipped (315+ PRs merged). Focus is on TypeScript solver parity
 |-------|-------|----------|
 | #618 | Add timeout guard to DeathBlossom + deep eliminators | Performance |
 | #617 | Profile DeathBlossom bottlenecks and add ALS caching | Performance |
-| #585 | Close Kotlin ↔ TypeScript solver parity gap (umbrella) | Architecture |
-| #555 | Test systemd crash loop prevention after rate limiting | Infra |
 
 ### 🟢 Low Priority
 
 | Issue | Title | Category |
 |-------|-------|----------|
+| #555 | Test systemd crash loop prevention after rate limiting | Infra |
 | #445 | Evaluate pure TypeScript + CDN deployment (future) | Architecture |
 
 ### Open Bugs
@@ -46,6 +38,7 @@ Core feature set shipped (315+ PRs merged). Focus is on TypeScript solver parity
 
 - ✅ #644 Port ForcingChainsCandidateEliminator to TS
 - ✅ #639 Port SimpleColoringCandidateEliminator to TS
+- ✅ #585, #566 — parity umbrella + epic closed
 - ✅ #640 Port UniqueRectanglesCandidateEliminator to TS
 - ✅ #638 Optimize MutantFish elimination loop (cover set perf)
 - ✅ #637 Port XYZWingCandidateEliminator to TS (v2)
