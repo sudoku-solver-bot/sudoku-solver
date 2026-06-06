@@ -17,6 +17,7 @@ import {
     SimpleColoringCandidateEliminator,
     ForcingChainsCandidateEliminator,
     ALSXZCandidateEliminator,
+    DeathBlossomCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
 
@@ -51,23 +52,30 @@ export const NoOpListener: SolvingListener = {}
 /** Configuration for the Sudoku solver. */
 export class SolverConfig {
     readonly eliminators: readonly CandidateEliminator[]
+    readonly deepEliminators: readonly CandidateEliminator[]
     readonly maxRecursionDepth: number
 
     constructor(
         eliminators?: readonly CandidateEliminator[],
         maxRecursionDepth?: number,
+        deepEliminators?: readonly CandidateEliminator[],
     ) {
         this.eliminators = eliminators ?? defaultEliminators()
+        this.deepEliminators = deepEliminators ?? defaultDeepEliminators()
         this.maxRecursionDepth = maxRecursionDepth ?? 1000
     }
 
     /** Factory: only the 3 core eliminators (no advanced techniques). */
     static basic(): SolverConfig {
-        return new SolverConfig([
-            new SimpleCandidateEliminator(),
-            new GroupCandidateEliminator(),
-            new ExclusionCandidateEliminator(9),
-        ])
+        return new SolverConfig(
+            [
+                new SimpleCandidateEliminator(),
+                new GroupCandidateEliminator(),
+                new ExclusionCandidateEliminator(9),
+            ],
+            undefined,
+            [],
+        )
     }
 }
 
@@ -96,6 +104,17 @@ function defaultEliminators(): readonly CandidateEliminator[] {
         new SimpleColoringCandidateEliminator(),
         new ForcingChainsCandidateEliminator(),
         new ALSXZCandidateEliminator(),
+    ]
+}
+
+/**
+ * Deep eliminators: computationally expensive techniques that only run after
+ * simpler eliminators stall. These use internal timeouts to prevent excessive
+ * runtime on hard puzzles.
+ */
+export function defaultDeepEliminators(): readonly CandidateEliminator[] {
+    return [
+        new DeathBlossomCandidateEliminator(),
     ]
 }
 
@@ -141,52 +160,21 @@ export class Solver {
         if (!board.isValid()) return null
         if (board.isSolved()) return board
 
-        // Phase 1: Constraint propagation — apply eliminators until stable
+        // Phase 1: Constraint propagation — apply all eliminators until stable
+        // Phase 1a: Run default (lightweight) eliminators first
+        // Phase 1b: When defaults stall, run deep eliminators (expensive, timed)
+        //           and return to defaults if they make progress
         listener.onPropagationPassStarted?.()
 
         let anyProgress = true
         while (anyProgress) {
             anyProgress = false
-            for (const eliminator of this.config.eliminators) {
-                // Snapshot candidate values for unresolved cells
-                const beforeState = new Map<Coord, Set<number>>()
-                for (const c of Coord.all) {
-                    if (!board.isConfirmed(c)) {
-                        beforeState.set(c, new Set(board.candidateValues(c)))
-                    }
-                }
+            // Step 1: Run standard (lightweight) eliminators
+            anyProgress = this._runEliminators(this.config.eliminators, board, listener) || anyProgress
 
-                const changed = eliminator.eliminate(board)
-                if (changed) {
-                    // Compute per-cell diffs
-                    const eliminations: Elimination[] = []
-                    for (const [coord, beforeValues] of beforeState) {
-                        if (!board.isConfirmed(coord)) {
-                            const afterValues = new Set(board.candidateValues(coord))
-                            const removed = [...beforeValues].filter((v) => !afterValues.has(v))
-                            if (removed.length > 0) {
-                                eliminations.push({ coord, eliminatedValues: removed })
-                            }
-                        } else {
-                            // Cell became confirmed
-                            const confirmedValue = board.value(coord)
-                            const removed = [...beforeValues].filter((v) => v !== confirmedValue)
-                            if (removed.length > 0) {
-                                eliminations.push({ coord, eliminatedValues: removed })
-                            }
-                        }
-                    }
-
-                    const totalEliminated = eliminations.reduce(
-                        (sum, e) => sum + e.eliminatedValues.length,
-                        0,
-                    )
-                    if (totalEliminated > 0) {
-                        listener.onEliminatorApplied?.(eliminator.displayName, totalEliminated)
-                        listener.onCandidatesEliminated?.(eliminator.displayName, eliminations)
-                    }
-                    anyProgress = true
-                }
+            // Step 2: If standards stalled, try deep eliminators
+            if (!anyProgress && this.config.deepEliminators.length > 0) {
+                anyProgress = this._runEliminators(this.config.deepEliminators, board, listener)
             }
         }
 
@@ -225,5 +213,55 @@ export class Solver {
         }
 
         return null
+    }
+
+    /**
+     * Run a set of eliminators once each. Returns true if any made progress.
+     */
+    private _runEliminators(
+        eliminators: readonly CandidateEliminator[],
+        board: Board,
+        listener: SolvingListener,
+    ): boolean {
+        let anyProgress = false
+        for (const eliminator of eliminators) {
+            const beforeState = new Map<Coord, Set<number>>()
+            for (const c of Coord.all) {
+                if (!board.isConfirmed(c)) {
+                    beforeState.set(c, new Set(board.candidateValues(c)))
+                }
+            }
+
+            const changed = eliminator.eliminate(board)
+            if (changed) {
+                const eliminations: Elimination[] = []
+                for (const [coord, beforeValues] of beforeState) {
+                    if (!board.isConfirmed(coord)) {
+                        const afterValues = new Set(board.candidateValues(coord))
+                        const removed = [...beforeValues].filter((v) => !afterValues.has(v))
+                        if (removed.length > 0) {
+                            eliminations.push({ coord, eliminatedValues: removed })
+                        }
+                    } else {
+                        const confirmedValue = board.value(coord)
+                        const removed = [...beforeValues].filter((v) => v !== confirmedValue)
+                        if (removed.length > 0) {
+                            eliminations.push({ coord, eliminatedValues: removed })
+                        }
+                    }
+                }
+
+                const totalEliminated = eliminations.reduce(
+                    (sum, e) => sum + e.eliminatedValues.length,
+                    0,
+                )
+                if (totalEliminated > 0) {
+                    listener.onEliminatorApplied?.(eliminator.displayName, totalEliminated)
+                    listener.onCandidatesEliminated?.(eliminator.displayName, eliminations)
+                }
+                anyProgress = true
+            }
+        }
+        return anyProgress
     }
 }
