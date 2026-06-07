@@ -634,10 +634,10 @@
         "type": "highlight",
         "cells": [
           0,
+          1,
           5,
           6,
-          7,
-          8
+          7
         ],
         "highlightColor": "blue",
         "text": "This is the famous 'World's Hardest Sudoku' by Arto Inkala. It needs advanced techniques like Swordfish to solve."
@@ -850,7 +850,7 @@
     "technique": "Simple Coloring",
     "description": "Color conjugate pairs to find contradictions and eliminate candidates.",
     "concept": "When a candidate appears in exactly two cells in a group (a conjugate pair), we can 'color' them alternately. If a color creates a contradiction (same color appears twice in a group), eliminate all cells of that color.",
-    "examplePuzzle": "100000000000010700005003000020000050000800000000600001000002009080070000000000200",
+    "examplePuzzle": "005300000800000020070010500400005300010070006003200080060500009004000030000009700",
     "steps": [
       {
         "order": 1,
@@ -994,7 +994,7 @@
         "type": "highlight",
         "cells": [
           22,
-          40
+          39
         ],
         "highlightColor": "blue",
         "text": "These cells form another ALS. Both ALS can 'see' each other through a shared row/column/box."
@@ -1072,7 +1072,7 @@
         "type": "reveal",
         "cells": [
           6,
-          12
+          11
         ],
         "highlightColor": "green",
         "text": "\ud83c\udf89 Franken Fish are fish patterns that cross house types (rows + boxes or columns + boxes). Spot the candidate pattern, apply fish logic. Master-level pattern recognition!",
@@ -1127,7 +1127,7 @@
         "order": 6,
         "type": "reveal",
         "cells": [
-          0,
+          1,
           72
         ],
         "highlightColor": "green",
