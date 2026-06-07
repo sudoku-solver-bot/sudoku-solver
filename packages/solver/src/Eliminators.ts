@@ -938,13 +938,7 @@ export class WWingCandidateEliminator implements CandidateEliminator {
     readonly displayName = 'W-Wing'
 
     eliminate(board: Board): boolean {
-        let anyUpdate = false
-        let stable: boolean
-        do {
-            stable = true
-            if (this._eliminateWings(board)) { anyUpdate = true; stable = false }
-        } while (!stable)
-        return anyUpdate
+        return this._eliminateWings(board)
     }
 
     private _eliminateWings(board: Board): boolean {
@@ -982,9 +976,9 @@ export class WWingCandidateEliminator implements CandidateEliminator {
     }
 
     private _checkWWing(board: Board, a: Coord, b: Coord, link: number, target: number): boolean {
-        // Find cells with 'link' candidate that see cell a
-        const linkCellsA = this._findLinkCells(board, a, link)
-        const linkCellsB = this._findLinkCells(board, b, link)
+        // Find cells with 'link' candidate that see cell a (but are not a or b)
+        const linkCellsA = this._findLinkCells(board, a, link, b)
+        const linkCellsB = this._findLinkCells(board, b, link, a)
 
         for (const la of linkCellsA) {
             for (const lb of linkCellsB) {
@@ -997,11 +991,12 @@ export class WWingCandidateEliminator implements CandidateEliminator {
         return false
     }
 
-    private _findLinkCells(board: Board, cell: Coord, candidate: number): Coord[] {
+    private _findLinkCells(board: Board, cell: Coord, candidate: number, exclude?: Coord): Coord[] {
         const mask = MASKS[candidate - 1]
         const result: Coord[] = []
         for (const coord of Coord.all) {
             if (coord === cell) continue
+            if (exclude && coord === exclude) continue
             if (!(board.candidatePattern(coord) & mask)) continue
             if (this._seesEachOther(coord, cell)) result.push(coord)
         }
