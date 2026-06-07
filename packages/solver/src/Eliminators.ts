@@ -938,6 +938,9 @@ export class WWingCandidateEliminator implements CandidateEliminator {
     readonly displayName = 'W-Wing'
 
     eliminate(board: Board): boolean {
+        // Single pass: the solver's outer loop handles convergence.
+        // A do-while here (vs Kotlin's single-pass) caused cascading
+        // eliminations on intermediate board states, corrupting the puzzle.
         return this._eliminateWings(board)
     }
 
@@ -961,7 +964,11 @@ export class WWingCandidateEliminator implements CandidateEliminator {
                 for (let j = i + 1; j < cells.length; j++) {
                     const a = cells[i]
                     const b = cells[j]
+                    // Guard: skip if either cell was modified (narrowed) during this iteration
+                    if (board.candidateValues(a).length !== 2 ||
+                        board.candidateValues(b).length !== 2) continue
                     const vals = board.candidateValues(a).sort((x, y) => x - y)
+                    if (vals.length !== 2) continue
                     const link = vals[0]
                     const target = vals[1]
 
@@ -976,9 +983,9 @@ export class WWingCandidateEliminator implements CandidateEliminator {
     }
 
     private _checkWWing(board: Board, a: Coord, b: Coord, link: number, target: number): boolean {
-        // Find cells with 'link' candidate that see cell a (but are not a or b)
-        const linkCellsA = this._findLinkCells(board, a, link, b)
-        const linkCellsB = this._findLinkCells(board, b, link, a)
+        // Find cells with 'link' candidate that see cell a
+        const linkCellsA = this._findLinkCells(board, a, link)
+        const linkCellsB = this._findLinkCells(board, b, link)
 
         for (const la of linkCellsA) {
             for (const lb of linkCellsB) {
@@ -991,12 +998,11 @@ export class WWingCandidateEliminator implements CandidateEliminator {
         return false
     }
 
-    private _findLinkCells(board: Board, cell: Coord, candidate: number, exclude?: Coord): Coord[] {
+    private _findLinkCells(board: Board, cell: Coord, candidate: number): Coord[] {
         const mask = MASKS[candidate - 1]
         const result: Coord[] = []
         for (const coord of Coord.all) {
             if (coord === cell) continue
-            if (exclude && coord === exclude) continue
             if (!(board.candidatePattern(coord) & mask)) continue
             if (this._seesEachOther(coord, cell)) result.push(coord)
         }

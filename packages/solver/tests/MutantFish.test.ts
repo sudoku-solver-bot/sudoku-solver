@@ -8,7 +8,8 @@ import {
     findHousesWithCandidates,
 } from '../src/FishHelpers'
 
-describe('MutantFishCandidateEliminator', { timeout: 15000 }, () => {
+describe('MutantFishCandidateEliminator', () => {
+    // MutantFish is computationally expensive (~5.5s per test)
     it('has correct displayName', () => {
         expect(new MutantFishCandidateEliminator().displayName).toBe('Mutant Fish')
     })
@@ -22,7 +23,7 @@ describe('MutantFishCandidateEliminator', { timeout: 15000 }, () => {
         expect(changed).toBe(false)
     })
 
-    it('does not throw on a real-world puzzle', () => {
+    it('does not throw on a real-world puzzle', { timeout: 15000 }, () => {
         const board = BoardReader.fromString(
             '53..7....' +
             '6..195...' +
@@ -38,7 +39,7 @@ describe('MutantFishCandidateEliminator', { timeout: 15000 }, () => {
         new MutantFishCandidateEliminator().eliminate(board)
     })
 
-    it('does not modify confirmed cells', () => {
+    it('does not modify confirmed cells', { timeout: 15000 }, () => {
         const board = BoardReader.fromString(
             '53..7....' +
             '6..195...' +
