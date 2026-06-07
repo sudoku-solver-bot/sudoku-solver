@@ -9,18 +9,18 @@
 
 Core feature set shipped (320+ PRs merged). **TS solver parity achieved!** Epic #566 and umbrella #585 closed. DeathBlossom performance optimized (#649, #648). Focus is now on bug fixes — 3 new bugs reported.
 
+### Completed This Session (June 7)
+
+- ✅ **#653** — **TS WWing board corruption** — Fixed. Removed do-while(!stable) loop that caused cascading eliminations on partially-converged boards. PR: 187e55d.
+- ✅ **#655** — **MutantFish test timeout** — Fixed. Added 15s per-test timeout. All tests pass.
+- ✅ **#651/#654** — **Multi-solution tutorials** — Fixed. Replaced 6 remaining puzzles (swordfish, naked-single, hidden-pair, pointing-pair, xyz-wing, forcing-chains) with unique-solution versions. All 20 tutorials now have `uniqueSolution=true`. PR: 6b1d5f5.
+- ✅ **#656/#650** — Confirmed WWing fix resolves Naked Pair tutorial. All 323 tests pass.
+
 ### Active Goals
 
 - ✅ **TS Solver Parity (Epic #566)** — all 9 eliminators ported 🎉
 - ✅ **DeathBlossom performance** — profiling + ALS caching shipped (#649, #648)
-- 🔴 **Fix TS WWing corruption** (#653) — board state corrupted by WWing eliminator
-- 🔴 **Fix multi-solution tutorials** (#654) — 7 tutorial puzzles have 2 solutions
-
-### 🟡 Medium Priority
-
-| Issue | Title | Category |
-|-------|-------|----------|
-| #655 | Increase MutantFish test timeout to 15s | Tests |
+- ✅ **Bug fixes** — WWing corruption, MutantFish timeout, multi-solution tutorials (all resolved)
 
 ### 🟢 Low Priority
 
