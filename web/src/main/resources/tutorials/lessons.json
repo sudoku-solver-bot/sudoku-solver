@@ -615,7 +615,7 @@
     "technique": "Swordfish",
     "description": "Like X-Wing but with three rows and three columns \u2014 the bigger fish!",
     "concept": "Swordfish extends X-Wing to 3 rows/columns. If a candidate appears in exactly 2-3 cells in each of 3 rows, and all candidates lie in just 3 columns, eliminate from the rest of those columns.",
-    "examplePuzzle": ".5916......7....9...6....7..647..9.....8..71.......834.25...1....8.7......36.....",
+    "examplePuzzle": "000100002008030040600050000200300800004000600000009001040000000020000090000080000",
     "steps": [
       {
         "order": 1,
@@ -679,7 +679,7 @@
     "technique": "XY-Wing",
     "description": "Three cells with candidates {AB}, {AC}, {BC} \u2014 eliminate C from cells that see both pincers.",
     "concept": "An XY-Wing uses three cells: a 'pivot' with {A,B}, and two 'pincers' with {A,C} and {B,C}. Whatever A or B the pivot is, C must appear in one of the pincers. Eliminate C from any cell that sees BOTH pincers.",
-    "examplePuzzle": "...31.........713....5..4.........48765...91.......563...67...4...25........4..71",
+    "examplePuzzle": "080040070000005800040700020063500002200000005800002760010007030009300000050080010",
     "steps": [
       {
         "order": 1,
@@ -850,7 +850,7 @@
     "technique": "Simple Coloring",
     "description": "Color conjugate pairs to find contradictions and eliminate candidates.",
     "concept": "When a candidate appears in exactly two cells in a group (a conjugate pair), we can 'color' them alternately. If a color creates a contradiction (same color appears twice in a group), eliminate all cells of that color.",
-    "examplePuzzle": ".....5..........5.145.67.....8....47..1....6...9...81..56284...2.4.3....8.3......",
+    "examplePuzzle": "100000000000010700005003000020000050000800000000600001000002009080070000000000200",
     "steps": [
       {
         "order": 1,
@@ -912,7 +912,7 @@
     "technique": "W-Wing",
     "description": "Two cells with the same pair linked by a conjugate pair in a third group.",
     "concept": "A W-Wing finds two cells with the same two candidates {X,Y}. If they're connected by a conjugate pair of X (or Y) in a shared row/column/box, then Y (or X) can be eliminated from cells that see both endpoints.",
-    "examplePuzzle": ".98....7.3.........67..8.95.713.......394.7.....18.........9......5.341..3.6.....",
+    "examplePuzzle": "010200870050000001000076000800027006000000000100480003000850700700000030001000020",
     "steps": [
       {
         "order": 1,
@@ -968,7 +968,7 @@
     "technique": "ALS-XZ",
     "description": "Two Almost Locked Sets sharing a restricted common \u2014 eliminate the other common.",
     "concept": "An Almost Locked Set (ALS) is N cells with N+1 candidates. When two ALS share a 'restricted common' candidate X (every cell with X in one ALS sees every cell with X in the other), and they also share another candidate Z, then Z can be eliminated from any cell that sees ALL cells with Z in both ALS.",
-    "examplePuzzle": "654..2...........11.........1.......4..7.....7.38.1.24.9..2..4..4.59....8.6..4.9.",
+    "examplePuzzle": "910000003002003709000004086009300000020050070000008900270400000501200600300000027",
     "steps": [
       {
         "order": 1,
@@ -1028,7 +1028,7 @@
     "technique": "Franken Fish",
     "description": "Fish patterns that use boxes as part of the base or cover sets.",
     "concept": "Normal fish (X-Wing, Swordfish) use rows and columns. Franken Fish include 3x3 boxes as base or cover sets! If a candidate appears in a pattern using rows + boxes (or columns + boxes), you can eliminate from the cover set. It's like a fish that 'swims through boxes'.",
-    "examplePuzzle": "92...1.8.16....4.95...9......2...894.59..4....1.....7.........34....9.2....3...4.",
+    "examplePuzzle": "92...1.8.16.8..4.95...9......2.5.894.59..4....1.....7....2....34....9.2....3...4.",
     "steps": [
       {
         "order": 1,
@@ -1091,7 +1091,7 @@
     "technique": "Mutant Fish",
     "description": "Fish patterns with mixed base and cover house types \u2014 the ultimate fish.",
     "concept": "Mutant Fish generalize Franken Fish: the base set can mix rows, columns, AND boxes, and the cover set can too! Any valid one-to-one mapping between base houses and cover houses creates a fish. If candidate X in the base houses maps to specific cover houses, eliminate X from cover houses outside the fish.",
-    "examplePuzzle": "........9..97...6...8.5...3.5.......8.....7..3.7.12.8.9.15....7..3..1..6.6..9...4",
+    "examplePuzzle": "5....4..9..97...6...8.5...3.5.......8.....73.3.7.12.8.9.15....77.3..1..6.6..9...4",
     "steps": [
       {
         "order": 1,
