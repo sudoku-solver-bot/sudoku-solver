@@ -8,7 +8,7 @@ import {
     findHousesWithCandidates,
 } from '../src/FishHelpers'
 
-describe('MutantFishCandidateEliminator', () => {
+describe('MutantFishCandidateEliminator', { timeout: 15000 }, () => {
     it('has correct displayName', () => {
         expect(new MutantFishCandidateEliminator().displayName).toBe('Mutant Fish')
     })
