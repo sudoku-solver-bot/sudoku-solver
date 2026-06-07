@@ -10,7 +10,7 @@
     "technique": "Naked Single",
     "description": "When a cell has only ONE candidate left, that must be the answer!",
     "concept": "After eliminating all numbers that appear in the same row, column, and 3x3 box, if a cell has only ONE candidate remaining, that is the only possibility.",
-    "examplePuzzle": "9.8...3.7.71..6.2.2..7.4..8.......9.35.2.9.7.48......2.9...21.363...1..971.93824.",
+    "examplePuzzle": "504608012672905048190342567859000400426800091713000806961000204287000605345000109",
     "steps": [
       {
         "order": 1,
@@ -26,26 +26,42 @@
       },
       {
         "order": 3,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. Look at R3C3. Its row already has 1, 3, 4, 5, 6, 7, and 9 filled in. Its column has 5, and its box has 2. After eliminating all those, only TWO numbers remain as candidates."
+        "type": "highlight",
+        "cells": [
+          20
+        ],
+        "highlightColor": "blue",
+        "text": "Look at R3C3. Its row already has 1, 3, 4, 5, 6, 7, and 9 filled in. Its column has 5, and its box has 2. After eliminating all those, only TWO numbers remain as candidates."
       },
       {
         "order": 4,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. Look at this cell. It has NO pencil marks! That means after checking its row, column, and box..."
+        "type": "highlight",
+        "cells": [
+          20
+        ],
+        "highlightColor": "yellow",
+        "text": "Look at this cell. It has NO pencil marks! That means after checking its row, column, and box..."
       },
       {
         "order": 5,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. After checking row + column + box, every number except 8 has been eliminated. Only ONE candidate remains \u2014 that's a Naked Single! \ud83c\udfaf"
+        "type": "highlight",
+        "cells": [
+          20
+        ],
+        "highlightColor": "red",
+        "text": "After checking row + column + box, every number except 8 has been eliminated. Only ONE candidate remains \u2014 that's a Naked Single! \ud83c\udfaf"
       },
       {
         "order": 6,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. A Naked Single is the simplest technique \u2014 when only one number can possibly fit. As you solve more cells, more naked singles appear! \u2705"
+        "type": "reveal",
+        "cells": [
+          20
+        ],
+        "highlightColor": "green",
+        "text": "A Naked Single is the simplest technique \u2014 when only one number can possibly fit. As you solve more cells, more naked singles appear! \u2705",
+        "eliminatedValue": 8
       }
-    ],
-    "exampleSolution": "948125367571386924263794518127863495356249871489517632894672153632451789715938246"
+    ]
   },
   {
     "id": "hidden-single",
@@ -207,7 +223,7 @@
     "technique": "Hidden Pair",
     "description": "When two numbers can only go in the same two cells, remove other candidates from those cells.",
     "concept": "If two numbers can only appear in the same two cells within a group, those cells can only contain those two numbers. Remove all OTHER candidates!",
-    "examplePuzzle": "1..8...695.3194...9.857.1437...6.31....7126....5..9..2...2....12........4.19572..",
+    "examplePuzzle": "100070002090400050006000700050903000000040000000850090900000800040002030007010006",
     "steps": [
       {
         "order": 1,
@@ -223,8 +239,17 @@
       },
       {
         "order": 3,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. Look at row 4. Many candidates. Let's check where numbers 6 and 7 can go."
+        "type": "highlight",
+        "cells": [
+          27,
+          29,
+          31,
+          33,
+          34,
+          35
+        ],
+        "highlightColor": "blue",
+        "text": "Look at row 4. Many candidates. Let's check where numbers 6 and 7 can go."
       },
       {
         "order": 4,
@@ -247,8 +272,7 @@
         "text": "\ud83c\udf89 Hidden Pairs clear extra candidates, often revealing singles! Scan for two numbers sharing only two cells.",
         "eliminatedValue": 6
       }
-    ],
-    "exampleSolution": "147823569563194827928576143792465318834712695615389472376248951259631784481957236"
+    ]
   },
   {
     "id": "pointing-pair",
@@ -261,7 +285,7 @@
     "technique": "Pointing Pair",
     "description": "When candidates in a box are aligned on one row or column, eliminate them from the rest of that line.",
     "concept": "If all instances of a number within a box fall on the same row or column, that number can't appear anywhere else on that row/column outside the box.",
-    "examplePuzzle": "....87.....71.958...163.7.4...31.2956...78.3.....5.....1684..5.3..5.186..8...2.43",
+    "examplePuzzle": "394100000600040030001706004000070008000002000000010960102000306476000009005800000",
     "steps": [
       {
         "order": 1,
@@ -271,13 +295,23 @@
       },
       {
         "order": 2,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. In box 7 (bottom-left), the number 3 only appears in these two cells \u2014 both on row 9. This is a pointing pair!"
+        "type": "highlight",
+        "cells": [
+          72,
+          73
+        ],
+        "highlightColor": "yellow",
+        "text": "In box 7 (bottom-left), the number 3 only appears in these two cells \u2014 both on row 9. This is a pointing pair!"
       },
       {
         "order": 3,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. Since 3 MUST be in R9C1 or R9C2 (the yellow cells), you can eliminate 3 from these other cells in row 9 outside of box 7."
+        "type": "highlight",
+        "cells": [
+          76,
+          77
+        ],
+        "highlightColor": "orange",
+        "text": "Since 3 MUST be in R9C1 or R9C2 (the yellow cells), you can eliminate 3 from these other cells in row 9 outside of box 7."
       },
       {
         "order": 4,
@@ -297,8 +331,7 @@
         "cells": [],
         "text": "Pointing Pairs are powerful because they reduce pencil marks in an entire row or column at once. Spot them early to simplify the puzzle fast! \u26a1"
       }
-    ],
-    "exampleSolution": "562487319437129586891635724748316295659278431123954678216843957374591862985762143"
+    ]
   },
   {
     "id": "box-line-reduction",
@@ -582,13 +615,13 @@
     "technique": "Swordfish",
     "description": "Like X-Wing but with three rows and three columns \u2014 the bigger fish!",
     "concept": "Swordfish extends X-Wing to 3 rows/columns. If a candidate appears in exactly 2-3 cells in each of 3 rows, and all candidates lie in just 3 columns, eliminate from the rest of those columns.",
-    "examplePuzzle": "204600005800070900000030020000000096100302007680000000040050000006020008300009602",
+    "examplePuzzle": "000100002008030040600050000200300800004000600000009001040000000020000090000080000",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Still Purple! \ud83d\udca3 Swordfish is X-Wing's bigger sibling. Instead of 2 rows \u00d7 2 columns, it uses 3 rows \u00d7 3 columns."
+        "text": "Still Purple! \ud83d\udfe3 Swordfish is X-Wing's bigger sibling. Instead of 2 rows \u00d7 2 columns, it uses 3 rows \u00d7 3 columns."
       },
       {
         "order": 2,
@@ -598,22 +631,40 @@
       },
       {
         "order": 3,
-        "type": "explain",
-        "cells": [],
-        "text": "Swordfish is harder to spot than X-Wing but follows the same logic. The eliminations are more powerful because they span 3 rows and 3 columns."
+        "type": "highlight",
+        "cells": [
+          0,
+          1,
+          5,
+          6,
+          7
+        ],
+        "highlightColor": "blue",
+        "text": "This is the famous 'World's Hardest Sudoku' by Arto Inkala. It needs advanced techniques like Swordfish to solve."
       },
       {
         "order": 4,
         "type": "explain",
         "cells": [],
-        "text": "Like an X-Wing, a Swordfish can be in rows or columns. If it's in 3 rows, you eliminate from the 3 columns \u2014 and vice versa."
+        "text": "Look for a number that's constrained to just 3 columns across 3 different rows. The candidates form a fish-like shape."
       },
       {
         "order": 5,
-        "type": "reveal",
+        "type": "explain",
         "cells": [],
+        "text": "Eliminate that candidate from the rest of those 3 columns. The pattern is harder to spot than X-Wing but follows the same logic!"
+      },
+      {
+        "order": 6,
+        "type": "reveal",
+        "cells": [
+          0,
+          6,
+          12
+        ],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Swordfish, X-Wing, and Jellyfish (4\u00d74) are all fish patterns. The bigger the fish, the harder to spot \u2014 but the elimination power is the same!"
+        "text": "\ud83c\udf89 Swordfish, X-Wing, and Jellyfish (4\u00d74) are all fish patterns. The bigger the fish, the harder to spot \u2014 but the elimination power is the same!",
+        "eliminatedValue": 1
       }
     ]
   },
@@ -689,7 +740,7 @@
     "technique": "XYZ-Wing",
     "description": "Like XY-Wing but the pivot has three candidates \u2014 even more powerful!",
     "concept": "An XYZ-Wing has a pivot with {A,B,C} and two pincers: one with {A,C} and one with {B,C}. The shared candidate C can be eliminated from any cell that sees all three cells.",
-    "examplePuzzle": "..1.4......69.34.1.4.1.......8...2.33..21.96.2...978..9.....1..48..7139.6135.9.48",
+    "examplePuzzle": "024005906618290000000070010000000001300700008009000020000500000806000034900800250",
     "steps": [
       {
         "order": 1,
@@ -723,11 +774,15 @@
       },
       {
         "order": 6,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. \ud83c\udf89 XYZ-Wing extends XY-Wing logic. Master both and you have a powerful toolkit for eliminating candidates in tough puzzles!"
+        "type": "reveal",
+        "cells": [
+          0
+        ],
+        "highlightColor": "green",
+        "text": "\ud83c\udf89 XYZ-Wing extends XY-Wing logic. Master both and you have a powerful toolkit for eliminating candidates in tough puzzles!",
+        "eliminatedValue": 1
       }
-    ],
-    "exampleSolution": "831746529726953481549182637198465273357218964264397815972834156485671392613529748"
+    ]
   },
   {
     "id": "unique-rectangle",
@@ -1159,7 +1214,7 @@
     "technique": "Forcing Chains",
     "description": "Follow 'what if' chains to find contradictions and eliminate candidates.",
     "concept": "Forcing Chains test a hypothesis: 'If this cell is X, what happens?' Follow the cascade of deductions. If X leads to a contradiction (like a cell with no candidates), then X is impossible. If both values of a cell lead to the same result elsewhere, that result must be true!",
-    "examplePuzzle": "2...7..4..7.1...3..9.3..5...8...3....3.461789.1..5..6..4.512..7.2.83.41..51.478..",
+    "examplePuzzle": "301006000700000004009050207900030040100000900000049001004010392003000080000093000",
     "steps": [
       {
         "order": 1,
@@ -1188,15 +1243,25 @@
       },
       {
         "order": 5,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. Chains can be long \u2014 5, 10, even 20 steps! The chain follows bivalue cells (only 2 candidates), where choosing one forces the other cells one by one."
+        "type": "highlight",
+        "cells": [
+          40,
+          80
+        ],
+        "highlightColor": "blue",
+        "text": "Chains can be long \u2014 5, 10, even 20 steps! The chain follows bivalue cells (only 2 candidates), where choosing one forces the other cells one by one."
       },
       {
         "order": 6,
-        "type": "explain",
-        "text": "Observe the pattern described above in your current puzzle. \ud83c\udf89 Forcing Chains are the ultimate fallback \u2014 when no pattern technique works, try 'what if'. If a chain leads to contradiction, eliminate! If both chains agree, trust the result!"
+        "type": "reveal",
+        "cells": [
+          40,
+          80
+        ],
+        "highlightColor": "green",
+        "text": "\ud83c\udf89 Forcing Chains are the ultimate fallback \u2014 when no pattern technique works, try 'what if'. If a chain leads to contradiction, eliminate! If both chains agree, trust the result!",
+        "eliminatedValue": 1
       }
-    ],
-    "exampleSolution": "263975148875124936194386572486793251532461789719258364348512697627839415951647823"
+    ]
   }
 ]
