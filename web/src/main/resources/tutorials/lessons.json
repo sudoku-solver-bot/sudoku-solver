@@ -615,13 +615,13 @@
     "technique": "Swordfish",
     "description": "Like X-Wing but with three rows and three columns \u2014 the bigger fish!",
     "concept": "Swordfish extends X-Wing to 3 rows/columns. If a candidate appears in exactly 2-3 cells in each of 3 rows, and all candidates lie in just 3 columns, eliminate from the rest of those columns.",
-    "examplePuzzle": "000100002008030040600050000200300800004000600000009001040000000020000090000080000",
+    "examplePuzzle": "204600005800070900000030020000000096100302007680000000040050000006020008300009602",
     "steps": [
       {
         "order": 1,
         "type": "explain",
         "cells": [],
-        "text": "Still Purple! \ud83d\udfe3 Swordfish is X-Wing's bigger sibling. Instead of 2 rows \u00d7 2 columns, it uses 3 rows \u00d7 3 columns."
+        "text": "Still Purple! \ud83d\udca3 Swordfish is X-Wing's bigger sibling. Instead of 2 rows \u00d7 2 columns, it uses 3 rows \u00d7 3 columns."
       },
       {
         "order": 2,
@@ -631,40 +631,22 @@
       },
       {
         "order": 3,
-        "type": "highlight",
-        "cells": [
-          0,
-          1,
-          5,
-          6,
-          7
-        ],
-        "highlightColor": "blue",
-        "text": "This is the famous 'World's Hardest Sudoku' by Arto Inkala. It needs advanced techniques like Swordfish to solve."
+        "type": "explain",
+        "cells": [],
+        "text": "Swordfish is harder to spot than X-Wing but follows the same logic. The eliminations are more powerful because they span 3 rows and 3 columns."
       },
       {
         "order": 4,
         "type": "explain",
         "cells": [],
-        "text": "Look for a number that's constrained to just 3 columns across 3 different rows. The candidates form a fish-like shape."
+        "text": "Like an X-Wing, a Swordfish can be in rows or columns. If it's in 3 rows, you eliminate from the 3 columns \u2014 and vice versa."
       },
       {
         "order": 5,
-        "type": "explain",
-        "cells": [],
-        "text": "Eliminate that candidate from the rest of those 3 columns. The pattern is harder to spot than X-Wing but follows the same logic!"
-      },
-      {
-        "order": 6,
         "type": "reveal",
-        "cells": [
-          0,
-          6,
-          12
-        ],
+        "cells": [],
         "highlightColor": "green",
-        "text": "\ud83c\udf89 Swordfish, X-Wing, and Jellyfish (4\u00d74) are all fish patterns. The bigger the fish, the harder to spot \u2014 but the elimination power is the same!",
-        "eliminatedValue": 1
+        "text": "\ud83c\udf89 Swordfish, X-Wing, and Jellyfish (4\u00d74) are all fish patterns. The bigger the fish, the harder to spot \u2014 but the elimination power is the same!"
       }
     ]
   },
