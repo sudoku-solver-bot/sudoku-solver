@@ -5,37 +5,22 @@
 
 ---
 
-## Current Phase: Performance & Polish (June 2026)
+## Current Phase: Stabilization Complete (June 2026)
 
-Core feature set shipped (320+ PRs merged). **TS solver parity achieved!** Epic #566 and umbrella #585 closed. DeathBlossom performance optimized (#649, #648). Focus is now on bug fixes — 3 new bugs reported.
+All critical bugs fixed. TS solver at full parity with Kotlin. All 20 tutorials have unique-solution puzzles. No open bugs. Zero open plan issues for coder.
 
-### Completed This Session (June 7)
+### Completed This Sprint (June 7)
 
-- ✅ **#653** — **TS WWing board corruption** — Fixed. Removed do-while(!stable) loop that caused cascading eliminations on partially-converged boards. PR: 187e55d.
-- ✅ **#655** — **MutantFish test timeout** — Fixed. Added 15s per-test timeout. All tests pass.
-- ✅ **#651/#654** — **Multi-solution tutorials** — Fixed. Replaced 6 remaining puzzles (swordfish, naked-single, hidden-pair, pointing-pair, xyz-wing, forcing-chains) with unique-solution versions. All 20 tutorials now have `uniqueSolution=true`. PR: 6b1d5f5.
-- ✅ **#656/#650** — Confirmed WWing fix resolves Naked Pair tutorial. All 323 tests pass.
+- ✅ **#653/#650** — **WWing board corruption** — Removed do-while(!stable) loop in WWingCandidateEliminator. Had caused cascading eliminations on partially-converged boards. PR: 187e55d.
+- ✅ **#655/#652** — **MutantFish test timeout** — Added 15s per-test timeout. All 323 tests pass.
+- ✅ **#651/#654** — **Multi-solution tutorials (12 total)** — Replaced all non-unique puzzles with validated unique-solution versions. All 20 tutorials now pass validation. PRs: 6b1d5f5, #657.
+- ✅ **#445/#660** — **TS + CDN architectural evaluation** — Complete feasibility assessment (estimated 5-7 days). HintGenerator (1,208 LOC) is the largest porting risk. Deferred to future phase.
 
-### Active Goals
+### 🟢 Backlog
 
-- ✅ **TS Solver Parity (Epic #566)** — all 9 eliminators ported 🎉
-- ✅ **DeathBlossom performance** — profiling + ALS caching shipped (#649, #648)
-- ✅ **Bug fixes** — WWing corruption, MutantFish timeout, multi-solution tutorials (all resolved)
-
-### 🟢 Low Priority
-
-| Issue | Title | Category |
-|-------|-------|----------|
-| #555 | Test systemd crash loop prevention after rate limiting | Infra |
-| #445 | Evaluate pure TypeScript + CDN deployment (future) | Architecture |
-
-### Open Bugs
-
-| Issue | Title | Priority |
-|-------|-------|----------|
-| #651 | 7 tutorial puzzles have multiple solutions | 🔴 Critical (plan: #654) |
-| #650 | TS WWingCandidateEliminator corrupts board | 🔴 Critical (plan: #653) |
-| #652 | MutantFish tests time out with default 5s limit | 🟡 Minor (plan: #655) |
+| Issue | Title | Notes |
+|-------|-------|-------|
+| #555 | Test systemd crash loop prevention | Ops task — needs VPS SSH access. Not actionable from planner. Systemd RestartSec already configured. |
 
 ### Recently Completed (May–June 2026)
 
