@@ -1,22 +1,26 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-06-06
+**Last updated:** 2026-06-07
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
 
 ## Current Phase: Performance & Polish (June 2026)
 
-Core feature set shipped (320+ PRs merged). **TS solver parity achieved!** Epic #566 and umbrella #585 closed. Focus is on DeathBlossom performance optimization and polish.
+Core feature set shipped (320+ PRs merged). **TS solver parity achieved!** Epic #566 and umbrella #585 closed. DeathBlossom performance optimized (#649, #648). Focus is now on bug fixes — 3 new bugs reported.
 
 ### Active Goals
 
 - ✅ **TS Solver Parity (Epic #566)** — all 9 eliminators ported 🎉
-- [ ] Optimize DeathBlossom performance (#583 → #617 + #618)
+- ✅ **DeathBlossom performance** — profiling + ALS caching shipped (#649, #648)
+- 🔴 **Fix TS WWing corruption** (#653) — board state corrupted by WWing eliminator
+- 🔴 **Fix multi-solution tutorials** (#654) — 7 tutorial puzzles have 2 solutions
 
 ### 🟡 Medium Priority
 
-_None — all medium-priority issues resolved._
+| Issue | Title | Category |
+|-------|-------|----------|
+| #655 | Increase MutantFish test timeout to 15s | Tests |
 
 ### 🟢 Low Priority
 
@@ -29,11 +33,16 @@ _None — all medium-priority issues resolved._
 
 | Issue | Title | Priority |
 |-------|-------|----------|
-| #583 | DeathBlossomCandidateEliminator too slow (TS side) | 🟡 (plan: #617) |
+| #651 | 7 tutorial puzzles have multiple solutions | 🔴 Critical (plan: #654) |
+| #650 | TS WWingCandidateEliminator corrupts board | 🔴 Critical (plan: #653) |
+| #652 | MutantFish tests time out with default 5s limit | 🟡 Minor (plan: #655) |
 
 ### Recently Completed (May–June 2026)
 
 - ✅ #649 Add DeathBlossom profiling instrumentation
+- ✅ #648 Add ALS caching and early pruning to DeathBlossom
+- ✅ #647 Profile DeathBlossom bottlenecks
+- ✅ #646 ALS caching + early pruning plan
 - ✅ #645 Add timeout guard to DeathBlossom + deepEliminators set
 - ✅ #644 Port ForcingChainsCandidateEliminator to TS
 - ✅ #639 Port SimpleColoringCandidateEliminator to TS
