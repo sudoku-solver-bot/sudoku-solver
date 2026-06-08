@@ -1,9 +1,17 @@
 package will.sudoku.solver
 
 import will.sudoku.solver.detectors.BoxLineReductionDetector
+import will.sudoku.solver.detectors.HiddenPairDetector
 import will.sudoku.solver.detectors.HiddenSingleDetector
+import will.sudoku.solver.detectors.HiddenTripleDetector
+import will.sudoku.solver.detectors.NakedPairDetector
 import will.sudoku.solver.detectors.NakedSingleDetector
+import will.sudoku.solver.detectors.NakedTripleDetector
 import will.sudoku.solver.detectors.PointingPairDetector
+import will.sudoku.solver.detectors.SwordfishDetector
+import will.sudoku.solver.detectors.XYWingDetector
+import will.sudoku.solver.detectors.XWingDetector
+import will.sudoku.solver.detectors.XYZWingDetector
 
 /**
  * Hint Generator
@@ -369,6 +377,14 @@ object HintGenerator {
     private val hiddenSingleDetector = HiddenSingleDetector()
     private val pointingPairDetector = PointingPairDetector()
     private val boxLineReductionDetector = BoxLineReductionDetector()
+    private val nakedPairDetector = NakedPairDetector()
+    private val nakedTripleDetector = NakedTripleDetector()
+    private val hiddenPairDetector = HiddenPairDetector()
+    private val hiddenTripleDetector = HiddenTripleDetector()
+    private val xWingDetector = XWingDetector()
+    private val swordfishDetector = SwordfishDetector()
+    private val xyWingDetector = XYWingDetector()
+    private val xyzWingDetector = XYZWingDetector()
 
     private fun detectTechnique(board: Board, technique: Technique): Hint? {
         return when (technique) {
@@ -376,14 +392,14 @@ object HintGenerator {
             Technique.HIDDEN_SINGLE -> hiddenSingleDetector.detect(board)
             Technique.POINTING_PAIR -> pointingPairDetector.detect(board)
             Technique.BOX_LINE_REDUCTION -> boxLineReductionDetector.detect(board)
-            Technique.NAKED_PAIR -> findNakedPair(board)
-            Technique.NAKED_TRIPLE -> findNakedTriple(board)
-            Technique.HIDDEN_PAIR -> findHiddenPair(board)
-            Technique.HIDDEN_TRIPLE -> findHiddenTriple(board)
-            Technique.X_WING -> findXWing(board)
-            Technique.SWORDFISH -> findSwordfish(board)
-            Technique.XY_WING -> findXYWing(board)
-            Technique.XYZ_WING -> findXYZWWing(board)
+            Technique.NAKED_PAIR -> nakedPairDetector.detect(board)
+            Technique.NAKED_TRIPLE -> nakedTripleDetector.detect(board)
+            Technique.HIDDEN_PAIR -> hiddenPairDetector.detect(board)
+            Technique.HIDDEN_TRIPLE -> hiddenTripleDetector.detect(board)
+            Technique.X_WING -> xWingDetector.detect(board)
+            Technique.SWORDFISH -> swordfishDetector.detect(board)
+            Technique.XY_WING -> xyWingDetector.detect(board)
+            Technique.XYZ_WING -> xyzWingDetector.detect(board)
             Technique.W_WING -> findTechniqueViaEliminator(board, Technique.W_WING, WWingCandidateEliminator())
             Technique.SIMPLE_COLORING -> findTechniqueViaEliminator(board, Technique.SIMPLE_COLORING, SimpleColoringCandidateEliminator())
             Technique.UNIQUE_RECTANGLE -> findTechniqueViaEliminator(board, Technique.UNIQUE_RECTANGLE, UniqueRectanglesCandidateEliminator())
