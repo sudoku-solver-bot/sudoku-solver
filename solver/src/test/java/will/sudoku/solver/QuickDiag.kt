@@ -14,7 +14,7 @@ class QuickDiag {
 
         val cases = listOf(
             TC("swordfish", "Swordfish", ".5916......7....9...6....7..647..9.....8..71.......834.25...1....8.7......36.....",
-                SwordfishCandidateEliminator()),
+                FishCandidateEliminator(3)),
             TC("xy-wing", "XY-Wing", "...31.........713....5..4.........48765...91.......563...67...4...25........4..71",
                 XYWingCandidateEliminator()),
             TC("xyz-wing", "XYZ-Wing", ".2...59.661829........7..1.........13.......8..9....2....5.....8.6....349..8..25.",

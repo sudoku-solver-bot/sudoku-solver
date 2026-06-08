@@ -42,8 +42,8 @@ data class SolverConfig(
             GroupCandidateEliminator(),
             HiddenSubsetCandidateEliminator(),
             ExclusionCandidateEliminator(9),
-            XWingCandidateEliminator(),
-            SwordfishCandidateEliminator(),
+            FishCandidateEliminator(2),
+            FishCandidateEliminator(3),
             XYWingCandidateEliminator(),
             XYZWingCandidateEliminator(),
             WWingCandidateEliminator(),
@@ -84,8 +84,8 @@ data class SolverConfig(
             }
 
             if (maxDifficulty >= DifficultyLevel.EXPERT) {
-                eliminators.add(XWingCandidateEliminator())
-                eliminators.add(SwordfishCandidateEliminator())
+                eliminators.add(FishCandidateEliminator(2))
+                eliminators.add(FishCandidateEliminator(3))
                 eliminators.add(XYWingCandidateEliminator())
                 eliminators.add(XYZWingCandidateEliminator())
                 eliminators.add(WWingCandidateEliminator())
@@ -114,8 +114,8 @@ data class SolverConfig(
             StepType.SIMPLE_ELIMINATION -> setOf(SimpleCandidateEliminator::class, ExclusionCandidateEliminator::class)
             StepType.NAKED_PAIR, StepType.NAKED_TRIPLE, StepType.NAKED_SUBSET -> setOf(GroupCandidateEliminator::class)
             StepType.HIDDEN_SINGLE, StepType.HIDDEN_PAIR, StepType.HIDDEN_TRIPLE, StepType.HIDDEN_SUBSET -> setOf(HiddenSubsetCandidateEliminator::class)
-            StepType.X_WING -> setOf(XWingCandidateEliminator::class)
-            StepType.SWORDFISH -> setOf(SwordfishCandidateEliminator::class)
+            StepType.X_WING -> setOf(FishCandidateEliminator::class)
+            StepType.SWORDFISH -> setOf(FishCandidateEliminator::class)
             StepType.XY_WING -> setOf(XYWingCandidateEliminator::class)
             else -> emptySet() // unknown/generic: can't exclude
         }

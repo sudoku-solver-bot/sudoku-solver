@@ -21,8 +21,8 @@ class DebugPuzzleGeneratorTest {
             GroupCandidateEliminator(),
             HiddenSubsetCandidateEliminator(),
             ExclusionCandidateEliminator(9),
-            XWingCandidateEliminator(),
-            SwordfishCandidateEliminator(),
+            FishCandidateEliminator(2),
+            FishCandidateEliminator(3),
             XYWingCandidateEliminator()
         )
         

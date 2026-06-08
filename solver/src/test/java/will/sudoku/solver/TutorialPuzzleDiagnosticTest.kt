@@ -17,7 +17,7 @@ class TutorialPuzzleDiagnosticTest {
     private val testCases = listOf(
         TestCase("swordfish", "Swordfish",
             ".5916......7....9...6....7..647..9.....8..71.......834.25...1....8.7......36.....",
-            SwordfishCandidateEliminator()),
+            FishCandidateEliminator(3)),
         TestCase("xy-wing", "XY-Wing",
             "...31.........713....5..4.........48765...91.......563...67...4...25........4..71",
             XYWingCandidateEliminator()),

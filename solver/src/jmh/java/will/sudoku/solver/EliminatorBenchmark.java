@@ -54,7 +54,7 @@ public class EliminatorBenchmark {
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public void xWingEliminator(Blackhole bh, BenchmarkState state) {
         Board board = state.originalBoard.copy();
-        CandidateEliminator eliminator = new XWingCandidateEliminator();
+        CandidateEliminator eliminator = new FishCandidateEliminator(2);
         bh.consume(eliminator.eliminate(board));
     }
 
@@ -63,7 +63,7 @@ public class EliminatorBenchmark {
     @OutputTimeUnit(TimeUnit.NANOSECONDS)
     public void swordfishEliminator(Blackhole bh, BenchmarkState state) {
         Board board = state.originalBoard.copy();
-        CandidateEliminator eliminator = new SwordfishCandidateEliminator();
+        CandidateEliminator eliminator = new FishCandidateEliminator(3);
         bh.consume(eliminator.eliminate(board));
     }
 
