@@ -28,7 +28,7 @@ class ClaimingCandidateEliminator : CandidateEliminator {
         for (value in 1..9) {
             val mask = Board.masks[value - 1]
             val cellsWithCandidate = (0..8).filter { col ->
-                (board.candidatePattern(Coord(row, col)) and mask) != 0
+                !board.isConfirmed(Coord(row, col)) && (board.candidatePattern(Coord(row, col)) and mask) != 0
             }
             if (cellsWithCandidate.size < 2) continue
 
@@ -53,7 +53,7 @@ class ClaimingCandidateEliminator : CandidateEliminator {
         for (value in 1..9) {
             val mask = Board.masks[value - 1]
             val cellsWithCandidate = (0..8).filter { row ->
-                (board.candidatePattern(Coord(row, col)) and mask) != 0
+                !board.isConfirmed(Coord(row, col)) && (board.candidatePattern(Coord(row, col)) and mask) != 0
             }
             if (cellsWithCandidate.size < 2) continue
 
