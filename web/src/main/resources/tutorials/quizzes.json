@@ -87,12 +87,12 @@
     "questions": [
       {
         "id": "yellow-q1",
-        "puzzle": "000300054008000627500200030900050000000607003002900005006093540000005276051762300",
+        "puzzle": "030608000672190348008042007000700000420050001003004000900000004000000630005000100",
         "question": "Where is the Hidden Single for the number 5 in row 2?",
         "hint": "Check which empty cell in row 2 is the only one that can hold the number 5. Other cells are blocked by columns or boxes already containing 5.",
-        "answerCell": 12,
+        "answerCell": 14,
         "answerValue": "5",
-        "explanation": "Cell R2C4 is a Hidden Single for value 5 in row 2. Every other empty cell in row 2 is blocked from holding 5 — column 1 already has 5, column 2 already has 5, column 5 already has 5, and column 6 already has 5. R2C4 is the only cell in the row where 5 can go.",
+        "explanation": "Cell R2C6 is a Hidden Single for value 5 in row 2. Every other empty cell in row 2 is blocked from holding 5 — columns and box constraints eliminate all alternatives, leaving R2C6 as the only cell in the row where 5 can go.",
         "highlightCells": [
           9,
           10,
@@ -106,22 +106,22 @@
         ],
         "highlightColor": "blue",
         "options": [
-          "R2C4",
+          "R2C6",
           "R2C1",
           "R2C5",
-          "R2C6",
-          "R3C4"
+          "R2C4",
+          "R3C6"
         ],
         "correctAnswer": 0
       },
       {
         "id": "yellow-q2",
-        "puzzle": "800000010009006800001000002200071500508209670010004000006400020902060050085920007",
+        "puzzle": "000608902000005340008300500050001400000003000710024006061007000007409000300006070",
         "question": "Find the Hidden Single for the number 2 in column 6. Which cell?",
         "hint": "Look for a cell in column 6 where 2 can go. All other cells in that column either already have a value or are blocked by rows/boxes containing 2.",
-        "answerCell": 5,
+        "answerCell": 23,
         "answerValue": "2",
-        "explanation": "Cell R1C6 is a Hidden Single for value 2 in column 6. Every other empty cell in column 6 is blocked from holding 2 by the row or box already containing that digit — rows 2, 3, 5, 7, and 9 each have a 2 elsewhere, and box constraints eliminate the remaining cells.",
+        "explanation": "Cell R3C6 is a Hidden Single for value 2 in column 6. Every other empty cell in column 6 is blocked from holding 2 by the row or box already containing that digit. R3C6 is the only cell in the column where 2 can go.",
         "highlightCells": [
           5,
           14,
@@ -135,8 +135,8 @@
         ],
         "highlightColor": "green",
         "options": [
-          "R1C6",
           "R3C6",
+          "R1C6",
           "R7C6",
           "R8C6",
           "R9C6"
@@ -177,23 +177,23 @@
       },
       {
         "id": "orange-q2",
-        "puzzle": "004600010010003005030800002600000400000050000005000003700004020800300060090020008",
+        "puzzle": "000070002670190040198000007050000000000003701700004050001030280200010005305200000",
         "question": "Spot the Naked Pair in a row. Which cell is part of the pair?",
         "hint": "Look for two cells in the same row that can only hold the same two numbers — no other candidates are possible.",
-        "answerCell": 4,
-        "answerValue": "7",
-        "explanation": "Cells R1C5 and R1C9 form a Naked Pair with candidates {7, 9}. Since both cells can only contain 7 or 9, these two values are locked to those cells in the row, eliminating 7 and 9 from all other cells in that row.",
+        "answerCell": 1,
+        "answerValue": "3",
+        "explanation": "Cells R1C2 and R1C3 form a Naked Pair with candidates {3, 4}. Since both cells can only contain 3 or 4, these two values are locked to those cells in the row, eliminating 3 and 4 from all other cells in that row.",
         "highlightCells": [
-          4,
-          8
+          1,
+          2
         ],
         "highlightColor": "yellow",
         "options": [
+          "R1C2",
+          "R1C3",
+          "R1C1",
           "R1C5",
-          "R1C9",
-          "R1C4",
-          "R1C6",
-          "R2C5"
+          "R2C2"
         ],
         "correctAnswer": 0
       }
@@ -452,24 +452,24 @@
       },
       {
         "id": "red-q2",
-        "puzzle": "850002400000100000000000002080004000001000700090030005000060000372090080000000000",
+        "puzzle": "530078000000000040100040060009000000406853790000904050000500000080009600040000179",
         "question": "Where can you apply a W-Wing elimination to narrow down candidates?",
-        "hint": "Look for two cells with the same two candidates that are connected through a strong link in a column or box.",
-        "answerCell": 36,
+        "hint": "Look for two bivalue cells with the same candidates connected by a strong link in a column.",
+        "answerCell": 8,
         "answerValue": "2",
-        "explanation": "The W-Wing technique identifies two bivalue cells with the same candidates connected by a strong link on one candidate. Any cell seeing both wings cannot contain the other candidate. This elimination often reveals hidden singles or further techniques.",
+        "explanation": "Cells R1C8 and R5C9 are both bivalue cells with candidates {1, 2}. They are connected by a strong link on 1 in column 8 — only R1C8 and R4C8 can hold 1 in that column. Since one of the wings must be 1 (or else the strong link forces it), one of them must be 2. Therefore, 2 can be eliminated from R1C9, which sees both wings.",
         "highlightCells": [
-          36,
-          37,
-          38
+          7,
+          8,
+          44
         ],
         "highlightColor": "red",
         "options": [
-          "R5C1",
-          "R5C2",
-          "R5C3",
-          "R4C1",
-          "R6C1"
+          "R1C9",
+          "R1C8",
+          "R2C9",
+          "R5C9",
+          "R3C9"
         ],
         "correctAnswer": 0
       }
