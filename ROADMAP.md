@@ -1,6 +1,6 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-06-07
+**Last updated:** 2026-06-08
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
@@ -16,10 +16,18 @@ All critical bugs fixed. TS solver at full parity with Kotlin. All 20 tutorials 
 - ✅ **#651/#654** — **Multi-solution tutorials (12 total)** — Replaced all non-unique puzzles with validated unique-solution versions. All 20 tutorials now pass validation. PRs: 6b1d5f5, #657.
 - ✅ **#445/#660** — **TS + CDN architectural evaluation** — Complete feasibility assessment (estimated 5-7 days). HintGenerator (1,208 LOC) is the largest porting risk. Deferred to future phase.
 
+### 🟡 Current Sprint (June 8)
+
+| Issue | Title | Priority | Est. |
+|-------|-------|----------|------|
+| #667 | Extract generic FishCandidateEliminator | 🔴 High | 1h |
+| #668 | Decompose HintGenerator (1,208 LOC) | 🔴 High | 2-3h |
+
 ### 🟢 Backlog
 
 | Issue | Title | Notes |
 |-------|-------|-------|
+| #666 | Prioritize client-side TS migration | Medium priority |
 | #555 | Test systemd crash loop prevention | Ops task — needs VPS SSH access. Not actionable from planner. Systemd RestartSec already configured. |
 
 ### Recently Completed (May–June 2026)
