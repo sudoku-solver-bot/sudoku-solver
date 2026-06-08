@@ -36,7 +36,7 @@ class PointingCandidateEliminator : CandidateEliminator {
             for (r in boxRow * 3 until boxRow * 3 + 3) {
                 for (c in boxCol * 3 until boxCol * 3 + 3) {
                     val coord = Coord(r, c)
-                    if ((board.candidatePattern(coord) and mask) != 0) {
+                    if (!board.isConfirmed(coord) && (board.candidatePattern(coord) and mask) != 0) {
                         cellsWithCandidate.add(coord)
                     }
                 }

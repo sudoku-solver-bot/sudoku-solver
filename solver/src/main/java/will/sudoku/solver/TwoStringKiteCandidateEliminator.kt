@@ -34,7 +34,7 @@ class TwoStringKiteCandidateEliminator : CandidateEliminator {
         val rowLinks = mutableMapOf<Int, Pair<Int, Int>>()
         for (r in 0..8) {
             val cols = (0..8).filter { c ->
-                (board.candidatePattern(Coord(r, c)) and mask) != 0
+                !board.isConfirmed(Coord(r, c)) && (board.candidatePattern(Coord(r, c)) and mask) != 0
             }
             if (cols.size == 2) rowLinks[r] = Pair(cols[0], cols[1])
         }
@@ -43,7 +43,7 @@ class TwoStringKiteCandidateEliminator : CandidateEliminator {
         val colLinks = mutableMapOf<Int, Pair<Int, Int>>()
         for (c in 0..8) {
             val rows = (0..8).filter { r ->
-                (board.candidatePattern(Coord(r, c)) and mask) != 0
+                !board.isConfirmed(Coord(r, c)) && (board.candidatePattern(Coord(r, c)) and mask) != 0
             }
             if (rows.size == 2) colLinks[c] = Pair(rows[0], rows[1])
         }
@@ -61,7 +61,7 @@ class TwoStringKiteCandidateEliminator : CandidateEliminator {
                 }
 
                 val regionCells = regionCoords.filter { coord ->
-                    (board.candidatePattern(coord) and mask) != 0
+                    !board.isConfirmed(coord) && (board.candidatePattern(coord) and mask) != 0
                 }
 
                 if (regionCells.size != 2) continue
