@@ -27,7 +27,10 @@ All critical bugs fixed. TS solver at full parity with Kotlin. All 20 tutorials 
 
 | Issue | Title | Notes |
 |-------|-------|-------|
-| #666 | Prioritize client-side TS migration | Medium priority |
+| #666 | Client-side TS migration (umbrella) | 3 phases: hints, step-by-step, generation |
+| #669 | Port HintGenerator to TS | Part of #666, Phase 1 |
+| #670 | Port step-by-step to TS | Part of #666, Phase 2 |
+| #671 | Port puzzle generation to TS | Part of #666, Phase 3 |
 | #555 | Test systemd crash loop prevention | Ops task — needs VPS SSH access. Not actionable from planner. Systemd RestartSec already configured. |
 
 ### Recently Completed (May–June 2026)
