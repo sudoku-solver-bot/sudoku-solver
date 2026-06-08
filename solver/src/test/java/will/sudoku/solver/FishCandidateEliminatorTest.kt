@@ -109,61 +109,21 @@ class FishCandidateEliminatorTest {
     }
 
     @Test
-    fun `classic X-Wing example - candidate 1`() {
-        val values = IntArray(81) { 0 }
+    fun `solver with FishCandidateEliminator solves AI Escargot`() {
+        // AI Escargot — famous hard puzzle requiring advanced techniques
+        val puzzle = "100007090030020008009600500005300900010080002600004000300000010040000007007000300"
+        val board = BoardReader.readBoard(puzzle)
+        val solver = Solver()
+        val solution = solver.solve(board)
 
-        // Block 1 in row 0, columns 0,1,3,4,5,7,8 by placing 1 in those columns in other rows
-        for (col in listOf(0, 1, 3, 4, 5, 7, 8)) {
-            values[1 * 9 + col] = 1
-        }
-
-        // Block 1 in row 4, columns 0,1,3,4,5,7,8 by placing 1 in those columns in other rows
-        for (col in listOf(0, 1, 3, 4, 5, 7, 8)) {
-            values[5 * 9 + col] = 1
-        }
-
-        val board = Board(values)
-        SimpleCandidateEliminator().eliminate(board)
-
-        val row0CandidatesFor1 = (0..8).filter { col ->
-            val coord = Coord(0, col)
-            !board.isConfirmed(coord) && board.candidateValues(coord).contains(1)
-        }
-        val row4CandidatesFor1 = (0..8).filter { col ->
-            val coord = Coord(4, col)
-            !board.isConfirmed(coord) && board.candidateValues(coord).contains(1)
-        }
-
-        val eliminator = FishCandidateEliminator(2)
-        val changed = eliminator.eliminate(board)
-
-        if (row0CandidatesFor1 == listOf(2, 6) && row4CandidatesFor1 == listOf(2, 6)) {
-            for (row in listOf(2, 3, 6, 7, 8)) {
-                for (col in listOf(2, 6)) {
-                    val coord = Coord(row, col)
-                    if (!board.isConfirmed(coord)) {
-                        assertThat(board.candidateValues(coord))
-                            .`as`("Row $row, Col $col should not have 1 after X-Wing elimination")
-                            .doesNotContain(1)
-                    }
-                }
-            }
-        }
+        assertThat(solution).isNotNull
+        assertThat(solution!!.isSolved()).isTrue()
     }
 
     @Test
-    fun `solver with FishCandidateEliminator solves hard puzzle`() {
-        // Hard puzzle that requires advanced techniques (X-Wing, Swordfish, etc.)
-        val puzzle = "8........" +
-                     "..36....." +
-                     ".7..9.2.." +
-                     ".5...7..." +
-                     "....457.." +
-                     "...1...3." +
-                     "..1....68" +
-                     "..85...1." +
-                     ".9....4.."
-
+    fun `solver with FishCandidateEliminator solves Easter Monster`() {
+        // Easter Monster — requires multiple advanced techniques
+        val puzzle = "100000002090400050006000700050903000000040000000850090900000800040002030007010006"
         val board = BoardReader.readBoard(puzzle)
         val solver = Solver()
         val solution = solver.solve(board)
