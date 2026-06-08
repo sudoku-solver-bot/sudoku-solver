@@ -13,16 +13,16 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 
 | Issue | Title | Priority | Effort | Status |
 |-------|-------|----------|--------|--------|
-| #668 | Decompose HintGenerator — remove dead code (~700 LOC) | High | 30min | Partially done (detectors extracted, old methods still present) |
-| #669 | Port HintGenerator to TypeScript — core technique detection | High | 3-5 days | |
+| #669 | Port HintGenerator to TypeScript — core technique detection | High | 3-5 days | Next up |
 | #670 | Port step-by-step solving to TypeScript | High | 2-3 days | |
 | #671 | Port puzzle generation to TypeScript | Medium | 2-3 days | |
 | #555 | Test systemd crash loop prevention | Medium | — | Ops task, blocked on VPS SSH |
 
 ### Completed This Sprint (June 7-8)
 
-- ✅ **#673** — **HintGenerator decomposition part 1** — Extracted TechniqueDetector interface + 12 detectors (NakedSingle, HiddenSingle, PointingPair, BoxLineReduction, NakedPair, NakedTriple, HiddenPair, HiddenTriple, XWing, Swordfish, XYWing, XYZWing). Old findXxx methods now dead code.
-- ✅ **#672/#667** — **Fish unification** — Extracted generic FishCandidateEliminator parameterized by size. Deleted XWingCandidateEliminator and SwordfishCandidateEliminator. PR: #672.
+- ✅ **#674/#668** — **HintGenerator decomposition complete** — Removed dead code. HintGenerator: 1,208 → 507 LOC. 12 detectors in detectors/ package.
+- ✅ **#673** — **HintGenerator decomposition part 1** — Extracted TechniqueDetector interface + 12 detectors.
+- ✅ **#672/#667** — **Fish unification** — Extracted generic FishCandidateEliminator parameterized by size. Deleted XWingCandidateEliminator and SwordfishCandidateEliminator.
 - ✅ **#653/#650** — **WWing board corruption** — Removed do-while(!stable) loop in WWingCandidateEliminator. Had caused cascading eliminations on partially-converged boards. PR: 187e55d.
 - ✅ **#655/#652** — **MutantFish test timeout** — Added 15s per-test timeout. All 323 tests pass.
 - ✅ **#651/#654** — **Multi-solution tutorials (12 total)** — Replaced all non-unique puzzles with validated unique-solution versions. All 20 tutorials now pass validation. PRs: 6b1d5f5, #657.
