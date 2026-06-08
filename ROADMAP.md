@@ -5,16 +5,31 @@
 
 ---
 
-## Current Phase: Stabilization Complete (June 2026)
+## Current Phase: Client-Side TypeScript Migration (June 2026)
 
-All critical bugs fixed. TS solver at full parity with Kotlin. All 20 tutorials have unique-solution puzzles. No open bugs. Zero open plan issues for coder.
+Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). Now migrating remaining backend logic to client-side TypeScript for offline capability.
 
-### Completed This Sprint (June 7)
+### In Progress
+
+- 🔄 **#672** — **Extract generic FishCandidateEliminator from X-Wing/Swordfish** — PR open, CI running
+
+### Planned (from #666)
+
+| Issue | Title | Priority | Effort |
+|-------|-------|----------|--------|
+| #667 | Extract generic FishCandidateEliminator | High | — |
+| #668 | Decompose HintGenerator (1,208 LOC) into smaller components | High | 1-2 days |
+| #669 | Port HintGenerator to TypeScript — core technique detection | High | 3-5 days |
+| #670 | Port step-by-step solving to TypeScript | High | 2-3 days |
+| #671 | Port puzzle generation to TypeScript | Medium | 2-3 days |
+
+### Completed This Sprint (June 7-8)
 
 - ✅ **#653/#650** — **WWing board corruption** — Removed do-while(!stable) loop in WWingCandidateEliminator. Had caused cascading eliminations on partially-converged boards. PR: 187e55d.
 - ✅ **#655/#652** — **MutantFish test timeout** — Added 15s per-test timeout. All 323 tests pass.
 - ✅ **#651/#654** — **Multi-solution tutorials (12 total)** — Replaced all non-unique puzzles with validated unique-solution versions. All 20 tutorials now pass validation. PRs: 6b1d5f5, #657.
 - ✅ **#445/#660** — **TS + CDN architectural evaluation** — Complete feasibility assessment (estimated 5-7 days). HintGenerator (1,208 LOC) is the largest porting risk. Deferred to future phase.
+- ✅ **#666** — **Client-side TS migration plan** — Filed and decomposed by planner into #667-#671.
 
 ### 🟡 Current Sprint (June 8)
 
@@ -86,10 +101,11 @@ All critical bugs fixed. TS solver at full parity with Kotlin. All 20 tutorials 
 
 ### Architecture
 - 17 Kotlin elimination algorithms (Naked Single → Death Blossom)
-- 16+ TypeScript eliminators (porting in progress)
-- REST API at `/api/v1/*`
-- Step-by-step solving for educational use
-- Daily challenge with streak tracking
+- **20 TypeScript eliminators** (full parity with Kotlin)
+- REST API at `/api/v1/*` (client-side solving with server fallback)
+- Step-by-step solving for educational use (server-only, porting planned)
+- Hint generation (server-only, porting planned)
+- Daily challenge removed (ADR-005)
 
 ### Key Links
 - **Issues:** https://github.com/sudoku-solver-bot/sudoku-solver/issues
