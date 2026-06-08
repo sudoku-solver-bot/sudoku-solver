@@ -12,7 +12,7 @@ class TechniqueStateFinder {
     )
 
     private val targets = listOf(
-        Target("swordfish", "Swordfish", SwordfishCandidateEliminator::class.java),
+        Target("swordfish", "Swordfish", FishCandidateEliminator::class.java),
         Target("xy-wing", "XY-Wing", XYWingCandidateEliminator::class.java),
         Target("xyz-wing", "XYZ-Wing", XYZWingCandidateEliminator::class.java),
         Target("unique-rectangle", "Unique Rectangle", UniqueRectanglesCandidateEliminator::class.java),

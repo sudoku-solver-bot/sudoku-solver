@@ -81,7 +81,7 @@ class DifficultyRaterTest {
             eliminatorMetrics = mapOf(
                 "SimpleCandidateEliminator" to EliminatorMetrics(20, 8, 1000),
                 "ExclusionCandidateEliminator" to EliminatorMetrics(8, 4, 600),
-                "XWingCandidateEliminator" to EliminatorMetrics(2, 1, 400)
+                "XWing" to EliminatorMetrics(2, 1, 400)
             )
         )
 
