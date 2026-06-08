@@ -142,26 +142,6 @@
           "R9C6"
         ],
         "correctAnswer": 0
-        "highlightCells": [
-          5,
-          14,
-          23,
-          32,
-          41,
-          50,
-          59,
-          68,
-          77
-        ],
-        "highlightColor": "green",
-        "options": [
-          "R7C6",
-          "R1C6",
-          "R3C6",
-          "R8C6",
-          "R9C6"
-        ],
-        "correctAnswer": 0
       }
     ]
   },
