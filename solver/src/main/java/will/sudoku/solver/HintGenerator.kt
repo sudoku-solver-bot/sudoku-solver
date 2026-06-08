@@ -1,5 +1,10 @@
 package will.sudoku.solver
 
+import will.sudoku.solver.detectors.BoxLineReductionDetector
+import will.sudoku.solver.detectors.HiddenSingleDetector
+import will.sudoku.solver.detectors.NakedSingleDetector
+import will.sudoku.solver.detectors.PointingPairDetector
+
 /**
  * Hint Generator
  *
@@ -162,7 +167,7 @@ object HintGenerator {
             var foundOne: Boolean
             do {
                 foundOne = false
-                val hint = findHiddenSingle(board)
+                val hint = hiddenSingleDetector.detect(board)
                 if (hint != null) {
                     board.markValue(hint.coord, hint.value)
                     lastHint = hint
@@ -360,11 +365,17 @@ object HintGenerator {
      * Detect a specific technique on the board.
      * Runs the corresponding detection method and returns a hint if found.
      */
+    private val nakedSingleDetector = NakedSingleDetector()
+    private val hiddenSingleDetector = HiddenSingleDetector()
+    private val pointingPairDetector = PointingPairDetector()
+    private val boxLineReductionDetector = BoxLineReductionDetector()
+
     private fun detectTechnique(board: Board, technique: Technique): Hint? {
         return when (technique) {
-            Technique.NAKED_SINGLE -> findNakedSingle(board)
-            Technique.HIDDEN_SINGLE -> findHiddenSingle(board)
-            Technique.POINTING_PAIR -> findPointingPair(board)
+            Technique.NAKED_SINGLE -> nakedSingleDetector.detect(board)
+            Technique.HIDDEN_SINGLE -> hiddenSingleDetector.detect(board)
+            Technique.POINTING_PAIR -> pointingPairDetector.detect(board)
+            Technique.BOX_LINE_REDUCTION -> boxLineReductionDetector.detect(board)
             Technique.NAKED_PAIR -> findNakedPair(board)
             Technique.NAKED_TRIPLE -> findNakedTriple(board)
             Technique.HIDDEN_PAIR -> findHiddenPair(board)
@@ -381,7 +392,6 @@ object HintGenerator {
             Technique.MUTANT_FISH -> findTechniqueViaEliminator(board, Technique.MUTANT_FISH, MutantFishCandidateEliminator())
             Technique.DEATH_BLOSSOM -> findTechniqueViaEliminator(board, Technique.DEATH_BLOSSOM, DeathBlossomCandidateEliminator())
             Technique.FORCING_CHAINS -> findTechniqueViaEliminator(board, Technique.FORCING_CHAINS, ForcingChainsCandidateEliminator())
-            Technique.BOX_LINE_REDUCTION -> findBoxLineReduction(board)
         }
     }
 
