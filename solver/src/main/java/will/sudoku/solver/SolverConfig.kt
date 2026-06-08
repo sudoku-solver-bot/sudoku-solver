@@ -54,6 +54,11 @@ data class SolverConfig(
             FrankenFishCandidateEliminator(),
             MutantFishCandidateEliminator()
             // DeathBlossom excluded — too slow for default set (combinatorial explosion)
+            // PointingCandidateEliminator() — TODO: investigate conflict with DeathBlossom/MutantFish tests
+            // ClaimingCandidateEliminator()
+            // SkyscraperCandidateEliminator()
+            // TwoStringKiteCandidateEliminator()
+            // EmptyRectangleCandidateEliminator()
         )
 
         /**
