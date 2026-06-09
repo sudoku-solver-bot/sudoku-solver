@@ -141,3 +141,4 @@ export { Level, LEVEL_NAMES, LEVEL_DESCRIPTIONS, rate, rateLevel, isHard } from 
 export type { Rating } from './DifficultyRater'
 export { StepRecorder } from './StepRecorder'
 export { SolverWithSteps } from './SolverWithSteps'
+export { generate as generatePuzzle } from './PuzzleGenerator'
