@@ -16,6 +16,9 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 | #669 | Port HintGenerator to TypeScript — core technique detection | High | 3-5 days | Next up |
 | #670 | Port step-by-step solving to TypeScript | High | 2-3 days | |
 | #671 | Port puzzle generation to TypeScript | Medium | 2-3 days | |
+| #678 | Automate API test suite | Medium | — | |
+| #679 | Automate UI/UX source code audit | Medium | — | |
+| #680 | Automate localStorage persistence tests | Medium | — | |
 | #555 | Test systemd crash loop prevention | Medium | — | Ops task, blocked on VPS SSH |
 
 ### Completed This Sprint (June 7-8)
