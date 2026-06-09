@@ -1,13 +1,16 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'fs'
-import { join } from 'path'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 import { Board } from '../src/Board'
 import { BoardReader } from '../src/BoardReader'
 import { Technique } from '../src/HintTypes'
 import { generate } from '../src/HintGenerator'
 
 // Load tutorial lessons from the web resources
-const lessonsPath = join(process.cwd(), 'web/src/main/resources/tutorials/lessons.json')
+// Resolve relative to this test file's location
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const lessonsPath = join(__dirname, '../../../web/src/main/resources/tutorials/lessons.json')
 const lessons = JSON.parse(readFileSync(lessonsPath, 'utf-8'))
 
 // Map lesson technique names to Technique enum values
