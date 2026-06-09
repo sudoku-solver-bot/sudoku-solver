@@ -18,12 +18,20 @@ import { NakedSingleDetector } from './detectors/NakedSingleDetector'
 import { HiddenSingleDetector } from './detectors/HiddenSingleDetector'
 import { PointingPairDetector } from './detectors/PointingPairDetector'
 import { BoxLineReductionDetector } from './detectors/BoxLineReductionDetector'
+import { NakedPairDetector } from './detectors/NakedPairDetector'
+import { NakedTripleDetector } from './detectors/NakedTripleDetector'
+import { HiddenPairDetector } from './detectors/HiddenPairDetector'
+import { HiddenTripleDetector } from './detectors/HiddenTripleDetector'
 
 const detectors: TechniqueDetector[] = [
   new NakedSingleDetector(),
   new HiddenSingleDetector(),
   new PointingPairDetector(),
-  new BoxLineReductionDetector()
+  new BoxLineReductionDetector(),
+  new NakedPairDetector(),
+  new NakedTripleDetector(),
+  new HiddenPairDetector(),
+  new HiddenTripleDetector()
 ]
 
 // ---------------------------------------------------------------------------
