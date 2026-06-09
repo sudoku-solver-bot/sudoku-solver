@@ -71,10 +71,54 @@ export async function generatePuzzle(difficulty = 'MEDIUM'): Promise<unknown> {
 }
 
 // ---------------------------------------------------------------------------
-// Hint — always server (hint logic not on client yet)
+// Hint — client-first, server fallback
 // ---------------------------------------------------------------------------
 
+let _clientHintGenerator: any = null
+
+async function loadClientHintGenerator(): Promise<any> {
+  if (_clientHintGenerator) return _clientHintGenerator
+  try {
+    const solver = await import('@sudoku-dojo/solver')
+    if (solver.generateHint) {
+      _clientHintGenerator = solver
+      return _clientHintGenerator
+    }
+    return null
+  } catch {
+    return null
+  }
+}
+
 export async function getHintForPuzzle(puzzle: string, technique?: string): Promise<unknown> {
+  // Try client-side hint generator first
+  const clientHG = await loadClientHintGenerator()
+  if (clientHG) {
+    try {
+      const board = clientHG.BoardReader.fromString(puzzle.replace(/\./g, '0'), clientHG.Board)
+      const options: Record<string, unknown> = {}
+      if (technique) {
+        // Map technique string to Technique enum value
+        const techEnum = clientHG.Technique[technique.toUpperCase().replace(/ /g, '_')]
+        if (techEnum) options.targetTechnique = techEnum
+      }
+      const hint = clientHG.generateHint(board, options)
+      if (hint) {
+        return {
+          coord: { row: hint.coord.row, col: hint.coord.col },
+          value: hint.value,
+          technique: hint.technique,
+          explanation: hint.explanation,
+          clientSolver: true
+        }
+      }
+      // No client hint found — fall through to server
+    } catch {
+      // Client failed — fall through to server
+    }
+  }
+
+  // Fall back to server API
   const normalized = puzzle.replace(/\./g, '0')
   const body: Record<string, string> = { puzzle: normalized }
   if (technique) body.technique = technique

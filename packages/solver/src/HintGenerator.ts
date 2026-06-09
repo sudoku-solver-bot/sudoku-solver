@@ -2,6 +2,16 @@ import type { Board } from './Board'
 import { Coord } from './Coord'
 import { SimpleCandidateEliminator } from './Eliminators'
 import {
+  WWingCandidateEliminator,
+  SimpleColoringCandidateEliminator,
+  UniqueRectanglesCandidateEliminator,
+  ALSXZCandidateEliminator,
+  FrankenFishCandidateEliminator,
+  MutantFishCandidateEliminator,
+  DeathBlossomCandidateEliminator,
+  ForcingChainsCandidateEliminator,
+} from './Eliminators'
+import {
   Technique,
   TECHNIQUE_DESCRIPTIONS,
 } from './HintTypes'
@@ -18,12 +28,28 @@ import { NakedSingleDetector } from './detectors/NakedSingleDetector'
 import { HiddenSingleDetector } from './detectors/HiddenSingleDetector'
 import { PointingPairDetector } from './detectors/PointingPairDetector'
 import { BoxLineReductionDetector } from './detectors/BoxLineReductionDetector'
+import { NakedPairDetector } from './detectors/NakedPairDetector'
+import { NakedTripleDetector } from './detectors/NakedTripleDetector'
+import { HiddenPairDetector } from './detectors/HiddenPairDetector'
+import { HiddenTripleDetector } from './detectors/HiddenTripleDetector'
+import { XWingDetector } from './detectors/XWingDetector'
+import { SwordfishDetector } from './detectors/SwordfishDetector'
+import { XYWingDetector } from './detectors/XYWingDetector'
+import { XYZWingDetector } from './detectors/XYZWingDetector'
 
 const detectors: TechniqueDetector[] = [
   new NakedSingleDetector(),
   new HiddenSingleDetector(),
   new PointingPairDetector(),
-  new BoxLineReductionDetector()
+  new BoxLineReductionDetector(),
+  new NakedPairDetector(),
+  new NakedTripleDetector(),
+  new HiddenPairDetector(),
+  new HiddenTripleDetector(),
+  new XWingDetector(),
+  new SwordfishDetector(),
+  new XYWingDetector(),
+  new XYZWingDetector()
 ]
 
 // ---------------------------------------------------------------------------
@@ -155,6 +181,50 @@ function detectTechnique(board: Board, technique: Technique): Hint | null {
   if (detector != null) {
     return detector.detect(board)
   }
-  // TODO: Implement findTechniqueViaEliminator for eliminator-based techniques
+  // Eliminator-based techniques
+  return findTechniqueViaEliminator(board, technique)
+}
+
+/**
+ * Generic technique detection using an eliminator.
+ * Copies the board, runs the eliminator, and checks if any progress was made.
+ */
+function findTechniqueViaEliminator(board: Board, technique: Technique): Hint | null {
+  const eliminator = getEliminatorForTechnique(technique)
+  if (eliminator == null) return null
+
+  const testBoard = board.copy()
+  const changed = eliminator.eliminate(testBoard)
+  if (!changed) return null
+
+  // Find a cell that was affected (lost candidates)
+  for (const coord of Coord.all) {
+    if (board.isConfirmed(coord) || testBoard.isConfirmed(coord)) continue
+    const before = board.candidateValues(coord)
+    const after = testBoard.candidateValues(coord)
+    const eliminated = before.filter(v => !after.includes(v))
+    if (eliminated.length > 0) {
+      return {
+        coord,
+        value: eliminated[0],
+        technique,
+        explanation: `${technique} — Candidate ${eliminated.join(', ')} can be eliminated from cell (${coord.row + 1},${coord.col + 1}).`
+      }
+    }
+  }
   return null
+}
+
+function getEliminatorForTechnique(technique: Technique): import('./Eliminators').CandidateEliminator | null {
+  switch (technique) {
+    case Technique.W_WING: return new WWingCandidateEliminator()
+    case Technique.SIMPLE_COLORING: return new SimpleColoringCandidateEliminator()
+    case Technique.UNIQUE_RECTANGLE: return new UniqueRectanglesCandidateEliminator()
+    case Technique.ALS_XZ: return new ALSXZCandidateEliminator()
+    case Technique.FRANKEN_FISH: return new FrankenFishCandidateEliminator()
+    case Technique.MUTANT_FISH: return new MutantFishCandidateEliminator()
+    case Technique.DEATH_BLOSSOM: return new DeathBlossomCandidateEliminator()
+    case Technique.FORCING_CHAINS: return new ForcingChainsCandidateEliminator()
+    default: return null
+  }
 }
