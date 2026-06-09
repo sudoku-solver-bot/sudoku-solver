@@ -1,6 +1,6 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-09
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
@@ -13,12 +13,12 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 
 | Issue | Title | Priority | Effort | Status |
 |-------|-------|----------|--------|--------|
-| #669 | Port HintGenerator to TypeScript | High | ~3h total | Broken into #682-#689 |
-| #670 | Port step-by-step solving to TypeScript | High | 2-3 days | |
-| #671 | Port puzzle generation to TypeScript | Medium | 2-3 days | |
-| #678 | Automate API test suite | Medium | — | |
-| #679 | Automate UI/UX source code audit | Medium | — | |
-| #680 | Automate localStorage persistence tests | Medium | — | |
+| #669 | Port HintGenerator to TypeScript | High | ~3h total | ✅ Closed — sub-issues #682-#689 |
+| #670 | Port step-by-step solving to TypeScript | High | ~1h total | Broken into #693-#696 |
+| #671 | Port puzzle generation to TypeScript | Medium | ~50 min total | Broken into #690-#692 |
+| #678 | Automate API test suite | Medium | ~1h total | Broken into #697-#701 |
+| #679 | Automate UI/UX source code audit | Medium | ~40 min | ⚠️ Needs breakdown |
+| #680 | Automate localStorage persistence tests | Medium | ~30 min | ⚠️ Needs breakdown |
 | #555 | Test systemd crash loop prevention | Medium | — | Ops task, blocked on VPS SSH |
 
 ### Completed This Sprint (June 7-8)
@@ -32,22 +32,38 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 - ✅ **#445/#660** — **TS + CDN architectural evaluation** — Complete feasibility assessment (estimated 5-7 days). HintGenerator (1,208 LOC) is the largest porting risk. Deferred to future phase.
 - ✅ **#666** — **Client-side TS migration plan** — Filed and decomposed by planner into #667-#671.
 
-### 🟡 Current Sprint (June 8)
+### 🟡 Current Sprint (June 8-9) — Active Work
 
-| Issue | Title | Priority | Est. |
-|-------|-------|----------|------|
-| #667 | Extract generic FishCandidateEliminator | 🔴 High | 1h |
-| #668 | Decompose HintGenerator (1,208 LOC) | 🔴 High | 2-3h |
+| Issue | Title | Priority | Est. | Status |
+|-------|-------|----------|------|--------|
+| #682 | HintGenerator core infrastructure + basic detectors | 🔴 High | ~20 min | Ready for coder |
+| #683 | PointingPair + BoxLineReduction detectors | 🔴 High | ~15 min | Blocked on #682 |
+| #684 | Subset detectors (4) | 🔴 High | ~20 min | Blocked on #682 |
+| #685 | Fish + wing detectors (4) | 🔴 High | ~20 min | Blocked on #682 |
+| #686 | Eliminator-based techniques (8) | 🔴 High | ~25 min | Blocked on #682 |
+| #687 | Wire HintGenerator to api.ts | 🔴 High | ~15 min | Blocked on #682-#686 |
+| #688 | Verify against 20 tutorials | 🔴 High | ~20 min | Blocked on #687 |
+| #689 | Update HintModal.vue | 🟡 Medium | ~15 min | Blocked on #687 |
+| #690 | Port DifficultyRater to TS | 🟡 Medium | ~15 min | Ready |
+| #691 | Port PuzzleGenerator to TS | 🟡 Medium | ~20 min | Blocked on #690 |
+| #692 | Wire PuzzleGenerator to API | 🟡 Medium | ~15 min | Blocked on #691 |
+| #693 | Port SolvingProgress/SolvingStep types | 🔴 High | ~10 min | Ready |
+| #694 | Port StepRecorder to TS | 🔴 High | ~20 min | Blocked on #693 |
+| #695 | Port SolverWithSteps to TS | 🔴 High | ~10 min | Blocked on #694 |
+| #696 | Wire SolverWithSteps to API | 🔴 High | ~15 min | Blocked on #695 |
 
-### 🟢 Backlog
+### 🟢 Backlog — Test Automation
 
 | Issue | Title | Notes |
 |-------|-------|-------|
-| #666 | Client-side TS migration (umbrella) | 3 phases: hints, step-by-step, generation |
-| #669 | Port HintGenerator to TS | Part of #666, Phase 1 |
-| #670 | Port step-by-step to TS | Part of #666, Phase 2 |
-| #671 | Port puzzle generation to TS | Part of #666, Phase 3 |
-| #555 | Test systemd crash loop prevention | Ops task — needs VPS SSH access. Not actionable from planner. Systemd RestartSec already configured. |
+| #697 | Tutorial validation tests (20) | Part of #678 |
+| #698 | Quiz validation tests (20) | Part of #678 |
+| #699 | Difficulty generation tests (9) | Part of #678 |
+| #700 | Rate limiting test | Part of #678 |
+| #701 | Endpoint error handling tests | Part of #678 |
+| #679 | UI/UX source code audit automation | Needs breakdown |
+| #680 | localStorage persistence tests | Needs breakdown |
+| #555 | Test systemd crash loop prevention | Ops task, blocked on VPS SSH |
 
 ### Recently Completed (May–June 2026)
 

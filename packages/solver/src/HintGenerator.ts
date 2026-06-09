@@ -24,7 +24,6 @@ const detectors: TechniqueDetector[] = [
   new HiddenSingleDetector(),
   new PointingPairDetector(),
   new BoxLineReductionDetector()
-  // TODO: Add more detectors as they are ported from Kotlin
 ]
 
 // ---------------------------------------------------------------------------
