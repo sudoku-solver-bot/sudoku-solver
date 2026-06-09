@@ -13,7 +13,7 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 
 | Issue | Title | Priority | Effort | Status |
 |-------|-------|----------|--------|--------|
-| #669 | Port HintGenerator to TypeScript — core technique detection | High | 3-5 days | Next up |
+| #669 | Port HintGenerator to TypeScript | High | ~3h total | Broken into #682-#689 |
 | #670 | Port step-by-step solving to TypeScript | High | 2-3 days | |
 | #671 | Port puzzle generation to TypeScript | Medium | 2-3 days | |
 | #678 | Automate API test suite | Medium | — | |
