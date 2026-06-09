@@ -76,7 +76,7 @@ class TwoStringKiteCandidateEliminator : CandidateEliminator {
                     val (br1, br2) = colLinks[b.col]!!
                     val colOtherRow = if (br1 == b.row) br2 else br1
                     val target = Coord(colOtherRow, rowOtherCol)
-                    if (board.eraseCandidateValue(target, value)) anyUpdate = true
+                    if (!board.isConfirmed(target) && board.eraseCandidateValue(target, value)) anyUpdate = true
                 }
 
                 // Try: cell A forms col strong link, cell B forms row strong link
@@ -86,7 +86,7 @@ class TwoStringKiteCandidateEliminator : CandidateEliminator {
                     val (bc1, bc2) = rowLinks[b.row]!!
                     val rowOtherCol = if (bc1 == b.col) bc2 else bc1
                     val target = Coord(colOtherRow, rowOtherCol)
-                    if (board.eraseCandidateValue(target, value)) anyUpdate = true
+                    if (!board.isConfirmed(target) && board.eraseCandidateValue(target, value)) anyUpdate = true
                 }
             }
         }

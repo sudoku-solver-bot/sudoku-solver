@@ -81,13 +81,13 @@ class EmptyRectangleCandidateEliminator : CandidateEliminator {
                             val r2InBox = Coord(r2, erCol).region == regionIndex
                             if (r1InBox && !r2InBox) {
                                 val target = Coord(r2, erCol)
-                                if ((board.candidatePattern(target) and mask) != 0) {
+                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
                                     board.eraseCandidateValue(target, value)
                                     anyUpdate = true
                                 }
                             } else if (r2InBox && !r1InBox) {
                                 val target = Coord(r1, erCol)
-                                if ((board.candidatePattern(target) and mask) != 0) {
+                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
                                     board.eraseCandidateValue(target, value)
                                     anyUpdate = true
                                 }
@@ -102,13 +102,13 @@ class EmptyRectangleCandidateEliminator : CandidateEliminator {
                             val c2InBox = Coord(erRow, c2).region == regionIndex
                             if (c1InBox && !c2InBox) {
                                 val target = Coord(erRow, c2)
-                                if ((board.candidatePattern(target) and mask) != 0) {
+                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
                                     board.eraseCandidateValue(target, value)
                                     anyUpdate = true
                                 }
                             } else if (c2InBox && !c1InBox) {
                                 val target = Coord(erRow, c1)
-                                if ((board.candidatePattern(target) and mask) != 0) {
+                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
                                     board.eraseCandidateValue(target, value)
                                     anyUpdate = true
                                 }

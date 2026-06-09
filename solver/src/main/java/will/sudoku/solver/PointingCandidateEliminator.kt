@@ -50,7 +50,7 @@ class PointingCandidateEliminator : CandidateEliminator {
                 for (col in 0..8) {
                     if (col / 3 == boxCol) continue
                     val cell = Coord(firstRow, col)
-                    if (board.eraseCandidateValue(cell, value)) anyUpdate = true
+                    if (!board.isConfirmed(cell) && board.eraseCandidateValue(cell, value)) anyUpdate = true
                 }
             }
 
@@ -60,7 +60,7 @@ class PointingCandidateEliminator : CandidateEliminator {
                 for (row in 0..8) {
                     if (row / 3 == boxRow) continue
                     val cell = Coord(row, firstCol)
-                    if (board.eraseCandidateValue(cell, value)) anyUpdate = true
+                    if (!board.isConfirmed(cell) && board.eraseCandidateValue(cell, value)) anyUpdate = true
                 }
             }
         }
