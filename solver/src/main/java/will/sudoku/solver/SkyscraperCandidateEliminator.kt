@@ -61,7 +61,7 @@ class SkyscraperCandidateEliminator : CandidateEliminator {
                     // Eliminate from cells that see both non-aligned ends
                     val targets = listOf(Coord(r1, c2), Coord(r2, c1))
                     for (t in targets) {
-                        if (board.eraseCandidateValue(t, value)) {
+                        if (!board.isConfirmed(t) && board.eraseCandidateValue(t, value)) {
                             anyUpdate = true
                         }
                     }
@@ -102,7 +102,7 @@ class SkyscraperCandidateEliminator : CandidateEliminator {
 
                     val targets = listOf(Coord(r1, c2), Coord(r2, c1))
                     for (t in targets) {
-                        if (board.eraseCandidateValue(t, value)) {
+                        if (!board.isConfirmed(t) && board.eraseCandidateValue(t, value)) {
                             anyUpdate = true
                         }
                     }
