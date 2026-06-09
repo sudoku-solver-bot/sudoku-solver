@@ -1,8 +1,8 @@
 import type { Board } from '../Board'
 import { Coord } from '../Coord'
 import { CoordGroup } from '../CoordGroup'
-import type { Hint, TechniqueDetector } from '../HintGenerator'
-import { Technique } from '../HintGenerator'
+import type { Hint, TechniqueDetector } from '../HintTypes'
+import { Technique } from '../HintTypes'
 
 /**
  * Detects hidden singles — values that appear only once in a row, column, or region.
