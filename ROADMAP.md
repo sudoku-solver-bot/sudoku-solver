@@ -36,10 +36,10 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 
 | Issue | Title | Priority | Est. | Status |
 |-------|-------|----------|------|--------|
-| #682 | HintGenerator core infrastructure + basic detectors | 🔴 High | ~20 min | Ready for coder |
-| #683 | PointingPair + BoxLineReduction detectors | 🔴 High | ~15 min | Blocked on #682 |
-| #684 | Subset detectors (4) | 🔴 High | ~20 min | Blocked on #682 |
-| #685 | Fish + wing detectors (4) | 🔴 High | ~20 min | Blocked on #682 |
+| #682 | HintGenerator core infrastructure + basic detectors | 🔴 High | ~20 min | ✅ Closed — PR #702 |
+| #683 | PointingPair + BoxLineReduction detectors | 🔴 High | ~15 min | ✅ Closed — PR #703 |
+| #684 | Subset detectors (4) | 🔴 High | ~20 min | ✅ Closed — PR #714 |
+| #685 | Fish + wing detectors (4) | 🔴 High | ~20 min | ✅ Closed — PR #714 |
 | #686 | Eliminator-based techniques (8) | 🔴 High | ~25 min | Blocked on #682 |
 | #687 | Wire HintGenerator to api.ts | 🔴 High | ~15 min | Blocked on #682-#686 |
 | #688 | Verify against 20 tutorials | 🔴 High | ~20 min | Blocked on #687 |
