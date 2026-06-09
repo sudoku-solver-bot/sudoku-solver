@@ -7,7 +7,7 @@ import { Technique } from '../src/HintTypes'
 import { generate } from '../src/HintGenerator'
 
 // Load tutorial lessons from the web resources
-const lessonsPath = join(process.cwd(), '..', '..', 'web/src/main/resources/tutorials/lessons.json')
+const lessonsPath = join(process.cwd(), 'web/src/main/resources/tutorials/lessons.json')
 const lessons = JSON.parse(readFileSync(lessonsPath, 'utf-8'))
 
 // Map lesson technique names to Technique enum values
