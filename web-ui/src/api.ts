@@ -63,6 +63,58 @@ export async function solvePuzzle(puzzle: string, includeMetrics = false): Promi
 }
 
 // ---------------------------------------------------------------------------
+// Solve with steps — client-first, server fallback
+// ---------------------------------------------------------------------------
+
+export async function solveWithSteps(puzzle: string): Promise<unknown> {
+  const clientSolver = await loadClientSolver()
+  if (clientSolver) {
+    try {
+      const startTime = performance.now()
+      const board = clientSolver.BoardReader.fromString(puzzle.replace(/\./g, '0'), clientSolver.Board)
+      const wrapper = new clientSolver.SolverWithSteps()
+      const [solution, progress] = wrapper.solveWithSteps(board)
+      const elapsed = performance.now() - startTime
+
+      if (solution) {
+        // Convert solution to string
+        let solutionStr = ''
+        for (let r = 0; r < 9; r++) {
+          for (let c = 0; c < 9; c++) {
+            const coord = clientSolver.Coord.all[r * 9 + c]
+            solutionStr += solution.isConfirmed(coord) ? solution.value(coord) : '.'
+          }
+        }
+
+        // Convert progress steps to plain objects
+        const steps = progress.steps.map((s: any) => ({
+          stepNumber: s.stepNumber,
+          stepType: s.stepType,
+          explanation: s.explanation,
+          affectedCells: s.affectedCells?.map((c: any) => ({ row: c.row, col: c.col })) ?? [],
+          values: [...(s.values ?? [])]
+        }))
+
+        return {
+          solved: true,
+          solution: solutionStr,
+          steps,
+          stepCount: steps.length,
+          techniquesUsed: [...new Set(steps.map((s: any) => s.stepType))],
+          solveTimeMs: Math.round(elapsed * 100) / 100,
+          clientSolver: true
+        }
+      }
+    } catch {
+      // Client failed — fall through to server
+    }
+  }
+
+  // Fall back to server API
+  return apiPost(`${API_BASE}/solve-steps`, { puzzle })
+}
+
+// ---------------------------------------------------------------------------
 // Generate — always server (generation logic not on client)
 // ---------------------------------------------------------------------------
 
