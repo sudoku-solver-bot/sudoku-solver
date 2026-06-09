@@ -1,7 +1,7 @@
 import type { Board } from '../Board'
 import { Coord } from '../Coord'
-import type { Hint, TechniqueDetector } from '../HintGenerator'
-import { Technique } from '../HintGenerator'
+import type { Hint, TechniqueDetector } from '../HintTypes'
+import { Technique } from '../HintTypes'
 
 /**
  * Detects naked singles — cells with only one remaining candidate.
