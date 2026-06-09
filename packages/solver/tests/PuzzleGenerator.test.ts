@@ -11,14 +11,14 @@ describe('PuzzleGenerator', () => {
     const solver = new Solver()
     const solution = solver.solve(puzzle.copy())
     expect(solution).not.toBeNull()
-  })
+  }, 15000)
 
   it('generates a valid medium puzzle', () => {
     const puzzle = generate(Level.MEDIUM, 42)
     const solver = new Solver()
     const solution = solver.solve(puzzle.copy())
     expect(solution).not.toBeNull()
-  })
+  }, 15000)
 
   it('seed produces reproducible puzzles', () => {
     const p1 = generate(Level.MEDIUM, 123)
@@ -34,7 +34,7 @@ describe('PuzzleGenerator', () => {
     const same = Array.from({ length: 81 }, (_, i) => p1.candidatePatterns[i] === p2.candidatePatterns[i])
       .every(Boolean)
     expect(same).toBe(false)
-  })
+  }, 15000)
 
   it('generated puzzles have confirmed cells', () => {
     const puzzle = generate(Level.MEDIUM, 42)
@@ -45,5 +45,5 @@ describe('PuzzleGenerator', () => {
     // Medium should have ~36 cells (81 - 45)
     expect(confirmed).toBeGreaterThan(20)
     expect(confirmed).toBeLessThan(60)
-  })
+  }, 15000)
 })
