@@ -36,18 +36,18 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 
 | Issue | Title | Priority | Est. | Status |
 |-------|-------|----------|------|--------|
-| #682 | HintGenerator core infrastructure + basic detectors | 🔴 High | ~20 min | Ready for coder |
-| #683 | PointingPair + BoxLineReduction detectors | 🔴 High | ~15 min | Blocked on #682 |
-| #684 | Subset detectors (4) | 🔴 High | ~20 min | Blocked on #682 |
-| #685 | Fish + wing detectors (4) | 🔴 High | ~20 min | Blocked on #682 |
+| #682 | HintGenerator core infrastructure + basic detectors | 🔴 High | ~20 min | ✅ Closed — PR #702 |
+| #683 | PointingPair + BoxLineReduction detectors | 🔴 High | ~15 min | ✅ Closed — PR #703 |
+| #684 | Subset detectors (4) | 🔴 High | ~20 min | ✅ Closed — PR #714 |
+| #685 | Fish + wing detectors (4) | 🔴 High | ~20 min | ✅ Closed — PR #714 |
 | #686 | Eliminator-based techniques (8) | 🔴 High | ~25 min | Blocked on #682 |
 | #687 | Wire HintGenerator to api.ts | 🔴 High | ~15 min | Blocked on #682-#686 |
 | #688 | Verify against 20 tutorials | 🔴 High | ~20 min | Blocked on #687 |
 | #689 | Update HintModal.vue | 🟡 Medium | ~15 min | Blocked on #687 |
-| #690 | Port DifficultyRater to TS | 🟡 Medium | ~15 min | Ready |
+| #690 | Port DifficultyRater to TS | 🟡 Medium | ~15 min | ✅ Closed — PR #717 |
 | #691 | Port PuzzleGenerator to TS | 🟡 Medium | ~20 min | Blocked on #690 |
 | #692 | Wire PuzzleGenerator to API | 🟡 Medium | ~15 min | Blocked on #691 |
-| #693 | Port SolvingProgress/SolvingStep types | 🔴 High | ~10 min | Ready |
+| #693 | Port SolvingProgress/SolvingStep types | 🔴 High | ~10 min | ✅ Closed — PR #717 |
 | #694 | Port StepRecorder to TS | 🔴 High | ~20 min | Blocked on #693 |
 | #695 | Port SolverWithSteps to TS | 🔴 High | ~10 min | Blocked on #694 |
 | #696 | Wire SolverWithSteps to API | 🔴 High | ~15 min | Blocked on #695 |
