@@ -115,10 +115,43 @@ export async function solveWithSteps(puzzle: string): Promise<unknown> {
 }
 
 // ---------------------------------------------------------------------------
-// Generate — always server (generation logic not on client)
+// Generate — client-first, server fallback
 // ---------------------------------------------------------------------------
 
-export async function generatePuzzle(difficulty = 'MEDIUM'): Promise<unknown> {
+export async function generatePuzzle(difficulty = 'MEDIUM', seed?: number): Promise<unknown> {
+  // Try client-side generator first
+  const clientSolver = await loadClientSolver()
+  if (clientSolver) {
+    try {
+      const startTime = performance.now()
+      const levelMap: Record<string, number> = {
+        EASY: 1, MEDIUM: 2, HARD: 3, EXPERT: 4, VERY_HARD: 5, MASTER: 6
+      }
+      const level = levelMap[difficulty.toUpperCase()] ?? 2
+      const puzzle = clientSolver.generatePuzzle(level, seed)
+      const elapsed = performance.now() - startTime
+
+      // Convert board to string
+      let puzzleStr = ''
+      for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+          const coord = clientSolver.Coord.all[r * 9 + c]
+          puzzleStr += puzzle.isConfirmed(coord) ? puzzle.value(coord) : '.'
+        }
+      }
+
+      return {
+        puzzle: puzzleStr,
+        difficulty,
+        generateTimeMs: Math.round(elapsed * 100) / 100,
+        clientSolver: true
+      }
+    } catch {
+      // Client failed — fall through to server
+    }
+  }
+
+  // Fall back to server API
   return apiPost(`${API_BASE}/generate`, { difficulty })
 }
 
