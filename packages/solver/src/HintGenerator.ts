@@ -18,12 +18,28 @@ import { NakedSingleDetector } from './detectors/NakedSingleDetector'
 import { HiddenSingleDetector } from './detectors/HiddenSingleDetector'
 import { PointingPairDetector } from './detectors/PointingPairDetector'
 import { BoxLineReductionDetector } from './detectors/BoxLineReductionDetector'
+import { NakedPairDetector } from './detectors/NakedPairDetector'
+import { NakedTripleDetector } from './detectors/NakedTripleDetector'
+import { HiddenPairDetector } from './detectors/HiddenPairDetector'
+import { HiddenTripleDetector } from './detectors/HiddenTripleDetector'
+import { XWingDetector } from './detectors/XWingDetector'
+import { SwordfishDetector } from './detectors/SwordfishDetector'
+import { XYWingDetector } from './detectors/XYWingDetector'
+import { XYZWingDetector } from './detectors/XYZWingDetector'
 
 const detectors: TechniqueDetector[] = [
   new NakedSingleDetector(),
   new HiddenSingleDetector(),
   new PointingPairDetector(),
-  new BoxLineReductionDetector()
+  new BoxLineReductionDetector(),
+  new NakedPairDetector(),
+  new NakedTripleDetector(),
+  new HiddenPairDetector(),
+  new HiddenTripleDetector(),
+  new XWingDetector(),
+  new SwordfishDetector(),
+  new XYWingDetector(),
+  new XYZWingDetector()
 ]
 
 // ---------------------------------------------------------------------------
