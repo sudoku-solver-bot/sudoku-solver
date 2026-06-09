@@ -17,8 +17,8 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 | #670 | Port step-by-step solving to TypeScript | High | ~1h total | Broken into #693-#696 |
 | #671 | Port puzzle generation to TypeScript | Medium | ~50 min total | Broken into #690-#692 |
 | #678 | Automate API test suite | Medium | ~1h total | Broken into #697-#701 |
-| #679 | Automate UI/UX source code audit | Medium | ~40 min | ⚠️ Needs breakdown |
-| #680 | Automate localStorage persistence tests | Medium | ~30 min | ⚠️ Needs breakdown |
+| #679 | Automate UI/UX source code audit | Medium | ~60 min total | Broken into #704-#708 |
+| #680 | Automate localStorage persistence tests | Medium | ~45 min total | Broken into #709-#712 |
 | #555 | Test systemd crash loop prevention | Medium | — | Ops task, blocked on VPS SSH |
 
 ### Completed This Sprint (June 7-8)
@@ -61,8 +61,15 @@ Stabilization complete. TS solver at full parity with Kotlin (20 eliminators). N
 | #699 | Difficulty generation tests (9) | Part of #678 |
 | #700 | Rate limiting test | Part of #678 |
 | #701 | Endpoint error handling tests | Part of #678 |
-| #679 | UI/UX source code audit automation | Needs breakdown |
-| #680 | localStorage persistence tests | Needs breakdown |
+| #704 | Empty cell rendering + ARIA labels audit | Part of #679 |
+| #705 | Keyboard navigation audit | Part of #679 |
+| #706 | Dark/colorblind/contrast modes audit | Part of #679 |
+| #707 | Number bar + highlight priority audit | Part of #679 |
+| #708 | Tutorial highlights + themes audit | Part of #679 |
+| #709 | localStorage key existence checks | Part of #680 |
+| #710 | Game state save/restore tests | Part of #680 |
+| #711 | Preference persistence tests | Part of #680 |
+| #712 | Tutorial progress + saved puzzles tests | Part of #680 |
 | #555 | Test systemd crash loop prevention | Ops task, blocked on VPS SSH |
 
 ### Recently Completed (May–June 2026)
