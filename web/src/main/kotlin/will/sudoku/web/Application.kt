@@ -54,7 +54,7 @@ fun Application.module() {
 
     // Rate limiting: 100 requests per minute per IP
     install(RateLimit) {
-        register {
+        global {
             rateLimiter(100, 1.minutes)
             requestKey { call ->
                 call.request.local.remoteAddress
