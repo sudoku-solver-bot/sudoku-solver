@@ -83,11 +83,7 @@ class TutorialQuizValidationTest {
 
         for (quiz in quizzes) {
             for (q in quiz.questions) {
-                val answerVal = q.answerValue.toIntOrNull()
-                if (answerVal == null) {
-                    violations.add("${q.id}: answerValue '${q.answerValue}' is not a number")
-                    continue
-                }
+                val answerVal = q.answerValue
 
                 val board = helper.prepareBoardBasic(q.puzzle)
                 val candidates = helper.getCandidates(board, q.answerCell)

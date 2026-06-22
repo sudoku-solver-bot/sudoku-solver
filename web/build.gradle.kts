@@ -259,13 +259,13 @@ val validateJsonData by tasks.registering {
                 error("$qId: answerCell $ac points to filled cell '${puzzle[ac]}'")
             }
 
-            val avMatch = Regex("\"answerValue\"\\s*:\\s*\"([^\"]+)\"").find(qJson)
+            val avMatch = Regex("\"answerValue\"\\s*:\\s*(\\d+)").find(qJson)
             if (avMatch == null) {
                 error("$qId: missing answerValue")
             } else {
                 val av = avMatch.groupValues[1]
                 if (av.length != 1 || av[0] !in '1'..'9') {
-                    error("$qId: answerValue='$av' is not a digit 1-9")
+                    error("$qId: answerValue=$av is not a digit 1-9")
                 }
             }
 

@@ -12,7 +12,7 @@ data class QuizQuestion(
     val question: String,
     val hint: String,
     val answerCell: Int,
-    val answerValue: String,
+    val answerValue: Int,
     val highlightCells: List<Int>,
     val highlightColor: String
 )
