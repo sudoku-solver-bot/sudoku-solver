@@ -514,6 +514,13 @@ const handleKeyDown = (e) => {
     getHint()
     return
   }
+
+  // P for pencil mode toggle
+  if (e.key === 'p' || e.key === 'P') {
+    e.preventDefault()
+    pencilMode.value = !pencilMode.value
+    return
+  }
 }
 
 onMounted(() => {

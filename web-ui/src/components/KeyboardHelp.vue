@@ -43,6 +43,8 @@ const shortcuts: Shortcut[] = [
   { key: '↑ ↓ ← →', desc: 'Navigate cells' },
   { key: '1-9', desc: 'Enter number' },
   { key: 'Delete / ⌫', desc: 'Clear cell' },
+  { key: 'P', desc: 'Toggle pencil mode' },
+  { key: 'H', desc: 'Get hint' },
   { key: 'Ctrl+Z', desc: 'Undo' },
   { key: 'Ctrl+Y', desc: 'Redo' },
   { key: '?', desc: 'Show this help' },
