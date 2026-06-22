@@ -78,7 +78,7 @@ data class QuizQuestion(
     val question: String,
     val hint: String,
     val answerCell: Int,
-    val answerValue: String,
+    val answerValue: Int,
     val explanation: String = "",
     val highlightCells: List<Int> = emptyList(),
     val highlightColor: String = "blue",
