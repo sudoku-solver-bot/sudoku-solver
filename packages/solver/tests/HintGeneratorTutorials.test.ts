@@ -1,66 +1,92 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync } from 'fs'
-import { join, dirname } from 'path'
-import { fileURLToPath } from 'url'
 import { Board } from '../src/Board'
 import { BoardReader } from '../src/BoardReader'
+import { Coord } from '../src/Coord'
 import { Technique } from '../src/HintTypes'
 import { generate } from '../src/HintGenerator'
+import { loadTutorialTestData, isValidPuzzleString } from './hintGeneratorTestData'
 
-// Load tutorial lessons from the web resources
-// Resolve relative to this test file's location
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const lessonsPath = join(__dirname, '../../../web/src/main/resources/tutorials/lessons.json')
-const lessons = JSON.parse(readFileSync(lessonsPath, 'utf-8'))
+const tutorialData = loadTutorialTestData()
 
-// Map lesson technique names to Technique enum values
-const techniqueMap: Record<string, Technique> = {
-    'Naked Single': Technique.NAKED_SINGLE,
-    'Hidden Single': Technique.HIDDEN_SINGLE,
-    'Pointing Pair': Technique.POINTING_PAIR,
-    'Pointing Pair / Triple': Technique.POINTING_PAIR,
-    'Box/Line Reduction': Technique.BOX_LINE_REDUCTION,
-    'Naked Pair': Technique.NAKED_PAIR,
-    'Naked Triple': Technique.NAKED_TRIPLE,
-    'Hidden Pair': Technique.HIDDEN_PAIR,
-    'Hidden Triple': Technique.HIDDEN_TRIPLE,
-    'X-Wing': Technique.X_WING,
-    'Swordfish': Technique.SWORDFISH,
-    'XY-Wing': Technique.XY_WING,
-    'XYZ-Wing': Technique.XYZ_WING,
-    'Unique Rectangle': Technique.UNIQUE_RECTANGLE,
-    'Simple Coloring': Technique.SIMPLE_COLORING,
-    'W-Wing': Technique.W_WING,
-    'ALS-XZ': Technique.ALS_XZ,
-    'Franken Fish': Technique.FRANKEN_FISH,
-    'Mutant Fish': Technique.MUTANT_FISH,
-    'Death Blossom': Technique.DEATH_BLOSSOM,
-    'Forcing Chains': Technique.FORCING_CHAINS
+/**
+ * Check that a value does not conflict with the given row, column, and box
+ * on the *original* board state (not affected by generate's internal mutations).
+ */
+function isValidHint(board: Board, value: number, row: number, col: number): boolean {
+  // Cell should be empty on the original board
+  if (board.value(Coord.all[row * 9 + col]) !== 0) return false
+
+  // Check row
+  for (let c = 0; c < 9; c++) {
+    if (board.value(Coord.all[row * 9 + c]) === value) return false
+  }
+  // Check column
+  for (let r = 0; r < 9; r++) {
+    if (board.value(Coord.all[r * 9 + col]) === value) return false
+  }
+  // Check box
+  const boxRow = Math.floor(row / 3) * 3
+  const boxCol = Math.floor(col / 3) * 3
+  for (let dr = 0; dr < 3; dr++) {
+    for (let dc = 0; dc < 3; dc++) {
+      if (board.value(Coord.all[(boxRow + dr) * 9 + (boxCol + dc)]) === value) return false
+    }
+  }
+  return true
 }
 
 describe('HintGenerator — tutorial puzzle verification', () => {
-    for (const lesson of lessons) {
-        const puzzle = lesson.examplePuzzle
-        const expectedTechnique = techniqueMap[lesson.technique]
-
-        it(`${lesson.id} (${lesson.technique}) produces a valid hint`, () => {
-            const board = BoardReader.fromString(puzzle, Board)
-            const hint = generate(board)
-
-            // Some puzzles are fully solved by basic elimination — no hint needed
-            if (hint) {
-                expect(hint.value).toBeGreaterThanOrEqual(1)
-                expect(hint.value).toBeLessThanOrEqual(9)
-                expect(hint.coord.row).toBeGreaterThanOrEqual(0)
-                expect(hint.coord.row).toBeLessThanOrEqual(8)
-                expect(hint.coord.col).toBeGreaterThanOrEqual(0)
-                expect(hint.coord.col).toBeLessThanOrEqual(8)
-                expect(hint.explanation).toBeTruthy()
-                expect(hint.explanation.length).toBeGreaterThan(0)
-                expect(Object.values(Technique)).toContain(hint.technique)
-            }
-            // Whether hint found or not, verify no crash
-            expect(true).toBe(true)
-        })
+  // Ensure we have all 20 tutorials
+  it('has test data for all 20 tutorials', () => {
+    expect(tutorialData).toHaveLength(20)
+    for (const td of tutorialData) {
+      expect(isValidPuzzleString(td.puzzle)).toBe(true)
     }
+  })
+
+  for (const { id, technique, puzzle, expectedTechnique } of tutorialData) {
+    describe(`${id} (${technique})`, () => {
+      // #744: Hint technique correctness
+      it('produces a hint with a valid technique', () => {
+        const board = BoardReader.fromString(puzzle, Board)
+        const hint = generate(board)
+        if (hint !== null) {
+          expect(Object.values(Technique)).toContain(hint.technique)
+        }
+      })
+
+      // #745: Cell and value validity
+      it('returns a valid, non-conflicting hint', () => {
+        const originalBoard = BoardReader.fromString(puzzle, Board)
+        const workBoard = originalBoard.copy()
+        const hint = generate(workBoard)
+
+        // hint === null is acceptable — some puzzles may not produce a
+        // hint with the current technique set (e.g. technique not yet wired)
+        if (hint === null) return
+
+        const { coord, value } = hint
+
+        // Cell coordinates are within bounds
+        expect(coord.row).toBeGreaterThanOrEqual(0)
+        expect(coord.row).toBeLessThanOrEqual(8)
+        expect(coord.col).toBeGreaterThanOrEqual(0)
+        expect(coord.col).toBeLessThanOrEqual(8)
+
+        // Value is valid
+        expect(value).toBeGreaterThanOrEqual(1)
+        expect(value).toBeLessThanOrEqual(9)
+
+        // Explanation is non-empty
+        expect(hint.explanation).toBeTruthy()
+        expect(hint.explanation.length).toBeGreaterThan(0)
+
+        // Cell must be empty on the ORIGINAL board
+        expect(originalBoard.value(coord)).toBe(0)
+
+        // Value must not conflict with the ORIGINAL board's row/col/box
+        expect(isValidHint(originalBoard, value, coord.row, coord.col)).toBe(true)
+      })
+    })
+  }
 })
