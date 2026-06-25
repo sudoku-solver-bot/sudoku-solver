@@ -190,9 +190,13 @@ export async function getHintForPuzzle(puzzle: string, technique?: string): Prom
       const hint = clientHG.generateHint(board, options)
       if (hint) {
         return {
-          coord: { row: hint.coord.row, col: hint.coord.col },
-          value: hint.value,
-          technique: hint.technique,
+          hasHint: true,
+          hint: {
+            row: hint.coord.row,
+            col: hint.coord.col,
+            value: hint.value,
+            technique: hint.technique
+          },
           explanation: hint.explanation,
           clientSolver: true
         }
@@ -207,7 +211,24 @@ export async function getHintForPuzzle(puzzle: string, technique?: string): Prom
   const normalized = puzzle.replace(/\./g, '0')
   const body: Record<string, string> = { puzzle: normalized }
   if (technique) body.technique = technique
-  return apiPost(`${API_BASE}/hint`, body)
+  const serverData = await apiPost(`${API_BASE}/hint`, body)
+  
+  // Normalize server response to match client shape
+  if (serverData && (serverData as any).cell) {
+    const d = serverData as any
+    return {
+      hasHint: true,
+      hint: {
+        row: d.cell.row,
+        col: d.cell.col,
+        value: d.value,
+        technique: d.technique
+      },
+      explanation: d.explanation,
+      clientSolver: false
+    }
+  }
+  return { hasHint: false, error: 'No hint found' }
 }
 
 // ---------------------------------------------------------------------------
