@@ -1,6 +1,7 @@
-import type { Board } from './Board'
+import { Board } from './Board'
+import { BoardReader } from './BoardReader'
 import { Coord } from './Coord'
-import { Solver } from './Solver'
+import { Solver, SolverConfig } from './Solver'
 import { StepRecorder } from './StepRecorder'
 import { SolvingProgress } from './SolvingProgress'
 
@@ -24,8 +25,8 @@ import { SolvingProgress } from './SolvingProgress'
 export class SolverWithSteps {
   private solver: Solver
 
-  constructor() {
-    this.solver = new Solver()
+  constructor(config?: SolverConfig) {
+    this.solver = new Solver(config)
   }
 
   /**
@@ -42,6 +43,16 @@ export class SolverWithSteps {
     }
 
     return [solution, recorder.progress]
+  }
+
+  /**
+   * Convenience method to solve a puzzle string and get step-by-step results.
+   */
+  static solveWithSteps(puzzleString: string): [Board | null, SolvingProgress]
+  static solveWithSteps(puzzleString: string, config: SolverConfig): [Board | null, SolvingProgress]
+  static solveWithSteps(puzzleString: string, config?: SolverConfig): [Board | null, SolvingProgress] {
+    const board = BoardReader.fromString(puzzleString, Board)
+    return new SolverWithSteps(config).solveWithSteps(board)
   }
 }
 
