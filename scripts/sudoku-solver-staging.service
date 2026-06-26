@@ -1,6 +1,8 @@
 [Unit]
 Description=Sudoku Dojo (Staging)
 After=network.target
+StartLimitIntervalSec=60s
+StartLimitBurst=5
 
 [Service]
 Type=simple
@@ -13,8 +15,6 @@ Environment=BUILD_TIMESTAMP_FILE=/opt/sudoku-solver-staging/.build-timestamp
 ExecStart=/opt/sudoku-solver-staging/bin/web
 Restart=on-failure
 RestartSec=2s
-StartLimitIntervalSec=60s
-StartLimitBurst=5
 
 # Security hardening
 NoNewPrivileges=yes
