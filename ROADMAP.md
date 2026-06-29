@@ -1,6 +1,6 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-06-29
+**Last updated:** 2026-06-30
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
@@ -35,7 +35,7 @@ TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenera
 
 The issue board is completely clean:
 - **sudoku-solver-bot/sudoku-solver**: 0 open issues
-- **novaclawhk/video-pipeline**: 2 open bugs (see below)
+- **novaclawhk/video-pipeline**: 1 open enhancement (see below)
 
 ---
 
@@ -69,10 +69,13 @@ The issue board is completely clean:
 
 | # | Title | Priority | Status |
 |---|-------|----------|--------|
-| 101 | Duplicate pipeline workers for same slug | 🔴 High | Triage done — needs plan |
-| 97  | VAD filter stops JAV transcription early | 🔴 High | Triage done — needs plan |
+| #161 | Auto-resume pipeline after crash (within-step recovery) | 🟡 Medium | Broken down — sub-issues #167, #168, #169 coder-assigned |
 
-Both bugs have detailed analysis with root causes and suggested fixes but need `plan` issues and coder assignment.
+### Recent Milestones
+- ✅ **Task-queue scheduler epic (#154)** — All 6 PRs merged. Migrated from video-sequential to resource-aware task-queue dispatcher with dependency gating, resource capacity management, subprocess executor, and full integration into `process_slug()`.
+- ✅ **CLI overhaul (#134 epic)** — Full command groups (config, auth, system, videos) with CliRunner-based tests, deploy health checks, rollback, stale unit cleanup.
+- ✅ **Old bugs closed** — #101 (duplicate workers), #97 (VAD filter), #143 (stale uvicorn), #142 (systemd unit tests) all fixed.
+- ✅ **#153** — Env-specific Playwright BDD test failures (documented and closed).
 
 ---
 
