@@ -1,6 +1,6 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-06-30
+**Last updated:** 2026-06-30 (updated 09:01)
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
@@ -69,13 +69,19 @@ The issue board is completely clean:
 
 | # | Title | Priority | Status |
 |---|-------|----------|--------|
-| #161 | Auto-resume pipeline after crash (within-step recovery) | 🟡 Medium | Broken down — sub-issues #167, #168, #169 coder-assigned |
+| # | Title | Priority | Status |
+|---|-------|----------|--------|
+| #181 | 4-copy workspace consolidation (ADR-0004) | 🟡 Medium | Proposed — pending review |
+| #177 | Comprehensive USER.md guide | 🟡 Medium | Plan #183 created, coder-assigned |
+| #179 | DEVELOPER.md/DEVOPS.md missing from pip package | 🟡 Medium | Plan #182 created, coder-assigned |
 
 ### Recent Milestones
 - ✅ **Task-queue scheduler epic (#154)** — All 6 PRs merged. Migrated from video-sequential to resource-aware task-queue dispatcher with dependency gating, resource capacity management, subprocess executor, and full integration into `process_slug()`.
+- ✅ **Auto-resume after crash (#161)** — All 3 sub-plans shipped: transcribe checkpoint (#167), crash retry flag (#168), systemd PID tracking (#169). PRs #171, #172, #173 merged.
+- ✅ **#175** — Download duration marker (PR #176 merged). ADR-0003 accepted.
+- ✅ **#153** — Env-specific Playwright BDD test failures (documented and closed).
 - ✅ **CLI overhaul (#134 epic)** — Full command groups (config, auth, system, videos) with CliRunner-based tests, deploy health checks, rollback, stale unit cleanup.
 - ✅ **Old bugs closed** — #101 (duplicate workers), #97 (VAD filter), #143 (stale uvicorn), #142 (systemd unit tests) all fixed.
-- ✅ **#153** — Env-specific Playwright BDD test failures (documented and closed).
 
 ---
 
