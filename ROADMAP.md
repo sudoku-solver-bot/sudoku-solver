@@ -31,11 +31,11 @@ TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenera
 - ✅ **#749** — ADR-0008: Weekly Issue Board Audit (process established)
 - ✅ **#752** — Agent session-launch repo scoping guard (architecture)
 
-### 🟢 No Open Issues
+### 🟢 Sudoku-solver Issues
 
 The issue board is completely clean:
 - **sudoku-solver-bot/sudoku-solver**: 0 open issues
-- **novaclawhk/video-pipeline**: 1 open enhancement (see below)
+- **novaclawhk/video-pipeline**: 7 open issues (see below)
 
 ---
 
@@ -69,13 +69,17 @@ The issue board is completely clean:
 
 | # | Title | Priority | Status |
 |---|-------|----------|--------|
-| # | Title | Priority | Status |
-|---|-------|----------|--------|
-| #181 | 4-copy workspace consolidation (ADR-0004) | 🟡 Medium | Proposed — pending review |
-| #177 | Comprehensive USER.md guide | 🟡 Medium | Plan #183 created, coder-assigned |
-| #179 | DEVELOPER.md/DEVOPS.md missing from pip package | 🟡 Medium | Plan #182 created, coder-assigned |
+| #228 | Move data layer dashboard/ → service/ | 🟡 Medium | Assigned to coder — in progress |
+| #229 | Move API routes to service/ | 🟡 Medium | Assigned to coder — in progress |
+| #230 | Fix imports (dashboard → service) | 🟡 Medium | Assigned to coder — in progress |
+| #231 | Refactor web.py (remove direct DB) | 🔴 High | Assigned to coder — in progress |
+| #232 | Clean up dashboard main.py | 🟡 Medium | Assigned to coder — in progress |
+| #233 | Update pyproject.toml Phase 2 | 🟡 Medium | Assigned to coder — in progress |
+| #205 | ADR-0006 Consistent project structure (tracker) | 🟡 Medium | Architecture — Phases 2-4 pending |
 
 ### Recent Milestones
+- ✅ **ADR-0006 Phase 1 complete (Jun 30)** — All 6 sub-issues shipped: module renames (dashboard → dashboard/, pipeline_service/ → service/, pipeline/ → processor/), pyproject.toml consolidation, deploy path updates, test reorganization. 11 PRs merged in 2 hours.
+- 🔄 **ADR-0006 Phase 2 in progress (Jun 30)** — Decouple dashboard from service. 6 sub-issues created: #228 (data layer move), #229 (API routes), #230 (imports), #231 (web.py refactor), #232 (main.py cleanup), #233 (pyproject update). All assigned to coder.
 - ✅ **Task-queue scheduler epic (#154)** — All 6 PRs merged. Migrated from video-sequential to resource-aware task-queue dispatcher with dependency gating, resource capacity management, subprocess executor, and full integration into `process_slug()`.
 - ✅ **Auto-resume after crash (#161)** — All 3 sub-plans shipped: transcribe checkpoint (#167), crash retry flag (#168), systemd PID tracking (#169). PRs #171, #172, #173 merged.
 - ✅ **#175** — Download duration marker (PR #176 merged). ADR-0003 accepted.
