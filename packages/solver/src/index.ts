@@ -21,6 +21,7 @@ import { BoardReader } from './BoardReader'
 import { Board } from './Board'
 import { Coord } from './Coord'
 import { Solver, SolverConfig } from './Solver'
+import { SolverWithSteps } from './SolverWithSteps'
 import type { CandidateEliminator } from './Eliminators'
 
 /**
@@ -141,4 +142,13 @@ export { Level, LEVEL_NAMES, LEVEL_DESCRIPTIONS, rate, rateLevel, isHard } from 
 export type { Rating } from './DifficultyRater'
 export { StepRecorder } from './StepRecorder'
 export { SolverWithSteps } from './SolverWithSteps'
+
+/**
+ * Solve a puzzle and return the step-by-step solving sequence.
+ * Convenience function that wraps SolverWithSteps.
+ */
+export function steps(puzzle: string) {
+  const [, progress] = SolverWithSteps.solveWithSteps(puzzle)
+  return progress
+}
 export { generate as generatePuzzle } from './PuzzleGenerator'
