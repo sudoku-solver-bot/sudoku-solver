@@ -856,65 +856,50 @@ export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
             const cells = region.coords.filter(c => board.candidatePattern(c) & mask)
             if (cells.length < 2) continue
 
-            // Find rows and columns occupied by candidate in this region
-            const candidateRows = new Set(cells.map(c => c.row))
-            const candidateCols = new Set(cells.map(c => c.col))
+            for (const eri of cells) {
+                // ERI must have other candidates in both its row and column
+                // (within the box) — forming an L-shaped pattern.
+                const hasRowBuddy = cells.some(c => c !== eri && c.row === eri.row)
+                const hasColBuddy = cells.some(c => c !== eri && c.col === eri.col)
+                if (!hasRowBuddy || !hasColBuddy) continue
 
-            // Need L-shaped pattern: candidate occupies both multiple rows AND
-            // multiple columns within the box
-            if (candidateRows.size < 2 || candidateCols.size < 2) continue
+                const eriBox = eri.region
+                const eriRow = eri.row
+                const eriCol = eri.col
 
-            // For each pair of candidate rows and columns in the box,
-            // the ERI is at their intersection. Check for strong links.
-            const candRowArr = Array.from(candidateRows)
-            const candColArr = Array.from(candidateCols)
+                // Row strong links: near end shares column with ERI
+                // Target = (ERI.row, farEnd.col)
+                for (const [slRow, [c1, c2]] of rowLinks) {
+                    const farCol: number | null = c1 === eriCol ? c2 : c2 === eriCol ? c1 : null
+                    if (farCol === null) continue
 
-            for (const erRow of candRowArr) {
-                for (const erCol of candColArr) {
-                    // Check for strong link in erRow — one end must be in the box
-                    const rowLink = rowLinks.get(erRow)
-                    if (rowLink) {
-                        const [r1, r2] = rowLink
-                        const r1InBox = Coord.all[r1 * 9 + erCol].region === region.coords[0].region
-                        const r2InBox = Coord.all[r2 * 9 + erCol].region === region.coords[0].region
-                        if (r1InBox && !r2InBox) {
-                            // r2 is outside — eliminate from (r2, erCol)
-                            const target = Coord.all[r2 * 9 + erCol]
-                            if (board.candidatePattern(target) & mask) {
-                                board.eraseCandidateValue(target, value)
-                                anyUpdate = true
-                            }
-                        } else if (r2InBox && !r1InBox) {
-                            // r1 is outside — eliminate from (r1, erCol)
-                            const target = Coord.all[r1 * 9 + erCol]
-                            if (board.candidatePattern(target) & mask) {
-                                board.eraseCandidateValue(target, value)
-                                anyUpdate = true
-                            }
-                        }
+                    const nearEnd = Coord.all[slRow * 9 + eriCol]
+                    if (nearEnd.region === eriBox) continue
+
+                    const target = Coord.all[eriRow * 9 + farCol]
+                    if (target.region === eriBox) continue
+                    if (!(board.candidatePattern(target) & mask)) continue
+
+                    if (board.eraseCandidateValue(target, value)) {
+                        anyUpdate = true
                     }
+                }
 
-                    // Check for strong link in erCol — one end must be in the box
-                    const colLink = colLinks.get(erCol)
-                    if (colLink) {
-                        const [c1, c2] = colLink
-                        const c1InBox = Coord.all[erRow * 9 + c1].region === region.coords[0].region
-                        const c2InBox = Coord.all[erRow * 9 + c2].region === region.coords[0].region
-                        if (c1InBox && !c2InBox) {
-                            // c2 is outside — eliminate from (erRow, c2)
-                            const target = Coord.all[erRow * 9 + c2]
-                            if (board.candidatePattern(target) & mask) {
-                                board.eraseCandidateValue(target, value)
-                                anyUpdate = true
-                            }
-                        } else if (c2InBox && !c1InBox) {
-                            // c1 is outside — eliminate from (erRow, c1)
-                            const target = Coord.all[erRow * 9 + c1]
-                            if (board.candidatePattern(target) & mask) {
-                                board.eraseCandidateValue(target, value)
-                                anyUpdate = true
-                            }
-                        }
+                // Column strong links: near end shares row with ERI
+                // Target = (farEnd.row, ERI.col)
+                for (const [slCol, [r1, r2]] of colLinks) {
+                    const farRow: number | null = r1 === eriRow ? r2 : r2 === eriRow ? r1 : null
+                    if (farRow === null) continue
+
+                    const nearEnd = Coord.all[eriRow * 9 + slCol]
+                    if (nearEnd.region === eriBox) continue
+
+                    const target = Coord.all[farRow * 9 + eriCol]
+                    if (target.region === eriBox) continue
+                    if (!(board.candidatePattern(target) & mask)) continue
+
+                    if (board.eraseCandidateValue(target, value)) {
+                        anyUpdate = true
                     }
                 }
             }

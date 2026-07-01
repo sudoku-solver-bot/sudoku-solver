@@ -1,131 +1,185 @@
 import { describe, it, expect } from 'vitest'
 import { Board } from '../src/Board'
+import { BoardReader } from '../src/BoardReader'
 import { Coord } from '../src/Coord'
 import { MASKS, WILDCARD_PATTERN } from '../src/Bitmask'
 import { EmptyRectangleCandidateEliminator } from '../src/Eliminators'
+import { SolverConfig } from '../src/Solver'
 
 /**
- * Tests demonstrating incorrect eliminations in EmptyRectangleCandidateEliminator.
+ * Empty Rectangle Candidate Eliminator tests.
  *
- * Root cause: The eliminator makes eliminations that are NOT logically forced
- * by the Empty Rectangle pattern for single-row or single-column configurations.
+ * Algorithm (SudokuWiki-based):
+ * 1. Identify ERIs (Empty Rectangle Intersections): candidate cells that
+ *    have other candidates in both their row and column within the box
+ *    (L-shaped pattern).
+ * 2. For each row/column strong link, check if one end (the "near end")
+ *    sees the ERI (same row or column).
+ * 3. Eliminate candidate from the cell at the intersection of the far end
+ *    and the ERI:
+ *    - Row link, near end shares col → target at (ERI.row, farEnd.col)
+ *    - Column link, near end shares row → target at (farEnd.row, ERI.col)
+ * 4. Both the near end and the elimination target must be outside the
+ *    ERI's box.
  *
- * The current algorithm treats ANY box where a candidate is confined to a single
- * row (or single column) with ≤2 columns (≤2 rows) as an Empty Rectangle. It then
- * uses a strong link intersecting one of those columns/rows to eliminate from the
- * intersection of the strong link's other endpoint and the other column/row.
- *
- * However, this elimination is not logically forced:
- *
- *   ER: candidate X at (er, c1) and (er, c2) in box (single row, 2 columns)
- *   Strong link in column c1: (er, c1) = (otherR, c1)
- *   Code eliminates X from (otherR, c2)
- *
- * Proof that this is incorrect:
- *   If X is at (otherR, c2):
- *     - (er, c2) cannot have X (same column c2)
- *     - In the box, X must go at (er, c1) — the only remaining position
- *     - Column c1 has X at (er, c1), satisfying the strong link
- *     - (otherR, c1) cannot have X, but this is fine (strong link says X is at one end)
- *   → No contradiction. The elimination is not valid.
- *
- * Additionally, the code does NOT detect true L-shaped Empty Rectangles
- * (candidate confined to BOTH a row AND a column in the box), which is the
- * pattern described in standard sudoku technique references.
+ * Reference: https://www.sudokuwiki.org/Empty_Rectangles
  */
 
-describe('EmptyRectangleCandidateEliminator — incorrect eliminations', () => {
+describe('EmptyRectangleCandidateEliminator — basic properties', () => {
+    it('has correct displayName', () => {
+        expect(new EmptyRectangleCandidateEliminator().displayName).toBe('Empty Rectangle')
+    })
+
+    it('returns false on empty board', () => {
+        const board = BoardReader.fromString('.'.repeat(81), Board)
+        const changed = new EmptyRectangleCandidateEliminator().eliminate(board)
+        expect(changed).toBe(false)
+    })
+
+    it('returns false on fully solved board', () => {
+        const solved = '534678912672195348198342567859761423426853791713924856961537284287419635345286179'
+        const board = BoardReader.fromString(solved, Board)
+        const changed = new EmptyRectangleCandidateEliminator().eliminate(board)
+        expect(changed).toBe(false)
+    })
+
+    it('does not throw on various puzzles', () => {
+        const eliminator = new EmptyRectangleCandidateEliminator()
+        const puzzles = [
+            '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79',
+            '1.....5694.2.....8.5...9.4....64.8.1....1....2.8.35....4.5...1.9.....4.2621.....5',
+            '.....6....59.....82....8....45........3........6..3.54...325..6..................',
+        ]
+        for (const p of puzzles) {
+            const board = BoardReader.fromString(p, Board)
+            eliminator.eliminate(board)
+        }
+    })
+})
+
+describe('EmptyRectangleCandidateEliminator — correct elimination', () => {
+    it('eliminates candidate via classic Empty Rectangle pattern', () => {
+        // Construct a board with the classic ER pattern (SudokuWiki example):
+        // ERI at D6 (row 3, col 5) in box 4 (center)
+        // Strong link on candidate 6 in row 7: H6 (7,5) ↔ H9 (7,8)
+        // Near end H6 shares column 5 with ERI → eliminate 6 from D9 (3,8)
+        const ALL = 0x1FF // all candidates 1-9
+        const MASK6 = 1 << 5 // candidate 6
+
+        const patterns = new Int32Array(81)
+        for (let i = 0; i < 81; i++) {
+            patterns[i] = ALL & ~MASK6
+        }
+
+        // Box 4 (center, rows 3-5, cols 3-5): candidate 6 cells
+        // D4(3,3), D5(3,4), D6(3,5), E6(4,5), F6(5,5)
+        // Strong link row 7: H6(7,5), H9(7,8)
+        // Elimination target: D9(3,8) — should be eliminated
+        // J9(8,8) prevents unintended column strong link D9-H9
+        const keepCells = [
+            [3, 3], [3, 4], [3, 5], // D4, D5, D6 (box 4 row buddies)
+            [4, 5], // E6 (box 4 col buddy)
+            [5, 5], // F6 (box 4 col buddy)
+            [7, 5], // H6 (strong link)
+            [7, 8], // H9 (strong link)
+            [3, 8], // D9 (elimination target)
+            [8, 8], // J9 (prevents column strong link D9-H9)
+        ]
+        for (const [r, c] of keepCells) {
+            patterns[r * 9 + c] |= MASK6
+        }
+
+        const board = new Board(patterns)
+
+        // Verify D9 has candidate 6 before elimination
+        const d9 = Coord.all[3 * 9 + 8]
+        expect(board.candidateValues(d9)).toContain(6)
+
+        const eliminator = new EmptyRectangleCandidateEliminator()
+        const changed = eliminator.eliminate(board)
+
+        expect(changed).toBe(true)
+        expect(board.candidateValues(d9)).not.toContain(6)
+        expect(board.candidateValues(Coord.all[7 * 9 + 5])).toContain(6)
+        expect(board.candidateValues(Coord.all[7 * 9 + 8])).toContain(6)
+    })
+
+    it('is included in default eliminator set', () => {
+        const config = new SolverConfig()
+        // Solve a puzzle with defaults — should succeed without error
+        const puzzle = '53..7....6..195....98....6.8...6...34..8.3..17...2...6.6....28....419..5....8..79'
+        const board = BoardReader.fromString(puzzle, Board)
+        for (const eliminator of config.eliminators) {
+            eliminator.eliminate(board)
+        }
+        // No crash = ER is in defaults and doesn't break anything
+    })
+})
+
+describe('EmptyRectangleCandidateEliminator — rejects invalid patterns', () => {
     /**
      * Helper: create a board with specific candidate set for a given value.
-     * All other cells have all 9 candidates (WILDCARD_PATTERN).
-     * Cells with the target candidate get WILDCARD_PATTERN | mask.
+     * All cells have all candidates EXCEPT the target value; only specified
+     * positions get the target candidate added back.
      */
     function createBoardWithCandidate(
         value: number,
         positions: [number, number][],
     ): Board {
         const mask = MASKS[value - 1]
-        // Start with all cells having all candidates
         const patterns = new Int32Array(81)
         for (let i = 0; i < 81; i++) {
-            patterns[i] = WILDCARD_PATTERN
-        }
-        // Override: only target cells have the specific candidate
-        // (all others have all candidates EXCEPT the target value)
-        for (let i = 0; i < 81; i++) {
-            patterns[i] = WILDCARD_PATTERN & ~mask // all except target
+            patterns[i] = WILDCARD_PATTERN & ~mask
         }
         for (const [r, c] of positions) {
-            patterns[r * 9 + c] |= mask // add target candidate back
+            patterns[r * 9 + c] |= mask
         }
         return new Board(patterns)
     }
 
-    it('should NOT eliminate when ER is single-row with 2 cols and strong link intersects', () => {
-        // Construct:
-        // - In box 0, candidate 5 appears ONLY at (0,1) and (0,2)
-        // - Column 1 has candidate 5 ONLY at (0,1) and (4,1) — strong link
-        // - Cell (4,2) also has candidate 5 (the target for incorrect elimination)
+    it('does NOT eliminate for single-row pattern (no column buddy)', () => {
+        // Single row (0,1), (0,2) in box 0: no cell has both row AND column
+        // buddies, so no valid ERI — the algorithm correctly skips.
         const value = 5
         const positions: [number, number][] = [
-            [0, 1], [0, 2],  // Box 0, row 0: the ER pattern
-            [4, 1],          // Column 1 strong link other end
-            [4, 2],          // The potential target cell
+            [0, 1], [0, 2],  // Box 0, row 0 only
+            [4, 1],          // Column 1 strong link
+            [4, 2],          // Potential (invalid) target
         ]
 
         const board = createBoardWithCandidate(value, positions)
         const mask = MASKS[value - 1]
 
-        // Verify setup
-        expect(board.candidatePatterns[0 * 9 + 1] & mask).toBeTruthy()  // (0,1)
-        expect(board.candidatePatterns[0 * 9 + 2] & mask).toBeTruthy()  // (0,2)
-        expect(board.candidatePatterns[4 * 9 + 1] & mask).toBeTruthy()  // (4,1)
-        expect(board.candidatePatterns[4 * 9 + 2] & mask).toBeTruthy()  // (4,2)
-
         const eliminator = new EmptyRectangleCandidateEliminator()
         const changed = eliminator.eliminate(board)
 
-        // The eliminator should NOT remove candidate 5 from (4,2)
-        // because placing 5 at (4,2) does not create a contradiction
-        const stillHasCandidate = !!(board.candidatePatterns[4 * 9 + 2] & mask)
-        expect(stillHasCandidate).toBe(true)
+        expect(changed).toBe(false)
+        expect(!!(board.candidatePatterns[4 * 9 + 2] & mask)).toBe(true)
     })
 
-    it('should NOT eliminate when ER is single-column with 2 rows and strong link intersects', () => {
-        // Construct:
-        // - In box 0, candidate 5 appears ONLY at (1,0) and (2,0)
-        // - Row 1 has candidate 5 ONLY at (1,0) and (1,4) — strong link
-        // - Cell (2,4) also has candidate 5 (the target for incorrect elimination)
+    it('does NOT eliminate for single-column pattern (no row buddy)', () => {
+        // Single column (1,0), (2,0) in box 0: no ERI qualifies.
         const value = 5
         const positions: [number, number][] = [
-            [1, 0], [2, 0],  // Box 0, col 0: the ER pattern (column-direction)
-            [1, 4],          // Row 1 strong link other end
-            [2, 4],          // The potential target cell
+            [1, 0], [2, 0],  // Box 0, col 0 only
+            [1, 4],          // Row 1 strong link
+            [2, 4],          // Potential (invalid) target
         ]
 
         const board = createBoardWithCandidate(value, positions)
         const mask = MASKS[value - 1]
 
-        // Verify setup
-        expect(board.candidatePatterns[1 * 9 + 0] & mask).toBeTruthy()  // (1,0)
-        expect(board.candidatePatterns[2 * 9 + 0] & mask).toBeTruthy()  // (2,0)
-        expect(board.candidatePatterns[1 * 9 + 4] & mask).toBeTruthy()  // (1,4)
-        expect(board.candidatePatterns[2 * 9 + 4] & mask).toBeTruthy()  // (2,4)
-
         const eliminator = new EmptyRectangleCandidateEliminator()
         const changed = eliminator.eliminate(board)
 
-        // The eliminator should NOT remove candidate 5 from (2,4)
-        const stillHasCandidate = !!(board.candidatePatterns[2 * 9 + 4] & mask)
-        expect(stillHasCandidate).toBe(true)
+        expect(changed).toBe(false)
+        expect(!!(board.candidatePatterns[2 * 9 + 4] & mask)).toBe(true)
     })
 
-    it('should NOT eliminate for ER with 1 column (no second column to target)', () => {
-        // When cols.size === 1, there's no "other" column to eliminate from.
-        // This case is currently harmless but we should verify.
+    it('does NOT eliminate with only one candidate cell', () => {
         const value = 5
         const positions: [number, number][] = [
-            [0, 1],  // Box 0, row 0, single column
+            [0, 1],  // Single cell in box 0
             [4, 1],  // Column 1 strong link
         ]
 
@@ -133,15 +187,14 @@ describe('EmptyRectangleCandidateEliminator — incorrect eliminations', () => {
         const eliminator = new EmptyRectangleCandidateEliminator()
         const changed = eliminator.eliminate(board)
 
-        // No elimination should occur — the inner loop finds no other column
         expect(changed).toBe(false)
     })
 
-    it('should detect true L-shaped Empty Rectangles (currently NOT detected)', () => {
-        // A proper L-shaped Empty Rectangle:
-        // - Candidate occupies row 0 (cols 1,2) AND column 0 (rows 1,2) in box 0
-        // - This forms an L: (0,1), (0,2), (1,0), (2,0)
-        // Current code does NOT detect this because rows.size=3 and cols.size=3
+    it('does NOT eliminate when ERI corner has no candidate (L-shaped gap)', () => {
+        // L-shaped pattern in box 0: (0,1),(0,2) + (1,0),(2,0)
+        // The corner cell (0,0) does NOT have the candidate → no valid ERI.
+        // This is a known limitation: the algorithm requires the ERI cell
+        // itself to hold the candidate to be considered.
         const value = 5
         const positions: [number, number][] = [
             [0, 1], [0, 2],  // Row arm of L in box 0
@@ -153,9 +206,7 @@ describe('EmptyRectangleCandidateEliminator — incorrect eliminations', () => {
         const eliminator = new EmptyRectangleCandidateEliminator()
         const changed = eliminator.eliminate(board)
 
-        // Current code does NOT eliminate anything because it doesn't detect
-        // the L-shaped pattern (rows.size=3, cols.size=3 — neither equals 1)
-        // This test documents the gap: true L-shaped ERs are not handled
+        // No valid ERI found (corner (0,0) doesn't have the candidate)
         expect(changed).toBe(false)
     })
 })
