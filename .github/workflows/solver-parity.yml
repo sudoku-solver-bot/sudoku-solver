@@ -1,0 +1,41 @@
+# ADR-0010: TS/Kotlin solver parity CI guard.
+# Runs TS SolverParity tests on every PR and push to master.
+# Must pass before merge for any PR touching solver code.
+
+name: Solver Parity
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'packages/solver/**'
+      - '.github/workflows/solver-parity.yml'
+  pull_request:
+    branches: [master]
+    paths:
+      - 'packages/solver/**'
+      - '.github/workflows/solver-parity.yml'
+  workflow_dispatch:
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: packages/solver/package-lock.json
+
+      - name: Install dependencies
+        working-directory: packages/solver
+        run: npm ci
+
+      - name: Run solver parity tests
+        working-directory: packages/solver
+        run: npx vitest run tests/SolverParity.test.ts --reporter=verbose

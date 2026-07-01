@@ -1,5 +1,8 @@
 # Sudoku Dojo — High-Level Design & Architecture
 
+[![CI Build & Analysis](https://github.com/sudoku-solver-bot/sudoku-solver/actions/workflows/gradle.yml/badge.svg)](https://github.com/sudoku-solver-bot/sudoku-solver/actions/workflows/gradle.yml)
+[![Solver Parity](https://github.com/sudoku-solver-bot/sudoku-solver/actions/workflows/solver-parity.yml/badge.svg)](https://github.com/sudoku-solver-bot/sudoku-solver/actions/workflows/solver-parity.yml)
+
 An **educational** Sudoku platform that teaches 21 solving techniques through interactive tutorials, belt-rank progression, and daily challenges. Target audience: learners mastering Sudoku logic + contributors extending the system.
 
 
