@@ -18,6 +18,7 @@ import {
     ForcingChainsCandidateEliminator,
     ALSXZCandidateEliminator,
     DeathBlossomCandidateEliminator,
+    EmptyRectangleCandidateEliminator,
 } from './Eliminators'
 import { Coord } from './Coord'
 
@@ -80,10 +81,9 @@ export class SolverConfig {
 }
 
 /**
- * Default eliminators: all 11 production-ready TS eliminators.
+ * Default eliminators: all 12 production-ready TS eliminators.
  *
  * Excluded:
- *   EmptyRectangle — makes incorrect eliminations (known bug, breaks solver)
  *   DeathBlossom  — too slow for default set (combinatorial explosion)
  */
 function defaultEliminators(): readonly CandidateEliminator[] {
@@ -100,6 +100,7 @@ function defaultEliminators(): readonly CandidateEliminator[] {
         new WWingCandidateEliminator(),
         new XYWingCandidateEliminator(),
         new XYZWingCandidateEliminator(),
+        new EmptyRectangleCandidateEliminator(),
         new UniqueRectanglesCandidateEliminator(),
         new SimpleColoringCandidateEliminator(),
         new ForcingChainsCandidateEliminator(),
