@@ -128,7 +128,7 @@ export {
 } from './Eliminators'
 export type { CandidateEliminator } from './Eliminators'
 export { SIZE, REGION_SIZE, SYMBOLS, MASKS, WILDCARD_PATTERN, bitCount } from './Bitmask'
-export { generate as generateHint, applyBasicElimination, applyHiddenSinglesUntilStable } from './HintGenerator'
+export { generate as hint, generate as generateHint, applyBasicElimination, applyHiddenSinglesUntilStable } from './HintGenerator'
 export type { Hint, HintOptions, TechniqueDetector } from './HintTypes'
 export { Technique, TECHNIQUE_DESCRIPTIONS } from './HintTypes'
 export { StepType, STEP_TYPE_DESCRIPTIONS, stepTypeFromTechniqueName } from './StepType'
