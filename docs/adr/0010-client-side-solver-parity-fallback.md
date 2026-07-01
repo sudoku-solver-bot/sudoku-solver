@@ -6,11 +6,11 @@
 
 ## Context
 
-ADR-0009 established the thin-server architecture migration, resulting in two solver implementations: the original Kotlin solver (reference, 21 eliminators) and the TypeScript solver (`@sudoku-dojo/solver`, 20 eliminators). Both are active in production — the TypeScript solver handles solve/validate/candidates client-side, and the Kotlin solver handles hint generation, step-by-step solving, and puzzle generation server-side.
+ADR-0009 established the thin-server architecture migration, resulting in two solver implementations: the original Kotlin solver (reference, 21 eliminators) and the TypeScript solver (`@sudoku-dojo/solver`, 20 eliminator classes — 18 active, 2 excluded). Both are active in production — the TypeScript solver handles solve/validate/candidates client-side, and the Kotlin solver handles hint generation, step-by-step solving, and puzzle generation server-side.
 
 This dual-implementation architecture creates specific risks:
 - **Divergence**: Kotlin and TypeScript solvers could produce different results for the same puzzle
-- **Incomplete parity**: TypeScript solver has 20 eliminators vs Kotlin's 21 (Missing: `DeathBlossomCandidateEliminator`)
+- **Incomplete parity**: TypeScript solver has 20 eliminator classes, 18 active in the default set. 2 are excluded: EmptyRectangle (correctness bug, see EmptyRectangle.test.ts) and DeathBlossomCandidateEliminator (ported but excluded from defaults due to speed, available as a deep/timeout-gated eliminator).
 - **Fallback reliability**: When the client-side solver fails or is unavailable, the server fallback must work correctly
 - **Testing gaps**: Without systematic parity testing, behavioral differences go undetected
 
@@ -35,7 +35,7 @@ Specifically:
 - 200+ tests, run via Vitest in CI
 
 **Parity tests (`SolverParity.test.ts`)**:
-- A corpus of 50+ puzzles (easy through extreme) solved by both implementations
+- A corpus of puzzles (currently 5, targeting 50+) spanning easy through extreme, solved by both implementations
 - Each puzzle is solved by the Kotlin solver first (source of truth), then the TS solver
 - Assertions: same final board, same solution, same validation result
 - Run in CI on every PR that touches the solver
@@ -78,11 +78,18 @@ Fallback triggers:
 
 ### 4. Eliminator Gap Tracking
 
-The TypeScript solver has 20 of 21 eliminators. The gap (`DeathBlossomCandidateEliminator`) is documented as a known limitation:
-- Death Blossom applies to <0.1% of puzzles (extreme difficulty only)
-- Puzzles requiring Death Blossom will fall back to the Kotlin server solver
-- The gap is tracked in issue #445 (TS + CDN evaluation)
-- No new eliminator gaps should be introduced without an ADR update
+The TypeScript solver has 20 eliminator classes. Two are **excluded from the default set**, not unported:
+
+| Eliminator | Status | Severity | Reason |
+|-----------|--------|----------|--------|
+| EmptyRectangleCandidateEliminator | Ported, excluded | 🔴 **Bug** | Makes incorrect eliminations (documented in `EmptyRectangle.test.ts`). Excluded because it's wrong, not because it's slow. |
+| DeathBlossomCandidateEliminator | Ported, excluded | 🟡 Speed | Available as a deep eliminator with per-invocation timeout (default 50ms). Excluded from defaults due to combinatorial explosion on extreme puzzles. Used by hint generator for Death Blossom hints. |
+
+Rules for exclusions:
+- EmptyRectangle should be re-enabled only after its correctness bug is fixed
+- Death Blossom is available via hint generator and deep eliminator set (timeout-gated)
+- 18 eliminators run in the default standard set
+- No new eliminator exclusions should be introduced without a documented reason and an ADR update
 
 ### 5. Versioning & Release
 

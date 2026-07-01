@@ -36,12 +36,27 @@ Extract the solver from `web-ui/src/solver/` into `packages/solver/` as `@sudoku
 - 200+ unit tests with Vitest, runnable in CI without a browser
 
 ### Phase 3: Progressive Server Reduction (🟡 In Progress)
-Gradually move remaining server-side logic to the client where feasible:
-- `solve` and `validate` already client-first with server fallback
-- `candidates` already client-first
-- `hint` (next hint) remains server-only — requires puzzle generation and step tracking
-- `steps` (step-by-step) remains server-only — requires full solving pipeline
-- Future: evaluate client-side hint generation and step tracking
+
+Gradually move remaining server-side logic to the client where feasible.
+
+**Decision boundary**: Only pure computation endpoints migrate. Endpoints that require global puzzle generation, multi-step state tracking, or difficulty analysis stay server-side indefinitely.
+
+| Endpoint | TS Parity | Client Migration | Rationale |
+|----------|-----------|-----------------|-----------|
+| `solve` | ✅ Full | ✅ Done | Pure computation, zero deps |
+| `validate` | ✅ Full | ✅ Done | Pure computation, zero deps |
+| `candidates` | ✅ Full | ✅ Done | Pure computation, zero deps |
+| `hint` | ⚠️ Partial | 🔮 Possible | TS has hint generator but step tracking is coupled to server puzzle generation. Could migrate if client-side step tracking is built. |
+| `steps` | ⚠️ Partial | 🔮 Possible | TS solver can produce steps; needs client-side puzzle generation or server-side puzzle generation first. |
+| `generate` | ❌ None | ❌ Stays server | Difficulty guarantees require Kotlin solver's repeat-generate-and-validate pipeline. Not feasible to port to TS with current difficulty analysis. |
+
+**Long-term Kotlin status**: The Kotlin server is retained indefinitely as the reference implementation and source of truth. It handles:
+- Puzzle generation (difficulty-guaranteed via repeat-generate pipeline)
+- Tutorial/hint integration (multi-step state tracking)
+- Puzzle storage and serving (server-side DB)
+- Fallback for client-side solver failures
+
+The Kotlin solver is NOT being deprecated — it's the canonical implementation. The TS solver is a client-side performance optimization, not a replacement.
 
 ### Client-First with Server Fallback
 ```typescript
