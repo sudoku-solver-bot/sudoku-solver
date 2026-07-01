@@ -805,10 +805,14 @@ export class TwoStringKiteCandidateEliminator implements CandidateEliminator {
 // ---------------------------------------------------------------------------
 
 /**
- * Empty Rectangle: In a 3×3 box, if a candidate's cells are confined to
- * one row + at most 2 columns (or one column + at most 2 rows), find a
- * strong link outside the box that intersects and eliminate the candidate
- * from the chain's remote intersection.
+ * Empty Rectangle: In a 3×3 box, find a 2×2 sub-grid where all 4 cells
+ * are empty of the candidate (the "empty rectangle"). The cell diagonally
+ * opposite the empty rectangle is the ERI (Empty Rectangle Intersection).
+ * If the ERI contains the candidate and aligns with a strong link outside
+ * the box, the candidate can be eliminated from the far intersection.
+ *
+ * Reference: https://www.sudokuwiki.org/Empty_Rectangles (deprecated in
+ * favor of Rectangle Elimination, but still a valid pattern).
  */
 export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
     readonly displayName = 'Empty Rectangle'
@@ -852,20 +856,49 @@ export class EmptyRectangleCandidateEliminator implements CandidateEliminator {
             if (cols.length === 2) rowLinks.set(r, [cols[0], cols[1]])
         }
 
+        // Helper: check if cell (r, c) has the candidate
+        const hasCandidate = (r: number, c: number): boolean =>
+            !!(board.candidatePattern(Coord.all[r * 9 + c]) & mask)
+
         for (const region of CoordGroup.region) {
-            const cells = region.coords.filter(c => board.candidatePattern(c) & mask)
-            if (cells.length < 2) continue
+            // Compute global row/col of the box's top-left corner
+            const boxRow = region.coords[0].row
+            const boxCol = region.coords[0].col
 
-            for (const eri of cells) {
-                // ERI must have other candidates in both its row and column
-                // (within the box) — forming an L-shaped pattern.
-                const hasRowBuddy = cells.some(c => c !== eri && c.row === eri.row)
-                const hasColBuddy = cells.some(c => c !== eri && c.col === eri.col)
-                if (!hasRowBuddy || !hasColBuddy) continue
+            // Find all 2×2 sub-grids within this box where ALL 4 cells
+            // are empty of the candidate (the "empty rectangle").
+            // The ERI is the cell diagonally opposite the empty rectangle.
+            //
+            // 4 possible 2×2 placements within a 3×3:
+            //   [0,0]→(2,2)   [0,1]→(2,0)   [1,0]→(0,2)   [1,1]→(0,0)
+            const eriCandidates: [number, number][] = []
 
-                const eriBox = eri.region
-                const eriRow = eri.row
-                const eriCol = eri.col
+            // Top-left 2×2 empty → ERI at bottom-right
+            if (!hasCandidate(boxRow, boxCol) && !hasCandidate(boxRow, boxCol + 1) &&
+                !hasCandidate(boxRow + 1, boxCol) && !hasCandidate(boxRow + 1, boxCol + 1)) {
+                eriCandidates.push([boxRow + 2, boxCol + 2])
+            }
+            // Top-right 2×2 empty → ERI at bottom-left
+            if (!hasCandidate(boxRow, boxCol + 1) && !hasCandidate(boxRow, boxCol + 2) &&
+                !hasCandidate(boxRow + 1, boxCol + 1) && !hasCandidate(boxRow + 1, boxCol + 2)) {
+                eriCandidates.push([boxRow + 2, boxCol])
+            }
+            // Bottom-left 2×2 empty → ERI at top-right
+            if (!hasCandidate(boxRow + 1, boxCol) && !hasCandidate(boxRow + 1, boxCol + 1) &&
+                !hasCandidate(boxRow + 2, boxCol) && !hasCandidate(boxRow + 2, boxCol + 1)) {
+                eriCandidates.push([boxRow, boxCol + 2])
+            }
+            // Bottom-right 2×2 empty → ERI at top-left
+            if (!hasCandidate(boxRow + 1, boxCol + 1) && !hasCandidate(boxRow + 1, boxCol + 2) &&
+                !hasCandidate(boxRow + 2, boxCol + 1) && !hasCandidate(boxRow + 2, boxCol + 2)) {
+                eriCandidates.push([boxRow, boxCol])
+            }
+
+            for (const [eriRow, eriCol] of eriCandidates) {
+                // ERI must contain the candidate (intersection of Empty Rectangle Lines)
+                if (!hasCandidate(eriRow, eriCol)) continue
+
+                const eriBox = Coord.all[eriRow * 9 + eriCol].region
 
                 // Row strong links: near end shares column with ERI
                 // Target = (ERI.row, farEnd.col)
