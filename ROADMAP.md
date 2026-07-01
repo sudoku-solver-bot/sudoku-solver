@@ -1,13 +1,13 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-06-30 (updated 09:01)
+**Last updated:** 2026-07-01 (updated 11:00 HKT)
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
 
-## Current Phase: Test Automation & Infrastructure Stabilization (June 2026)
+## Current Phase: Thin-Server Architecture Migration (July 2026)
 
-TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenerator, SolverWithSteps all in TypeScript. Focus shifted to test coverage, infrastructure hardening, and process automation.
+TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenerator, SolverWithSteps all in TypeScript. Phase 3 of thin-server migration underway — moving hint generation, step-by-step solving, and parity enforcement client-side. ADR-0009 and ADR-0010 formalize the strategy.
 
 ### ✅ Completed (June 9–29)
 
@@ -24,6 +24,9 @@ TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenera
 - ✅ **#747** — API rate limiting test (#700)
 - ✅ **#746** — HintGenerator test harness with tutorial verification (#743, #744, #745)
 
+#### Bug Fixes
+- ✅ **#763** — Fix EmptyRectangleCandidateEliminator (incorrect ERI detection via heuristic → correct 2×2 empty rectangle check). Re-enabled in defaults.
+
 #### Infrastructure
 - ✅ **#754** — Fix StartLimitIntervalSec in wrong systemd section
 - ✅ **#751** — Normalize getHintForPuzzle response (client-first + server fallback)
@@ -31,11 +34,16 @@ TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenera
 - ✅ **#749** — ADR-0008: Weekly Issue Board Audit (process established)
 - ✅ **#752** — Agent session-launch repo scoping guard (architecture)
 
-### 🟢 Sudoku-solver Issues
+### 🔵 Sudoku-solver Issues
 
-The issue board is completely clean:
-- **sudoku-solver-bot/sudoku-solver**: 0 open issues
-- **novaclawhk/video-pipeline**: 7 open issues (see below)
+Open issues (7):
+- **#755, #756** — ADR-0009 (Thin-Server) & ADR-0010 (Client-Side Solver Parity) — awaiting reviewer approval
+- **#757** — Port hint generator to TS — ready for coder (~20 min)
+- **#758** — Port step-by-step solving to TS — ready for coder (~20 min)
+- **#759** — Expand SolverParity corpus 5→50+ — ready for coder (~20 min)
+- **#761** — Add CI parity enforcement — ready for coder (~15 min)
+
+**novaclawhk/video-pipeline**: 7 open issues (see below)
 
 ---
 
