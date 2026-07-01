@@ -2,6 +2,7 @@ import type { Board } from './Board'
 import type { CandidateEliminator } from './Eliminators'
 import {
     SimpleCandidateEliminator,
+    EmptyRectangleCandidateEliminator,
     GroupCandidateEliminator,
     HiddenSubsetCandidateEliminator,
     ExclusionCandidateEliminator,
@@ -83,12 +84,12 @@ export class SolverConfig {
  * Default eliminators: all 11 production-ready TS eliminators.
  *
  * Excluded:
- *   EmptyRectangle — makes incorrect eliminations (known bug, breaks solver)
  *   DeathBlossom  — too slow for default set (combinatorial explosion)
  */
 function defaultEliminators(): readonly CandidateEliminator[] {
     return [
         new SimpleCandidateEliminator(),
+        new EmptyRectangleCandidateEliminator(),
         new GroupCandidateEliminator(),
         new HiddenSubsetCandidateEliminator(),
         new ExclusionCandidateEliminator(9),

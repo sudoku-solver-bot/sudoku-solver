@@ -192,9 +192,8 @@ describe('EmptyRectangleCandidateEliminator — rejects invalid patterns', () =>
 
     it('does NOT eliminate when ERI corner has no candidate (L-shaped gap)', () => {
         // L-shaped pattern in box 0: (0,1),(0,2) + (1,0),(2,0)
-        // The corner cell (0,0) does NOT have the candidate → no valid ERI.
-        // This is a known limitation: the algorithm requires the ERI cell
-        // itself to hold the candidate to be considered.
+        // The 2×2 at (1,1)→(2,2) is empty → ERI would be (0,0).
+        // But (0,0) does not have the candidate, so no valid ERI.
         const value = 5
         const positions: [number, number][] = [
             [0, 1], [0, 2],  // Row arm of L in box 0
