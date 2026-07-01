@@ -1,15 +1,23 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-07-01 (updated 11:00 HKT)
+**Last updated:** 2026-07-01 (updated 20:00 HKT)
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
 
-## Current Phase: Thin-Server Architecture Migration (July 2026)
+## Current Phase: IMPROVEMENT PHASE (July 2026)
 
-TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenerator, SolverWithSteps all in TypeScript. Phase 3 of thin-server migration underway — moving hint generation, step-by-step solving, and parity enforcement client-side. ADR-0009 and ADR-0010 formalize the strategy.
+✅ **Phase 3 — Thin-Server Architecture Migration complete.** All ADR-0009 and ADR-0010 sub-issues shipped. Hint generator, step-by-step solving, solver parity corpus, and CI enforcement all delivered. TS solver at full parity with 20 eliminators. 0 open PRs. Production live.
 
-### ✅ Completed (June 9–29)
+### ✅ Completed
+
+#### Phase 3 — Thin-Server Migration (ADR-0009, ADR-0010)
+- ✅ **#757** — Port hint generator to TypeScript (PR #767 merged)
+- ✅ **#758** — Port step-by-step solving to TypeScript (PR #768 merged)
+- ✅ **#759** — Expand SolverParity corpus 5→50+ puzzles (PR #766 merged)
+- ✅ **#761** — Add CI solver parity workflow + README badge (PR #765 merged)
+- ✅ **#756** — ADR-0010 closed (all sub-issues shipped)
+- ✅ **#755** — ADR-0009 closed (all sub-issues shipped)
 
 #### Test Automation (from #678, #679, #680)
 - ✅ **#741** — Difficulty generation tests (#699)
@@ -36,12 +44,7 @@ TS solver at full parity. All 20 eliminators ported. HintGenerator, PuzzleGenera
 
 ### 🔵 Sudoku-solver Issues
 
-Open issues (7):
-- **#755, #756** — ADR-0009 (Thin-Server) & ADR-0010 (Client-Side Solver Parity) — awaiting reviewer approval
-- **#757** — Port hint generator to TS — ready for coder (~20 min)
-- **#758** — Port step-by-step solving to TS — ready for coder (~20 min)
-- **#759** — Expand SolverParity corpus 5→50+ — ready for coder (~20 min)
-- **#761** — Add CI parity enforcement — ready for coder (~15 min)
+**0 open issues** — all shipped and closed.
 
 **novaclawhk/video-pipeline**: 7 open issues (see below)
 
