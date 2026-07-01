@@ -3,9 +3,20 @@ package will.sudoku.solver
 /**
  * Empty Rectangle Candidate Eliminator
  *
- * In a 3x3 box, if a candidate's cells form an L-shape (confined to
- * specific rows and columns), find a strong link outside the box that
- * intersects and eliminate the candidate from the chain's remote intersection.
+ * Algorithm (SudokuWiki-based):
+ * 1. Identify ERIs (Empty Rectangle Intersections): candidate cells that
+ *    have other candidates in both their row and column within the box
+ *    (L-shaped pattern).
+ * 2. For each row/column strong link, check if one end (the "near end")
+ *    sees the ERI (same row or column).
+ * 3. Eliminate candidate from the cell at the intersection of the far end
+ *    and the ERI:
+ *    - Row link, near end shares col → target at (ERI.row, farEnd.col)
+ *    - Column link, near end shares row → target at (farEnd.row, ERI.col)
+ * 4. Both the near end and the elimination target must be outside the
+ *    ERI's box.
+ *
+ * Reference: https://www.sudokuwiki.org/Empty_Rectangles
  */
 class EmptyRectangleCandidateEliminator : CandidateEliminator {
 
@@ -63,56 +74,58 @@ class EmptyRectangleCandidateEliminator : CandidateEliminator {
                 }
                 if (cells.size < 2) continue
 
-                val candidateRows = cells.map { it.row }.toSet()
-                val candidateCols = cells.map { it.col }.toSet()
-
-                // Need L-shaped pattern: candidate occupies multiple rows AND columns
-                if (candidateRows.size < 2 || candidateCols.size < 2) continue
-
                 val regionIndex = boxRow * 3 + boxCol
 
-                for (erRow in candidateRows) {
-                    for (erCol in candidateCols) {
-                        // Check for strong link in erRow — one end must be in the box
-                        val rowLink = rowLinks[erRow]
-                        if (rowLink != null) {
-                            val (r1, r2) = rowLink
-                            val r1InBox = Coord(r1, erCol).region == regionIndex
-                            val r2InBox = Coord(r2, erCol).region == regionIndex
-                            if (r1InBox && !r2InBox) {
-                                val target = Coord(r2, erCol)
-                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
-                                    board.eraseCandidateValue(target, value)
-                                    anyUpdate = true
-                                }
-                            } else if (r2InBox && !r1InBox) {
-                                val target = Coord(r1, erCol)
-                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
-                                    board.eraseCandidateValue(target, value)
-                                    anyUpdate = true
-                                }
-                            }
-                        }
+                for (eri in cells) {
+                    // ERI must have other candidates in both its row and column
+                    // (within the box) — forming an L-shaped pattern.
+                    val hasRowBuddy = cells.any { c -> c !== eri && c.row == eri.row }
+                    val hasColBuddy = cells.any { c -> c !== eri && c.col == eri.col }
+                    if (!hasRowBuddy || !hasColBuddy) continue
 
-                        // Check for strong link in erCol — one end must be in the box
-                        val colLink = colLinks[erCol]
-                        if (colLink != null) {
-                            val (c1, c2) = colLink
-                            val c1InBox = Coord(erRow, c1).region == regionIndex
-                            val c2InBox = Coord(erRow, c2).region == regionIndex
-                            if (c1InBox && !c2InBox) {
-                                val target = Coord(erRow, c2)
-                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
-                                    board.eraseCandidateValue(target, value)
-                                    anyUpdate = true
-                                }
-                            } else if (c2InBox && !c1InBox) {
-                                val target = Coord(erRow, c1)
-                                if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
-                                    board.eraseCandidateValue(target, value)
-                                    anyUpdate = true
-                                }
-                            }
+                    val eriBox = eri.region
+                    val eriRow = eri.row
+                    val eriCol = eri.col
+
+                    // Row strong links: near end shares column with ERI
+                    // Target = (ERI.row, farEnd.col)
+                    for ((slRow, link) in rowLinks) {
+                        val (c1, c2) = link
+                        val farCol = when {
+                            c1 == eriCol -> c2
+                            c2 == eriCol -> c1
+                            else -> null
+                        } ?: continue
+
+                        val nearEnd = Coord(slRow, eriCol)
+                        if (nearEnd.region == eriBox) continue
+
+                        val target = Coord(eriRow, farCol)
+                        if (target.region == eriBox) continue
+                        if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
+                            board.eraseCandidateValue(target, value)
+                            anyUpdate = true
+                        }
+                    }
+
+                    // Column strong links: near end shares row with ERI
+                    // Target = (farEnd.row, ERI.col)
+                    for ((slCol, link) in colLinks) {
+                        val (r1, r2) = link
+                        val farRow = when {
+                            r1 == eriRow -> r2
+                            r2 == eriRow -> r1
+                            else -> null
+                        } ?: continue
+
+                        val nearEnd = Coord(eriRow, slCol)
+                        if (nearEnd.region == eriBox) continue
+
+                        val target = Coord(farRow, eriCol)
+                        if (target.region == eriBox) continue
+                        if (!board.isConfirmed(target) && (board.candidatePattern(target) and mask) != 0) {
+                            board.eraseCandidateValue(target, value)
+                            anyUpdate = true
                         }
                     }
                 }
