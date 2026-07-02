@@ -6,7 +6,9 @@ StartLimitBurst=5
 
 [Service]
 Type=simple
-User=sudoku
+# IMPORTANT: The User= value must exist on the host before starting this service.
+# Create with: useradd -r -s /usr/sbin/nologin sudoku  (if using a dedicated user)
+User=claw1
 WorkingDirectory=/opt/sudoku-solver-staging
 Environment=PORT=25322
 Environment=STAGING=true
@@ -19,7 +21,7 @@ RestartSec=2s
 # Security hardening
 NoNewPrivileges=yes
 ProtectSystem=strict
-ProtectHome=yes
+ProtectHome=read-only
 ReadWritePaths=/opt/sudoku-solver-staging
 PrivateTmp=yes
 PrivateDevices=yes

@@ -19,6 +19,15 @@
 - Reports deployment status to architect/planner if issues arise
 - Updates `.deploy-commit` file with deployed commit hash
 
+## Systemd Prerequisites
+
+Before deploying, ensure the systemd user configured in the service unit exists on the host:
+- Production (`sudoku-solver.service`): `User=claw1`
+- Staging (`sudoku-solver-staging.service`): `User=claw1`
+
+If the configured user does not exist, systemd will fail to start the service.
+Create the user if needed: `useradd -r -s /usr/sbin/nologin <username>`
+
 ## Deploy Procedure
 1. `git fetch origin` → compare `.deploy-commit` with `origin/master`
 2. If new commits: `git pull --ff-only`, build frontend + backend
