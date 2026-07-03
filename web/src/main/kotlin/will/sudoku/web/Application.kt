@@ -137,7 +137,9 @@ fun Application.module() {
         // Versioned API routes (v1)
         route("api/v1") {
             intercept(ApplicationCallPipeline.Plugins) {
-                call.response.headers.append("X-API-Version", "1.0")
+                if (!call.response.isCommitted) {
+                    call.response.headers.append("X-API-Version", "1.0")
+                }
             }
             registerAllRoutes()
         }
