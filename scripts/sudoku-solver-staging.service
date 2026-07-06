@@ -15,7 +15,7 @@ Environment=STAGING=true
 Environment=DEPLOY_COMMIT_FILE=/opt/sudoku-solver-staging/.deploy-commit
 Environment=BUILD_TIMESTAMP_FILE=/opt/sudoku-solver-staging/.build-timestamp
 ExecStart=/opt/sudoku-solver-staging/bin/web
-Restart=on-failure
+Restart=always
 RestartSec=2s
 
 # Security hardening
