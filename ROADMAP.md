@@ -1,6 +1,6 @@
 # Sudoku Dojo — Roadmap
 
-**Last updated:** 2026-07-01 (updated 21:30 HKT)
+**Last updated:** 2026-07-27 (Weekly Audit #5 — 16:00 HKT)
 **Repository:** [sudoku-solver-bot/sudoku-solver](https://github.com/sudoku-solver-bot/sudoku-solver)
 
 ---
